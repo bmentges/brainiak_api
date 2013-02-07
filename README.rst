@@ -1,17 +1,31 @@
 brainiak
 ++++++++
 
-Brainiak is a Linked Data RESTful API that provides a simple interface with SPARQL endpoints.
+Brainiak is a Linked Data RESTful API that provides access to SPARQL endpoints.
+
+Motivation
+==========
+
+Some of the 
+* Lower the barrier to use semantic technlogies
+* Encapsulate the access to a triple store
+* Provide data governance to triple stores
+* Provide a unique and coherent interface to multiple database backents (e.g. `OpenLink Virtuoso <http://virtuoso.openlinksw.com/>`_ and `ElasticSearch <http://www.elasticsearch.org/>`_), including non triple stores.
 
 Dependencies
 ============
 
-Can be installed using virtualenv: ::
 
+Brainiak is developed using `Python <http://www.python.org/>`_.
+
+Can be installed using `virtualenvwrapper <http://www.doughellmann.com/projects/virtualenvwrapper/>`_: ::
+
+    # In case you don't have it installed:
     sudo pip install virtualenv
     sudo pip install virtualenvwrapper
     source `which virtualenvwrapper.sh`
 
+    # Just use it:
     mkvirtualenv brainiak
     workon brainiak
     make install

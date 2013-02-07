@@ -6,4 +6,4 @@ Brainiak is a Linked Data RESTful API to offer simple interface for SPARQL endpo
 Installing
 ==========
 
-
+pip install -r requirements.txt

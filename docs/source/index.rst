@@ -12,8 +12,7 @@ Brainiak is a Linked Data RESTful API.
    :maxdepth: 2
 
    concepts.rst
-
-
+   interfaces.rst
 
 Indices and tables
 ==================

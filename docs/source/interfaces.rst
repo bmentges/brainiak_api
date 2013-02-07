@@ -30,30 +30,30 @@ Interface examples
 List all contexts
 --------------------------------
 
-```http
-GET 'http://localhost:5100/contexts'
-```
+.. code-block:: http
+
+    GET 'http://localhost:5100/contexts'
 
 List all schemas of a context
 -----------------------------
 
-```http
-GET 'http://localhost:5100/contexts/place/schemas'
-```
+.. code-block:: http
+
+  GET 'http://localhost:5100/contexts/place/schemas'
 
 Get a specific schema of a context
 ----------------------------------
 
-```http
-GET 'http://localhost:5100/contexts/place/schemas/city'
-```
+.. code-block:: http
+
+  GET 'http://localhost:5100/contexts/place/schemas/city'
 
 Create schema
 -------------
 
-```http
-PUT 'http://localhost:5100/contexts/place/schemas/city' -H 'Content-type: text/turtle'
-```
+.. code-block:: http
+
+  PUT 'http://localhost:5100/contexts/place/schemas/city' -H 'Content-type: text/turtle'
 
 The payload for this request will be something like:
 
@@ -67,9 +67,9 @@ The payload for this request will be something like:
 Adding instances
 ----------------
 
-```http
-POST 'http://localhost:5100/contexts/tech/software' -H 'Content-type: application/json'
-```
+.. code-block:: http
+
+  POST 'http://localhost:5100/contexts/tech/software' -H 'Content-type: application/json'
 
 .. Example of payload:
 

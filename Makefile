@@ -33,6 +33,10 @@ pep8_tests:
 	@-pep8 tests --ignore=E501,E126,E127,E128
 
 run:
-	@echo "Raising Brainiak..."
+	@echo "Brainiak is rising..."
 	@echo "TODO"
 	#PYTHONPATH="$(NEW_PYTHONPATH)" python -m brainiak.server
+
+documentation:
+	@echo "Compiling and opening documentation..."
+	@cd docs; make run

@@ -30,6 +30,11 @@ in a common language.
 Likewise, we expect a schema to be easily written, by using the Turtle format, the
 most compact serialization of ontologies developed in the RDF/OWL model.
 
+.. code-block:: guess
+
+    :City a owl:Class ;
+          rdfs:subClassOf :Place .
+
 .. _concept_collection:
 
 Collection

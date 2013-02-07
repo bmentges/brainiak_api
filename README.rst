@@ -21,7 +21,6 @@ https://brainiak.readthedocs.org
 Running
 ============
 
-
 Brainiak is developed using `Python <http://www.python.org/>`_.
 
 It can be installed using `virtualenvwrapper <http://www.doughellmann.com/projects/virtualenvwrapper/>`_: ::
@@ -61,7 +60,7 @@ Brainiak is GNU GPL 2: ::
 
     Brainiak is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation,  version 2 of the License.
+    the Free Software Foundation, version 2 of the License.
 
     Brainiak is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of

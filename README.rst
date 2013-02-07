@@ -7,10 +7,11 @@ Motivation
 ==========
 
 Some of the 
-* Lower the barrier to use semantic technlogies
-* Encapsulate the access to a triple store
-* Provide data governance to triple stores
-* Provide a unique and coherent interface to multiple database backents (e.g. `OpenLink Virtuoso <http://virtuoso.openlinksw.com/>`_ and `ElasticSearch <http://www.elasticsearch.org/>`_), including non triple stores.
+
+ * Lower the barrier to use semantic technlogies
+ * Encapsulate the access to a triple store
+ * Provide data governance to triple stores
+ * Provide a unique and coherent interface to multiple database backents (e.g. `OpenLink Virtuoso <http://virtuoso.openlinksw.com/>`_ and `ElasticSearch <http://www.elasticsearch.org/>`_), including non triple stores.
 
 Dependencies
 ============

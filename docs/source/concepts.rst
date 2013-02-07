@@ -4,12 +4,16 @@ API concepts
 Here we explain the main concepts of the API, i.e. this is
 our `ubiquitous language <http://martinfowler.com/bliki/UbiquitousLanguage.html>`_.
 
+.. _concept_context:
+
 Context
 -------
 
 An isolated context of data, defined by some unique slug that defines its namespace.
 
 It might represent, for example, the product or the app being developed.
+
+.. _concept_schema:
 
 Schema
 ------
@@ -26,6 +30,8 @@ in a common language.
 Likewise, we expect a schema to be easily written, by using the Turtle format, the
 most compact serialization of ontologies developed in the RDF/OWL model.
 
+.. _concept_collection:
+
 Collection
 ----------
 
@@ -33,6 +39,8 @@ A schema defines a group of instances of the same type.
 This group is hereby named a collection.
 
 The collection name is based on the class name plural (e.g. City -> cities)
+
+.. _concept_instance:
 
 Instance
 --------

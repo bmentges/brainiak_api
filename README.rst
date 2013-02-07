@@ -1,7 +1,7 @@
 brainiak
 ++++++++
 
-Brainiak is a Linked Data RESTful API that provides access to SPARQL endpoints.
+Brainiak is a Linked Data RESTful API to provide transparent access to SPARQL endpoints.
 
 Motivation
 ==========
@@ -10,7 +10,7 @@ The following topics motivated the development of Brainiak:
 
 * Lower the barrier to use semantic technlogies
 * Encapsulate the access to triple stores compatible with RDF/TURTLE and SPARQL (e.g. `OpenLink Virtuoso <http://virtuoso.openlinksw.com/>`_, `Sesame <http://www.aduna-software.com/technology/sesame>`_, `AllegroGraph <http://www.franz.com/agraph/allegrograph/>`_, `Ontotext OWLIM <http://www.ontotext.com/owlim>`_)
-* Provide data governance to triple stores
+* Enhance data management to triple stores
 * Provide a unique and coherent interface to other database backends, including non triple stores (e.g.: `ElasticSearch <http://www.elasticsearch.org/>`_).
 
 Documentation
@@ -18,13 +18,13 @@ Documentation
 
 https://brainiak.readthedocs.org
 
-Dependencies
+Running
 ============
 
 
 Brainiak is developed using `Python <http://www.python.org/>`_.
 
-Can be installed using `virtualenvwrapper <http://www.doughellmann.com/projects/virtualenvwrapper/>`_: ::
+It can be installed using `virtualenvwrapper <http://www.doughellmann.com/projects/virtualenvwrapper/>`_: ::
 
     # Install virtualenv / virtualenvwraper, in case you didn't yet:
     sudo pip install virtualenv
@@ -40,15 +40,12 @@ Or using super-user powers: ::
 
     sudo make install
 
-Run
-===
-
-At development environments: ::
+After virtualenv is ready (run in development mode): ::
 
     make run
 
-Test
-====
+Testing
+=======
 
 Check if everything is running as expected, and keep up the code covered with tests when contributing: ::
 

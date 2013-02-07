@@ -6,12 +6,12 @@ Brainiak is a Linked Data RESTful API that provides access to SPARQL endpoints.
 Motivation
 ==========
 
-Some of the 
+The following topics motivated the development of Brainiak:
 
 * Lower the barrier to use semantic technlogies
-* Encapsulate the access to a triple store
+* Encapsulate the access to triple stores compatible with RDF/TURTLE and SPARQL (e.g. `OpenLink Virtuoso <http://virtuoso.openlinksw.com/>`_, `Sesame <http://www.aduna-software.com/technology/sesame>`_, `AllegroGraph <http://www.franz.com/agraph/allegrograph/>`_, `Ontotext OWLIM <http://www.ontotext.com/owlim>`_)
 * Provide data governance to triple stores
-* Provide a unique and coherent interface to multiple database backents (e.g. `OpenLink Virtuoso <http://virtuoso.openlinksw.com/>`_ and `ElasticSearch <http://www.elasticsearch.org/>`_), including non triple stores.
+* Provide a unique and coherent interface to other database backents (`ElasticSearch <http://www.elasticsearch.org/>`_), including non triple stores.
 
 Dependencies
 ============

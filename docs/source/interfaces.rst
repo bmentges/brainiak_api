@@ -1,4 +1,4 @@
-API interface
+API Interface
 =============
 
 The API interfaces should be easy to remember,
@@ -9,14 +9,12 @@ confusing.
 We follow the principles of `REST <http://en.wikipedia.org/wiki/Representational_state_transfer>`_
 and `HATEOAS <http://en.wikipedia.org/wiki/HATEOAS>`_.
 
-In all examples from now on we use a context named *place*, a schema
-named *city* and a correspondent collection named *cities*
-containing instances of cities. All these examples are based on
-the DBPedia 3.7 English Ontology.
+In all examples from now on we use a context named *place*, 
+a schema named *City* and a correspondent collection named *cities* containing instances of cities. 
+All these examples are based on the DBPedia 3.7 English Ontology.
 
-Therefore, the place context in the example represents all subclasses
-of DBPedia `Place <http://dbpedia.org/ontology/Place>`_, *city* represents
-`City <http://dbpedia.org/ontology/City>`_ and so on.
+Therefore, the place context in the example represents all subclasses of DBPedia `Place <http://dbpedia.org/ontology/Place>`_, 
+*city* represents `City <http://dbpedia.org/ontology/City>`_ and so on.
 
 You can query and learn more about this data model using the `DBPedia SPARQL endpoint <http://dbpedia.org/sparql>`_.
 

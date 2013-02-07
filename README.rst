@@ -13,6 +13,11 @@ The following topics motivated the development of Brainiak:
 * Provide data governance to triple stores
 * Provide a unique and coherent interface to other database backends, including non triple stores (e.g.: `ElasticSearch <http://www.elasticsearch.org/>`_).
 
+Documentation
+=============
+
+https://brainiak.readthedocs.org
+
 Dependencies
 ============
 

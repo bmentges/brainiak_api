@@ -9,22 +9,25 @@ our `ubiquitous language <http://martinfowler.com/bliki/UbiquitousLanguage.html>
 Context
 -------
 
-An isolated context of data, defined by some unique slug that defines its namespace.
+Context is an isolated data space, defined by some unique slug.
+This slug will also be used as a namespace.
 
-It might represent, for example, the product or the app being developed.
+A context can represent, for example, the product or the app being developed.
 
 .. _concept_schema:
 
 Schema
 ------
 
-Most of database models work with a clear distinction between instances (data) and
-schema (metadata), we also make this distinction on the API interface.
+Usually database models work with a clear distinction between instances (data) and schema (metadata).
+We also make this distinction on the API interface, although we have the same URL pattern to handle
+both schemas and non-schemas (aka instances).
 
-Therefore, a *Schema* is a structure that defines the data being stored.
+A *Schema* is a priviledged instance that defines the structure of the data (non-schema instances) being stored.
+To avoid confusion, we avoid referring to Schemas calling them *instances*, a term we reserve for *non-schema* instances.
 
-Schemas are defined in the RDF/OWL Model, given its high expressivity and flexibility. Like so,
-it will be possible to represent schemas in different database models or even translations between them
+Schemas are defined in the RDF/OWL Model, given its high expressivity and flexibility. 
+Therefore, it will be possible to represent schemas in different database models or even translations between them
 in a common language.
 
 Likewise, we expect a schema to be easily written, by using the `Turtle <http://en.wikipedia.org/wiki/Turtle_(syntax)>`_
@@ -43,7 +46,7 @@ Collection
 A schema defines a group of instances of the same type.
 This group is hereby named a collection.
 
-The collection name is based on the class name plural (e.g. City -> cities)
+The recommended collection name is the plural of the schema (or class) name,  e.g. City -> cities.
 
 .. _concept_instance:
 
@@ -51,5 +54,5 @@ Instance
 --------
 
 Instances must be easily retrieved and "instance queries" must be really simple
-to developers to understand as they will do way more requests on instances than on schemas. As such,
-the interface for manipulating instances also accept JSON as content_type as most of the RESTful APIs do.
+for developers to understand as they will do way more requests on instances than on schemas. 
+As such, the interface for manipulating instances also accept JSON as content_type as most of the RESTful APIs do.

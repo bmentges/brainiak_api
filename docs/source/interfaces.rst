@@ -45,7 +45,8 @@ Get a specific schema of a context
 .. code-block:: http
 
   GET 'http://localhost:5100/contexts/place/schemas/city'
-
+  
+      
 Create schema
 -------------
 

@@ -1,0 +1,70 @@
+
+{
+    "type": "object",
+    "@id": "http://semantica.globo.com/person/Person",
+    "@context": {
+        "@language": "pt"
+    },
+    "$schema": "http://json-schema.org/draft-03/schema#",
+    "rdfs:label": "Pessoa",
+    "rdfs:comment": "Ser humano, vivo, morto ou fictício.",
+    "properties": {
+        "upper:birthDate": {
+            "type": "string",
+            "format": "date-time",
+            "@type": "xsd:date", 
+            "rdfs:label": "Data de Nascimento"
+        },
+        "upper:name": {
+            "type": "string",
+            "@type": "xsd:string",
+            "rdfs:label": "Nome",
+            "rdfs:comment": "Nomes populares de uma instância. Exemplo: nomes pelo quais uma pessoa é conhecida (e.g. Ronaldinho, Zico, Lula). Não confundir com nome completo, uma outra propriedade com valor único e formal."
+        }
+    }
+}
+
+
+{
+"predicates": {
+"http://semantica.globo.com/upper/name": {
+"range": {
+"http://www.w3.org/2001/XMLSchema#string": {
+"graph": "",
+"min": "1",
+"label": ""
+}
+},
+"type": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+"label": "Nome"
+},
+"type": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+"label": "Data de Nascimento"
+},
+"http://semantica.globo.com/person/gender": {
+"comment": "Gênero.",
+"graph": "http://semantica.globo.com/person/",
+"range": {
+"http://semantica.globo.com/person/Gender": {
+"graph": "http://semantica.globo.com/person/",
+"max": "1",
+"min": "1",
+"options": [
+{
+"http://semantica.globo.com/data/Gender/Male": "Masculino"
+},
+{
+"http://semantica.globo.com/data/Gender/Female": "Feminino"
+},
+{
+"http://semantica.globo.com/data/Gender/Transgender": "Transgênero"
+}
+],
+"label": "Gênero da Pessoa"
+}
+},
+"type": "http://www.w3.org/2002/07/owl#ObjectProperty",
+"label": "Sexo"
+}
+}
+}

@@ -20,9 +20,43 @@
             "@type": "xsd:string",
             "rdfs:label": "Nome",
             "rdfs:comment": "Nomes populares de uma instância. Exemplo: nomes pelo quais uma pessoa é conhecida (e.g. Ronaldinho, Zico, Lula). Não confundir com nome completo, uma outra propriedade com valor único e formal."
+        },
+        "person:parent": {
+            "type": "array",
+            "items": { "$ref": "person:Person" }
+        },
+        "person:gender": {
+            "type": "string",
+            "title": "Sexo",
+            "enum": [ {"$ref": "gender:Male:", "title":"Masculino"} ,
+                      {"$ref": "gender:Female", "title":"Feminino"}],
+            "$ref": "person:Gender"
+        },
+        "person:birthPlace": {
+            "type": "object",
+            "$ref": "place:Place"
+        },
+        "person:cityOfBirth": {
+            "type": "object",
+            "$ref": "place:City"
+        },
+        "person:fullName": {
+            "type": "string"
+        },
+        "person:occupation": {
+            "type": "string"
+        },
+        "person:mainPhoto": {
+            "type": "string",
+            "format": "uri"
         }
     }
 }
+
+
+
+"maxItems": ,
+"required": false,
 
 
 {

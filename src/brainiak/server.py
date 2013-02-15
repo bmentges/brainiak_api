@@ -25,5 +25,10 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser(description=settings.DESCRIPTION)
     parser.add_argument('-d', '--debug', action='store_const', const=True, default=settings.DEBUG, help='debug mode')
+    parser.add_argument('-s', '--settings_file',  help='Override settings file')
     args = parser.parse_args()
+    if args.settings_file:
+        pass
+        #"Override settings")
+        
     main(args)

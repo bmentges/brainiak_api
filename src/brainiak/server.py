@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import logging
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application as TornadoApplication
@@ -28,7 +28,6 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--settings_file',  help='Override settings file')
     args = parser.parse_args()
     if args.settings_file:
-        pass
-        #"Override settings")
-        
+        logging.info("Override settings with {0}".format(args.settings_file))
+
     main(args)

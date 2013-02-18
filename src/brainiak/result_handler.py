@@ -2,12 +2,7 @@
 
 
 def filter_values(result_dict, key):
-    results = []
-    for item in result_dict['results']['bindings']:
-        if item.get(key):
-            result = item[key]['value']
-            results.append(result)
-    return results
+    return [item[key]['value'] for item in result_dict['results']['bindings'] if item.get(key)]
 
 
 def get_one_value(result_dict, key):
@@ -34,12 +29,11 @@ def lang_dict(result_list):
 
 def simplify_dict(predicate_dict):
     simplified_dict = {}
-
     predicates = predicate_dict["predicates"]
     for predicate_uri, predicate_values in predicates.iteritems():
         simplified_dict[predicate_uri] = {}
         original_ranges_dict = predicate_values["range"]
-        simplified_ranges = get_ranges(original_ranges_dict)
+        simplified_ranges = original_ranges_dict.keys()
         if simplified_ranges:
             simplified_dict[predicate_uri]["ranges"] = simplified_ranges
 
@@ -51,16 +45,8 @@ def simplify_dict(predicate_dict):
 
 
 def get_ranges_graphs(ranges_dict):
-    graphs_set = set([])
-    for range_values in ranges_dict.values():
-        graph_uri = range_values.get("graph")
-        if graph_uri:
-            graphs_set.add(graph_uri)
-    return list(graphs_set)
-
-
-def get_ranges(ranges_dict):
-    return ranges_dict.keys()
+    return list({range_value.get("graph") for range_value in ranges_dict.values()
+                                          if range_value.get("graph")})
 
 
 def parse_label_and_type(sparql_dict):
@@ -119,7 +105,6 @@ class PredicateResultHandler():
     def get_predicates_and_cardinalities_dict(self):
         predicates = self.get_unique_predicates_list()
         predicates_dict = {}
-
         for predicate in predicates:
             new_ranges = {}
             predicate_dict = {}
@@ -144,14 +129,7 @@ class PredicateResultHandler():
         return predicates_dict
 
     def get_unique_predicates_list(self):
-        unique_predicates = []
-        for item in self.query_result['results']['bindings']:
-            predicate = item['predicate']['value']
-            if not predicate in unique_predicates:
-                unique_predicates.append(predicate)
-
-        unique_predicates.sort()
-        return unique_predicates
+        return sorted(list({item['predicate']['value'] for item in self.query_result['results']['bindings']}))
 
     def get_predicates_dict_for_a_predicate(self, predicate):
         items = []
@@ -162,7 +140,6 @@ class PredicateResultHandler():
                     if attribute not in parsed_item:
                         parsed_item[attribute] = item[attribute]['value']
                 items.append(parsed_item)
-
         return items
 
     def get_ranges_for_predicate(self, predicate):

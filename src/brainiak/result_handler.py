@@ -69,10 +69,8 @@ class CardinalityResultHandler():
         for binding in self.query_result['results']['bindings']:
             property = binding["predicate"]["value"]
             range = binding["range"]["value"]
-
             if (not property in cardinalities or not range in cardinalities[property]) and not range.startswith("nodeID://"):
                 cardinalities[property] = {range: {}}
-
             if "min" in binding:
                 cardinalities[property][range].update({"min": binding["min"]["value"]})
             elif "max" in binding:

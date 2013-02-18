@@ -3,8 +3,9 @@ from brainiak.result_handler import CardinalityResultHandler, \
     PredicateResultHandler, get_one_value, get_ranges_graphs, simplify_dict, \
     parse_label_and_type, is_result_empty, filter_values, lang_dict
 
-from tests.fixtures import CLASS, PREDICATE, CARDINALITY, FINAL, FINAL_REAL, \
-    RANGES_DICT, SIMPLIFIED_RANGES, SIMPLIFIED_RANGE_GRAPHS, \
+from tests.fixtures import CLASS, PREDICATE, CARDINALITY, \
+    CARDINALITY_WITH_ENUMERATED_VALUE, \
+    RANGES_DICT, SIMPLIFIED_RANGE_GRAPHS, \
     PREDICATE_DICT_ORIGINAL, SIMPLIFIED_PREDICATE_DICT, \
     EMPTY_GRAPHS_RANGES_DICT, RESULT_DICT_WITH_LANG, FINAL_CLASS_PERSON
 
@@ -72,6 +73,18 @@ class CardinalityResultHandlerTestCase(unittest.TestCase):
             }
         }
 
+        self.assertEquals(expected, self.result_handler.get_cardinalities())
+
+
+class CardinalityResultHandlerWithEnumerationTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.result_handler = CardinalityResultHandler(CARDINALITY_WITH_ENUMERATED_VALUE)
+
+    def test_get_cardinalities(self):
+        expected = {'http://test.domain.com/predicate_with_enumerated_value':
+                        {'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral': {},
+                         'options': [{'Masculino': 'Sexo'}]}}
         self.assertEquals(expected, self.result_handler.get_cardinalities())
 
 

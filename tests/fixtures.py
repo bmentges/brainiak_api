@@ -151,6 +151,17 @@ CARDINALITY = {
     }
 }
 
+CARDINALITY_WITH_ENUMERATED_VALUE = {
+    "head": {"link": [], "vars": ["predicate", "min", "max", "range"]},
+    "results": {"distinct": False, "ordered": True, "bindings": [
+        {"predicate": {"type": "uri", "value": "http://test.domain.com/predicate_with_enumerated_value"},
+         "range": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"},
+         "enumerated_value": {"value": "Masculino"},
+         "enumerated_value_label": {"value": "Sexo"}
+         }
+    ]}
+}
+
 FINAL = {
     "class": u"http://semantica.globo.com/G1/Video",
     "graph": u"http://semantica.globo.com/",

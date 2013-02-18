@@ -1,5 +1,9 @@
 from brainiak import settings
 
+
+def query_sparql(query, callback):
+    return None
+
 #def query_sparql(query):
 #    """
 #    Simple interface that given a SPARQL query string

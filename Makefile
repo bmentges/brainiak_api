@@ -11,6 +11,12 @@ install:
 	@pip install -r $(HOME_BRAINIAK)/requirements.txt
 	@pip install -r $(HOME_BRAINIAK)/requirements_test.txt
 	@pip install -r $(HOME_BRAINIAK)/docs/requirements.txt
+	@echo "Installing git hook"
+	@cp ./git-hooks/pre-commit ./.git/hooks/pre-commit
+	@chmod ug+x ./.git/hooks/pre-commit
+
+coverage: clean
+	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak
 
 test: clean pep8 pep8_tests coverage
 	@echo "Running all tests..."
@@ -19,9 +25,6 @@ test: clean pep8 pep8_tests coverage
 unit: clean
 	@echo "Running unit tests..."
 	@nosetests -s  --tests=$(HOME_BRAINIAK)/tests/unit --with-xunit
-
-coverage: clean
-	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak
 
 functional: clean
 	@echo "Running functional tests..."

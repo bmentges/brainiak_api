@@ -36,3 +36,6 @@ nosetests.xml
 
 # Diff tool
 *.orig
+
+# PyVharm
+.idea

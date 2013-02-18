@@ -1,6 +1,6 @@
 import unittest
 from brainiak.result_handler import CardinalityResultHandler, \
-    PredicateResultHandler, get_one_value, get_ranges, get_ranges_graphs, simplify_dict, \
+    PredicateResultHandler, get_one_value, get_ranges_graphs, simplify_dict, \
     parse_label_and_type, is_result_empty, filter_values, lang_dict
 
 from tests.fixtures import CLASS, PREDICATE, CARDINALITY, FINAL, FINAL_REAL, \
@@ -93,11 +93,6 @@ class SimplifyPredicateDictTestCase(unittest.TestCase):
     def test_simplifiy_dict(self):
         expected = SIMPLIFIED_PREDICATE_DICT
         result = simplify_dict(PREDICATE_DICT_ORIGINAL)
-        self.assertEquals(expected, result)
-
-    def test_get_ranges(self):
-        expected = SIMPLIFIED_RANGES
-        result = get_ranges(RANGES_DICT)
         self.assertEquals(expected, result)
 
     def test_get_range_graphs_empty(self):

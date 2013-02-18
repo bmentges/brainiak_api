@@ -1,6 +1,7 @@
 CWD = `pwd`
 HOME_BRAINIAK ?= $(CWD)
-NEW_PYTHONPATH="$(HOME_BRAINIAK)/src:$(PYTHONPATH)"
+BRAINIAK_CODE = $(HOME_BRAINIAK)/src
+NEW_PYTHONPATH="$(BRAINIAK_CODE):$(PYTHONPATH)"
 
 clean:
 	@find . -name "*.pyc" -delete
@@ -45,3 +46,7 @@ run:
 docs:
 	@echo "Compiling and opening documentation..."
 	@cd $(HOME_BRAINIAK)/docs; make run
+
+console:
+	@echo "Console Python inside Brainiak code (you must be on the correct Virtualenv)"
+	@cd $(BRAINIAK_CODE); python

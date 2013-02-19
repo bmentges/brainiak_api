@@ -1,7 +1,10 @@
+import urllib
+
 from tornado import gen
 from tornado.ioloop import IOLoop
 from tornado.httpclient import HTTPRequest
-from tornado.escape import url_escape
+from tornado.httputil import url_concat
+
 
 from brainiak import settings, utils
 
@@ -41,20 +44,33 @@ class VirtuosoConnection(object):
         self.client = utils.get_tornado_async_client(self.io_loop)
 
     @gen.engine
-    def query(self, callback, query, **kw):
+    def query(self, callback, query, *args, **kw):
         method = kw.get("method", "POST")
         result_format = kw.get("result_format", DEFAULT_FORMAT)
-        content_type = kw.get("content_type", DEFAULT_CONTENT_TYPE)
+        content_type = DEFAULT_CONTENT_TYPE
 
-        body_encoded = "query=" + url_escape(query)
         headers = {
-            "Accept": result_format,
-            "Content-Type": content_type
-            #"format": result_format
+            "Content-Type": content_type,
         }
-        request = HTTPRequest(url=self.endpoint_url,
+
+        params = {
+            "query": query,
+            "format": result_format
+        }
+
+        url = self.endpoint_url
+
+        if method == "GET":
+            url = url_concat(url, params)
+            body = None
+        elif method == "POST":
+            body = urllib.urlencode(params)
+        else:
+            raise 
+
+        request = HTTPRequest(url=url,
                               method=method,
                               headers=headers,
-                              body=body_encoded)
+                              body=body)
         response = yield gen.Task(self.client.fetch, request)
-        callback(response, **kw)
+        callback(response, *args, **kw)

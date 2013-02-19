@@ -24,5 +24,3 @@ class SchemaResource(RequestHandler):
     #     self.set_status(201)
     #     #self.set_header('Location', headers.location(self.request, data['slug']))
     #     self.finish()
-
-

@@ -2,9 +2,10 @@
 
 from tornado.testing import AsyncTestCase
 from tornado.ioloop import IOLoop
+from tests import TornadoAsyncTestCase
 from brainiak import schema_resource
 
-class QueriesTestCase(AsyncTestCase):
+class QueriesTestCase(TornadoAsyncTestCase):
 
     def setUp(self):
         self.io_loop = self.get_new_ioloop()

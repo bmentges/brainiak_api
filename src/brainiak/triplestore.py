@@ -6,14 +6,14 @@ from tornado.escape import url_escape
 from brainiak import settings, utils
 
 
-def query_sparql(callback, query):
+def query_sparql(callback, query, **kw):
     """
     Simple interface that given a SPARQL query string returns a string representing a SPARQL results bindings
     in JSON format. For now it only works with Virtuoso, but in futurw we intend to support other databases
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
     connection = VirtuosoConnection()
-    connection.query(callback, query)
+    connection.query(callback, query, **kw)
 
 SPARQL_RESULTS_FORMAT = {
     "json": "application/sparql-results+json",
@@ -41,7 +41,7 @@ class VirtuosoConnection(object):
         self.client = utils.get_tornado_async_client(self.io_loop)
 
     @gen.engine
-    def query(self, callback, query, method="POST", result_format=DEFAULT_FORMAT, content_type=DEFAULT_CONTENT_TYPE):
+    def query(self, callback, query, method="POST", result_format=DEFAULT_FORMAT, content_type=DEFAULT_CONTENT_TYPE, **kw):
         body_encoded = url_escape("query=" + query)
         headers = {
             "Accept": result_format,
@@ -53,4 +53,4 @@ class VirtuosoConnection(object):
                               headers=headers,
                               body=body_encoded)
         response = yield gen.Task(self.client.fetch, request)
-        callback(response)
+        callback(response, **kw)

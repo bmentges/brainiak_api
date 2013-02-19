@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from brainiak.sparql_queries import query_class_schema, query_cardinalities, query_predicates, query_predicates_without_lang
+from brainiak.schema_resource import query_class_schema, query_cardinalities, query_predicates, query_predicates_without_lang
 
 
 class QueriesTestCase(unittest.TestCase):

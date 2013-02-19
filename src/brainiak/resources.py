@@ -2,6 +2,7 @@
 
 from tornado import gen
 from tornado.web import asynchronous, RequestHandler
+from brainiak.schema_resource import get_schema
 
 
 class SchemaResource(RequestHandler):
@@ -12,10 +13,12 @@ class SchemaResource(RequestHandler):
     @asynchronous
     @gen.engine
     def get(self, context_name, schema_name):
-        #data = yield gen.Task(self._entities.paginate, context_name, collection_name)
-        self.set_header('Access-Control-Allow-Origin', '*')
-        self.write('')
-        self.finish()
+        #data = yield gen.Task(get_schema, context_name, schema_name)
+        def handle_response(response):
+            self.set_header('Access-Control-Allow-Origin', '*')
+            self.write(response)
+            self.finish()
+        get_schema(context_name, schema_name, handle_response)
 
     # @asynchronous
     # @gen.engine

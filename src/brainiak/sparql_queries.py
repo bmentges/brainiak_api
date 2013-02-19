@@ -13,7 +13,7 @@ def query_class_schema(class_uri, callback):
         }
         """ % {"class_uri": class_uri}
     # self.logger.info("%s" % QUERY_TEMPLATE)
-    query_sparql(QUERY_TEMPLATE, callback)
+    query_sparql(callback, QUERY_TEMPLATE)
 
 
 def query_cardinalities(class_uri, callback):

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 from brainiak.triplestore import query_sparql
 from brainiak.result_handler import *
 from brainiak import settings
@@ -15,7 +16,8 @@ def get_schema(context_name, schema_name, callback):
                          "predicates": predicates_and_cardinalities}
         callback(complete_dict)
 
-    def has_class_schema(class_schema):
+    def has_class_schema(tornado_response):
+        class_schema = json.loads(tornado_response.body)
         get_predicates_and_cardinalities(class_uri, class_schema, has_predicates_and_cardinalities)
 
     query_class_schema(class_uri, has_class_schema)
@@ -23,31 +25,37 @@ def get_schema(context_name, schema_name, callback):
 
 def get_predicates_and_cardinalities(class_uri, class_schema, callback):
 
-    def has_cardinalities(cardinalities, class_schema, callback):
-        predicates = _get_unique_predicates_list(class_schema)
-        predicates_dict = {}
-        for predicate in predicates:
-            new_ranges = {}
-            predicate_dict = {}
-            ranges = _get_ranges_for_predicate(predicates, predicate)
-            for predicate_range in ranges:
-                new_ranges[predicate_range] = ranges[predicate_range]
-                if (predicate in cardinalities) and (predicate_range in cardinalities[predicate]):
-                    predicate_restriction = cardinalities[predicate]
-                    new_ranges[predicate_range].update(predicate_restriction[predicate_range])
-                    if "options" in predicate_restriction:
-                        new_ranges[predicate_range]["options"] = predicate_restriction["options"]
+    def has_cardinalities(tornado_response, class_schema, callback):
+        cardinalities = json.loads(tornado_response.body)
 
-            predicate_dict["range"] = new_ranges
-            for item in _get_predicates_dict_for_a_predicate(predicate, class_schema):
-                predicate_dict["type"] = item["type"]
-                predicate_dict["label"] = item["label"]
-                predicate_dict["graph"] = item["predicate_graph"]
-                if "predicate_comment" in item:  # Para Video que não tem isso
-                    predicate_dict["comment"] = item["predicate_comment"]
-            predicates_dict[predicate] = predicate_dict
+        def has_predicates(tornado_response, class_schema=class_schema):
+            predicates = json.loads(tornado_response.body)
+            unique_predicates = _get_unique_predicates_list(predicates)
+            predicates_dict = {}
+            for predicate in unique_predicates:
+                new_ranges = {}
+                predicate_dict = {}
+                ranges = _get_ranges_for_predicate(predicates, predicate)
+                for predicate_range in ranges:
+                    new_ranges[predicate_range] = ranges[predicate_range]
+                    if (predicate in cardinalities) and (predicate_range in cardinalities[predicate]):
+                        predicate_restriction = cardinalities[predicate]
+                        new_ranges[predicate_range].update(predicate_restriction[predicate_range])
+                        if "options" in predicate_restriction:
+                            new_ranges[predicate_range]["options"] = predicate_restriction["options"]
 
-        callback(predicates_dict)
+                predicate_dict["range"] = new_ranges
+                for item in _get_predicates_dict_for_a_predicate(predicates, predicate):
+                    predicate_dict["type"] = item["type"]
+                    predicate_dict["label"] = item["label"]
+                    predicate_dict["graph"] = item["predicate_graph"]
+                    if "predicate_comment" in item:  # Para Video que não tem isso
+                        predicate_dict["comment"] = item["predicate_comment"]
+                predicates_dict[predicate] = predicate_dict
+
+            callback(class_schema, predicates_dict)
+
+        query_predicates(class_uri, has_predicates)
 
     query_cardinalities(class_uri, class_schema, callback, has_cardinalities)
 
@@ -79,10 +87,10 @@ def _get_unique_predicates_list(predicates):
     return sorted(list({item['predicate']['value'] for item in predicates['results']['bindings']}))
 
 
-def _get_predicates_dict_for_a_predicate(predicate, class_schema):
+def _get_predicates_dict_for_a_predicate(predicates, predicate):
     items = []
     parsed_item = {}
-    for item in class_schema['results']['bindings']:
+    for item in predicates['results']['bindings']:
         if item['predicate']['value'] == predicate:
             for attribute in item:
                 if attribute not in parsed_item:
@@ -99,6 +107,7 @@ def _get_ranges_for_predicate(predicates, predicate):
             range_label = item.get('label_do_range', {}).get('value', "")
             range_graph = item.get('grafo_do_range', {}).get('value', "")
             ranges[range_class_uri] = {'graph': range_graph, 'label': range_label}
+            break
     return ranges
 
 
@@ -117,11 +126,12 @@ def query_class_schema(class_uri, callback):
 
 def query_predicates(class_uri, callback):
 
-    def fallback_query_callback(response):
+    def fallback_query_callback(tornado_response):
+        response = json.loads(tornado_response.body)
         if not response['results']['bindings']:
             _query_predicate_without_lang(class_uri, callback)
         else:
-            callback(response)
+            callback(tornado_response)
 
     _query_predicate_with_lang(class_uri, fallback_query_callback)
 

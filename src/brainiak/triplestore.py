@@ -41,7 +41,7 @@ class VirtuosoConnection(object):
         self.client = utils.get_tornado_async_client(self.io_loop)
 
     @gen.engine
-    def query(self, callback, query, **kw):
+    def query(self, callback, query, *args, **kw):
         method = kw.get("method", "POST")
         result_format = kw.get("result_format", DEFAULT_FORMAT)
         content_type = kw.get("content_type", DEFAULT_CONTENT_TYPE)
@@ -57,4 +57,4 @@ class VirtuosoConnection(object):
                               headers=headers,
                               body=body_encoded)
         response = yield gen.Task(self.client.fetch, request)
-        callback(response, **kw)
+        callback(response, *args, **kw)

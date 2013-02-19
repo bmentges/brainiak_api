@@ -75,9 +75,9 @@ CLASS = {
     u'results': {u'distinct': False,
                  u'bindings': [
                 {
-                    u'graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                    u'program': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Programa_Bem_Estar'},
-                    u'videoClass': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/Video'}
+                    u'graph': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                    u'program': {u'type': u'uri', u'value': u'http://test.domain.com/base/Programa_Bem_Estar'},
+                    u'videoClass': {u'type': u'uri', u'value': u'http://test.domain.com/G1/Video'}
                 }],
     u'ordered': True}}
 
@@ -96,29 +96,29 @@ EMPTY_CLASS = {
 PREDICATE = {
     "head": {"link": [], "vars": ["predicate", "predicate_graph", "type", "range", "label", "tem_valor_unico", "grafo_do_range", "label_do_range"]},
     "results": {"distinct": False, "ordered": True, "bindings": [
-        {"predicate": {"type": "uri", "value": "http://semantica.globo.com/base/status_de_publicacao"},
+        {"predicate": {"type": "uri", "value": "http://test.domain.com/base/status_de_publicacao"},
          "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#DatatypeProperty"},
-         "predicate_graph": {"type": "uri", "value": "http://semantica.globo.com/G1/"},
+         "predicate_graph": {"type": "uri", "value": "http://test.domain.com/G1/"},
          "range": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"},
          "label": {"type": "literal", "value": "Status de publica\u00E7\u00E3o"}},
         {"predicate": {"type": "uri", "value": "http://www.w3.org/2000/01/rdf-schema#label"},
          "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#DatatypeProperty"},
-         "predicate_graph": {"type": "uri", "value": "http://semantica.globo.com/G1/"},
+         "predicate_graph": {"type": "uri", "value": "http://test.domain.com/G1/"},
          "range": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"},
          "label": {"type": "literal", "value": "Nome popular"}},
-        {"predicate": {"type": "uri", "value": "http://semantica.globo.com/base/cita_a_entidade"},
+        {"predicate": {"type": "uri", "value": "http://test.domain.com/base/cita_a_entidade"},
          "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
-         "predicate_graph": {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-         "range": {"type": "uri", "value": "http://semantica.globo.com/G1/MontadoraDeVeiculos"},
+         "predicate_graph": {"type": "uri", "value": "http://test.domain.com/G1/"},
+         "range": {"type": "uri", "value": "http://test.domain.com/G1/MontadoraDeVeiculos"},
          "label": {"type": "literal", "value": "Entidades"},
-         "grafo_do_range": {"type": "uri", "value": "http://semantica.globo.com/G1/"},
+         "grafo_do_range": {"type": "uri", "value": "http://test.domain.com/G1/"},
          "label_do_range": {"type": "literal", "value": "Montadora de ve\u00EDculos"}},
-        {"predicate": {"type": "uri", "value": "http://semantica.globo.com/base/cita_a_entidade"},
+        {"predicate": {"type": "uri", "value": "http://test.domain.com/base/cita_a_entidade"},
          "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
-         "predicate_graph": {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-         "range": {"type": "uri", "value": "http://semantica.globo.com/base/Organizacao"},
+         "predicate_graph": {"type": "uri", "value": "http://test.domain.com/G1/"},
+         "range": {"type": "uri", "value": "http://test.domain.com/base/Organizacao"},
          "label": {"type": "literal", "value": "Entidades"},
-         "grafo_do_range": {"type": "uri", "value": "http://semantica.globo.com/"},
+         "grafo_do_range": {"type": "uri", "value": "http://test.domain.com/"},
          "label_do_range": {"type": "literal", "value": "Organiza\u00E7\u00E3o"}}
     ]}
 }
@@ -127,21 +127,21 @@ PREDICATE = {
 CARDINALITY = {
     "head": {"link": [], "vars": ["predicate", "min", "max", "range"]},
     "results": {"distinct": False, "ordered": True, "bindings": [
-        {"predicate": {"type": "uri", "value": "http://semantica.globo.com/base/data_de_criacao_do_conteudo"},
+        {"predicate": {"type": "uri", "value": "http://test.domain.com/base/data_de_criacao_do_conteudo"},
          "max": {"type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#integer", "value": "1"},
          "range": {"type": "uri", "value": "http://www.w3.org/2001/XMLSchema#dateTime"}},
-        {"predicate": {"type": "uri", "value": "http://semantica.globo.com/base/data_de_criacao_do_conteudo"}	,
+        {"predicate": {"type": "uri", "value": "http://test.domain.com/base/data_de_criacao_do_conteudo"}	,
          "min": {"type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#integer", "value": "1"},
          "range": {"type": "uri", "value": "http://www.w3.org/2001/XMLSchema#dateTime"}},
-        {"predicate": {"type": "uri", "value": "http://semantica.globo.com/base/status_de_publicacao"},
+        {"predicate": {"type": "uri", "value": "http://test.domain.com/base/status_de_publicacao"},
          "max": {"type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#integer", "value": "1"},
          "range": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"}},
-        {"predicate": {"type": "uri", "value": "http://semantica.globo.com/base/status_de_publicacao"},
+        {"predicate": {"type": "uri", "value": "http://test.domain.com/base/status_de_publicacao"},
          "min": {"type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#integer", "value": "1"},
          "range": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"}},
-        {"predicate": {"type": "uri", "value": "http://semantica.globo.com/base/pertence_ao_produto"},
+        {"predicate": {"type": "uri", "value": "http://test.domain.com/base/pertence_ao_produto"},
          "min": {"type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#integer", "value": "1"},
-         "range": {"type": "uri", "value": "http://semantica.globo.com/base/Produto"}},
+         "range": {"type": "uri", "value": "http://test.domain.com/base/Produto"}},
         {"predicate": {"type": "uri", "value": "http://www.w3.org/2000/01/rdf-schema#label"},
          "max": {"type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#integer", "value": "1"},
          "range": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"}},
@@ -163,13 +163,13 @@ CARDINALITY_WITH_ENUMERATED_VALUE = {
 }
 
 FINAL = {
-    "class": u"http://semantica.globo.com/G1/Video",
-    "graph": u"http://semantica.globo.com/",
+    "class": u"http://test.domain.com/G1/Video",
+    "graph": u"http://test.domain.com/",
     "predicates": {
         "http://www.w3.org/2000/01/rdf-schema#label": {
             "type": "http://www.w3.org/2002/07/owl#DatatypeProperty",
             "label": "Nome popular",
-            "graph": "http://semantica.globo.com/G1/",
+            "graph": "http://test.domain.com/G1/",
             "range": {
                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral": {
                     "min": "1",
@@ -179,9 +179,9 @@ FINAL = {
                 }
             }
         },
-        "http://semantica.globo.com/base/status_de_publicacao": {
+        "http://test.domain.com/base/status_de_publicacao": {
             "type": "http://www.w3.org/2002/07/owl#DatatypeProperty",
-            "graph": "http://semantica.globo.com/G1/",
+            "graph": "http://test.domain.com/G1/",
             "label": "Status de publica\u00E7\u00E3o",
             "range": {
                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral": {
@@ -192,17 +192,17 @@ FINAL = {
                 }
             }
         },
-        "http://semantica.globo.com/base/cita_a_entidade": {
+        "http://test.domain.com/base/cita_a_entidade": {
             "type": "http://www.w3.org/2002/07/owl#ObjectProperty",
-            "graph": "http://semantica.globo.com/G1/",
+            "graph": "http://test.domain.com/G1/",
             "label": "Entidades",
             "range": {
-                "http://semantica.globo.com/G1/MontadoraDeVeiculos": {
-                    "graph": "http://semantica.globo.com/G1/",
+                "http://test.domain.com/G1/MontadoraDeVeiculos": {
+                    "graph": "http://test.domain.com/G1/",
                     "label": "Montadora de ve\u00EDculos"
                 },
-                "http://semantica.globo.com/base/Organizacao": {
-                    "graph": "http://semantica.globo.com/",
+                "http://test.domain.com/base/Organizacao": {
+                    "graph": "http://test.domain.com/",
                     "label": "Organiza\\u00E7\\u00E3o"
                 }
             }
@@ -211,7 +211,7 @@ FINAL = {
 }
 
 FINAL_CLASS_PERSON = {
-    "class": u"http://semantica.globo.com/person/Person",
+    "class": u"http://test.domain.com/person/Person",
     "comment": u"Ser humano, vivo, morto ou fictício.",
     "label": u"Pessoa",
     "predicates": FINAL["predicates"]
@@ -226,159 +226,159 @@ FINAL_REAL = {
     u'results': {
         u'distinct': False,
         u'bindings': [{
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/trata_do_assunto'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/trata_do_assunto'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Assunto'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/base/Assunto'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Assunto'},
                 u'label': {u'type': u'literal', u'value': u'Assuntos'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/trata_do_assunto'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/trata_do_assunto'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/AssuntoCarro'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/G1/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/G1/AssuntoCarro'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Assunto de Carros'},
                 u'label': {u'type': u'literal', u'value': u'Assuntos'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/trata_do_assunto'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/trata_do_assunto'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/AssuntoAeroporto'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/G1/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/G1/AssuntoAeroporto'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Assuntos de Aeroportos'},
                 u'label': {u'type': u'literal', u'value': u'Assuntos'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/type_midia'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/type_midia'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
                 u'grafo_do_range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'},
                 u'label_do_range': {u'type': u'literal', u'value': u'XMLLiteral'},
                 u'label': {u'type': u'literal', u'value': u'type de m\xeddia'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/type_midia'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/type_midia'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
                 u'grafo_do_range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'},
                 u'label_do_range': {u'type': u'literal', u'value': u'XMLLiteral'},
                 u'label': {u'type': u'literal', u'value': u'type de Midia'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/cita_a_entidade'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/cita_a_entidade'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Lugar'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/base/Lugar'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Lugar'},
                 u'label': {u'type': u'literal', u'value': u'Entidades'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/cita_a_entidade'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/cita_a_entidade'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/UF'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/base/UF'},
                 u'label_do_range': {u'type': u'literal', u'value': u'UF'},
                 u'label': {u'type': u'literal', u'value': u'Entidades'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/cita_a_entidade'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/cita_a_entidade'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Endereco'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/base/Endereco'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Endere\xe7o'},
                 u'label': {u'type': u'literal', u'value': u'Entidades'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/cita_a_entidade'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/cita_a_entidade'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Criatura'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/base/Criatura'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Criatura'},
                 u'label': {u'type': u'literal', u'value': u'Entidades'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/cita_a_entidade'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/cita_a_entidade'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Organizacao'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/base/Organizacao'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Organiza\xe7\xe3o'},
                 u'label': {u'type': u'literal', u'value': u'Entidades'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/cita_a_entidade'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/cita_a_entidade'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/GrupoMusical'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/base/GrupoMusical'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Grupo Musical'},
                 u'label': {u'type': u'literal', u'value': u'Entidades'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/cita_a_entidade'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/cita_a_entidade'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/MontadoraDeVeiculos'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/G1/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/G1/MontadoraDeVeiculos'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Montadora de ve\xedculos'},
                 u'label': {u'type': u'literal', u'value': u'Entidades'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/faz_parte_da_historia'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/faz_parte_da_historia'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Historia'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/base/Historia'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Hist\xf3ria'},
                 u'label': {u'type': u'literal', u'value': u'Hist\xf3rias'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/midia_id'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/midia_id'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#integer'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'},
                 u'label': {u'type': u'literal', u'value': u'MidiaID'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/esta_no_canal'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/esta_no_canal'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Canal'},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/base/Canal'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Canal de TV'},
                 u'label': {u'type': u'literal', u'value': u'Est\xe1 no Canal'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/esta_no_programa'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/esta_no_programa'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Programa'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/base/Programa'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Programa de TV'},
                 u'label': {u'type': u'literal', u'value': u'Est\xe1 no Programa'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/canal_webmedia'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/canal_webmedia'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'},
                 u'grafo_do_range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'},
                 u'label_do_range': {u'type': u'literal', u'value': u'XMLLiteral'},
                 u'label': {u'type': u'literal', u'value': u'Canal na WebMedia'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_obra'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/G1/cita_a_obra'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/Aeroporto'},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/G1/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/G1/Aeroporto'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Aeroporto'},
                 u'label': {u'type': u'literal', u'value': u'Produtos e Constru\xe7\xf5es'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_obra'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/G1/cita_a_obra'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'grafo_do_range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/Carro'},
+                u'grafo_do_range': {u'type': u'uri', u'value': u'http://test.domain.com/G1/'},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
+                u'range': {u'type': u'uri', u'value': u'http://test.domain.com/G1/Carro'},
                 u'label_do_range': {u'type': u'literal', u'value': u'Carro'},
                 u'label': {u'type': u'literal', u'value': u'Produtos e Constru\xe7\xf5es'}
         }, {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/permalink'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.domain.com/base/permalink'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'},
-                u'predicate_graph': {"type": "uri", "value": "http://semantica.globo.com/G1/"},
+                u'predicate_graph': {"type": "uri", "value": "http://test.domain.com/G1/"},
                 u'grafo_do_range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'},
                 u'label_do_range': {u'type': u'literal', u'value': u'XMLLiteral'},
@@ -391,14 +391,14 @@ FINAL_REAL = {
 SOLR_SIMPLIFIED_RESPONSE = {
     'response': {
         u'docs': [{
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Baixa_da_Colina_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Baixa_da_Colina_Rio_Branco_AC',
             u'label': u'Baixa da Colina'
         }, {
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Preventorio_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Preventorio_Rio_Branco_AC',
             u'label': u'Prevent\xf3rio'}
         ]
     }
@@ -462,7 +462,7 @@ SPARQL_RESULT_DETAILS_QUERY_1 = {
             {
                 "predicate": {
                     "type": "uri",
-                    "value": "http://semantica.globo.com/base/nome_completo"
+                    "value": "http://test.domain.com/base/nome_completo"
                 },
                 "label": {
                     "type": "literal",
@@ -476,7 +476,7 @@ SPARQL_RESULT_DETAILS_QUERY_1 = {
             {
                 "predicate": {
                     "type": "uri",
-                    "value": "http://semantica.globo.com/base/uma_object_property"
+                    "value": "http://test.domain.com/base/uma_object_property"
                 },
                 "label": {
                     "type": "literal",
@@ -507,7 +507,7 @@ SPARQL_RESULT_DETAILS_QUERY_2 = {
             {
                 "predicate": {
                     "type": "uri",
-                    "value": "http://semantica.globo.com/base/nome_completo"
+                    "value": "http://test.domain.com/base/nome_completo"
                 },
                 "label": {
                     "type": "literal",
@@ -523,15 +523,15 @@ SPARQL_RESULT_DETAILS_QUERY_2 = {
 }
 
 SUGGEST_PREDICATE_RESPONSE = {u"value": {
-    u'http://semantica.globo.com/base/Bairro_Baixa_da_Colina_Rio_Branco_AC': {
+    u'http://test.domain.com/base/Bairro_Baixa_da_Colina_Rio_Branco_AC': {
         u"label": u'Baixa da Colina',
-        u"type": {u'http://semantica.globo.com/base/Bairro': u"Bairro"},
+        u"type": {u'http://test.domain.com/base/Bairro': u"Bairro"},
         u"detail": [{u"value": u"v1", u"label": u"l1"},
                  {u"value": u"v2", u"label": u"l2"}]
     },
-    u'http://semantica.globo.com/base/Bairro_Preventorio_Rio_Branco_AC': {
+    u'http://test.domain.com/base/Bairro_Preventorio_Rio_Branco_AC': {
         u"label": u'Prevent\xf3rio',
-        u"type": {u'http://semantica.globo.com/base/Bairro': u"Bairro"},
+        u"type": {u'http://test.domain.com/base/Bairro': u"Bairro"},
         u"detail": [{u"value": u"v3", u"label": u"l3"}]
     }
 }}
@@ -553,54 +553,54 @@ SOLR_GOOD_RESPONSE = {
         u'start': 0,
         u'numFound': 34228,
         u'docs': [{
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Baixa_da_Colina_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Baixa_da_Colina_Rio_Branco_AC',
             u'label': u'Baixa da Colina'
         }, {
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Preventorio_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Preventorio_Rio_Branco_AC',
             u'label': u'Prevent\xf3rio'
         }, {
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Primavera_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Primavera_Rio_Branco_AC',
             u'label': u'Primavera'
         }, {
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Quinze_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Quinze_Rio_Branco_AC',
             u'label': u'Quinze'
         }, {
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Santa_Quiteria_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Santa_Quiteria_Rio_Branco_AC',
             u'label': u'Santa Quit\xe9ria'
         }, {
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Sao_Francisco_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Sao_Francisco_Rio_Branco_AC',
             u'label': u'S\xe3o Francisco'
         }, {
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Seis_De_Agosto_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Seis_De_Agosto_Rio_Branco_AC',
             u'label': u'Seis De Agosto'
         }, {
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Sobral_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Sobral_Rio_Branco_AC',
             u'label': u'Sobral'
         }, {
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Vila_Acre_Rio_Branco_AC',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Vila_Acre_Rio_Branco_AC',
             u'label': u'Vila Acre'
         }, {
-            u'classe': u'http://semantica.globo.com/base/Bairro',
-            u'grafo': u'http://semantica.globo.com/',
-            u'uri': u'http://semantica.globo.com/base/Bairro_Baixa_Grande_Arapiraca_AL',
+            u'classe': u'http://test.domain.com/base/Bairro',
+            u'grafo': u'http://test.domain.com/',
+            u'uri': u'http://test.domain.com/base/Bairro_Baixa_Grande_Arapiraca_AL',
             u'label': u'Baixa Grande'
         }]
     }

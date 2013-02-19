@@ -13,7 +13,7 @@ from tests.fixtures import CLASS, PREDICATE, CARDINALITY, \
 class ResultHandlerTestCase(unittest.TestCase):
 
     def test_get_result(self):
-        expected = "http://semantica.globo.com/G1/Video"
+        expected = "http://test.domain.com/G1/Video"
         self.assertEquals(expected, get_one_value(CLASS, "videoClass"))
 
     def test_get_result_empty(self):
@@ -48,20 +48,20 @@ class CardinalityResultHandlerTestCase(unittest.TestCase):
 
     def test_get_cardinalities(self):
         expected = {
-            "http://semantica.globo.com/base/data_de_criacao_do_conteudo": {
+            "http://test.domain.com/base/data_de_criacao_do_conteudo": {
                 "http://www.w3.org/2001/XMLSchema#dateTime": {
                     "min": "1",
                     "max": "1"
                 }
             },
-            "http://semantica.globo.com/base/status_de_publicacao": {
+            "http://test.domain.com/base/status_de_publicacao": {
                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral": {
                     "min": "1",
                     "max": "1"
                 }
             },
-            "http://semantica.globo.com/base/pertence_ao_produto": {
-                "http://semantica.globo.com/base/Produto": {
+            "http://test.domain.com/base/pertence_ao_produto": {
+                "http://test.domain.com/base/Produto": {
                     "min": "1"
                 }
             },
@@ -91,7 +91,7 @@ class CardinalityResultHandlerWithEnumerationTestCase(unittest.TestCase):
 class PredicateResultHandlerTestCase(unittest.TestCase):
 
     def setUp(self):
-        class_uri = "http://semantica.globo.com/person/Person"
+        class_uri = "http://test.domain.com/person/Person"
         self.result_handler = PredicateResultHandler(class_uri, RESULT_DICT_WITH_LANG, PREDICATE, CARDINALITY)
         self.maxDiff = None
 
@@ -123,12 +123,12 @@ class GetOneTestCase(unittest.TestCase):
 
     response = {u'head': {u'link': [], u'vars': [u'graph', u'videoClass', u'program']},
                 u'results': {u'distinct': False, u'bindings':
-                             [{u'videoClass': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/Video'}}],
+                             [{u'videoClass': {u'type': u'uri', u'value': u'http://test.domain.com/G1/Video'}}],
                              u'ordered': True}}
 
     def test_get_result(self):
         computed = get_one_value(self.response, "videoClass")
-        expected = "http://semantica.globo.com/G1/Video"
+        expected = "http://test.domain.com/G1/Video"
         self.assertEquals(computed, expected)
 
     def test_get_result_empty(self):

@@ -65,8 +65,6 @@ class VirtuosoConnection(object):
             body = None
         elif method == "POST":
             body = urllib.urlencode(params)
-        else:
-            raise 
 
         request = HTTPRequest(url=url,
                               method=method,

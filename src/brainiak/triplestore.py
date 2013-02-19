@@ -46,7 +46,7 @@ class VirtuosoConnection(object):
         result_format = kw.get("result_format", DEFAULT_FORMAT)
         content_type = kw.get("content_type", DEFAULT_CONTENT_TYPE)
 
-        body_encoded = url_escape("query=" + query)
+        body_encoded = "query=" + url_escape(query)
         headers = {
             "Accept": result_format,
             "Content-Type": content_type

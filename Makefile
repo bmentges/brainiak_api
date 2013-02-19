@@ -23,10 +23,6 @@ unit: clean
 	@echo "Running unit tests..."
 	@nosetests -s  --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/unit --with-xunit
 
-functional: clean
-	@echo "Running functional tests..."
-	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/functional --with-xunit
-
 integration: clean
 	@echo "Running integration tests..."
 	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/integration --with-xunit

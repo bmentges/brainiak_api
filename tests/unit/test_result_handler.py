@@ -1,4 +1,5 @@
 import unittest
+
 # from brainiak.result_handler import CardinalityResultHandler, \
 #     PredicateResultHandler, get_one_value, get_ranges_graphs, simplify_dict, \
 #     parse_label_and_type, is_result_empty, filter_values, lang_dict

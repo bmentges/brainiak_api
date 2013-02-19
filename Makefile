@@ -15,24 +15,21 @@ install:
 	@cp ./git-hooks/pre-commit ./.git/hooks/pre-commit
 	@chmod ug+x ./.git/hooks/pre-commit
 
-coverage: clean
-	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak
-
-test: clean pep8 pep8_tests coverage
+test: clean pep8 pep8_tests 
 	@echo "Running all tests..."
-	@nosetests -s  --tests=$(HOME_BRAINIAK)/tests --with-xunit
+	@nosetests -s  --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests --with-xunit
 
 unit: clean
 	@echo "Running unit tests..."
-	@nosetests -s  --tests=$(HOME_BRAINIAK)/tests/unit --with-xunit
+	@nosetests -s  --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/unit --with-xunit
 
 functional: clean
 	@echo "Running functional tests..."
-	@nosetests -s --tests=$(HOME_BRAINIAK)/tests/functional --with-xunit
+	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/functional --with-xunit
 
 integration: clean
 	@echo "Running integration tests..."
-	@nosetests -s  --tests=$(HOME_BRAINIAK)/tests/integration --with-xunit
+	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/integration --with-xunit
 
 pep8:
 	@echo "Checking source-code PEP8 compliance"

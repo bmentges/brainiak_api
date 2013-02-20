@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
 
+import json
+
 from tornado.testing import AsyncTestCase
 from tornado.ioloop import IOLoop
-from tests import TornadoAsyncTestCase
+
 from brainiak import schema_resource
+from tests import TornadoAsyncTestCase
+
+
+class MockResponse(object):
+
+    def __init__(self, body):
+        self.body = json.dumps(body)
 
 
 class QueriesTestCase(TornadoAsyncTestCase):
@@ -30,8 +39,9 @@ class QueriesTestCase(TornadoAsyncTestCase):
 
         # Mocks
         def mock_query_class_schema(class_uri, callback):
-            class_schema = {'results': {'bindings': [{'dummy_key': 'dummy_value'}]}}
-            callback(class_schema)
+            class_schema = {"results": {"bindings": [{"dummy_key": "dummy_value"}]}}
+            tornado_response = MockResponse(class_schema)
+            callback(tornado_response)
         schema_resource.query_class_schema = mock_query_class_schema
 
         def mock_get_predicates_and_cardinalities(class_uri, class_schema, callback):

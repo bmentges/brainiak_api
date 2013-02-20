@@ -2,7 +2,7 @@
 
 from tornado.testing import AsyncHTTPTestCase
 from brainiak.server import Application
-
+#from tests import TornadoAsyncHTTPTestCase
 
 class SchemaResourceTestCase(AsyncHTTPTestCase):
 
@@ -12,4 +12,3 @@ class SchemaResourceTestCase(AsyncHTTPTestCase):
     def test_schema_person_returns_200_and_json(self):
         response = self.fetch('/contexts/test/schemas/person')
         self.assertEquals(response.code, 200)
-        # select distinct ?p ?o where {<http://dbpedia.org/ontology/Person> ?p ?o} LIMIT 100

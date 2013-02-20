@@ -82,5 +82,3 @@ class CardinalityResultHandler():
                 cardinalities[property].update({"options": new_options})
 
         return cardinalities
-
-

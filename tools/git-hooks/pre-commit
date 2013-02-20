@@ -27,12 +27,12 @@ CHECKS = [
         'ignore_files': ['.*docs.*'],
         'print_filename': True,
     },
-    {
-        'output': 'Checking for ontology references...',
-        'command': 'egrep -n "http:\/\/semantica\.globo\.com|person:|upper:|place:|organization:|concla:" %s',
-        'ignore_files': ['.*pre-commit', '.*README'],
-        'print_filename': True,
-    },
+#    {
+#        'output': 'Checking for ontology references...',
+#        'command': 'egrep -n "http:\/\/semantica\.globo\.com|person:|upper:|place:|organization:|concla:" %s',
+#        'ignore_files': ['.*pre-commit', '.*README'],
+#        'print_filename': True,
+#    },
 ]
 
 

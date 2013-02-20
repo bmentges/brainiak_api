@@ -4,7 +4,7 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application as TornadoApplication
 
-from brainiak import settings
+from brainiak import __doc__, __version__, settings
 from brainiak.urls import resources
 
 
@@ -23,7 +23,7 @@ def main(args):  # pragma: no cover
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
-    parser = ArgumentParser(description=settings.DESCRIPTION)
+    parser = ArgumentParser(description=__doc__)
     parser.add_argument('-d', '--debug', action='store_const', const=True, default=settings.DEBUG, help='debug mode')
     args = parser.parse_args()
 

@@ -69,6 +69,14 @@ class VirtuosoConnection(object):
         request = HTTPRequest(url=url,
                               method=method,
                               headers=headers,
-                              body=body)
+                              body=body,
+                              auth_username=settings.SPARQL_ENDPOINT_USER, # TODO test authentication
+                              auth_password=settings.SPARQL_ENDPOINT_PASSWORD,
+                              auth_mode=settings.SPARQL_ENDPOINT_AUTH_MODE
+                              )
         response = yield gen.Task(self.client.fetch, request)
         callback(response, *args, **kw)
+
+
+class VirtuosoException(Exception):
+    pass

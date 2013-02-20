@@ -3,7 +3,7 @@
 _PREFIXES = {
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
-    'owl':  'http://www.w3.org/2002/07/owl#"owl="http://www.w3.org/2002/07/owl#',
+    'owl': 'http://www.w3.org/2002/07/owl#"owl="http://www.w3.org/2002/07/owl#',
     'dc': 'http://purl.org/dc/elements/1.1/',
     'dct': 'http://purl.org/dc/terms/',
     'foaf': 'http://xmlns.com/foaf/0.1/',
@@ -20,13 +20,26 @@ _PREFIXES = {
     'act': 'http://semantica.globo.com/data/Activity/'
 }
 
-_URIS = {v:k for k,v in _PREFIXES.items()}
+_URIS = {v: k for k, v in _PREFIXES.items()}
+
 
 def uri_to_prefix(uri):
-    return _URIS[uri]
+    return _URIS.get(uri, uri)
+
 
 def prefix_to_uri(prefix):
-    return _PREFIXES[prefix]
+    return _PREFIXES.get(prefix, prefix)
+
 
 def replace_prefix(uri):
-    
+    prefixes = _URIS.keys()
+    # Inspired by code  from Vaughn Cato
+    uri_prefix = filter(uri.startswith, prefixes + [''])[0]
+    if uri_prefix:
+        suffix = uri[len(uri_prefix):]
+        return "{0}:{1}".format(uri_to_prefix(uri_prefix), suffix)
+    else:
+        return uri
+
+# TODO: verifify if re would give better performance
+# http://stackoverflow.com/questions/7539959/python-finding-whether-a-string-starts-with-one-of-a-lists-variable-length-pre

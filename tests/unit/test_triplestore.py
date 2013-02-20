@@ -2,22 +2,12 @@
 from mock import patch
 
 import tornado
-from tornado.testing import AsyncTestCase
-from tornado.ioloop import IOLoop
 
 from brainiak import triplestore
+from tests import TornadoAsyncTestCase
 
 
-
-class TriplestoreTestCase(AsyncTestCase):
-
-    def setUp(self):
-        self.io_loop = self.get_new_ioloop()
-
-    def tearDown(self):
-        if (not IOLoop.initialized() or self.io_loop is not IOLoop.instance()):
-            self.io_loop.close(all_fds=True)
-        super(AsyncTestCase, self).tearDown()
+class TriplestoreTestCase(TornadoAsyncTestCase):
 
     @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT_HOST="http://myhost", SPARQL_ENDPOINT_PORT=8080)
     def test_init_connection_endpoint_host_and_port_defined_in_settings(self, settings):

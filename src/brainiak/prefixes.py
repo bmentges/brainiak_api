@@ -28,3 +28,5 @@ def uri_to_prefix(uri):
 def prefix_to_uri(prefix):
     return _PREFIXES[prefix]
 
+def replace_prefix(uri):
+    

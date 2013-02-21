@@ -22,7 +22,7 @@ class PrefixesTestCase(unittest.TestCase):
         self.assertEquals(shorten_uri("http://some/invalid/uri"), "http://some/invalid/uri")
 
 
-class PMemorizeContextTestCase(unittest.TestCase):
+class MemorizeContextTestCase(unittest.TestCase):
 
     def setUp(self):
         self.remember = MemorizeContext()

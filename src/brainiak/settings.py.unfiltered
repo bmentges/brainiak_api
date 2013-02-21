@@ -1,0 +1,22 @@
+# WARNING: FILE RELATED TO DEPLOYMENT ENVIROMENTS
+import logging
+
+DEBUG = False
+
+SERVER_PORT = <%= server_port %>
+
+SPARQL_ENDPOINT_DATABASE = '<%= sparql_endpoint_database %>'
+SPARQL_ENDPOINT_HOST = '<%= sparql_endpoint_host %>'
+SPARQL_ENDPOINT_PORT = <%= sparql_endpoint_port %>
+
+SPARQL_ENDPOINT_USER = '<%= sparql_endpoint_user %>'
+SPARQL_ENDPOINT_PASSWORD = '<%= sparql_endpoint_password %>'
+SPARQL_ENDPOINT_AUTH_MODE = '<%= sparql_endpoint_auth_mode %>'
+SPARQL_ENDPOINT_REALM = "SPARQL"
+
+LOG_FILEPATH = "/opt/logs/brainiak/app/brainiak.log"
+LOG_LEVEL = logging.DEBUG
+LOG_NAME = "brainiak"
+
+URI_PREFIX = "http://semantica.globo.com"
+    

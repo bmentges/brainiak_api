@@ -4,7 +4,7 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application as TornadoApplication
 
-from brainiak import __doc__, __version__, settings
+from brainiak import __doc__, __version__, log, settings
 from brainiak.urls import resources
 
 
@@ -15,6 +15,7 @@ class Application(TornadoApplication):
 
 
 def main(args):  # pragma: no cover
+    log.initialize()
     application = Application(debug=args.debug)
     server = HTTPServer(application)
     server.listen(settings.SERVER_PORT)

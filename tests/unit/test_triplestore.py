@@ -26,11 +26,13 @@ class TriplestoreInitTestCase(TornadoAsyncTestCase):
         self.assertEquals(expected, result)
 
     @patch('tornado.ioloop.IOLoop', am_i_a_mock=True)
-    def test_init_connection_io_loop_as_a_param(self, io_loop):
+    @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT="http://myhost:8080/sparql")
+    def test_init_connection_io_loop_as_a_param(self, io_loop, settings):
         virtuoso_connection = triplestore.VirtuosoConnection(io_loop)
         self.assertTrue(virtuoso_connection.io_loop.am_i_a_mock)
 
-    def test_init_connection_io_loop_default(self):
+    @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT="http://myhost:8080/sparql")
+    def test_init_connection_io_loop_default(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection()
         self.assertTrue(isinstance(virtuoso_connection.io_loop, tornado.ioloop.IOLoop))
 

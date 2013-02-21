@@ -36,4 +36,3 @@ class MemorizeContextTestCase(unittest.TestCase):
         self.assertEquals(self.remember.shorten_uri('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 'rdf:type')
         self.assertIn('rdf', self.remember.context)
         self.assertEquals(self.remember.context['rdf'], 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-

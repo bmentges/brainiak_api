@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+from brainiak.prefixes import replace_prefix, uri_to_prefix
 from brainiak.triplestore import query_sparql
 from brainiak.result_handler import *
 from brainiak import settings
@@ -9,17 +10,18 @@ from brainiak import settings
 def assemble_schema_dict(class_uri, title, predicates, **kw):
     response = {
         "type": "object",
-        "@id": class_uri,
+        "@id": replace_prefix(class_uri),
         "@context": {"@langauge": "pt"},
         "$schema": "http://json-schema.org/draft-03/schema#",
         "title": title,
         "properties": predicates
     }
-    comment =  kw.get("comment", None)
+    comment = kw.get("comment", None)
     if comment:
-        response["comment"] = comment 
+        response["comment"] = comment
 
     return response
+
 
 def get_schema(context_name, schema_name, callback):
     class_uri = "/".join((settings.URI_PREFIX, context_name, schema_name))
@@ -88,7 +90,7 @@ def get_schema(context_name, schema_name, callback):
             "range": ["place:Place"],
             "rdfs:comment": "Local de nascimento de uma pessoa. Pode ser país, estado, cidade, etc."
         },
-        
+
         "person:gender": {
             "title": "Sexo",
             "type": "string",
@@ -98,7 +100,7 @@ def get_schema(context_name, schema_name, callback):
             "maxItems": 1,
             "range": ["person:Gender"]
         },
-        
+
         "upper:birthDate": {
             "title": "Data de Nascimento",
             "type": "string",
@@ -128,6 +130,7 @@ def get_schema(context_name, schema_name, callback):
 }
 """
 
+
 def get_predicates_and_cardinalities(class_uri, class_schema, callback):
 
     def has_cardinalities(tornado_response, class_schema, callback):
@@ -142,21 +145,22 @@ def get_predicates_and_cardinalities(class_uri, class_schema, callback):
                 predicate_dict = {}
                 ranges = _get_ranges_for_predicate(predicates, predicate)
                 for predicate_range in ranges:
-                    new_ranges[predicate_range] = ranges[predicate_range]
+                    range_key = replace_prefix(predicate_range)
+                    new_ranges[range_key] = ranges[predicate_range]
                     if (predicate in cardinalities) and (predicate_range in cardinalities[predicate]):
                         predicate_restriction = cardinalities[predicate]
-                        new_ranges[predicate_range].update(predicate_restriction[predicate_range])
+                        new_ranges[range_key].update(predicate_restriction[predicate_range])
                         if "options" in predicate_restriction:
-                            new_ranges[predicate_range]["options"] = predicate_restriction["options"]
+                            new_ranges[range_key]["options"] = predicate_restriction["options"]
 
                 predicate_dict["range"] = new_ranges
                 for item in _get_predicates_dict_for_a_predicate(predicates, predicate):
                     predicate_dict["type"] = item["type"]
                     predicate_dict["title"] = item["title"]
-                    predicate_dict["graph"] = item["predicate_graph"]
+                    predicate_dict["graph"] = uri_to_prefix(item["predicate_graph"])
                     if "predicate_comment" in item:  # Para Video que não tem isso
                         predicate_dict["comment"] = item["predicate_comment"]
-                predicates_dict[predicate] = predicate_dict
+                predicates_dict[replace_prefix(predicate)] = predicate_dict
 
             callback(class_schema, predicates_dict)
 
@@ -209,9 +213,8 @@ def _get_ranges_for_predicate(predicates, predicate):
     for item in predicates['results']['bindings']:
         if item['predicate']['value'] == predicate:
             range_class_uri = item['range']['value']
-            range_label = item.get('label_do_range', {}).get('value', "")
-            range_graph = item.get('grafo_do_range', {}).get('value', "")
-            ranges[range_class_uri] = {'graph': range_graph, 'title': range_label}
+            ranges[range_class_uri] = {'graph': uri_to_prefix(item.get('grafo_do_range', {}).get('value', "")),
+                                       'title': item.get('label_do_range', {}).get('value', "")}
             break
     return ranges
 

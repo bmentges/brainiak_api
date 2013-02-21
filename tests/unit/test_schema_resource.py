@@ -38,13 +38,13 @@ class QueriesTestCase(TornadoAsyncTestCase):
         }
 
         # Mocks
-        def mock_query_class_schema(class_uri, callback):
+        def mock_query_class_schema(class_uri, remember, callback):
             class_schema = {"results": {"bindings": [{"dummy_key": "dummy_value"}]}}
             tornado_response = MockResponse(class_schema)
-            callback(tornado_response)
+            callback(tornado_response, remember)
         schema_resource.query_class_schema = mock_query_class_schema
 
-        def mock_get_predicates_and_cardinalities(class_uri, class_schema, callback):
+        def mock_get_predicates_and_cardinalities(class_uri, class_schema, remember, callback):
             callback(class_schema, None)
         schema_resource.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
 

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 
 DEBUG = True
 
@@ -13,7 +14,7 @@ SPARQL_ENDPOINT_PASSWORD = "api-semantica"
 SPARQL_ENDPOINT_AUTH_MODE = "api-semantica"
 SPARQL_ENDPOINT_REALM = "SPARQL"  # Virtuoso-related
 
-LOG_FILEPATH = '/opt/logs/brainiak/brainiak.log'
+LOG_FILEPATH = '/tmp/brainiak.log'
 LOG_LEVEL = logging.DEBUG
 LOG_NAME = "brainiak"
 

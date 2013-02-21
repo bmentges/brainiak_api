@@ -1,3 +1,3 @@
-tornado==2.4.1
+-e git+https://github.com/icaromedeiros/tornado.git#egg=tornado
 pycurl==7.19.0
 mock==1.0.1

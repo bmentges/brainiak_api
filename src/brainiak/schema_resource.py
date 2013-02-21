@@ -5,10 +5,11 @@ from brainiak.prefixes import MemorizeContext
 from brainiak.triplestore import query_sparql
 from brainiak.result_handler import *
 from brainiak import settings
+from brainiak.type_mapper import items_from_type
 
 
 def assemble_schema_dict(short_uri, title, predicates, context, **kw):
-    effective_context = {"@langauge": "pt"}
+    effective_context = {"@language": "pt"}
     effective_context.update(context)
     response = {
         "type": "object",
@@ -82,7 +83,9 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
 
                 predicate_dict["range"] = new_ranges
                 for item in _get_predicates_dict_for_a_predicate(predicates, predicate):
-                    predicate_dict["type"] = item["type"]
+                    add_items = items_from_type(item["type"])
+                    if add_items:
+                        predicate_dict.update(add_items)
                     predicate_dict["title"] = item["title"]
                     predicate_dict["graph"] = remember.prefix_to_slug(item["predicate_graph"])
                     if "predicate_comment" in item:  # Para Video que não tem isso

@@ -33,8 +33,8 @@ DEFAULT_CONTENT_TYPE = URL_ENCODED
 class VirtuosoConnection(object):
 
     def __init__(self, io_loop=None):
-        if hasattr(settings, "SPARQL_ENDPOINT_FULL_URL"):
-            self.endpoint_url = settings.SPARQL_ENDPOINT_FULL_URL
+        if hasattr(settings, "SPARQL_ENDPOINT"):
+            self.endpoint_url = settings.SPARQL_ENDPOINT
         else:
             self.host = settings.SPARQL_ENDPOINT_HOST
             self.port = settings.SPARQL_ENDPOINT_PORT

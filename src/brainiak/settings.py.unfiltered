@@ -3,7 +3,7 @@ import os
 
 DEBUG = False
 
-SERVER_PORT = <%= server_port %>
+# SERVER_PORT = <%= server_port %>  # not used when running with Gunicorn
 
 SPARQL_ENDPOINT = '<%= sparql_endpoint %>'
 SPARQL_ENDPOINT_USER = os.environ['GLB_API_SEMANTICA_VIRTUOSO_USR'] 

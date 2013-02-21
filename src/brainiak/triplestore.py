@@ -42,6 +42,15 @@ class VirtuosoConnection(object):
 
         self.io_loop = io_loop or IOLoop.instance()
         self.client = utils.get_tornado_async_client(self.io_loop)
+        self._set_credentials()
+
+    def _set_credentials(self):
+        try:
+            self.user = settings.SPARQL_ENDPOINT_USER
+            self.password = settings.SPARQL_ENDPOINT_PASSWORD
+            self.auth_mode = settings.SPARQL_ENDPOINT_AUTH_MODE
+        except AttributeError:
+            self.user = self.password = self.auth_mode = None
 
     @gen.engine
     def query(self, callback, query, *args, **kw):
@@ -70,9 +79,9 @@ class VirtuosoConnection(object):
                               method=method,
                               headers=headers,
                               body=body,
-                              auth_username=settings.SPARQL_ENDPOINT_USER, # TODO test authentication
-                              auth_password=settings.SPARQL_ENDPOINT_PASSWORD,
-                              auth_mode=settings.SPARQL_ENDPOINT_AUTH_MODE
+                              auth_username=self.user,
+                              auth_password=self.password,
+                              auth_mode=self.auth_mode
                               )
         response = yield gen.Task(self.client.fetch, request)
         callback(response, *args, **kw)

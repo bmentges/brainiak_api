@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-import logging
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application as TornadoApplication
 
-from brainiak import __doc__, __version__, log, settings
+from brainiak import __doc__, log, settings
 from brainiak.urls import resources
 
 server = None
+
 
 class Application(TornadoApplication):
 
@@ -16,12 +16,13 @@ class Application(TornadoApplication):
 
 application = Application()
 
+
 def main(args):  # pragma: no cover
     log.initialize()
     application = Application(debug=args.debug)
     server = HTTPServer(application)
     server.listen(settings.SERVER_PORT)
-    ioloop = IOLoop.instance().start()
+    IOLoop.instance().start()
 
 
 if __name__ == '__main__':

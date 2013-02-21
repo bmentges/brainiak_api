@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
-from brainiak.prefixes import replace_prefix, uri_to_prefix
+from brainiak.prefixes import shorten_uri, prefix_to_slug
 from brainiak.triplestore import query_sparql
 from brainiak.result_handler import *
 from brainiak import settings
@@ -10,7 +10,7 @@ from brainiak import settings
 def assemble_schema_dict(class_uri, title, predicates, **kw):
     response = {
         "type": "object",
-        "@id": replace_prefix(class_uri),
+        "@id": shorten_uri(class_uri),
         "@context": {"@langauge": "pt"},
         "$schema": "http://json-schema.org/draft-03/schema#",
         "title": title,
@@ -145,7 +145,7 @@ def get_predicates_and_cardinalities(class_uri, class_schema, callback):
                 predicate_dict = {}
                 ranges = _get_ranges_for_predicate(predicates, predicate)
                 for predicate_range in ranges:
-                    range_key = replace_prefix(predicate_range)
+                    range_key = shorten_uri(predicate_range)
                     new_ranges[range_key] = ranges[predicate_range]
                     if (predicate in cardinalities) and (predicate_range in cardinalities[predicate]):
                         predicate_restriction = cardinalities[predicate]
@@ -157,10 +157,10 @@ def get_predicates_and_cardinalities(class_uri, class_schema, callback):
                 for item in _get_predicates_dict_for_a_predicate(predicates, predicate):
                     predicate_dict["type"] = item["type"]
                     predicate_dict["title"] = item["title"]
-                    predicate_dict["graph"] = uri_to_prefix(item["predicate_graph"])
+                    predicate_dict["graph"] = prefix_to_slug(item["predicate_graph"])
                     if "predicate_comment" in item:  # Para Video que não tem isso
                         predicate_dict["comment"] = item["predicate_comment"]
-                predicates_dict[replace_prefix(predicate)] = predicate_dict
+                predicates_dict[shorten_uri(predicate)] = predicate_dict
 
             callback(class_schema, predicates_dict)
 
@@ -213,7 +213,7 @@ def _get_ranges_for_predicate(predicates, predicate):
     for item in predicates['results']['bindings']:
         if item['predicate']['value'] == predicate:
             range_class_uri = item['range']['value']
-            ranges[range_class_uri] = {'graph': uri_to_prefix(item.get('grafo_do_range', {}).get('value', "")),
+            ranges[range_class_uri] = {'graph': prefix_to_slug(item.get('grafo_do_range', {}).get('value', "")),
                                        'title': item.get('label_do_range', {}).get('value', "")}
             break
     return ranges

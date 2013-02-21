@@ -7,7 +7,7 @@ from brainiak import triplestore
 from tests import TornadoAsyncTestCase
 
 
-class TriplestoreTestCase(TornadoAsyncTestCase):
+class TriplestoreInitTestCase(TornadoAsyncTestCase):
 
     @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT_HOST="http://myhost", SPARQL_ENDPOINT_PORT=8080)
     def test_init_connection_endpoint_host_and_port_defined_in_settings(self, settings):
@@ -33,3 +33,24 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
     def test_init_connection_io_loop_default(self):
         virtuoso_connection = triplestore.VirtuosoConnection()
         self.assertTrue(isinstance(virtuoso_connection.io_loop, tornado.ioloop.IOLoop))
+
+
+class TriplestoreSetCredentialsTestCase(TornadoAsyncTestCase):
+
+    @patch('brainiak.triplestore.settings')
+    def test_set_credentials_no_auth_settings_at_all(self, settings):
+        del settings.SPARQL_ENDPOINT_USER
+        del settings.SPARQL_ENDPOINT_PASSWORD
+        del settings.SPARQL_ENDPOINT_AUTH_MODE
+
+        virtuoso_connection = triplestore.VirtuosoConnection()
+        credentials = (virtuoso_connection.user, virtuoso_connection.password, virtuoso_connection.auth_mode)
+        self.assertTrue(all([x is None for x in credentials]))
+
+    @patch('brainiak.triplestore.settings')
+    def test_set_credentials_no_password(self, settings):
+        del settings.SPARQL_ENDPOINT_PASSWORD
+
+        virtuoso_connection = triplestore.VirtuosoConnection()
+        credentials = (virtuoso_connection.user, virtuoso_connection.password, virtuoso_connection.auth_mode)
+        self.assertTrue(all([x is None for x in credentials]))

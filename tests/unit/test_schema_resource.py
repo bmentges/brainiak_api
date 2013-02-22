@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import json
+from tornado import gen
 
 from tornado.testing import AsyncTestCase
 from tornado.ioloop import IOLoop
 
 from brainiak import schema_resource
+from brainiak.schema_resource import _extract_cardinalities
 from tests import TornadoAsyncTestCase
 
 
@@ -15,7 +17,7 @@ class MockResponse(object):
         self.body = json.dumps(body)
 
 
-class QueriesTestCase(TornadoAsyncTestCase):
+class GetSchemaTestCase(TornadoAsyncTestCase):
 
     def setUp(self):
         self.io_loop = self.get_new_ioloop()
@@ -29,6 +31,7 @@ class QueriesTestCase(TornadoAsyncTestCase):
         schema_resource.query_class_schema = self.original_query_class_schema
         schema_resource.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
 
+    @gen.engine
     def test_query_get_schema(self):
         expected_response = {
             "schema": {
@@ -50,47 +53,19 @@ class QueriesTestCase(TornadoAsyncTestCase):
             callback(class_schema, None)
         schema_resource.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
 
-        # Test target function
-        def handle_test_query_get_schema(response):
-            schema = response["schema"]
-            self.assertIn("title", schema)
-            self.assertIn("type", schema)
-            self.assertIn("@id", schema)
-            self.assertIn("properties", schema)
-            # FIXME: enhance the structure of the response
-            self.stop()
+        response = yield gen.Task(schema_resource.get_schema, "test_context", "test_class")
 
-        schema_resource.get_schema("test_context", "test_class", handle_test_query_get_schema)
-        self.wait()
+        schema = response["schema"]
+        self.assertIn("title", schema)
+        self.assertIn("type", schema)
+        self.assertIn("@id", schema)
+        self.assertIn("properties", schema)
+        # FIXME: enhance the structure of the response
+        self.stop()
 
-# {'title': False, 'type': 'object', '@context': {'@langauge': 'pt'}, '$schema': 'http://json-schema.org/draft-03/schema#', '@id': 'http://semantica.globo.com/test_context/test_class', 'properties': None}
 
-    # def test_query_cardinalities(self):
-    #     effecive_response = None
-    #
-    #     def callback(response):
-    #         global effecive_response
-    #         effecive_response = response
-    #
-    #     query_cardinalities("http://test.domain.com", callback)
-    #     self.assertEquals(effecive_response, None)
-    #
-    # def test_query_predicates(self):
-    #     effecive_response = None
-    #
-    #     def callback(response):
-    #         global effecive_response
-    #         effecive_response = response
-    #
-    #     query_predicates("http://test.domain.com", callback)
-    #     self.assertEquals(effecive_response, None)
-    #
-    # def test_query_predicates_without_lang(self):
-    #     effecive_response = None
-    #
-    #     def callback(response):
-    #         global effecive_response
-    #         effecive_response = response
-    #
-    #     query_predicates_without_lang("http://test.domain.com", callback)
-    #     self.assertEquals(effecive_response, None)
+    # def test_extract_cardinalities(self):
+    #     cardinalities_from_virtuoso = {u'head': {u'link': [], u'vars': [u'predicate', u'min', u'max', u'range', u'enumerated_value', u'enumerated_value_label']}, u'results': {u'distinct': False, u'bindings': [{u'max': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'type': u'typed-literal', u'value': u'1'}, u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/place/partOfState'}, u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/place/State'}, u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'type': u'typed-literal', u'value': u'0'}}, {u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/upper/name'}, u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'}, u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'type': u'typed-literal', u'value': u'1'}}], u'ordered': True}}
+    #     extracted = _extract_cardinalities(cardinalities_from_virtuoso)
+    #     expected = None
+    #     self.assertEquals(extracted, expected)

@@ -9,7 +9,8 @@ DATATYPE_PROPERTY = "http://www.w3.org/2002/07/owl#DatatypeProperty"
 _MAP_XSD_TO_JSON_TYPE = {
     "xsd:string": "string",
     "xsd:float": "number",
-    "xsd:integer": "integer"
+    "xsd:integer": "integer",
+    "xsd:XMLLiteral": "any"
 }
 
 

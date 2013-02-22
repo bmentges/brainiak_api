@@ -41,8 +41,7 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
            SPARQL_ENDPOINT_FULL_URL="http://localhost:8890/sparql-auth",
            SPARQL_ENDPOINT_AUTH_MODE="digest",
            SPARQL_ENDPOINT_USER="api-semantica",
-           SPARQL_ENDPOINT_PASSWORD="api-semantica"
-          )
+           SPARQL_ENDPOINT_PASSWORD="api-semantica")
     def test_authenticated_access_to_authenticated_endpoint(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
         virtuoso_connection.query(self.is_response_ok, SIMPLE_COUNT_CLASSES_QUERY)

@@ -13,12 +13,10 @@ class SchemaResource(RequestHandler):
     @asynchronous
     @gen.engine
     def get(self, context_name, schema_name):
-        #data = yield gen.Task(get_schema, context_name, schema_name)
-        def handle_response(response):
-            self.set_header('Access-Control-Allow-Origin', '*')
-            self.write(response)
-            self.finish()
-        get_schema(context_name, schema_name, handle_response)
+        response = yield gen.Task(get_schema, context_name, schema_name)
+        self.set_header('Access-Control-Allow-Origin', '*')
+        self.write(response)
+        self.finish()
 
     # @asynchronous
     # @gen.engine

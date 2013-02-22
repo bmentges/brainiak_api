@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import json
+from tornado import gen
+from tornado.web import asynchronous
 from brainiak.prefixes import MemorizeContext
 from brainiak.triplestore import query_sparql
 from brainiak.result_handler import *
@@ -30,25 +32,24 @@ def assemble_schema_dict(short_uri, title, predicates, remember, **kw):
 
     return response
 
-
+@gen.engine
 def get_schema(context_name, schema_name, callback):
     class_uri = "/".join((settings.URI_PREFIX, context_name, schema_name))
     remember = MemorizeContext()
     short_uri = remember.shorten_uri(class_uri)
 
-    def has_predicates_and_cardinalities(class_schema, predicates_and_cardinalities):
-        response_dict = assemble_schema_dict(short_uri,
-                                             get_one_value(class_schema, "title"),
-                                             predicates_and_cardinalities,
-                                             remember,
-                                             comment=get_one_value(class_schema, "comment"))
-        callback(response_dict)
+    response = yield gen.Task(query_class_schema, class_uri, remember)
+    tornado_response = response.args[0]
+    class_schema = json.loads(tornado_response.body)
 
-    def has_class_schema(tornado_response, remember):
-        class_schema = json.loads(tornado_response.body)
-        get_predicates_and_cardinalities(class_uri, class_schema, remember, has_predicates_and_cardinalities)
-
-    query_class_schema(class_uri, remember, has_class_schema)
+    response = yield gen.Task(get_predicates_and_cardinalities, class_uri, class_schema, remember)
+    class_schema, predicates_and_cardinalities = response.args
+    response_dict = assemble_schema_dict(short_uri,
+                                         get_one_value(class_schema, "title"),
+                                         predicates_and_cardinalities,
+                                         remember,
+                                         comment=get_one_value(class_schema, "comment"))
+    callback(response_dict)
 
 
 def query_class_schema(class_uri, remember, callback):

@@ -62,27 +62,28 @@ def query_class_schema(class_uri, remember, callback):
 def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback):
 
     def has_cardinalities(tornado_response, class_schema, callback, remember):
-        cardinalities = json.loads(tornado_response.body)
+        cardinalities = _extract_cardinalities(json.loads(tornado_response.body))
 
         def has_predicates(tornado_response, remember, class_schema=class_schema):
             predicates = json.loads(tornado_response.body)
-            unique_predicates = _get_unique_predicates_list(predicates)
+            unique_predicates = _get_unique_predicates(predicates)
             predicates_dict = {}
             for predicate in unique_predicates:
+                predicate_name = predicate['predicate']['value']
                 new_ranges = {}
                 predicate_dict = {}
-                ranges = _get_ranges_for_predicate(predicates, predicate, remember)
+                ranges = _get_ranges_for_predicate(predicate, remember)
                 for predicate_range in ranges:
                     range_key = remember.shorten_uri(predicate_range)
                     new_ranges[range_key] = ranges[predicate_range]
-                    if (predicate in cardinalities) and (predicate_range in cardinalities[predicate]):
-                        predicate_restriction = cardinalities[predicate]
+                    if (predicate_name in cardinalities) and (predicate_range in cardinalities[predicate_name]):
+                        predicate_restriction = cardinalities[predicate_name]
                         new_ranges[range_key].update(predicate_restriction[predicate_range])
                         if "options" in predicate_restriction:
                             new_ranges[range_key]["options"] = predicate_restriction["options"]
 
                 predicate_dict["range"] = new_ranges
-                for item in _get_predicates_dict_for_a_predicate(predicates, predicate):
+                for item in _get_predicates_dict_for_a_predicate(predicate):
                     add_items = items_from_type(item["type"])
                     if add_items:
                         predicate_dict.update(add_items)
@@ -90,13 +91,37 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
                     predicate_dict["graph"] = remember.prefix_to_slug(item["predicate_graph"])
                     if "predicate_comment" in item:  # Para Video que não tem isso
                         predicate_dict["comment"] = item["predicate_comment"]
-                predicates_dict[remember.shorten_uri(predicate)] = predicate_dict
+                predicates_dict[remember.shorten_uri(predicate_name)] = predicate_dict
 
             callback(class_schema, predicates_dict)
 
         query_predicates(class_uri, remember, has_predicates)
 
     query_cardinalities(class_uri, class_schema, callback, remember, has_cardinalities)
+
+
+def _extract_cardinalities(cardinalities_from_virtuoso):
+    cardinalities = {}
+    for binding in cardinalities_from_virtuoso['results']['bindings']:
+        property_ = binding["predicate"]["value"]
+        range_ = binding["range"]["value"]
+
+        if (not property_ in cardinalities or
+                not range_ in cardinalities[property_]) and \
+                not range_.startswith("nodeID://"):
+            cardinalities[property_] = {range_: {}}
+
+        if "min" in binding:
+            cardinalities[property_][range_].update({"minItems": binding["min"]["value"]})
+        elif "max" in binding:
+            cardinalities[property_][range_].update({"maxItems": binding["max"]["value"]})
+        elif "enumerated_value" in binding:
+            new_options = cardinalities[property_].get("options", [])
+            new_options_entry = {binding["enumerated_value"]["value"]: binding.get("enumerated_value_label", "").get("value", "")}
+            new_options.append(new_options_entry)
+            cardinalities[property_].update({"options": new_options})
+
+    return cardinalities
 
 
 def query_cardinalities(class_uri, class_schema, final_callback, remember, callback):
@@ -122,30 +147,26 @@ def query_cardinalities(class_uri, class_schema, final_callback, remember, callb
     query_sparql(callback, QUERY_TEMPLATE, class_schema, final_callback, remember)
 
 
-def _get_unique_predicates_list(predicates):
-    return sorted(list({item['predicate']['value'] for item in predicates['results']['bindings']}))
+def _get_unique_predicates(predicates):
+    return {item['predicate']['value']:item for item in predicates['results']['bindings']}.values()
 
 
-def _get_predicates_dict_for_a_predicate(predicates, predicate):
+def _get_predicates_dict_for_a_predicate(predicate):
     items = []
     parsed_item = {}
-    for item in predicates['results']['bindings']:
-        if item['predicate']['value'] == predicate:
-            for attribute in item:
-                if attribute not in parsed_item:
-                    parsed_item[attribute] = item[attribute]['value']
-            items.append(parsed_item)
+    for attribute in predicate:
+        if attribute not in parsed_item:
+            parsed_item[attribute] = predicate[attribute]['value']
+    items.append(parsed_item)
     return items
 
 
-def _get_ranges_for_predicate(predicates, predicate, remember):
+def _get_ranges_for_predicate(predicate, remember):
     ranges = {}
-    for item in predicates['results']['bindings']:
-        if item['predicate']['value'] == predicate:
-            range_class_uri = item['range']['value']
-            ranges[range_class_uri] = {'graph': remember.prefix_to_slug(item.get('grafo_do_range', {}).get('value', "")),
-                                       'title': item.get('label_do_range', {}).get('value', "")}
-            break
+    range_class_uri = predicate['range']['value']
+    #if predicate
+    ranges[range_class_uri] = {'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
+                               'title': predicate.get('label_do_range', {}).get('value', "")}
     return ranges
 
 

@@ -68,52 +68,49 @@ def query_class_schema(class_uri, remember, callback):
 
 @gen.engine
 def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback):
+    response = yield gen.Task(query_cardinalities, class_uri, class_schema, callback, remember)
+    tornado_response, class_schema, callback, remember = response.args
+    cardinalities = _extract_cardinalities(json.loads(tornado_response.body))
 
-    def has_cardinalities(tornado_response, class_schema, callback, remember):
-        cardinalities = _extract_cardinalities(json.loads(tornado_response.body))
+    response = yield gen.Task(query_predicates, class_uri, remember)
+    tornado_response, remember = response.args
+    predicates = json.loads(tornado_response.body)
+    unique_predicates = _get_unique_predicates(predicates)
+    predicates_dict = {}
+    for predicate in unique_predicates:
+        predicate_name = predicate['predicate']['value']
+        predicate_dict = {}
 
-        def has_predicates(tornado_response, remember, class_schema=class_schema):
-            predicates = json.loads(tornado_response.body)
-            unique_predicates = _get_unique_predicates(predicates)
-            predicates_dict = {}
-            for predicate in unique_predicates:
-                predicate_name = predicate['predicate']['value']
-                predicate_dict = {}
+        predicate_type = predicate['type']['value']
+        range_class_uri = predicate['range']['value']
+        range_key = remember.shorten_uri(range_class_uri)
+        if predicate_type == OBJECT_PROPERTY:
+            predicate_dict["range"] = {'@id': range_key,
+                                       'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
+                                       'title': predicate.get('label_do_range', {}).get('value', "")}
+            remember.add_object_property(range_key)
+        elif predicate_type == DATATYPE_PROPERTY:
+            # Have a datatype property
+            predicate_dict.update(items_from_range(range_class_uri))
 
-                predicate_type = predicate['type']['value']
-                range_class_uri = predicate['range']['value']
-                range_key = remember.shorten_uri(range_class_uri)
-                if predicate_type == OBJECT_PROPERTY:
-                    predicate_dict["range"] = {'@id': range_key,
-                                                'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
-                                                'title': predicate.get('label_do_range', {}).get('value', "")}
-                    remember.add_object_property(range_key)
-                elif predicate_type == DATATYPE_PROPERTY:
-                    # Have a datatype property
-                    predicate_dict.update(items_from_range(range_class_uri))
+        if (predicate_name in cardinalities) and (range_class_uri in cardinalities[predicate_name]):
+            predicate_restriction = cardinalities[predicate_name]
+            predicate_dict.update(predicate_restriction[range_class_uri])
+            if "options" in predicate_restriction:
+                predicate_dict["options"] = predicate_restriction["options"]
 
-                if (predicate_name in cardinalities) and (range_class_uri in cardinalities[predicate_name]):
-                    predicate_restriction = cardinalities[predicate_name]
-                    predicate_dict.update(predicate_restriction[range_class_uri])
-                    if "options" in predicate_restriction:
-                        predicate_dict["options"] = predicate_restriction["options"]
+        for item in _get_predicates_dict_for_a_predicate(predicate):
+            add_items = items_from_type(item["type"])
+            if add_items:
+                predicate_dict.update(add_items)
+            predicate_dict["title"] = item["title"]
+            predicate_dict["graph"] = remember.prefix_to_slug(item["predicate_graph"])
+            if "predicate_comment" in item:  # Para Video que não tem isso
+                predicate_dict["comment"] = item["predicate_comment"]
 
-                for item in _get_predicates_dict_for_a_predicate(predicate):
-                    add_items = items_from_type(item["type"])
-                    if add_items:
-                        predicate_dict.update(add_items)
-                    predicate_dict["title"] = item["title"]
-                    predicate_dict["graph"] = remember.prefix_to_slug(item["predicate_graph"])
-                    if "predicate_comment" in item:  # Para Video que não tem isso
-                        predicate_dict["comment"] = item["predicate_comment"]
+        predicates_dict[remember.shorten_uri(predicate_name)] = predicate_dict
 
-                predicates_dict[remember.shorten_uri(predicate_name)] = predicate_dict
-
-            callback(class_schema, predicates_dict)
-
-        query_predicates(class_uri, remember, has_predicates)
-
-    query_cardinalities(class_uri, class_schema, callback, remember, has_cardinalities)
+    callback(class_schema, predicates_dict)
 
 
 def _extract_cardinalities(cardinalities_from_virtuoso):
@@ -175,6 +172,7 @@ def _get_predicates_dict_for_a_predicate(predicate):
             parsed_item[attribute] = predicate[attribute]['value']
     items.append(parsed_item)
     return items
+
 
 @gen.engine
 def query_predicates(class_uri, remember, callback):

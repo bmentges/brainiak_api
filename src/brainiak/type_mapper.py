@@ -19,9 +19,7 @@ def items_from_type(predicate_type):
         return {"type": "string", "format": "uri"}
 
 
-def items_from_range(predicate_type, range_uri):
-    if predicate_type != DATATYPE_PROPERTY:
-        return None
+def items_from_range(range_uri):
     short_range = shorten_uri(range_uri)
     if short_range == 'xsd:date':
         return {"type": "string", "format": "date"}

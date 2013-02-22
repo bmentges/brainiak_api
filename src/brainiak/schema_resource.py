@@ -75,7 +75,7 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
                 predicate_type = predicate['type']['value']
                 range_class_uri = predicate['range']['value']
                 if predicate_type == OBJECT_PROPERTY:
-                    predicate_dict["range"] =  {'@id': range_class_uri,
+                    predicate_dict["range"] =  {'@id': remember.shorten_uri(range_class_uri),
                                                 'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
                                                 'title': predicate.get('label_do_range', {}).get('value', "")}
                 elif predicate_type == DATATYPE_PROPERTY:

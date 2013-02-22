@@ -176,17 +176,15 @@ def _get_predicates_dict_for_a_predicate(predicate):
     items.append(parsed_item)
     return items
 
-
+@gen.engine
 def query_predicates(class_uri, remember, callback):
-
-    def fallback_query_callback(tornado_response, remember):
-        response = json.loads(tornado_response.body)
-        if not response['results']['bindings']:
-            _query_predicate_without_lang(class_uri, remember, callback)
-        else:
-            callback(tornado_response, remember)
-
-    _query_predicate_with_lang(class_uri, remember, fallback_query_callback)
+    resp = yield gen.Task(_query_predicate_with_lang, class_uri, remember)
+    tornado_response, remember = resp.args
+    response = json.loads(tornado_response.body)
+    if not response['results']['bindings']:
+        _query_predicate_without_lang(class_uri, remember, callback)
+    else:
+        callback(tornado_response, remember)
 
 
 def _query_predicate_with_lang(class_uri, remember, callback):

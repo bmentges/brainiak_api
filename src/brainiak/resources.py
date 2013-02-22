@@ -5,7 +5,7 @@ from tornado.web import asynchronous, RequestHandler
 
 from brainiak.__init__ import __version__
 from brainiak.schema_resource import get_schema
-from brainiak.instance_resource import get_instance
+#from brainiak.instance_resource import get_instance
 
 
 class HealthcheckResource(RequestHandler):
@@ -42,15 +42,15 @@ class SchemaResource(RequestHandler):
     #     self.finish()
 
 
-class InstanceResource(RequestHandler):
-
-    def __init__(self, *args, **kwargs):
-        super(InstanceResource, self).__init__(*args, **kwargs)
-
-    @asynchronous
-    @gen.engine
-    def get(self, context_name, schema_name):
-        response = yield gen.Task(get_instance, context_name, schema_name)
-        self.set_header('Access-Control-Allow-Origin', '*')
-        self.write(response)
-        self.finish()
+# class InstanceResource(RequestHandler):
+#
+#     def __init__(self, *args, **kwargs):
+#         super(InstanceResource, self).__init__(*args, **kwargs)
+#
+#     @asynchronous
+#     @gen.engine
+#     def get(self, context_name, schema_name):
+#         response = yield gen.Task(get_instance, context_name, schema_name)
+#         self.set_header('Access-Control-Allow-Origin', '*')
+#         self.write(response)
+#         self.finish()

@@ -2,8 +2,22 @@
 
 from tornado import gen
 from tornado.web import asynchronous, RequestHandler
+
+from brainiak.__init__ import __version__
 from brainiak.schema_resource import get_schema
 from brainiak.instance_resource import get_instance
+
+
+class HealthcheckResource(RequestHandler):
+
+    def get(self):
+        self.write("WORKING")
+
+
+class VersionResource(RequestHandler):
+
+    def get(self):
+        self.write(__version__)
 
 
 class SchemaResource(RequestHandler):

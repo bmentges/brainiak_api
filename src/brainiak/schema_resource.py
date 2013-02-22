@@ -5,7 +5,7 @@ from brainiak.prefixes import MemorizeContext
 from brainiak.triplestore import query_sparql
 from brainiak.result_handler import *
 from brainiak import settings
-from brainiak.type_mapper import items_from_type
+from brainiak.type_mapper import items_from_type, OBJECT_PROPERTY, DATATYPE_PROPERTY, items_from_range
 
 
 def assemble_schema_dict(short_uri, title, predicates, context, **kw):
@@ -70,19 +70,29 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
             predicates_dict = {}
             for predicate in unique_predicates:
                 predicate_name = predicate['predicate']['value']
-                new_ranges = {}
                 predicate_dict = {}
-                ranges = _get_ranges_for_predicate(predicate, remember)
-                for predicate_range in ranges:
-                    range_key = remember.shorten_uri(predicate_range)
-                    new_ranges[range_key] = ranges[predicate_range]
-                    if (predicate_name in cardinalities) and (predicate_range in cardinalities[predicate_name]):
-                        predicate_restriction = cardinalities[predicate_name]
-                        new_ranges[range_key].update(predicate_restriction[predicate_range])
-                        if "options" in predicate_restriction:
-                            new_ranges[range_key]["options"] = predicate_restriction["options"]
 
-                predicate_dict["range"] = new_ranges
+                predicate_type = predicate['type']['value']
+                range_class_uri = predicate['range']['value']
+                if predicate_type == OBJECT_PROPERTY:
+                    predicate_dict["range"] =  {'@id': range_class_uri,
+                                                'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
+                                                'title': predicate.get('label_do_range', {}).get('value', "")}
+                elif predicate_type == DATATYPE_PROPERTY:
+                    # Have a datatype property
+                    predicate_dict.update(items_from_range(range_class_uri))
+
+                # new_ranges = {}
+                # for predicate_range in ranges:
+                #     range_key = remember.shorten_uri(predicate_range)
+                #     new_ranges[range_key] = ranges[predicate_range]
+                #     if (predicate_name in cardinalities) and (predicate_range in cardinalities[predicate_name]):
+                #         predicate_restriction = cardinalities[predicate_name]
+                #         new_ranges[range_key].update(predicate_restriction[predicate_range])
+                #         if "options" in predicate_restriction:
+                #             new_ranges[range_key]["options"] = predicate_restriction["options"]
+
+
                 for item in _get_predicates_dict_for_a_predicate(predicate):
                     add_items = items_from_type(item["type"])
                     if add_items:
@@ -159,15 +169,6 @@ def _get_predicates_dict_for_a_predicate(predicate):
             parsed_item[attribute] = predicate[attribute]['value']
     items.append(parsed_item)
     return items
-
-
-def _get_ranges_for_predicate(predicate, remember):
-    ranges = {}
-    range_class_uri = predicate['range']['value']
-    #if predicate
-    ranges[range_class_uri] = {'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
-                               'title': predicate.get('label_do_range', {}).get('value', "")}
-    return ranges
 
 
 def query_predicates(class_uri, remember, callback):

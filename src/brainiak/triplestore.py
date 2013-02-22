@@ -89,3 +89,35 @@ class VirtuosoConnection(object):
 
 class VirtuosoException(Exception):
     pass
+
+
+def status():
+    from SPARQLWrapper import SPARQLWrapper
+
+    msg = ""
+
+    query = "SELECT COUNT(*) WHERE {?s a owl:Class}"
+    endpoint = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    endpoint.addDefaultGraph("http://semantica.globo.com/person")
+    endpoint.setQuery(query)
+
+    try:
+
+       response = endpoint.query()
+       msg = "accessed without auth"
+
+    except Exception, e:
+
+        try:
+            endpoint.setCredentials(settings.SPARQL_ENDPOINT_USER,
+                                  settings.SPARQL_ENDPOINT_PASSWORD,
+                                  mode=settings.SPARQL_ENDPOINT_AUTH_MODE,
+                                  realm=settings.SPARQL_ENDPOINT_REALM)
+            response = endpoint.query()
+            msg = "accessed with auth [%s : %s]" % (settings.SPARQL_ENDPOINT_USER, settings.SPARQL_ENDPOINT_PASSWORD)
+
+        except Exception, e:
+            msg = "didn't access [%s : %s]\n %s" % (settings.SPARQL_ENDPOINT_USER, settings.SPARQL_ENDPOINT_PASSWORD, e.msg)
+
+    return msg
+

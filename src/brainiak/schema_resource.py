@@ -8,15 +8,20 @@ from brainiak import settings
 from brainiak.type_mapper import items_from_type, OBJECT_PROPERTY, DATATYPE_PROPERTY, items_from_range
 
 
-def assemble_schema_dict(short_uri, title, predicates, context, **kw):
+def assemble_schema_dict(short_uri, title, predicates, remember, **kw):
     effective_context = {"@language": "pt"}
-    effective_context.update(context)
+    effective_context.update(remember.context)
+
+    links = [{"rel":"{0}:{1}".format(ctx, item),
+              "href":"/{0}/collection/{1}".format(ctx, item)}
+             for ctx, item in remember.object_properties]
     response = {
         "type": "object",
         "@id": short_uri,
         "@context": effective_context,
         "$schema": "http://json-schema.org/draft-03/schema#",
         "title": title,
+        "links": links,
         "properties": predicates
     }
     comment = kw.get("comment", None)
@@ -35,7 +40,7 @@ def get_schema(context_name, schema_name, callback):
         response_dict = assemble_schema_dict(short_uri,
                                              get_one_value(class_schema, "title"),
                                              predicates_and_cardinalities,
-                                             remember.context,
+                                             remember,
                                              comment=get_one_value(class_schema, "comment"))
         callback(response_dict)
 
@@ -79,6 +84,7 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
                     predicate_dict["range"] = {'@id': range_key,
                                                 'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
                                                 'title': predicate.get('label_do_range', {}).get('value', "")}
+                    remember.add_object_property(range_key)
                 elif predicate_type == DATATYPE_PROPERTY:
                     # Have a datatype property
                     predicate_dict.update(items_from_range(range_class_uri))

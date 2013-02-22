@@ -74,9 +74,9 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
 
                 predicate_type = predicate['type']['value']
                 range_class_uri = predicate['range']['value']
-                range_key =  remember.shorten_uri(range_class_uri)
+                range_key = remember.shorten_uri(range_class_uri)
                 if predicate_type == OBJECT_PROPERTY:
-                    predicate_dict["range"] =  {'@id': range_key,
+                    predicate_dict["range"] = {'@id': range_key,
                                                 'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
                                                 'title': predicate.get('label_do_range', {}).get('value', "")}
                 elif predicate_type == DATATYPE_PROPERTY:
@@ -89,7 +89,6 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
                     if "options" in predicate_restriction:
                         predicate_dict["options"] = predicate_restriction["options"]
 
-
                 for item in _get_predicates_dict_for_a_predicate(predicate):
                     add_items = items_from_type(item["type"])
                     if add_items:
@@ -98,6 +97,7 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
                     predicate_dict["graph"] = remember.prefix_to_slug(item["predicate_graph"])
                     if "predicate_comment" in item:  # Para Video que não tem isso
                         predicate_dict["comment"] = item["predicate_comment"]
+
                 predicates_dict[remember.shorten_uri(predicate_name)] = predicate_dict
 
             callback(class_schema, predicates_dict)
@@ -155,7 +155,7 @@ def query_cardinalities(class_uri, class_schema, final_callback, remember, callb
 
 
 def _get_unique_predicates(predicates):
-    return {item['predicate']['value']:item for item in predicates['results']['bindings']}.values()
+    return {item['predicate']['value']: item for item in predicates['results']['bindings']}.values()
 
 
 def _get_predicates_dict_for_a_predicate(predicate):

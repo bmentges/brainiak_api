@@ -2,7 +2,6 @@
 
 import json
 from tornado import gen
-from tornado.web import asynchronous
 from brainiak.prefixes import MemorizeContext
 from brainiak.triplestore import query_sparql
 from brainiak.result_handler import *
@@ -14,10 +13,10 @@ def assemble_schema_dict(short_uri, title, predicates, remember, **kw):
     effective_context = {"@language": "pt"}
     effective_context.update(remember.context)
 
-    links = [{"rel":"{0}:{1}".format(ctx, item),
-              "href":"/{0}/collection/{1}".format(ctx, item)}
+    links = [{"rel": "{0}:{1}".format(ctx, item),
+              "href": "/{0}/collection/{1}".format(ctx, item)}
              for ctx, item in remember.object_properties]
-    response = {
+    schema = {
         "type": "object",
         "@id": short_uri,
         "@context": effective_context,
@@ -28,7 +27,9 @@ def assemble_schema_dict(short_uri, title, predicates, remember, **kw):
     }
     comment = kw.get("comment", None)
     if comment:
-        response["comment"] = comment
+        schema["comment"] = comment
+
+    response = {"schema": schema}
 
     return response
 
@@ -97,7 +98,8 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
             predicate_restriction = cardinalities[predicate_name]
             predicate_dict.update(predicate_restriction[range_class_uri])
             if "options" in predicate_restriction:
-                predicate_dict["options"] = predicate_restriction["options"]
+                # FIXME: simplify value returned from cardinalities to avoid ugly code below
+                predicate_dict["enum"] = [remember.shorten_uri(d.keys()[0]) for d in predicate_restriction["options"]]
 
         for item in _get_predicates_dict_for_a_predicate(predicate):
             add_items = items_from_type(item["type"])

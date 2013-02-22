@@ -13,8 +13,8 @@ def assemble_schema_dict(short_uri, title, predicates, remember, **kw):
     effective_context = {"@language": "pt"}
     effective_context.update(remember.context)
 
-    links = [{"rel":"{0}:{1}".format(ctx, item),
-              "href":"/{0}/collection/{1}".format(ctx, item)}
+    links = [{"rel": "{0}:{1}".format(ctx, item),
+              "href": "/{0}/collection/{1}".format(ctx, item)}
              for ctx, item in remember.object_properties]
     schema = {
         "type": "object",
@@ -29,7 +29,7 @@ def assemble_schema_dict(short_uri, title, predicates, remember, **kw):
     if comment:
         schema["comment"] = comment
 
-    response = {"schema":schema}
+    response = {"schema": schema}
 
     return response
 

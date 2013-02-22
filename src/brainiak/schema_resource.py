@@ -74,23 +74,20 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
 
                 predicate_type = predicate['type']['value']
                 range_class_uri = predicate['range']['value']
+                range_key =  remember.shorten_uri(range_class_uri)
                 if predicate_type == OBJECT_PROPERTY:
-                    predicate_dict["range"] =  {'@id': remember.shorten_uri(range_class_uri),
+                    predicate_dict["range"] =  {'@id': range_key,
                                                 'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
                                                 'title': predicate.get('label_do_range', {}).get('value', "")}
                 elif predicate_type == DATATYPE_PROPERTY:
                     # Have a datatype property
                     predicate_dict.update(items_from_range(range_class_uri))
 
-                # new_ranges = {}
-                # for predicate_range in ranges:
-                #     range_key = remember.shorten_uri(predicate_range)
-                #     new_ranges[range_key] = ranges[predicate_range]
-                #     if (predicate_name in cardinalities) and (predicate_range in cardinalities[predicate_name]):
-                #         predicate_restriction = cardinalities[predicate_name]
-                #         new_ranges[range_key].update(predicate_restriction[predicate_range])
-                #         if "options" in predicate_restriction:
-                #             new_ranges[range_key]["options"] = predicate_restriction["options"]
+                if (predicate_name in cardinalities) and (range_class_uri in cardinalities[predicate_name]):
+                    predicate_restriction = cardinalities[predicate_name]
+                    predicate_dict.update(predicate_restriction[range_class_uri])
+                    if "options" in predicate_restriction:
+                        predicate_dict["options"] = predicate_restriction["options"]
 
 
                 for item in _get_predicates_dict_for_a_predicate(predicate):

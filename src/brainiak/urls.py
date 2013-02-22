@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from brainiak.resources import HealthcheckResource, SchemaResource, VersionResource
+from brainiak.resources import HealthcheckResource, SchemaResource, VersionResource, VirtuosoStatusResource
 
 
 resources = [
-    (r'/(?P<context_name>.+)/schemas/(?P<schema_name>.+)', SchemaResource),
     (r'/healthcheck', HealthcheckResource),
-    (r'/version', VersionResource)
+    (r'/version', VersionResource),
+    (r'/status/virtuoso', VirtuosoStatusResource),
+    (r'/(?P<context_name>.+)/schemas/(?P<schema_name>.+)', SchemaResource)
 ]

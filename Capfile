@@ -27,12 +27,12 @@ namespace :deploy do
     # :restart redefinido para reinciar o gunicorn da APP_v1 apenas
     task :restart, :roles => :restart do
         puts "Reiniciando o GUNICORN 2..."
-        run "sudo /etc/init.d/gunicorn-api_semantica-be2 restart 2> /dev/null"
+        run "sudo /etc/init.d/api_semantica-gunicorn-be2.brainiak restart 2> /dev/null"
     end
 
 
     task :clean_local do
         puts "Voltando o settings atual"
-        system "mv src/api_semantica/settings.py.atual src/api_semantica/settings.py"
+        system "git checkout -- src/brainiak/settings.py"
     end
 end

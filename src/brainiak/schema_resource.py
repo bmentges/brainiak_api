@@ -32,6 +32,7 @@ def assemble_schema_dict(short_uri, title, predicates, remember, **kw):
 
     return response
 
+
 @gen.engine
 def get_schema(context_name, schema_name, callback):
     class_uri = "/".join((settings.URI_PREFIX, context_name, schema_name))
@@ -65,6 +66,7 @@ def query_class_schema(class_uri, remember, callback):
     query_sparql(callback, QUERY_TEMPLATE, remember)
 
 
+@gen.engine
 def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback):
 
     def has_cardinalities(tornado_response, class_schema, callback, remember):

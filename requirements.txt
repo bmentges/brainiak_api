@@ -1,4 +1,5 @@
-tornado-auth-digest==2.4.post3
 pycurl==7.19.0
+SPARQLWrapper==1.5.0-authdigest
+tornado-auth-digest==2.4.post3
 
 --extra-index-url=http://pypi.globoi.com/simple/

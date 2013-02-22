@@ -2,5 +2,5 @@
 from brainiak.resources import SchemaResource
 
 resources = [
-    (r'/contexts/(?P<context_name>.+)/schemas/(?P<schema_name>.+)', SchemaResource)
+    (r'/(?P<context_name>.+)/schemas/(?P<schema_name>.+)', SchemaResource)
 ]

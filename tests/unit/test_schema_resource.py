@@ -31,10 +31,12 @@ class QueriesTestCase(TornadoAsyncTestCase):
 
     def test_query_get_schema(self):
         expected_response = {
-            'class': 'http://test.domain.com/test_context/test_class',
-            'comment': False,
-            'label': False,
-            'predicates': None
+            "schema": {
+                'class': 'http://test.domain.com/test_context/test_class',
+                'comment': False,
+                'label': False,
+                'predicates': None
+            }
         }
 
         # Mocks
@@ -50,10 +52,11 @@ class QueriesTestCase(TornadoAsyncTestCase):
 
         # Test target function
         def handle_test_query_get_schema(response):
-            self.assertIn("title", response)
-            self.assertIn("type", response)
-            self.assertIn("@id", response)
-            self.assertIn("properties", response)
+            schema = response["schema"]
+            self.assertIn("title", schema)
+            self.assertIn("type", schema)
+            self.assertIn("@id", schema)
+            self.assertIn("properties", schema)
             # FIXME: enhance the structure of the response
             self.stop()
 

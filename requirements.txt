@@ -1,3 +1,4 @@
--e git+https://github.com/icaromedeiros/tornado.git#egg=tornado
+tornado-auth-digest==2.4.post3
 pycurl==7.19.0
-mock==1.0.1
+
+--extra-index-url=http://pypi.globoi.com/simple/

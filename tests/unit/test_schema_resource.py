@@ -13,13 +13,11 @@ from tests import TornadoAsyncTestCase
 
 
 class MockResponse(object):
-
     def __init__(self, body):
         self.body = json.dumps(body)
 
 
 class GetSchemaTestCase(TornadoAsyncTestCase):
-
     def setUp(self):
         self.io_loop = self.get_new_ioloop()
         self.original_query_class_schema = schema_resource.query_class_schema
@@ -48,10 +46,12 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
             class_schema = {"results": {"bindings": [{"dummy_key": "dummy_value"}]}}
             tornado_response = MockResponse(class_schema)
             callback(tornado_response, remember)
+
         schema_resource.query_class_schema = mock_query_class_schema
 
         def mock_get_predicates_and_cardinalities(class_uri, class_schema, remember, callback):
             callback(class_schema, None)
+
         schema_resource.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
 
         response = yield gen.Task(schema_resource.get_schema, "test_context", "test_class")
@@ -65,41 +65,58 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         self.stop()
 
 
-# class AuxiliaryFunctionsTestCase(unittest.TestCase):
-#
-#     def test_extract_cardinalities(self):
-#         cardinalities_from_virtuoso = [
-#             {
-#                 u'max': {
-#                     u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
-#                     u'type': u'typed-literal',
-#                     u'value': u'1'
-#                 },
-#                 u'predicate': {
-#                     u'type': u'uri',
-#                     u'value': u'http://semantica.globo.com/place/partOfState'
-#                 },
-#                 u'range': {
-#                     u'type': u'uri',
-#                     u'value': u'http://semantica.globo.com/place/State'
-#                 },
-#                 u'min': {
-#                     u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
-#                     u'type': u'typed-literal',
-#                     u'value': u'0'
-#                 }
-#             },
-#             {
-#                 u'predicate': {
-#                     u'type': u'uri',
-#                     u'value': u'http://semantica.globo.com/upper/name'},
-#                 u'range': {
-#                     u'type': u'uri',
-#                     u'value': u'http://www.w3.org/2001/XMLSchema#string'},
-#                 u'min': {
-#                     u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
-#                     u'type': u'typed-literal',
-#                     u'value': u'1'}}]
-#         extracted = _extract_cardinalities(cardinalities_from_virtuoso)
-#         expected = None
-#         self.assertEquals(extracted, expected)
+class AuxiliaryFunctionsTestCase(unittest.TestCase):
+
+    def test_extract_min(self):
+        binding = [
+            {
+                u'predicate': {u'type': u'uri',
+                               u'value': u'http://test/person/gender'},
+                u'range': {u'type': u'uri',
+                           u'value': u'http://test/person/Gender'},
+                u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                         u'type': u'typed-literal', u'value': u'1'}
+            }
+        ]
+        extracted = _extract_cardinalities(binding)
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': u'1'}}}
+        self.assertEquals(extracted, expected)
+
+    def test_extract_max(self):
+        binding = [
+            {
+                u'predicate': {u'type': u'uri',
+                               u'value': u'http://test/person/gender'},
+                u'range': {u'type': u'uri',
+                           u'value': u'http://test/person/Gender'},
+                u'max': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                         u'type': u'typed-literal', u'value': u'1'}
+            }
+        ]
+        extracted = _extract_cardinalities(binding)
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'maxItems': u'1'}}}
+        self.assertEquals(extracted, expected)
+
+    def test_extract_options(self):
+        binding = [
+            {u'predicate': {u'type': u'uri',
+                            u'value': u'http://test/person/gender'},
+             u'enumerated_value': {u'type': u'uri',
+                                   u'value': u'http://test/data/Gender/Male'},
+             u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'},
+             u'enumerated_value_label': {u'xml:lang': u'pt', u'type': u'literal',
+                                         u'value': u'Masculino'}},
+            {u'predicate': {u'type': u'uri',
+                            u'value': u'http://test/person/gender'},
+             u'enumerated_value': {u'type': u'uri',
+                                   u'value': u'http://test/data/Gender/Female'},
+             u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'},
+             u'enumerated_value_label': {u'xml:lang': u'pt', u'type': u'literal',
+                                         u'value': u'Feminino'}}
+        ]
+        extracted = _extract_cardinalities(binding)
+        expected = {u'http://test/person/gender': {
+                    'options': [{u'http://test/data/Gender/Male': u'Masculino'},
+                                {u'http://test/data/Gender/Female': u'Feminino'}
+                                ]}}
+        self.assertEquals(extracted, expected)

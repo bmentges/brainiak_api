@@ -19,16 +19,14 @@ class MockResponse(object):
 
 class GetSchemaTestCase(TornadoAsyncTestCase):
     def setUp(self):
-        self.io_loop = self.get_new_ioloop()
+        super(TornadoAsyncTestCase, self).setUp()
         self.original_query_class_schema = schema_resource.query_class_schema
         self.original_get_predicates_and_cardinalities = schema_resource.get_predicates_and_cardinalities
 
     def tearDown(self):
-        if (not IOLoop.initialized() or self.io_loop is not IOLoop.instance()):
-            self.io_loop.close(all_fds=True)
-        super(AsyncTestCase, self).tearDown()
         schema_resource.query_class_schema = self.original_query_class_schema
         schema_resource.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
+        super(TornadoAsyncTestCase, self).tearDown()
 
     @gen.engine
     def test_query_get_schema(self):
@@ -63,6 +61,19 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         self.assertIn("properties", schema)
         # FIXME: enhance the structure of the response
         self.stop()
+
+
+class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
+
+    def setUp(self):
+        super(TornadoAsyncTestCase, self).setUp()
+        # self.original_query_class_schema = schema_resource.query_class_schema
+        # self.original_get_predicates_and_cardinalities = schema_resource.get_predicates_and_cardinalities
+
+    def tearDown(self):
+        # schema_resource.query_class_schema = self.original_query_class_schema
+        # schema_resource.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
+        super(TornadoAsyncTestCase, self).tearDown()
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):

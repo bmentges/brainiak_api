@@ -35,6 +35,10 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
 
 
 class TestHandlerBase(AsyncHTTPTestCase):
+    brainiak_app = server.Application()
 
     def get_app(self):
-        return server.application
+        return self.brainiak_app
+
+    def get_new_ioloop(self):
+        return IOLoop.instance()

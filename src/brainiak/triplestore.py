@@ -3,10 +3,13 @@ import urllib
 import SPARQLWrapper
 from tornado import gen
 from tornado.ioloop import IOLoop
-from tornado.httpclient import HTTPRequest
+from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from tornado.httputil import url_concat
 
 from brainiak import settings, utils
+
+
+AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
 
 
 def query_sparql(callback, query, *args, **kw):
@@ -41,7 +44,7 @@ class VirtuosoConnection(object):
             self.endpoint_url = self.host + ":" + str(self.port) + "/sparql"
 
         self.io_loop = io_loop or IOLoop.instance()
-        self.client = utils.get_tornado_async_client(self.io_loop)
+        self.client = AsyncHTTPClient(io_loop=io_loop)
         self._set_credentials()
 
     def _set_credentials(self):

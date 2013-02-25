@@ -79,9 +79,9 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
     response = yield gen.Task(query_predicates, class_uri, remember)
     tornado_response, remember = response.args
     predicates = json.loads(tornado_response.body)
-    unique_predicates = _get_unique_predicates(predicates)
+    predicate_definitions = predicates['results']['bindings']
     predicates_dict = {}
-    for predicate in unique_predicates:
+    for predicate in predicate_definitions:
         predicate_name = predicate['predicate']['value']
         predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, remember)
         predicates_dict[remember.shorten_uri(predicate_name)] = predicate_dict
@@ -172,7 +172,8 @@ def query_cardinalities(class_uri, class_schema, final_callback, remember, callb
 
 
 def _get_unique_predicates(predicates):
-    return {item['predicate']['value']: item for item in predicates['results']['bindings']}.values()
+    return predicates['results']['bindings']
+    #return {item['predicate']['value']: item for item in predicates['results']['bindings']}.values()
 
 
 def _get_predicates_dict_for_a_predicate(predicate):

@@ -1,10 +1,8 @@
 import json
 
-from tornado.ioloop import IOLoop
-from tornado.testing import AsyncHTTPTestCase
 
 from brainiak import __version__
-from brainiak import server, settings
+from brainiak import settings
 from tests import TestHandlerBase
 
 

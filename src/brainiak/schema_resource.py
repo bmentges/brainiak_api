@@ -124,10 +124,11 @@ def _extract_cardinalities(bindings):
         property_ = binding["predicate"]["value"]
         range_ = binding["range"]["value"]
 
-        if (not property_ in cardinalities or
-                not range_ in cardinalities[property_]) and \
-                not range_.startswith("nodeID://"):
-            cardinalities[property_] = {range_: {}}
+        if not property_ in cardinalities:
+            cardinalities[property_] = {}
+
+        if not range_ in cardinalities[property_] and not range_.startswith("nodeID://"):
+            cardinalities[property_][range_] = {}
 
         current_property = cardinalities[property_]
 

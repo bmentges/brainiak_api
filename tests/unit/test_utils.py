@@ -1,6 +1,7 @@
 import unittest
-from mock import patch
 
+from mock import patch
+from tornado.httpclient import AsyncHTTPClient
 from tornado.curl_httpclient import CurlAsyncHTTPClient
 
 from brainiak import utils
@@ -9,9 +10,9 @@ from brainiak import utils
 class UtilsTestCase(unittest.TestCase):
 
     def test_async_client_is_curl_async_http_client(self):
-        expected = CurlAsyncHTTPClient()
+        #AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
         result = utils.get_tornado_async_client()
-        self.assertEquals(type(expected), type(result))
+        self.assertEquals(CurlAsyncHTTPClient, type(result))
 
     @patch('tornado.ioloop.IOLoop', am_i_a_mock=True)
     def test_async_client_with_ioloop(self, io_loop):

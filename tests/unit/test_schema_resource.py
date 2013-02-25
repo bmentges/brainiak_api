@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import unittest
 from tornado import gen
 
 from tornado.testing import AsyncTestCase
@@ -64,8 +65,41 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         self.stop()
 
 
-    # def test_extract_cardinalities(self):
-    #     cardinalities_from_virtuoso = {u'head': {u'link': [], u'vars': [u'predicate', u'min', u'max', u'range', u'enumerated_value', u'enumerated_value_label']}, u'results': {u'distinct': False, u'bindings': [{u'max': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'type': u'typed-literal', u'value': u'1'}, u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/place/partOfState'}, u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/place/State'}, u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'type': u'typed-literal', u'value': u'0'}}, {u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/upper/name'}, u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'}, u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'type': u'typed-literal', u'value': u'1'}}], u'ordered': True}}
-    #     extracted = _extract_cardinalities(cardinalities_from_virtuoso)
-    #     expected = None
-    #     self.assertEquals(extracted, expected)
+# class AuxiliaryFunctionsTestCase(unittest.TestCase):
+#
+#     def test_extract_cardinalities(self):
+#         cardinalities_from_virtuoso = [
+#             {
+#                 u'max': {
+#                     u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+#                     u'type': u'typed-literal',
+#                     u'value': u'1'
+#                 },
+#                 u'predicate': {
+#                     u'type': u'uri',
+#                     u'value': u'http://semantica.globo.com/place/partOfState'
+#                 },
+#                 u'range': {
+#                     u'type': u'uri',
+#                     u'value': u'http://semantica.globo.com/place/State'
+#                 },
+#                 u'min': {
+#                     u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+#                     u'type': u'typed-literal',
+#                     u'value': u'0'
+#                 }
+#             },
+#             {
+#                 u'predicate': {
+#                     u'type': u'uri',
+#                     u'value': u'http://semantica.globo.com/upper/name'},
+#                 u'range': {
+#                     u'type': u'uri',
+#                     u'value': u'http://www.w3.org/2001/XMLSchema#string'},
+#                 u'min': {
+#                     u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+#                     u'type': u'typed-literal',
+#                     u'value': u'1'}}]
+#         extracted = _extract_cardinalities(cardinalities_from_virtuoso)
+#         expected = None
+#         self.assertEquals(extracted, expected)

@@ -70,5 +70,6 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         virtuoso_connection.query(self.is_unauthorized, SIMPLE_COUNT_CLASSES_QUERY)
         self.wait()
 
-    def test_authenticated_access_to_not_authenticated_endpoint(self):
-        self.fail("not implemented")
+    # TODO
+    #def test_authenticated_access_to_not_authenticated_endpoint(self):
+    #    self.fail("not implemented")

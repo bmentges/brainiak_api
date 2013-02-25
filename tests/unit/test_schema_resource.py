@@ -116,7 +116,5 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         ]
         extracted = _extract_cardinalities(binding)
         expected = {u'http://test/person/gender': {
-                    'options': [{u'http://test/data/Gender/Male': u'Masculino'},
-                                {u'http://test/data/Gender/Female': u'Feminino'}
-                                ]}}
+                    'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female']}}
         self.assertEquals(extracted, expected)

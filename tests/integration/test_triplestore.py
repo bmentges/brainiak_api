@@ -1,6 +1,7 @@
-from tests import TornadoAsyncTestCase
-from brainiak import triplestore
 from mock import patch
+
+from brainiak import triplestore
+from tests import TornadoAsyncTestCase
 
 
 SIMPLE_COUNT_CLASSES_QUERY = "SELECT COUNT(*) WHERE {?s a owl:Class}"

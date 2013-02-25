@@ -3,7 +3,7 @@ from tornado import gen
 from brainiak.settings import URI_PREFIX
 from brainiak.triplestore import query_sparql
 
-#
+
 # @gen.engine
 # def get_instance(context_name, schema_name, callback):
 #     QUERY_TEMPLATE = """SELECT * { ?s a  <%(prefix)s/%(context_name)s/%(schema_name)s> }

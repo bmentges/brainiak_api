@@ -46,6 +46,7 @@ def get_schema(context_name, schema_name, callback):
 
     response = yield gen.Task(get_predicates_and_cardinalities, class_uri, class_schema, remember)
     class_schema, predicates_and_cardinalities = response.args
+
     response_dict = assemble_schema_dict(short_uri,
                                          get_one_value(class_schema, "title"),
                                          predicates_and_cardinalities,
@@ -71,7 +72,9 @@ def query_class_schema(class_uri, remember, callback):
 def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback):
     response = yield gen.Task(query_cardinalities, class_uri, class_schema, callback, remember)
     tornado_response, class_schema, callback, remember = response.args
-    cardinalities = _extract_cardinalities(json.loads(tornado_response.body))
+
+    query_result = json.loads(tornado_response.body)
+    cardinalities = _extract_cardinalities(query_result['results']['bindings'])
 
     response = yield gen.Task(query_predicates, class_uri, remember)
     tornado_response, remember = response.args
@@ -115,9 +118,9 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
     callback(class_schema, predicates_dict)
 
 
-def _extract_cardinalities(cardinalities_from_virtuoso):
+def _extract_cardinalities(bindings):
     cardinalities = {}
-    for binding in cardinalities_from_virtuoso['results']['bindings']:
+    for binding in bindings:
         property_ = binding["predicate"]["value"]
         range_ = binding["range"]["value"]
 
@@ -126,15 +129,17 @@ def _extract_cardinalities(cardinalities_from_virtuoso):
                 not range_.startswith("nodeID://"):
             cardinalities[property_] = {range_: {}}
 
+        current_property = cardinalities[property_]
+
         if "min" in binding:
-            cardinalities[property_][range_].update({"minItems": binding["min"]["value"]})
+            current_property[range_].update({"minItems": binding["min"]["value"]})
         elif "max" in binding:
-            cardinalities[property_][range_].update({"maxItems": binding["max"]["value"]})
+            current_property[range_].update({"maxItems": binding["max"]["value"]})
         elif "enumerated_value" in binding:
-            new_options = cardinalities[property_].get("options", [])
+            new_options = current_property.get("options", [])
             new_options_entry = {binding["enumerated_value"]["value"]: binding.get("enumerated_value_label", "").get("value", "")}
             new_options.append(new_options_entry)
-            cardinalities[property_].update({"options": new_options})
+            current_property.update({"options": new_options})
 
     return cardinalities
 
@@ -223,94 +228,3 @@ def _query_predicate_without_lang(class_uri, remember, callback):
     }""" % {'class_uri': class_uri}
     # self.logger.info(QUERY_TEMPLATE)
     query_sparql(callback, QUERY_TEMPLATE, remember)
-
-"""
-    "links":[
-        {
-            "rel": "person:birthPlace",
-            "title": "Local de Nascimento",
-            "maxItems": 1,
-            "type": "string",
-            "format": "uri",
-            "href": "place:Place",
-            "rdfs:comment": "Local de nascimento de uma pessoa. Pode ser país, estado, cidade, etc."
-        },
-        {
-            "rel": "person:cityOfBirth",
-            "href": "substituir por URL da api de dados onde obter vocabulario para campo"
-        },
-        {
-            "rel": "person:parent",
-            "href": "substituir por URL da api de dados onde obter vocabulario para campo"
-        },
-        {
-            "rel": "person:birthPlace",
-            "href": "substituir por URL da api de dados onde obter vocabulario para campo"
-        }
-    ],
-    "properties": {
-        "person:cityOfBirth": {
-            "title": "Naturalidade",
-            "maxItems": 1,
-            "type": "string",
-            "format": "uri",
-            "range": ["place:City"]
-        },
-
-        "person:parent": {
-            "title": "Filiação",
-            "type": "array",
-            "items": {
-                "type": "string",
-                "format": "uri",
-                "range": ["person:Person"]
-            }
-        },
-
-        "person:birthPlace": {
-            "title": "Local de Nascimento",
-            "maxItems": 1,
-            "type": "string",
-            "format": "uri",
-            "range": ["place:Place"],
-            "rdfs:comment": "Local de nascimento de uma pessoa. Pode ser país, estado, cidade, etc."
-        },
-
-        "person:gender": {
-            "title": "Sexo",
-            "type": "string",
-            "format": "uri",
-            "enum": [ "gender:Male", "gender:Female:", "gender:Transgender" ],
-            "minItems": 1,
-            "maxItems": 1,
-            "range": ["person:Gender"]
-        },
-
-        "upper:birthDate": {
-            "title": "Data de Nascimento",
-            "type": "string",
-            "format": "date-time"
-        },
-        "upper:name": {
-            "title": "Nome",
-            "type": "string",
-            "minItems": 1,
-            "rdfs:comment": "Nomes populares de uma instância. Exemplo: nomes pelo quais uma pessoa é conhecida (e.g. Ronaldinho, Zico, Lula). Não confundir com nome completo, uma outra propriedade com valor único e formal."
-        },
-        "person:fullName": {
-            "title": "Nome Completo",
-            "type": "string",
-            "maxItems": 1
-        },
-        "person:occupation": {
-            "title": "Ocupação",
-            "type": "string"
-        },
-        "person:mainPhoto": {
-            "title": "Foto",
-            "type": "string",
-            "format": "uri"
-        }
-    }
-}
-"""

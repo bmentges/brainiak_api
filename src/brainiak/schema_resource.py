@@ -108,9 +108,9 @@ def build_predicate_dict(name, predicate, cardinalities, context):
     if (name in cardinalities) and (range_class_uri in cardinalities[name]):
         predicate_restriction = cardinalities[name]
         predicate_dict.update(predicate_restriction[range_class_uri])
-        if "options" in predicate_restriction:
+        if "enum" in predicate_restriction:
             # FIXME: simplify value returned from cardinalities to avoid ugly code below
-            predicate_dict["enum"] = [context.shorten_uri(d.keys()[0]) for d in predicate_restriction["options"]]
+            predicate_dict["enum"] = predicate_restriction["enum"]
 
     simplified_predicate = {attribute: predicate[attribute]['value'] for attribute in predicate}
     add_items = items_from_type(simplified_predicate["type"])
@@ -142,10 +142,9 @@ def _extract_cardinalities(bindings):
         elif "max" in binding:
             current_property[range_].update({"maxItems": binding["max"]["value"]})
         elif "enumerated_value" in binding:
-            new_options = current_property.get("options", [])
-            new_options_entry = {binding["enumerated_value"]["value"]: binding.get("enumerated_value_label", "").get("value", "")}
-            new_options.append(new_options_entry)
-            current_property.update({"options": new_options})
+            new_options = current_property.get("enum", [])
+            new_options.append(binding["enumerated_value"]["value"])
+            current_property["enum"] = new_options
 
     return cardinalities
 

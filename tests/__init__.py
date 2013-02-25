@@ -42,3 +42,7 @@ class TestHandlerBase(AsyncHTTPTestCase):
 
     def get_new_ioloop(self):
         return IOLoop.instance()
+
+    # Disabling timeout for debugging purposes
+    def wait(self, condition=None, timeout=None):
+        return super(TestHandlerBase, self).wait(condition, timeout)

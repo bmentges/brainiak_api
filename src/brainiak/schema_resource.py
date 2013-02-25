@@ -9,13 +9,13 @@ from brainiak import settings
 from brainiak.type_mapper import items_from_type, OBJECT_PROPERTY, DATATYPE_PROPERTY, items_from_range
 
 
-def assemble_schema_dict(short_uri, title, predicates, remember, **kw):
+def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     effective_context = {"@language": "pt"}
-    effective_context.update(remember.context)
+    effective_context.update(context.context)
 
     links = [{"rel": "{0}:{1}".format(ctx, item),
               "href": "/{0}/collection/{1}".format(ctx, item)}
-             for ctx, item in remember.object_properties]
+             for ctx, item in context.object_properties]
     schema = {
         "type": "object",
         "@id": short_uri,
@@ -55,7 +55,7 @@ def get_schema(context_name, schema_name, callback):
     callback(response_dict)
 
 
-def query_class_schema(class_uri, remember, callback):
+def query_class_schema(class_uri, context, callback):
     QUERY_TEMPLATE = """
         SELECT DISTINCT ?title ?comment
         WHERE {
@@ -65,41 +65,41 @@ def query_class_schema(class_uri, remember, callback):
         }
         """ % {"class_uri": class_uri}
     # self.logger.info("%s" % QUERY_TEMPLATE)
-    query_sparql(callback, QUERY_TEMPLATE, remember)
+    query_sparql(callback, QUERY_TEMPLATE, context)
 
 
 @gen.engine
-def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback):
-    response = yield gen.Task(query_cardinalities, class_uri, class_schema, callback, remember)
-    tornado_response, class_schema, callback, remember = response.args
+def get_predicates_and_cardinalities(class_uri, class_schema, context, callback):
+    response = yield gen.Task(query_cardinalities, class_uri, class_schema, callback, context)
+    tornado_response, class_schema, callback, context = response.args
 
     query_result = json.loads(tornado_response.body)
     cardinalities = _extract_cardinalities(query_result['results']['bindings'])
 
-    response = yield gen.Task(query_predicates, class_uri, remember)
-    tornado_response, remember = response.args
+    response = yield gen.Task(query_predicates, class_uri, context)
+    tornado_response, context = response.args
     predicates = json.loads(tornado_response.body)
     predicate_definitions = predicates['results']['bindings']
     predicates_dict = {}
     for predicate in predicate_definitions:
         predicate_name = predicate['predicate']['value']
-        predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, remember)
-        predicates_dict[remember.shorten_uri(predicate_name)] = predicate_dict
+        predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, context)
+        predicates_dict[context.shorten_uri(predicate_name)] = predicate_dict
 
     callback(class_schema, predicates_dict)
 
 
-def build_predicate_dict(name, predicate, cardinalities, remember):
+def build_predicate_dict(name, predicate, cardinalities, context):
     predicate_dict = {}
     predicate_type = predicate['type']['value']
     range_class_uri = predicate['range']['value']
-    range_key = remember.shorten_uri(range_class_uri)
+    range_key = context.shorten_uri(range_class_uri)
 
     if predicate_type == OBJECT_PROPERTY:
         predicate_dict["range"] = {'@id': range_key,
-                                   'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
+                                   'graph': context.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
                                    'title': predicate.get('label_do_range', {}).get('value', "")}
-        remember.add_object_property(range_key)
+        context.add_object_property(range_key)
 
     elif predicate_type == DATATYPE_PROPERTY:
         # Have a datatype property
@@ -110,14 +110,14 @@ def build_predicate_dict(name, predicate, cardinalities, remember):
         predicate_dict.update(predicate_restriction[range_class_uri])
         if "options" in predicate_restriction:
             # FIXME: simplify value returned from cardinalities to avoid ugly code below
-            predicate_dict["enum"] = [remember.shorten_uri(d.keys()[0]) for d in predicate_restriction["options"]]
+            predicate_dict["enum"] = [context.shorten_uri(d.keys()[0]) for d in predicate_restriction["options"]]
 
     for item in _get_predicates_dict_for_a_predicate(predicate):
         add_items = items_from_type(item["type"])
         if add_items:
             predicate_dict.update(add_items)
         predicate_dict["title"] = item["title"]
-        predicate_dict["graph"] = remember.prefix_to_slug(item["predicate_graph"])
+        predicate_dict["graph"] = context.prefix_to_slug(item["predicate_graph"])
         if "predicate_comment" in item:  # Para Video que não tem isso
             predicate_dict["comment"] = item["predicate_comment"]
     return predicate_dict
@@ -150,7 +150,7 @@ def _extract_cardinalities(bindings):
     return cardinalities
 
 
-def query_cardinalities(class_uri, class_schema, final_callback, remember, callback):
+def query_cardinalities(class_uri, class_schema, final_callback, context, callback):
     QUERY_TEMPLATE = u"""
     SELECT DISTINCT ?predicate ?min ?max ?range ?enumerated_value ?enumerated_value_label
     WHERE {
@@ -170,7 +170,7 @@ def query_cardinalities(class_uri, class_schema, final_callback, remember, callb
     }
     """ % {"class_uri": class_uri}
     # self.logger.info("%s" % str(QUERY))
-    query_sparql(callback, QUERY_TEMPLATE, class_schema, final_callback, remember)
+    query_sparql(callback, QUERY_TEMPLATE, class_schema, final_callback, context)
 
 
 def _get_unique_predicates(predicates):
@@ -189,17 +189,17 @@ def _get_predicates_dict_for_a_predicate(predicate):
 
 
 @gen.engine
-def query_predicates(class_uri, remember, callback):
-    resp = yield gen.Task(_query_predicate_with_lang, class_uri, remember)
-    tornado_response, remember = resp.args
+def query_predicates(class_uri, context, callback):
+    resp = yield gen.Task(_query_predicate_with_lang, class_uri, context)
+    tornado_response, context = resp.args
     response = json.loads(tornado_response.body)
     if not response['results']['bindings']:
-        _query_predicate_without_lang(class_uri, remember, callback)
+        _query_predicate_without_lang(class_uri, context, callback)
     else:
-        callback(tornado_response, remember)
+        callback(tornado_response, context)
 
 
-def _query_predicate_with_lang(class_uri, remember, callback):
+def _query_predicate_with_lang(class_uri, context, callback):
     QUERY_TEMPLATE = """
     SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
     WHERE {
@@ -216,10 +216,10 @@ def _query_predicate_with_lang(class_uri, remember, callback):
         OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
     }""" % {'class_uri': class_uri, 'lang': 'PT'}
     # self.logger.info(QUERY_TEMPLATE)
-    query_sparql(callback, QUERY_TEMPLATE, remember)
+    query_sparql(callback, QUERY_TEMPLATE, context)
 
 
-def _query_predicate_without_lang(class_uri, remember, callback):
+def _query_predicate_without_lang(class_uri, context, callback):
     QUERY_TEMPLATE = """
     SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
     WHERE {
@@ -234,4 +234,4 @@ def _query_predicate_without_lang(class_uri, remember, callback):
         OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
     }""" % {'class_uri': class_uri}
     # self.logger.info(QUERY_TEMPLATE)
-    query_sparql(callback, QUERY_TEMPLATE, remember)
+    query_sparql(callback, QUERY_TEMPLATE, context)

@@ -83,39 +83,42 @@ def get_predicates_and_cardinalities(class_uri, class_schema, remember, callback
     predicates_dict = {}
     for predicate in unique_predicates:
         predicate_name = predicate['predicate']['value']
-        predicate_dict = {}
-
-        predicate_type = predicate['type']['value']
-        range_class_uri = predicate['range']['value']
-        range_key = remember.shorten_uri(range_class_uri)
-        if predicate_type == OBJECT_PROPERTY:
-            predicate_dict["range"] = {'@id': range_key,
-                                       'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
-                                       'title': predicate.get('label_do_range', {}).get('value', "")}
-            remember.add_object_property(range_key)
-        elif predicate_type == DATATYPE_PROPERTY:
-            # Have a datatype property
-            predicate_dict.update(items_from_range(range_class_uri))
-
-        if (predicate_name in cardinalities) and (range_class_uri in cardinalities[predicate_name]):
-            predicate_restriction = cardinalities[predicate_name]
-            predicate_dict.update(predicate_restriction[range_class_uri])
-            if "options" in predicate_restriction:
-                # FIXME: simplify value returned from cardinalities to avoid ugly code below
-                predicate_dict["enum"] = [remember.shorten_uri(d.keys()[0]) for d in predicate_restriction["options"]]
-
-        for item in _get_predicates_dict_for_a_predicate(predicate):
-            add_items = items_from_type(item["type"])
-            if add_items:
-                predicate_dict.update(add_items)
-            predicate_dict["title"] = item["title"]
-            predicate_dict["graph"] = remember.prefix_to_slug(item["predicate_graph"])
-            if "predicate_comment" in item:  # Para Video que não tem isso
-                predicate_dict["comment"] = item["predicate_comment"]
-
+        predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, remember)
         predicates_dict[remember.shorten_uri(predicate_name)] = predicate_dict
 
     callback(class_schema, predicates_dict)
+
+
+def build_predicate_dict(name, predicate, cardinalities, remember):
+    predicate_dict = {}
+    predicate_type = predicate['type']['value']
+    range_class_uri = predicate['range']['value']
+    range_key = remember.shorten_uri(range_class_uri)
+    if predicate_type == OBJECT_PROPERTY:
+        predicate_dict["range"] = {'@id': range_key,
+                                   'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
+                                   'title': predicate.get('label_do_range', {}).get('value', "")}
+        remember.add_object_property(range_key)
+    elif predicate_type == DATATYPE_PROPERTY:
+        # Have a datatype property
+        predicate_dict.update(items_from_range(range_class_uri))
+
+    if (name in cardinalities) and (range_class_uri in cardinalities[name]):
+        predicate_restriction = cardinalities[name]
+        predicate_dict.update(predicate_restriction[range_class_uri])
+        if "options" in predicate_restriction:
+            # FIXME: simplify value returned from cardinalities to avoid ugly code below
+            predicate_dict["enum"] = [remember.shorten_uri(d.keys()[0]) for d in predicate_restriction["options"]]
+
+    for item in _get_predicates_dict_for_a_predicate(predicate):
+        add_items = items_from_type(item["type"])
+        if add_items:
+            predicate_dict.update(add_items)
+        predicate_dict["title"] = item["title"]
+        predicate_dict["graph"] = remember.prefix_to_slug(item["predicate_graph"])
+        if "predicate_comment" in item:  # Para Video que não tem isso
+            predicate_dict["comment"] = item["predicate_comment"]
+    return predicate_dict
 
 
 def _extract_cardinalities(bindings):

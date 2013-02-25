@@ -3,6 +3,7 @@ from tornado.testing import AsyncTestCase, AsyncHTTPTestCase
 
 from brainiak import server
 
+
 class TornadoAsyncTestCase(AsyncTestCase):
 
     def setUp(self):
@@ -34,6 +35,6 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
 
 
 class TestHandlerBase(AsyncHTTPTestCase):
- 
+
     def get_app(self):
         return server.application

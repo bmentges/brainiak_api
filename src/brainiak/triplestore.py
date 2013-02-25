@@ -92,7 +92,7 @@ class VirtuosoException(Exception):
 
 
 def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT_PASSWORD,
-    mode=settings.SPARQL_ENDPOINT_AUTH_MODE, realm=settings.SPARQL_ENDPOINT_REALM):
+           mode=settings.SPARQL_ENDPOINT_AUTH_MODE, realm=settings.SPARQL_ENDPOINT_REALM):
 
     query = "SELECT COUNT(*) WHERE {?s a owl:Class}"
     endpoint = SPARQLWrapper.SPARQLWrapper(settings.SPARQL_ENDPOINT)
@@ -105,7 +105,6 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
     except Exception, error:
         msg = "didn't access without auth because: %s" % error.msg
 
-
     endpoint.setCredentials(user, password, mode=mode, realm=realm)
 
     try:
@@ -115,4 +114,3 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
         msg += "\ndidn't access with auth (%s : %s) because: %s" % (user, password, error.msg)
 
     return msg
-

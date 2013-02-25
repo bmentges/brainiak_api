@@ -112,14 +112,14 @@ def build_predicate_dict(name, predicate, cardinalities, context):
             # FIXME: simplify value returned from cardinalities to avoid ugly code below
             predicate_dict["enum"] = [context.shorten_uri(d.keys()[0]) for d in predicate_restriction["options"]]
 
-    for item in _get_predicates_dict_for_a_predicate(predicate):
-        add_items = items_from_type(item["type"])
-        if add_items:
-            predicate_dict.update(add_items)
-        predicate_dict["title"] = item["title"]
-        predicate_dict["graph"] = context.prefix_to_slug(item["predicate_graph"])
-        if "predicate_comment" in item:  # Para Video que não tem isso
-            predicate_dict["comment"] = item["predicate_comment"]
+    simplified_predicate = {attribute: predicate[attribute]['value'] for attribute in predicate}
+    add_items = items_from_type(simplified_predicate["type"])
+    if add_items:
+        predicate_dict.update(add_items)
+    predicate_dict["title"] = simplified_predicate["title"]
+    predicate_dict["graph"] = context.prefix_to_slug(simplified_predicate["predicate_graph"])
+    if "predicate_comment" in simplified_predicate:  # Para Video que não tem isso
+        predicate_dict["comment"] = simplified_predicate["predicate_comment"]
     return predicate_dict
 
 
@@ -171,16 +171,6 @@ def query_cardinalities(class_uri, class_schema, final_callback, context, callba
     """ % {"class_uri": class_uri}
     # self.logger.info("%s" % str(QUERY))
     query_sparql(callback, QUERY_TEMPLATE, class_schema, final_callback, context)
-
-
-def _get_predicates_dict_for_a_predicate(predicate):
-    items = []
-    parsed_item = {}
-    for attribute in predicate:
-        if attribute not in parsed_item:
-            parsed_item[attribute] = predicate[attribute]['value']
-    items.append(parsed_item)
-    return items
 
 
 @gen.engine

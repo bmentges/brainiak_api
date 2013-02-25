@@ -1,8 +1,36 @@
+import json
+
+from tornado.ioloop import IOLoop
 from tornado.testing import AsyncHTTPTestCase
 
 from brainiak import __version__
 from brainiak import server, settings
 from tests import TestHandlerBase
+
+
+SAMPLE_JSON_RESOURCE = {
+    u'schema': {
+        u'$schema': u'http://json-schema.org/draft-03/schema#',
+        u'@context': {u'@language': u'pt'},
+        u'@id': u'http://semantica.globo.com/animals/Ornithorhynchus',
+        u'links': [],
+        u'properties': {},
+        u'title': False,
+        u'type': u'object'
+    }
+}
+
+
+class TestSchemaResource(TestHandlerBase):
+
+    maxDiff = None
+
+    def test_schema_handler(self):
+        self.http_client.fetch(self.get_url('/animals/schemas/Ornithorhynchus'), self.stop)
+        response = self.wait()
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received, SAMPLE_JSON_RESOURCE)
 
 
 class TestHealthcheckResource(TestHandlerBase):

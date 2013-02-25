@@ -72,7 +72,7 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         pass  # test_query_ok (above)
 
     # Authentication UNHAPPY paths
-    @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.URL)
+    @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.AUTHENTICATED_URL)
     def test_not_authenticated_access_to_authenticated_endpoint(self, settings):
         del settings.SPARQL_ENDPOINT_AUTH_MODE
         del settings.SPARQL_ENDPOINT_USER

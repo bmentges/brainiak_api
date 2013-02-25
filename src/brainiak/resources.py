@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from tornado import gen
-from tornado.web import asynchronous, RequestHandler
+from tornado.web import asynchronous, HTTPError, RequestHandler
 
-from brainiak import triplestore
+from brainiak import settings, triplestore
 from brainiak.__init__ import __version__
 from brainiak.schema_resource import get_schema
 from brainiak.instance_resource import get_instance
-
 
 
 class HealthcheckResource(RequestHandler):
@@ -25,6 +24,8 @@ class VersionResource(RequestHandler):
 class VirtuosoStatusResource(RequestHandler):
 
     def get(self):
+        if settings.ENVIRONMENT == 'prod':
+            raise HTTPError(410)
         self.write(triplestore.status())
 
 

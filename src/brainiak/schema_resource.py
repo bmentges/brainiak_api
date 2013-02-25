@@ -9,6 +9,27 @@ from brainiak import settings
 from brainiak.type_mapper import items_from_type, OBJECT_PROPERTY, DATATYPE_PROPERTY, items_from_range
 
 
+@gen.engine
+def get_schema(context_name, schema_name, callback):
+    class_uri = "/".join((settings.URI_PREFIX, context_name, schema_name))
+    context = MemorizeContext()
+    short_uri = context.shorten_uri(class_uri)
+
+    response = yield gen.Task(query_class_schema, class_uri, context)
+    tornado_response = response.args[0]
+    class_schema = json.loads(tornado_response.body)
+
+    response = yield gen.Task(get_predicates_and_cardinalities, class_uri, class_schema, context)
+    class_schema, predicates_and_cardinalities = response.args
+
+    response_dict = assemble_schema_dict(short_uri,
+                                         get_one_value(class_schema, "title"),
+                                         predicates_and_cardinalities,
+                                         context,
+                                         comment=get_one_value(class_schema, "comment"))
+    callback(response_dict)
+
+
 def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     effective_context = {"@language": "pt"}
     effective_context.update(context.context)
@@ -32,27 +53,6 @@ def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     response = {"schema": schema}
 
     return response
-
-
-@gen.engine
-def get_schema(context_name, schema_name, callback):
-    class_uri = "/".join((settings.URI_PREFIX, context_name, schema_name))
-    context = MemorizeContext()
-    short_uri = context.shorten_uri(class_uri)
-
-    response = yield gen.Task(query_class_schema, class_uri, context)
-    tornado_response = response.args[0]
-    class_schema = json.loads(tornado_response.body)
-
-    response = yield gen.Task(get_predicates_and_cardinalities, class_uri, class_schema, context)
-    class_schema, predicates_and_cardinalities = response.args
-
-    response_dict = assemble_schema_dict(short_uri,
-                                         get_one_value(class_schema, "title"),
-                                         predicates_and_cardinalities,
-                                         context,
-                                         comment=get_one_value(class_schema, "comment"))
-    callback(response_dict)
 
 
 def query_class_schema(class_uri, context, callback):

@@ -7,6 +7,17 @@ from tests import TornadoAsyncTestCase
 SIMPLE_COUNT_CLASSES_QUERY = "SELECT COUNT(*) WHERE {?s a owl:Class}"
 
 
+# TODO Put that in a configs file
+class EndpointConfig:
+
+    URL = "http://localhost:8890/sparql"
+    AUTHENTICATED_URL = "http://localhost:8890/sparql-auth"
+    USER = "api-semantica"
+    PASSWORD = "api-semantica"
+    DIGEST = "digest"
+    BASIC = "basic"
+
+
 class TriplestoreTestCase(TornadoAsyncTestCase):
 
     def is_response_ok(self, response, *args, **kw):
@@ -22,7 +33,7 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         self.stop()
 
     @patch("brainiak.triplestore.settings",
-           SPARQL_ENDPOINT="http://localhost:8890/sparql",
+           SPARQL_ENDPOINT=EndpointConfig.URL,
            )
     def test_query_ok(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
@@ -30,7 +41,7 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         self.wait()
 
     @patch("brainiak.triplestore.settings",
-           SPARQL_ENDPOINT="http://localhost:8890/sparql",
+           SPARQL_ENDPOINT=EndpointConfig.URL,
            )
     def test_query_ok_with_get_method(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
@@ -38,7 +49,7 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         self.wait()
 
     @patch("brainiak.triplestore.settings",
-           SPARQL_ENDPOINT="http://localhost:8890/sparql",
+           SPARQL_ENDPOINT=EndpointConfig.URL,
            )
     def test_malformed_query(self, settings):
         MALFORMED_QUERY = "SELECT A MALFORMED QUERY {?s ?p ?o}"
@@ -48,10 +59,10 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
 
     # Authentication HAPPY paths
     @patch("brainiak.triplestore.settings",
-           SPARQL_ENDPOINT="http://localhost:8890/sparql-auth",
-           SPARQL_ENDPOINT_AUTH_MODE="digest",
-           SPARQL_ENDPOINT_USER="api-semantica",
-           SPARQL_ENDPOINT_PASSWORD="api-semantica")
+           SPARQL_ENDPOINT=EndpointConfig.AUTHENTICATED_URL,
+           SPARQL_ENDPOINT_AUTH_MODE=EndpointConfig.DIGEST,
+           SPARQL_ENDPOINT_USER=EndpointConfig.USER,
+           SPARQL_ENDPOINT_PASSWORD=EndpointConfig.PASSWORD)
     def test_authenticated_access_to_authenticated_endpoint(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
         virtuoso_connection.query(self.is_response_ok, SIMPLE_COUNT_CLASSES_QUERY)
@@ -61,7 +72,7 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         pass  # test_query_ok (above)
 
     # Authentication UNHAPPY paths
-    @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT="http://localhost:8890/sparql-auth")
+    @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.AUTHENTICATED_URL)
     def test_not_authenticated_access_to_authenticated_endpoint(self, settings):
         del settings.SPARQL_ENDPOINT_AUTH_MODE
         del settings.SPARQL_ENDPOINT_USER
@@ -70,6 +81,12 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         virtuoso_connection.query(self.is_unauthorized, SIMPLE_COUNT_CLASSES_QUERY)
         self.wait()
 
-    # TODO
-    #def test_authenticated_access_to_not_authenticated_endpoint(self):
-    #    self.fail("not implemented")
+    @patch("brainiak.triplestore.settings",
+           SPARQL_ENDPOINT=EndpointConfig.URL,
+           SPARQL_ENDPOINT_AUTH_MODE=EndpointConfig.DIGEST,
+           SPARQL_ENDPOINT_USER=EndpointConfig.USER,
+           SPARQL_ENDPOINT_PASSWORD=EndpointConfig.PASSWORD)
+    def test_authenticated_access_to_not_authenticated_endpoint(self, settings):
+        virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
+        virtuoso_connection.query(self.is_response_ok, SIMPLE_COUNT_CLASSES_QUERY)
+        self.wait()

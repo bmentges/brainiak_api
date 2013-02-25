@@ -1,10 +1,10 @@
 import urllib
 
+import SPARQLWrapper
 from tornado import gen
 from tornado.ioloop import IOLoop
 from tornado.httpclient import HTTPRequest
 from tornado.httputil import url_concat
-
 
 from brainiak import settings, utils
 
@@ -91,33 +91,28 @@ class VirtuosoException(Exception):
     pass
 
 
-def status():
-    from SPARQLWrapper import SPARQLWrapper
-
-    msg = ""
+def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT_PASSWORD,
+    mode=settings.SPARQL_ENDPOINT_AUTH_MODE, realm=settings.SPARQL_ENDPOINT_REALM):
 
     query = "SELECT COUNT(*) WHERE {?s a owl:Class}"
-    endpoint = SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    endpoint = SPARQLWrapper.SPARQLWrapper(settings.SPARQL_ENDPOINT)
     endpoint.addDefaultGraph("http://semantica.globo.com/person")
     endpoint.setQuery(query)
 
     try:
+        response = endpoint.query()
+        msg = "accessed without auth"
+    except Exception, error:
+        msg = "didn't access without auth because: %s" % error.msg
 
-       response = endpoint.query()
-       msg = "accessed without auth"
 
-    except Exception, e:
+    endpoint.setCredentials(user, password, mode=mode, realm=realm)
 
-        try:
-            endpoint.setCredentials(settings.SPARQL_ENDPOINT_USER,
-                                  settings.SPARQL_ENDPOINT_PASSWORD,
-                                  mode=settings.SPARQL_ENDPOINT_AUTH_MODE,
-                                  realm=settings.SPARQL_ENDPOINT_REALM)
-            response = endpoint.query()
-            msg = "accessed with auth [%s : %s]" % (settings.SPARQL_ENDPOINT_USER, settings.SPARQL_ENDPOINT_PASSWORD)
-
-        except Exception, e:
-            msg = "didn't access [%s : %s]\n %s" % (settings.SPARQL_ENDPOINT_USER, settings.SPARQL_ENDPOINT_PASSWORD, e.msg)
+    try:
+        response = endpoint.query()
+        msg += "\naccessed with auth (%s : %s)" % (user, password)
+    except Exception as error:
+        msg += "\ndidn't access with auth (%s : %s) because: %s" % (user, password, error.msg)
 
     return msg
 

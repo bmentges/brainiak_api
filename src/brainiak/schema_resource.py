@@ -173,11 +173,6 @@ def query_cardinalities(class_uri, class_schema, final_callback, context, callba
     query_sparql(callback, QUERY_TEMPLATE, class_schema, final_callback, context)
 
 
-def _get_unique_predicates(predicates):
-    return predicates['results']['bindings']
-    #return {item['predicate']['value']: item for item in predicates['results']['bindings']}.values()
-
-
 def _get_predicates_dict_for_a_predicate(predicate):
     items = []
     parsed_item = {}

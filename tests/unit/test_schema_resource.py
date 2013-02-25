@@ -8,6 +8,7 @@ from tornado.testing import AsyncTestCase
 from tornado.ioloop import IOLoop
 
 from brainiak import schema_resource
+from brainiak.prefixes import MemorizeContext
 from brainiak.schema_resource import _extract_cardinalities
 from tests import TornadoAsyncTestCase
 
@@ -67,13 +68,24 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
 
     def setUp(self):
         super(TornadoAsyncTestCase, self).setUp()
-        # self.original_query_class_schema = schema_resource.query_class_schema
-        # self.original_get_predicates_and_cardinalities = schema_resource.get_predicates_and_cardinalities
+        self.original_query_cardinalities = schema_resource.query_cardinalities
+        self.original_query_predicates = schema_resource.query_predicates
+        self.original_extract_cardinalities = schema_resource._extract_cardinalities
 
     def tearDown(self):
-        # schema_resource.query_class_schema = self.original_query_class_schema
-        # schema_resource.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
+        schema_resource.query_cardinalities = self.original_query_cardinalities
+        schema_resource.query_predicates = self.original_query_predicates
+        schema_resource._extract_cardinalities = self.original_extract_cardinalities
         super(TornadoAsyncTestCase, self).tearDown()
+
+    @gen.engine
+    def test_get_predicates_and_cardinalities(self):
+        context = MemorizeContext()
+        class_uri = "http://test/person/gender"
+        class_schema = None
+        response = yield gen.Task(schema_resource.get_predicates_and_cardinalities,
+                                  class_uri, class_schema, context)
+        self.assertEquals(response, None)
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):

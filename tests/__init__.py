@@ -1,6 +1,7 @@
 from tornado.ioloop import IOLoop
 from tornado.testing import AsyncTestCase, AsyncHTTPTestCase
 
+from brainiak import server
 
 class TornadoAsyncTestCase(AsyncTestCase):
 
@@ -30,3 +31,9 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
     # Disabling timeout for debugging purposes
     def wait(self, condition=None, timeout=None):
         return super(TornadoAsyncHTTPTestCase, self).wait(condition, timeout)
+
+
+class TestHandlerBase(AsyncHTTPTestCase):
+ 
+    def get_app(self):
+        return server.application

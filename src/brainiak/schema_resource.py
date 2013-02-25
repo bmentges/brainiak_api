@@ -37,20 +37,20 @@ def assemble_schema_dict(short_uri, title, predicates, remember, **kw):
 @gen.engine
 def get_schema(context_name, schema_name, callback):
     class_uri = "/".join((settings.URI_PREFIX, context_name, schema_name))
-    remember = MemorizeContext()
-    short_uri = remember.shorten_uri(class_uri)
+    context = MemorizeContext()
+    short_uri = context.shorten_uri(class_uri)
 
-    response = yield gen.Task(query_class_schema, class_uri, remember)
+    response = yield gen.Task(query_class_schema, class_uri, context)
     tornado_response = response.args[0]
     class_schema = json.loads(tornado_response.body)
 
-    response = yield gen.Task(get_predicates_and_cardinalities, class_uri, class_schema, remember)
+    response = yield gen.Task(get_predicates_and_cardinalities, class_uri, class_schema, context)
     class_schema, predicates_and_cardinalities = response.args
 
     response_dict = assemble_schema_dict(short_uri,
                                          get_one_value(class_schema, "title"),
                                          predicates_and_cardinalities,
-                                         remember,
+                                         context,
                                          comment=get_one_value(class_schema, "comment"))
     callback(response_dict)
 
@@ -94,11 +94,13 @@ def build_predicate_dict(name, predicate, cardinalities, remember):
     predicate_type = predicate['type']['value']
     range_class_uri = predicate['range']['value']
     range_key = remember.shorten_uri(range_class_uri)
+
     if predicate_type == OBJECT_PROPERTY:
         predicate_dict["range"] = {'@id': range_key,
                                    'graph': remember.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
                                    'title': predicate.get('label_do_range', {}).get('value', "")}
         remember.add_object_property(range_key)
+
     elif predicate_type == DATATYPE_PROPERTY:
         # Have a datatype property
         predicate_dict.update(items_from_range(range_class_uri))

@@ -7,10 +7,25 @@ OBJECT_PROPERTY = "http://www.w3.org/2002/07/owl#ObjectProperty"
 DATATYPE_PROPERTY = "http://www.w3.org/2002/07/owl#DatatypeProperty"
 
 _MAP_XSD_TO_JSON_TYPE = {
+    "rdf:XMLLiteral": "string",
     "xsd:string": "string",
     "xsd:float": "number",
+    "xsd:double": "number",
     "xsd:integer": "integer",
-    "xsd:XMLLiteral": "any"
+    "xsd:nonPositiveInteger": "integer",
+    "xsd:nonNegativeInteger": "integer",
+    "xsd:negativeInteger": "integer",
+    "xsd:positiveInteger": "integer",
+    "xsd:long": "integer",
+    "xsd:int": "integer",
+    "xsd:short": "integer",
+    "xsd:byte": "integer",
+    "xsd:decimal": "integer",
+    "xsd:unsignedLong": "integer",
+    "xsd:unsignedInt": "integer",
+    "xsd:unsignedShort": "integer",
+    "xsd:unsignedByte": "integer",
+    "xsd:boolean": "boolean"
 }
 
 
@@ -21,7 +36,7 @@ def items_from_type(predicate_type):
 
 def items_from_range(range_uri):
     short_range = shorten_uri(range_uri)
-    if short_range == 'xsd:date':
+    if short_range == 'xsd:date' or short_range == 'xsd:dateTime':
         return {"type": "string", "format": "date"}
     else:
         return {"type": _MAP_XSD_TO_JSON_TYPE.get(short_range, "any")}

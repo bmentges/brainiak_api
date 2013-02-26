@@ -24,7 +24,18 @@ namespace :deploy do
         # coisa que nao queremos
     end
 
-    # :restart redefinido para reinciar o gunicorn da APP_v1 apenas
+    task :docs, :roles => :docs do
+        puts "Gerando documentação"
+        system "tar chzf docs.tar.gz docs"
+        put File.read("docs.tar.gz"), "/tmp/docs.tar.gz", :via => :scp
+        run "cd /tmp && tar xzf docs.tar.gz"
+        run 'cd /tmp/docs && export PATH="/opt/api_semantica/virtualenv/bin:$PATH" && export PYTHONPATH="' + deploy_to + '/current:$PYTHONPATH" && make html'
+        run "mv /tmp/docs/build/html #{docs_html}"
+        run 'cd /tmp && rm -rf docs && rm docs.tar.gz'
+        system "rm docs.tar.gz"
+    end
+
+    # :restart redefinido para reinciar o gunicorn da APP_v2 (brainiak) apenas
     task :restart, :roles => :restart do
         puts "Reiniciando o GUNICORN 2..."
         run "sudo /etc/init.d/api_semantica-gunicorn-be2.brainiak restart 2> /dev/null"

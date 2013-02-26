@@ -81,7 +81,7 @@ def get_predicates_and_cardinalities(class_uri, class_schema, context, callback)
     predicates = json.loads(tornado_response.body)
     predicate_definitions = predicates['results']['bindings']
     predicates_dict = {}
-    for predicate in predicate_definitions: # *
+    for predicate in predicate_definitions:
         predicate_name = predicate['predicate']['value']
         predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, context)
         predicates_dict[context.shorten_uri(predicate_name)] = predicate_dict
@@ -89,7 +89,7 @@ def get_predicates_and_cardinalities(class_uri, class_schema, context, callback)
     callback(class_schema, predicates_dict)
 
 
-def build_predicate_dict(name, predicate, cardinalities, context): # *
+def build_predicate_dict(name, predicate, cardinalities, context):
     predicate_dict = {}
     predicate_type = predicate['type']['value']
     range_class_uri = predicate['range']['value']
@@ -176,7 +176,7 @@ def query_cardinalities(class_uri, class_schema, final_callback, context, callba
 def query_predicates(class_uri, context, callback):
     resp = yield gen.Task(_query_predicate_with_lang, class_uri, context)
     tornado_response, context = resp.args
-    
+
     response = json.loads(tornado_response.body)
     if not response['results']['bindings']:
         _query_predicate_without_lang(class_uri, context, callback)

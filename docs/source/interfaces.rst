@@ -45,11 +45,12 @@ Get a specific schema of a context
 
   GET 'http://localhost:5100/place/City/_schema'
 
-Why _schema? In our data model we have a clear distinction between class schemas (structure of instances) and data (instances),
-and by using a request like GET <context>/<class> we could not have a clear distinction whether we want
+Why _schema? In our data model we have a clear distinction between class schemas
+(structure of instances) and data (instances), and by using a request like
+GET <context>/<class> we could not have a clear distinction whether we want
 the whole collection of instances of this specific class or we want the schema of a class.
 
-Thus, the _schema suffix to distinguish these two use cases.
+Thus, the _schema suffix is used to distinguish these two use cases.
 
 Create schema
 -------------

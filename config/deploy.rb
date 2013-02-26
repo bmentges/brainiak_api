@@ -8,8 +8,11 @@ set :application, "brainiak"
 set :project, "#{application}"
 
 set :deploy_to, "/mnt/projetos/deploy-be/api_semantica/app2"
+set :docs_html, "#{deploy_to}/current/docs"
 
 before "deploy:update", "python:filter"
+before "deploy:restart", "deploy:docs"
+
 
 set :user, "busca"
 set :use_sudo, false
@@ -32,4 +35,3 @@ set :copy_exclude, [
 
 ## Variaveis para o module puppet do capistrano
 set :puppet_host, "puppet.globoi.com:8140" unless exists?(:puppet_host)
-

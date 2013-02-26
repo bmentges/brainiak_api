@@ -141,3 +141,62 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         expected = {u'http://test/person/gender': {
                     'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female']}}
         self.assertEquals(extracted, expected)
+
+
+class AuxiliaryFunctionsTestCase2(unittest.TestCase):
+
+    def setUp(self):
+        self.original_query_predicate_with_lang = schema_resource._query_predicate_with_lang
+        self.original_query_predicate_without_lang = schema_resource._query_predicate_without_lang
+
+    def tearDown(self):
+        schema_resource._query_predicate_with_lang = self.original_query_predicate_with_lang
+        schema_resource._query_predicate_without_lang = self.original_query_predicate_without_lang 
+
+    def test_query_predicates_successful_with_lang(self):
+
+        callback_stack = []
+
+        def first_callback(tornado_response, context):
+            callback_stack.append(1)
+
+        class ResponseWithBindings():
+            body = '{"results": {"bindings": [1]}}'
+
+        class ResponseMock():
+            args = [ResponseWithBindings(), {}]
+
+        schema_resource._query_predicate_with_lang = lambda class_uri, context, callback: callback(ResponseMock())
+
+        schema_resource.query_predicates("class_uri", {}, first_callback)
+        self.assertEquals(callback_stack, [1])
+
+    def test_query_predicates_successful_without_lang(self):
+
+        callback_stack = []
+
+
+        def first_callback(tornado_response, context=None):
+            callback_stack.append(1)
+
+
+        class ResponseWithoutBindings():
+            body = '{"results": {"bindings": []}}'
+
+
+        class ResponseToQueryWithLang():
+            args = [ResponseWithoutBindings(), {}]
+
+
+        class ResponseToQueryWithoutLang():
+            def __init__(self):
+                callback_stack.append(2)
+                self.args = [ResponseWithoutBindings(), {}]
+
+
+        schema_resource._query_predicate_with_lang = lambda class_uri, context, callback: callback(ResponseToQueryWithLang())
+        schema_resource._query_predicate_without_lang = lambda class_uri, context, callback: callback(ResponseToQueryWithoutLang())
+
+
+        schema_resource.query_predicates("class_uri", {}, first_callback)
+        self.assertEquals(callback_stack, [2, 1])

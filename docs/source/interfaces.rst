@@ -9,8 +9,7 @@ confusing.
 We follow the principles of `REST <http://en.wikipedia.org/wiki/Representational_state_transfer>`_
 and `HATEOAS <http://en.wikipedia.org/wiki/HATEOAS>`_.
 
-In all examples from now on we use a context named *place*,
-a schema named *City* and a correspondent collection named *cities* containing instances of cities.
+In all examples from now on we use a context named *place* and a schema named *City*.
 All these examples are based on the DBPedia 3.7 English Ontology.
 
 Therefore, the place context in the example represents all subclasses of DBPedia `Place <http://dbpedia.org/ontology/Place>`_,
@@ -37,14 +36,14 @@ List all schemas of a context
 
 .. code-block:: http
 
-  GET 'http://localhost:5100/place/schemas'
+  GET 'http://localhost:5100/place'
 
 Get a specific schema of a context
 ----------------------------------
 
 .. code-block:: http
 
-  GET 'http://localhost:5100/place/schemas/city'
+  GET 'http://localhost:5100/place/City/_schema'
 
 
 Create schema
@@ -52,7 +51,7 @@ Create schema
 
 .. code-block:: http
 
-  PUT 'http://localhost:5100/place/schemas/city' -H 'Content-type: text/turtle'
+  PUT 'http://localhost:5100/place/City/_schema' -H 'Content-type: text/turtle'
 
 The payload for this request will be something like:
 
@@ -68,7 +67,7 @@ Adding instances
 
 .. code-block:: http
 
-  POST 'http://localhost:5100/tech/software' -H 'Content-type: application/json'
+  POST 'http://localhost:5100/tech/Software' -H 'Content-type: application/json'
 
 .. Example of payload:
 

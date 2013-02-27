@@ -2,7 +2,7 @@
 
 import json
 from tornado import gen
-from brainiak.prefixes import MemorizeContext
+from brainiak.prefixes import MemorizeContext, shorten_uri
 from brainiak.triplestore import query_sparql
 from brainiak.result_handler import *
 from brainiak import settings
@@ -36,9 +36,9 @@ def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     effective_context = {"@language": "pt"}
     effective_context.update(context.context)
 
-    links = [{"rel": "{0}:{1}".format(ctx, item),
-              "href": "/{0}/collection/{1}".format(ctx, item)}
-             for ctx, item in context.object_properties]
+    links = [{"rel": property_name,
+              "href": "/{0}/collection/{1}".format(*(short_uri.split(':')))}
+             for property_name, short_uri in context.object_properties.items()]
     schema = {
         "type": "object",
         "@id": short_uri,
@@ -82,11 +82,25 @@ def get_predicates_and_cardinalities(class_uri, class_schema, context, callback)
     tornado_response, context = response.args
     predicates = json.loads(tornado_response.body)
     predicate_definitions = predicates['results']['bindings']
+    range_dict = {p['predicate']['value']: p['range']['value'] for p in predicate_definitions}
+
     predicates_dict = {}
+    remove_super_predicates = []
     for predicate in predicate_definitions:
         predicate_name = predicate['predicate']['value']
+        try:
+            super_property = predicate['super_property']['value']
+        except KeyError:
+            super_property = None
+        if (super_property in range_dict) and (range_dict[super_property] == predicate['range']['value']):
+            remove_super_predicates.append(super_property)
         predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, context)
         predicates_dict[context.shorten_uri(predicate_name)] = predicate_dict
+
+    # Avoid enumerating redundant predicates when a more specific predicate prevails over
+    # an inherited predicate with the same range
+    for p in remove_super_predicates:
+        del predicates_dict[shorten_uri(p)]
 
     callback(class_schema, predicates_dict)
 
@@ -101,7 +115,7 @@ def build_predicate_dict(name, predicate, cardinalities, context):
         predicate_dict["range"] = {'@id': range_key,
                                    'graph': context.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
                                    'title': predicate.get('label_do_range', {}).get('value', "")}
-        context.add_object_property(range_key)
+        context.add_object_property(predicate['predicate']['value'], range_key)
 
     elif predicate_type == DATATYPE_PROPERTY:
         # Have a datatype property

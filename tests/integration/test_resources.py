@@ -65,8 +65,3 @@ class TestVirtuosoStatusResource(TestHandlerBase):
         settings.ENVIRONMENT = "local"
         response = self.fetch('/status/virtuoso', method='GET')
         self.assertEqual(response.code, 200)
-
-    def test_virtuoso_status_in_non_prod_returns_400(self):
-        settings.ENVIRONMENT = "local"
-        response = self.fetch('/status/virtuoso', method='GET')
-        self.assertEqual(response.code, 400)

@@ -43,7 +43,7 @@ gunicorn:
 	@echo "Running with gunicorn..."
 	@pip install gunicorn
 	cd $(BRAINIAK_CODE); PYTHONPATH="$(NEW_PYTHONPATH)" gunicorn -k egg:gunicorn#tornado brainiak.server:application -w 1
-	
+
 docs:
 	@echo "Compiling and opening documentation..."
 	@cd $(HOME_BRAINIAK)/docs; make run

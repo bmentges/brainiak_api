@@ -1,5 +1,7 @@
+import md5
 import urllib
 
+import SPARQLWrapper
 from tornado import gen
 from tornado.ioloop import IOLoop
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
@@ -93,6 +95,28 @@ class VirtuosoException(Exception):
     pass
 
 
-def status(callback):
-    SIMPLE_COUNT_CLASSES_QUERY = "SELECT COUNT(*) WHERE {?s a owl:Class}"
-    query_sparql(callback, SIMPLE_COUNT_CLASSES_QUERY)
+def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT_PASSWORD,
+           mode=settings.SPARQL_ENDPOINT_AUTH_MODE, realm=settings.SPARQL_ENDPOINT_REALM):
+
+    query = "SELECT COUNT(*) WHERE {?s a owl:Class}"
+    endpoint = SPARQLWrapper.SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    endpoint.addDefaultGraph("http://semantica.globo.com/person")
+    endpoint.setQuery(query)
+
+    try:
+        response = endpoint.query()
+        msg = "accessed without auth"
+    except Exception, error:
+        msg = "didn't access without auth because: %s" % error.msg
+
+    endpoint.setCredentials(user, password, mode=mode, realm=realm)
+
+    password_md5 = md5.new(password).digest()
+
+    try:
+        response = endpoint.query()
+        msg += "\naccessed with auth (%s : %s)" % (user, password_md5)
+    except Exception as error:
+        msg += "\ndidn't access with auth (%s : %s) because: %s" % (user, password_md5, error.msg)
+
+    return msg

@@ -23,18 +23,11 @@ class VersionResource(RequestHandler):
 
 class VirtuosoStatusResource(RequestHandler):
 
-    @asynchronous
-    @gen.engine
     def get(self):
         if settings.ENVIRONMENT == 'prod':
-            raise HTTPError(410)
-        response = yield gen.Task(triplestore.status)
-        if response.code % 200 < 100:
-            msg = "Access to Virtuoso OK"
-        else:
-            msg = "Could not access Virtuoso"
-        self.write(msg)
-        self.finish()
+            raise HTTPError(404)
+
+        self.write(triplestore.status())
 
 
 class SchemaResource(RequestHandler):

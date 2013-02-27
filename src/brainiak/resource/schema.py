@@ -195,10 +195,9 @@ def query_predicates(class_uri, context, callback):
 
     response = json.loads(tornado_response.body)
     if not response['results']['bindings']:
-        resp = yield gen.Task(_query_predicate_without_lang, class_uri, context, callback)
-        tornado_response, context = resp.args
-
-    callback(tornado_response, context)
+        _query_predicate_without_lang(class_uri, context, callback)
+    else:
+        callback(tornado_response, context)
 
 
 def _query_predicate_with_lang(class_uri, context, callback):

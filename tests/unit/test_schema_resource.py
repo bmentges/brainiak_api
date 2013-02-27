@@ -4,13 +4,8 @@ import json
 import unittest
 from tornado import gen
 
-from tornado.testing import AsyncTestCase
-from tornado.ioloop import IOLoop
-from tornado.web import asynchronous
-
-from brainiak import schema_resource
-from brainiak.prefixes import MemorizeContext
-from brainiak.schema_resource import _extract_cardinalities
+from brainiak.resource import schema
+from brainiak.resource.schema import _extract_cardinalities
 from tests import TornadoAsyncTestCase
 
 
@@ -22,12 +17,12 @@ class MockResponse(object):
 class GetSchemaTestCase(TornadoAsyncTestCase):
     def setUp(self):
         super(TornadoAsyncTestCase, self).setUp()
-        self.original_query_class_schema = schema_resource.query_class_schema
-        self.original_get_predicates_and_cardinalities = schema_resource.get_predicates_and_cardinalities
+        self.original_query_class_schema = schema.query_class_schema
+        self.original_get_predicates_and_cardinalities = schema.get_predicates_and_cardinalities
 
     def tearDown(self):
-        schema_resource.query_class_schema = self.original_query_class_schema
-        schema_resource.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
+        schema.query_class_schema = self.original_query_class_schema
+        schema.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
         super(TornadoAsyncTestCase, self).tearDown()
 
     @gen.engine
@@ -47,20 +42,20 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
             tornado_response = MockResponse(class_schema)
             callback(tornado_response, remember)
 
-        schema_resource.query_class_schema = mock_query_class_schema
+        schema.query_class_schema = mock_query_class_schema
 
         def mock_get_predicates_and_cardinalities(class_uri, class_schema, remember, callback):
             callback(class_schema, None)
 
-        schema_resource.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
+        schema.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
 
-        response = yield gen.Task(schema_resource.get_schema, "test_context", "test_class")
+        response = yield gen.Task(schema.get_schema, "test_context", "test_class")
 
-        schema = response["schema"]
-        self.assertIn("title", schema)
-        self.assertIn("type", schema)
-        self.assertIn("@id", schema)
-        self.assertIn("properties", schema)
+        schema_response = response["schema"]
+        self.assertIn("title", schema_response)
+        self.assertIn("type", schema_response)
+        self.assertIn("@id", schema_response)
+        self.assertIn("properties", schema_response)
         # FIXME: enhance the structure of the response
         self.stop()
 
@@ -69,14 +64,14 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
 #
 #     def setUp(self):
 #         super(TornadoAsyncTestCase, self).setUp()
-#         self.original_query_cardinalities = schema_resource.query_cardinalities
-#         self.original_query_predicates = schema_resource.query_predicates
-#         self.original_extract_cardinalities = schema_resource._extract_cardinalities
+#         self.original_query_cardinalities = schema.query_cardinalities
+#         self.original_query_predicates = schema.query_predicates
+#         self.original_extract_cardinalities = schema._extract_cardinalities
 #
 #     def tearDown(self):
-#         schema_resource.query_cardinalities = self.original_query_cardinalities
-#         schema_resource.query_predicates = self.original_query_predicates
-#         schema_resource._extract_cardinalities = self.original_extract_cardinalities
+#         schema.query_cardinalities = self.original_query_cardinalities
+#         schema.query_predicates = self.original_query_predicates
+#         schema._extract_cardinalities = self.original_extract_cardinalities
 #         super(TornadoAsyncTestCase, self).tearDown()
 #
 #     @gen.engine
@@ -94,10 +89,10 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
 #             fake_response = {}
 #             callback(fake_response, class_schema, final_callback, context)
 #
-#         schema_resource.query_cardinalities = mock_query_cardinalities
-#         schema_resource.query_predicates = mock_query_predicates
+#         schema.query_cardinalities = mock_query_cardinalities
+#         schema.query_predicates = mock_query_predicates
 #
-#         response = yield gen.Task(schema_resource.get_predicates_and_cardinalities,
+#         response = yield gen.Task(schema.get_predicates_and_cardinalities,
 #                                   class_uri, class_schema, context)
 #         self.assertEquals(response, None)
 
@@ -160,12 +155,12 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
 class AuxiliaryFunctionsTestCase2(unittest.TestCase):
 
     def setUp(self):
-        self.original_query_predicate_with_lang = schema_resource._query_predicate_with_lang
-        self.original_query_predicate_without_lang = schema_resource._query_predicate_without_lang
+        self.original_query_predicate_with_lang = schema._query_predicate_with_lang
+        self.original_query_predicate_without_lang = schema._query_predicate_without_lang
 
     def tearDown(self):
-        schema_resource._query_predicate_with_lang = self.original_query_predicate_with_lang
-        schema_resource._query_predicate_without_lang = self.original_query_predicate_without_lang
+        schema._query_predicate_with_lang = self.original_query_predicate_with_lang
+        schema._query_predicate_without_lang = self.original_query_predicate_without_lang
 
     def test_query_predicates_successful_with_lang(self):
 
@@ -180,9 +175,9 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         class ResponseMock():
             args = [ResponseWithBindings(), {}]
 
-        schema_resource._query_predicate_with_lang = lambda class_uri, context, callback: callback(ResponseMock())
+        schema._query_predicate_with_lang = lambda class_uri, context, callback: callback(ResponseMock())
 
-        schema_resource.query_predicates("class_uri", {}, first_callback)
+        schema.query_predicates("class_uri", {}, first_callback)
         self.assertEquals(callback_stack, [1])
 
     def test_query_predicates_successful_without_lang(self):
@@ -203,8 +198,8 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                 callback_stack.append(2)
                 self.args = [ResponseWithoutBindings(), {}]
 
-        schema_resource._query_predicate_with_lang = lambda class_uri, context, callback: callback(ResponseToQueryWithLang())
-        schema_resource._query_predicate_without_lang = lambda class_uri, context, callback: callback(ResponseToQueryWithoutLang())
+        schema._query_predicate_with_lang = lambda class_uri, context, callback: callback(ResponseToQueryWithLang())
+        schema._query_predicate_without_lang = lambda class_uri, context, callback: callback(ResponseToQueryWithoutLang())
 
-        schema_resource.query_predicates("class_uri", {}, first_callback)
+        schema.query_predicates("class_uri", {}, first_callback)
         self.assertEquals(callback_stack, [2, 1])

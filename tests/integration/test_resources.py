@@ -1,3 +1,4 @@
+# coding: utf-8
 import json
 
 
@@ -9,11 +10,12 @@ from tests import TestHandlerBase
 SAMPLE_JSON_RESOURCE = {
     u'schema': {
         u'$schema': u'http://json-schema.org/draft-03/schema#',
-        u'@context': {u'@language': u'pt'},
-        u'@id': u'http://semantica.globo.com/animals/Ornithorhynchus',
+        u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
+        u'@id': u'person:Gender',
         u'links': [],
         u'properties': {},
-        u'title': False,
+        u'title': u"Gênero da Pessoa",
+        u'comment': u"Gênero de uma pessoa.",
         u'type': u'object'
     }
 }
@@ -24,11 +26,17 @@ class TestSchemaResource(TestHandlerBase):
     maxDiff = None
 
     def test_schema_handler(self):
-        self.http_client.fetch(self.get_url('/animals/Ornithorhynchus/_schema'), self.stop)
+        self.http_client.fetch(self.get_url('/person/Gender/_schema'), self.stop)
         response = self.wait()
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         self.assertEqual(json_received, SAMPLE_JSON_RESOURCE)
+
+    def test_schema_handler_class_undefined(self):
+        self.http_client.fetch(self.get_url('/animals/Ornithorhynchus/_schema'), self.stop)
+        response = self.wait()
+        self.assertEqual(response.code, 204)
+        self.assertFalse(response.body)
 
 
 class TestHealthcheckResource(TestHandlerBase):

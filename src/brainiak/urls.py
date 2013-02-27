@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from brainiak.resources import SchemaResource, VersionResource, HealthcheckResource, VirtuosoStatusResource  # InstanceResource
+from brainiak.handlers import SchemaResource, VersionResource, HealthcheckResource, VirtuosoStatusResource  # InstanceResource
 
 resources = [
     (r'/(?P<context_name>.+)/(?P<class_name>.+)/_schema', SchemaResource),

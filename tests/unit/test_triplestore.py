@@ -99,26 +99,26 @@ class TestCaseStatus(unittest.TestCase):
         SPARQLWrapper.SPARQLWrapper.exception_iterations = []
 
         received_msg = triplestore.status("USER", "PASSWORD")
-        expected_msg = "\n".join(["accessed without auth", "accessed with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x)"])
+        expected_msg = "<br>".join(["accessed without auth", "accessed with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x)"])
         self.assertEquals(received_msg, expected_msg)
 
     def test_without_auth_works_but_with_auth_doesnt(self):
         SPARQLWrapper.SPARQLWrapper.iteration = 0
         SPARQLWrapper.SPARQLWrapper.exception_iterations = [1]
         received_msg = triplestore.status("USER", "PASSWORD")
-        expected_msg = "\n".join(["accessed without auth", "didn't access with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x) because: ERROR 1"])
+        expected_msg = "<br>".join(["accessed without auth", "didn't access with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x) because: ERROR 1"])
         self.assertEquals(received_msg, expected_msg)
 
     def test_without_auth_doesnt_work_but_with_auth_works(self):
         SPARQLWrapper.SPARQLWrapper.iteration = 0
         SPARQLWrapper.SPARQLWrapper.exception_iterations = [0]
         received_msg = triplestore.status("USER", "PASSWORD")
-        expected_msg = "\n".join(["didn't access without auth because: ERROR 0", "accessed with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x)"])
+        expected_msg = "<br>".join(["didn't access without auth because: ERROR 0", "accessed with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x)"])
         self.assertEquals(received_msg, expected_msg)
 
     def test_both_without_auth_and_with_auth_dont_work(self):
         SPARQLWrapper.SPARQLWrapper.iteration = 0
         SPARQLWrapper.SPARQLWrapper.exception_iterations = [0, 1]
         received_msg = triplestore.status("USER", "PASSWORD")
-        expected_msg = "\n".join(["didn't access without auth because: ERROR 0", "didn't access with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x) because: ERROR 1"])
+        expected_msg = "<br>".join(["didn't access without auth because: ERROR 0", "didn't access with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x) because: ERROR 1"])
         self.assertEquals(received_msg, expected_msg)

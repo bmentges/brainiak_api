@@ -3,8 +3,10 @@
 import json
 import unittest
 from tornado import gen
+import mock
 
 from brainiak.resource import schema
+from brainiak.prefixes import MemorizeContext
 from brainiak.resource.schema import _extract_cardinalities
 from tests import TornadoAsyncTestCase
 
@@ -60,41 +62,52 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         self.stop()
 
 
-# class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
-#
-#     def setUp(self):
-#         super(TornadoAsyncTestCase, self).setUp()
-#         self.original_query_cardinalities = schema.query_cardinalities
-#         self.original_query_predicates = schema.query_predicates
-#         self.original_extract_cardinalities = schema._extract_cardinalities
-#
-#     def tearDown(self):
-#         schema.query_cardinalities = self.original_query_cardinalities
-#         schema.query_predicates = self.original_query_predicates
-#         schema._extract_cardinalities = self.original_extract_cardinalities
-#         super(TornadoAsyncTestCase, self).tearDown()
-#
-#     @gen.engine
-#     def test_get_predicates_and_cardinalities(self):
-#         context = MemorizeContext()
-#         class_uri = "http://test/person/gender"
-#         class_schema = None
-#
-#         # Mocks
-#         def mock_query_predicates(class_uri, context, callback):
-#             fake_response = {}
-#             callback(fake_response, context)
-#
-#         def mock_query_cardinalities(class_uri, class_schema, final_callback, context, callback):
-#             fake_response = {}
-#             callback(fake_response, class_schema, final_callback, context)
-#
-#         schema.query_cardinalities = mock_query_cardinalities
-#         schema.query_predicates = mock_query_predicates
-#
-#         response = yield gen.Task(schema.get_predicates_and_cardinalities,
-#                                   class_uri, class_schema, context)
-#         self.assertEquals(response, None)
+class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
+
+    def setUp(self):
+        super(TornadoAsyncTestCase, self).setUp()
+        self.original_query_cardinalities = schema.query_cardinalities
+        self.original_query_predicates = schema.query_predicates
+        self.original_extract_cardinalities = schema._extract_cardinalities
+
+    def tearDown(self):
+        schema.query_cardinalities = self.original_query_cardinalities
+        schema.query_predicates = self.original_query_predicates
+        schema._extract_cardinalities = self.original_extract_cardinalities
+        super(TornadoAsyncTestCase, self).tearDown()
+
+    # @gen.engine
+    # def test_get_predicates_and_cardinalities(self):
+    #     context = MemorizeContext()
+    #     class_uri = "http://test/person/gender"
+    #     class_schema = None
+    #
+    #     # Mocks
+    #     def mock_query_predicates(class_uri, context, callback):
+    #         fake_response = mock.MagicMock(body="""
+    #         { "results": { "bindings": [
+    #               { "predicate": { "type": "uri", "value": "http://test/person/gender" },
+    #                 "predicate_graph": { "type": "uri", "value": "http://test/person/" },
+    #                 "predicate_comment": { "type": "literal", "xml:lang": "pt", "value": "G\u00EAnero." },
+    #                 "type": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty" },
+    #                 "range": { "type": "uri", "value": "http://test/person/Gender" },
+    #                 "title": { "type": "literal", "xml:lang": "pt", "value": "Sexo" },
+    #                 "grafo_do_range": { "type": "uri", "value": "http://test/person/" },
+    #                 "label_do_range": { "type": "literal", "xml:lang": "pt", "value": "G\u00EAnero da Pessoa" }}]}}
+    #         """)
+    #
+    #         callback(fake_response, context)
+    #
+    #     def mock_query_cardinalities(class_uri, class_schema, final_callback, context, callback):
+    #         fake_response = mock.MagicMock()
+    #         callback(fake_response, class_schema, final_callback, context)
+    #
+    #     schema.query_cardinalities = mock_query_cardinalities
+    #     schema.query_predicates = mock_query_predicates
+    #
+    #     response = yield gen.Task(schema.get_predicates_and_cardinalities,
+    #                               class_uri, class_schema, context)
+    #     self.assertEquals(response, None)
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):

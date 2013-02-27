@@ -24,7 +24,7 @@ class TestSchemaResource(TestHandlerBase):
     maxDiff = None
 
     def test_schema_handler(self):
-        self.http_client.fetch(self.get_url('/animals/schemas/Ornithorhynchus'), self.stop)
+        self.http_client.fetch(self.get_url('/animals/Ornithorhynchus/_schema'), self.stop)
         response = self.wait()
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)

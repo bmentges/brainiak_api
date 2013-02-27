@@ -6,7 +6,7 @@ from tornado.web import asynchronous, HTTPError, RequestHandler
 from brainiak import settings, triplestore
 from brainiak import __version__
 from brainiak.resource.schema import get_schema
-#from brainiak.instance_resource import get_instance
+#from brainiak.resource.instance import get_instance
 
 
 class HealthcheckResource(RequestHandler):
@@ -23,18 +23,11 @@ class VersionResource(RequestHandler):
 
 class VirtuosoStatusResource(RequestHandler):
 
-    @asynchronous
-    @gen.engine
     def get(self):
         if settings.ENVIRONMENT == 'prod':
-            raise HTTPError(410)
-        response = yield gen.Task(triplestore.status)
-        if response.code % 200 < 100:
-            msg = "Access to Virtuoso OK"
-        else:
-            msg = "Could not access Virtuoso"
-        self.write(msg)
-        self.finish()
+            raise HTTPError(404)
+
+        self.write(triplestore.status())
 
 
 class SchemaResource(RequestHandler):
@@ -47,7 +40,10 @@ class SchemaResource(RequestHandler):
     def get(self, context_name, class_name):
         response = yield gen.Task(get_schema, context_name, class_name)
         self.set_header('Access-Control-Allow-Origin', '*')
-        self.write(response)
+        if response is None:
+            self.set_status(204)
+        else:
+            self.write(response)
         self.finish()
 
     # @asynchronous
@@ -59,15 +55,15 @@ class SchemaResource(RequestHandler):
     #     self.finish()
 
 
-# class InstanceResource(RequestHandler):
+#class InstanceResource(RequestHandler):
 #
-#     def __init__(self, *args, **kwargs):
-#         super(InstanceResource, self).__init__(*args, **kwargs)
+#    def __init__(self, *args, **kwargs):
+#        super(InstanceResource, self).__init__(*args, **kwargs)
 #
-#     @asynchronous
-#     @gen.engine
-#     def get(self, context_name, schema_name):
-#         response = yield gen.Task(get_instance, context_name, schema_name)
-#         self.set_header('Access-Control-Allow-Origin', '*')
-#         self.write(response)
-#         self.finish()
+#    @asynchronous
+#    @gen.engine
+#    def get(self, context_name, schema_name, instance_id):
+#        response = yield gen.Task(get_instance, context_name, schema_name, instance_id)
+#        self.set_header('Access-Control-Allow-Origin', '*')
+#        self.write(response)
+#        self.finish()

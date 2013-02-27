@@ -18,6 +18,8 @@ def get_schema(context_name, schema_name, callback):
     response = yield gen.Task(query_class_schema, class_uri, context)
     tornado_response = response.args[0]
     class_schema = json.loads(tornado_response.body)
+    if not class_schema["results"]["bindings"]:
+        callback(None)
 
     response = yield gen.Task(get_predicates_and_cardinalities, class_uri, class_schema, context)
     class_schema, predicates_and_cardinalities = response.args

@@ -66,10 +66,10 @@ class MemorizeContext(object):
     "Wrap operations replace_prefix() and uri_to_prefix() remembering all substitutions in the context attribute"
     def __init__(self):
         self.context = {}
-        self.object_properties = []
+        self.object_properties = {}
 
-    def add_object_property(self, short_uri):
-        self.object_properties.append(short_uri.split(":"))
+    def add_object_property(self, property_name, uri):
+        self.object_properties[shorten_uri(property_name)] = shorten_uri(uri)
 
     def shorten_uri(self, uri):
         short_uri = shorten_uri(uri)

@@ -52,6 +52,12 @@ the whole collection of instances of this specific class or we want the schema o
 
 Thus, the _schema suffix is used to distinguish these two use cases.
 
+Status 200: The class exists, the response body is a JSON representing the class schema.
+
+.. include :: examples/country_schema_json.rst
+
+Status 204: The class does not exist.
+
 Create schema
 -------------
 

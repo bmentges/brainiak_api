@@ -27,6 +27,9 @@ class MemorizeContextTestCase(unittest.TestCase):
     def setUp(self):
         self.remember = MemorizeContext()
 
+    def test_unique_object_properties(self):
+        self.remember.add_object_property("upper:Entity")
+
     def test_prefix_to_slug(self):
         self.assertEquals(self.remember.prefix_to_slug('http://www.w3.org/1999/02/22-rdf-syntax-ns#'), 'rdf')
         self.assertIn('rdf', self.remember.context)

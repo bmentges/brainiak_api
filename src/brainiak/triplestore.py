@@ -115,8 +115,8 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
 
     try:
         response = endpoint.query()
-        msg += "\naccessed with auth (%s : %s)" % (user, password_md5)
+        msg += "<br>accessed with auth (%s : %s)" % (user, password_md5)
     except Exception as error:
-        msg += "\ndidn't access with auth (%s : %s) because: %s" % (user, password_md5, error.msg)
+        msg += "<br>didn't access with auth (%s : %s) because: %s" % (user, password_md5, error.msg)
 
     return msg

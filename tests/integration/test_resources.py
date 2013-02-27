@@ -7,21 +7,38 @@ from brainiak import settings
 from tests import TestHandlerBase
 
 
-SAMPLE_JSON_RESOURCE = {
-    u'schema': {
-        u'$schema': u'http://json-schema.org/draft-03/schema#',
-        u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
-        u'@id': u'person:Gender',
-        u'links': [],
-        u'properties': {},
-        u'title': u"Gênero da Pessoa",
-        u'comment': u"Gênero de uma pessoa.",
-        u'type': u'object'
-    }
-}
+class TestInstanceResource(TestHandlerBase):
+
+    SAMPLE_JSON_INSTANCE = {}
+
+#    def test_get_instance_with_nonexistent_uri(self):
+#        self.http_client.fetch(self.get_url('/person/Gender/Alien'), self.stop)
+#        response = self.wait()
+#        self.assertEqual(response.code, 404)
+#
+#    def test_get_instance(self):
+#        self.http_client.fetch(self.get_url('/person/Gender/Male'), self.stop)
+#        response = self.wait()
+#        self.assertEqual(response.code, 200)
+#        json_received = json.loads(response.body)
+#        self.assertEqual(json_received, self.SAMPLE_JSON_INSTANCE)
+#
 
 
 class TestSchemaResource(TestHandlerBase):
+
+    SAMPLE_SCHEMA_JSON = {
+        u'schema': {
+            u'$schema': u'http://json-schema.org/draft-03/schema#',
+            u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
+            u'@id': u'person:Gender',
+            u'links': [],
+            u'properties': {},
+            u'title': u"Gênero da Pessoa",
+            u'comment': u"Gênero de uma pessoa.",
+            u'type': u'object'
+        }
+    }
 
     maxDiff = None
 
@@ -30,7 +47,7 @@ class TestSchemaResource(TestHandlerBase):
         response = self.wait()
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
-        self.assertEqual(json_received, SAMPLE_JSON_RESOURCE)
+        self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
 
     def test_schema_handler_class_undefined(self):
         self.http_client.fetch(self.get_url('/animals/Ornithorhynchus/_schema'), self.stop)

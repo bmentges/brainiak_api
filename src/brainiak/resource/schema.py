@@ -80,7 +80,6 @@ def get_predicates_and_cardinalities(class_uri, class_schema, context, callback)
     response = yield gen.Task(query_predicates, class_uri, context)
     tornado_response, context = response.args
     predicates = json.loads(tornado_response.body)
-
     predicate_definitions = predicates['results']['bindings']
     range_dict = {p['predicate']['value']: p['range']['value'] for p in predicate_definitions}
 

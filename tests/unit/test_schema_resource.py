@@ -63,6 +63,7 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
 
 
 class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
+    maxDiff = None
 
     def setUp(self):
         super(TornadoAsyncTestCase, self).setUp()
@@ -103,21 +104,21 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                 {"results": {
                     "bindings": [
                         {"max": {"datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "typed-literal", "value": "1"},
-                         "predicate": {"type": "uri", "value": "http://semantica.globo.com/person/gender"},
-                         "range": {"type": "uri", "value": "http://semantica.globo.com/person/Gender"}
+                         "predicate": {"type": "uri", "value": "http://test/person/gender"},
+                         "range": {"type": "uri", "value": "http://test/person/Gender"}
                         },
                         {"min": {"datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "typed-literal", "value": "1"},
-                         "predicate": {"type": "uri", "value": "http://semantica.globo.com/person/gender"},
-                         "range": {"type": "uri", "value": "http://semantica.globo.com/person/Gender"}
+                         "predicate": {"type": "uri", "value": "http://test/person/gender"},
+                         "range": {"type": "uri", "value": "http://test/person/Gender"}
                         },
-                        {"enumerated_value": {"type": "uri", "value": "http://semantica.globo.com/data/Gender/Male"},
+                        {"enumerated_value": {"type": "uri", "value": "http://test/data/Gender/Male"},
                          "enumerated_value_label": {"type": "literal", "value": "Masculino", "xml:lang": "pt"},
-                         "predicate": {"type": "uri", "value": "http://semantica.globo.com/person/gender"},
+                         "predicate": {"type": "uri", "value": "http://test/person/gender"},
                          "range": {"type": "bnode", "value": "nodeID://b72146"}
                         },
-                        {"enumerated_value": {"type": "uri", "value": "http://semantica.globo.com/data/Gender/Female"},
+                        {"enumerated_value": {"type": "uri", "value": "http://test/data/Gender/Female"},
                          "enumerated_value_label": {"type": "literal", "value": "Feminino", "xml:lang": "pt"},
-                         "predicate": {"type": "uri", "value": "http://semantica.globo.com/person/gender"},
+                         "predicate": {"type": "uri", "value": "http://test/person/gender"},
                          "range": {"type": "bnode", "value": "nodeID://b72146"}
                         }
                     ]}
@@ -134,8 +135,11 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
             u'http://test/person/gender':
                 {'comment': u'G\xeanero.',
                  'title': u'Sexo',
+                 'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female'],
                  'graph': u'http://test/person/',
                  'format': 'uri',
+                 'maxItems': u'1',
+                 'minItems': u'1',
                  'type': 'string',
                  'range': {'graph': u'http://test/person/',
                            '@id': u'http://test/person/Gender',
@@ -182,9 +186,14 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
     def test_extract_options(self):
         binding = [
             {u'predicate': {u'type': u'uri',
+                            u'value': u'http://test/person/root_gender'},
+             u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'}},
+            {u'predicate': {u'type': u'uri',
                             u'value': u'http://test/person/gender'},
              u'enumerated_value': {u'type': u'uri',
                                    u'value': u'http://test/data/Gender/Male'},
+             u'super_property': {u'type': u'uri',
+                                 u'value': u'http://test/person/root_gender'},
              u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'},
              u'enumerated_value_label': {u'xml:lang': u'pt', u'type': u'literal',
                                          u'value': u'Masculino'}},
@@ -198,7 +207,8 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         ]
         extracted = _extract_cardinalities(binding)
         expected = {u'http://test/person/gender': {
-                    'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female']}}
+                    'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female']},
+                    u'http://test/person/root_gender': {}}
         self.assertEquals(extracted, expected)
 
 

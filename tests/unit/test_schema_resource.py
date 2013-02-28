@@ -220,7 +220,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                     'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female']}}
         self.assertEquals(extracted, expected)
 
-    def test_build_predicate_dict(self):
+    def test_build_predicate_dict_with_object_property(self):
         expected_predicate_dict = {'comment': u'G\xeanero.',
                                    'range': {'graph': 'test',
                                              '@id': 'test:Gender',
@@ -252,6 +252,27 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         effective_predicate_dict = build_predicate_dict(name, predicate, cardinalities, context)
         self.assertEquals(expected_predicate_dict, effective_predicate_dict)
 
+    def test_build_predicate_dict_with_datatype_property(self):
+        expected_predicate_dict = {'comment': u'Nome completo da pessoa',
+                                   'graph': 'test',
+                                   'title': u'Nome',
+                                   'type': 'string'}
+        # params
+        name = u'http://test/person/gender'
+        predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/name'},
+                     u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
+                     u'title': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nome'},
+                     u'grafo_do_range': {u'type': u'uri', u'value': u'http://test/person/'},
+                     u'label_do_range': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nome da Pessoa'},
+                     u'predicate_graph': {u'type': u'uri', u'value': u'http://test/person/'},
+                     u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nome completo da pessoa'},
+                     u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}}
+        cardinalities = {}
+        context = prefixes.MemorizeContext()
+        context.prefix_to_slug('http://test/person')
+        # test call
+        effective_predicate_dict = build_predicate_dict(name, predicate, cardinalities, context)
+        self.assertEquals(expected_predicate_dict, effective_predicate_dict)
 #        u'http://semantica.globo.com/person/fullName': {u'http://www.w3.org/2001/XMLSchema#string': {'maxItems': u'1'}},
 
 

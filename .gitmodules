@@ -1,0 +1,3 @@
+[submodule "puppet/newdeploy"]
+	path = puppet/newdeploy
+	url = git://ngit.globoi.com/puppet-playground/deploy-module.git

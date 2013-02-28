@@ -34,6 +34,10 @@ _MAP_SLUG_TO_PREFIX = {
 _MAP_PREFIX_TO_SLUG = {v: k for k, v in _MAP_SLUG_TO_PREFIX.items()}
 
 
+def prefix_from_uri(uri):
+    return uri[:uri.rfind("/") + 1]
+
+
 def slug_to_prefix(prefix):
     return _MAP_SLUG_TO_PREFIX.get(prefix, prefix)
 

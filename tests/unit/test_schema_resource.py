@@ -76,38 +76,75 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         schema._extract_cardinalities = self.original_extract_cardinalities
         super(TornadoAsyncTestCase, self).tearDown()
 
-    # @gen.engine
-    # def test_get_predicates_and_cardinalities(self):
-    #     context = MemorizeContext()
-    #     class_uri = "http://test/person/gender"
-    #     class_schema = None
-    #
-    #     # Mocks
-    #     def mock_query_predicates(class_uri, context, callback):
-    #         fake_response = mock.MagicMock(body="""
-    #         { "results": { "bindings": [
-    #               { "predicate": { "type": "uri", "value": "http://test/person/gender" },
-    #                 "predicate_graph": { "type": "uri", "value": "http://test/person/" },
-    #                 "predicate_comment": { "type": "literal", "xml:lang": "pt", "value": "G\u00EAnero." },
-    #                 "type": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty" },
-    #                 "range": { "type": "uri", "value": "http://test/person/Gender" },
-    #                 "title": { "type": "literal", "xml:lang": "pt", "value": "Sexo" },
-    #                 "grafo_do_range": { "type": "uri", "value": "http://test/person/" },
-    #                 "label_do_range": { "type": "literal", "xml:lang": "pt", "value": "G\u00EAnero da Pessoa" }}]}}
-    #         """)
-    #
-    #         callback(fake_response, context)
-    #
-    #     def mock_query_cardinalities(class_uri, class_schema, final_callback, context, callback):
-    #         fake_response = mock.MagicMock()
-    #         callback(fake_response, class_schema, final_callback, context)
-    #
-    #     schema.query_cardinalities = mock_query_cardinalities
-    #     schema.query_predicates = mock_query_predicates
-    #
-    #     response = yield gen.Task(schema.get_predicates_and_cardinalities,
-    #                               class_uri, class_schema, context)
-    #     self.assertEquals(response, None)
+    @gen.engine
+    def test_get_predicates_and_cardinalities(self):
+        context = MemorizeContext()
+        class_uri = "http://test/person/gender"
+        class_schema = None
+
+        # Mocks
+        def mock_query_predicates(class_uri, context, callback):
+            fake_response = mock.MagicMock(body="""
+            { "results": { "bindings": [
+                  { "predicate": { "type": "uri", "value": "http://test/person/gender" },
+                    "predicate_graph": { "type": "uri", "value": "http://test/person/" },
+                    "predicate_comment": { "type": "literal", "xml:lang": "pt", "value": "G\u00EAnero." },
+                    "type": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty" },
+                    "range": { "type": "uri", "value": "http://test/person/Gender" },
+                    "title": { "type": "literal", "xml:lang": "pt", "value": "Sexo" },
+                    "grafo_do_range": { "type": "uri", "value": "http://test/person/" },
+                    "label_do_range": { "type": "literal", "xml:lang": "pt", "value": "G\u00EAnero da Pessoa" }}]}}
+            """)
+
+            callback(fake_response, context)
+
+        def mock_query_cardinalities(class_uri, class_schema, final_callback, context, callback):
+            fake_response = mock.MagicMock(body="""
+                {"results": {
+                    "bindings": [
+                        {"max": {"datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "typed-literal", "value": "1"},
+                         "predicate": {"type": "uri", "value": "http://semantica.globo.com/person/gender"},
+                         "range": {"type": "uri", "value": "http://semantica.globo.com/person/Gender"}
+                        },
+                        {"min": {"datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "typed-literal", "value": "1"},
+                         "predicate": {"type": "uri", "value": "http://semantica.globo.com/person/gender"},
+                         "range": {"type": "uri", "value": "http://semantica.globo.com/person/Gender"}
+                        },
+                        {"enumerated_value": {"type": "uri", "value": "http://semantica.globo.com/data/Gender/Male"},
+                         "enumerated_value_label": {"type": "literal", "value": "Masculino", "xml:lang": "pt"},
+                         "predicate": {"type": "uri", "value": "http://semantica.globo.com/person/gender"},
+                         "range": {"type": "bnode", "value": "nodeID://b72146"}
+                        },
+                        {"enumerated_value": {"type": "uri", "value": "http://semantica.globo.com/data/Gender/Female"},
+                         "enumerated_value_label": {"type": "literal", "value": "Feminino", "xml:lang": "pt"},
+                         "predicate": {"type": "uri", "value": "http://semantica.globo.com/person/gender"},
+                         "range": {"type": "bnode", "value": "nodeID://b72146"}
+                        }
+                    ]}
+                }""")
+            callback(fake_response, class_schema, final_callback, context)
+
+        schema.query_cardinalities = mock_query_cardinalities
+        schema.query_predicates = mock_query_predicates
+
+        response = yield gen.Task(schema.get_predicates_and_cardinalities,
+                                  class_uri, class_schema, context)
+        response_class_schema, response_predicates_and_cardinalities = response.args
+        expected_predicates_and_cardinalities = {
+            u'http://test/person/gender':
+                {'comment': u'G\xeanero.',
+                 'title': u'Sexo',
+                 'graph': u'http://test/person/',
+                 'format': 'uri',
+                 'type': 'string',
+                 'range': {'graph': u'http://test/person/',
+                           '@id': u'http://test/person/Gender',
+                           'title': u'G\xeanero da Pessoa'
+                           }
+                 }
+        }
+        self.assertEquals(response_class_schema, class_schema)
+        self.assertEquals(response_predicates_and_cardinalities, expected_predicates_and_cardinalities)
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):

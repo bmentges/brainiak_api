@@ -74,7 +74,6 @@ def query_class_schema(class_uri, context, callback):
 def get_predicates_and_cardinalities(class_uri, class_schema, context, callback):
     response = yield gen.Task(query_cardinalities, class_uri, class_schema, callback, context)
     tornado_response, class_schema, callback, context = response.args
-
     query_result = json.loads(tornado_response.body)
     cardinalities = _extract_cardinalities(query_result['results']['bindings'])
 

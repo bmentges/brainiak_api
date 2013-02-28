@@ -6,8 +6,8 @@ from tornado import gen
 import mock
 
 from brainiak.resource import schema
-from brainiak.prefixes import MemorizeContext
-from brainiak.resource.schema import _extract_cardinalities
+from brainiak import prefixes
+from brainiak.resource.schema import _extract_cardinalities, build_predicate_dict
 from tests import TornadoAsyncTestCase
 
 
@@ -79,7 +79,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
 
     @gen.engine
     def test_get_predicates_and_cardinalities(self):
-        context = MemorizeContext()
+        context = prefixes.MemorizeContext()
         class_uri = "http://test/person/gender"
         class_schema = None
 
@@ -152,6 +152,15 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):
+    maxDiff = None
+
+    def setUp(self):
+        prefixes._MAP_SLUG_TO_PREFIX['test'] = 'http://test/person/'
+        prefixes._MAP_PREFIX_TO_SLUG['http://test/person/'] = 'test'
+
+    def tearDown(self):
+        del prefixes._MAP_SLUG_TO_PREFIX['test']
+        del prefixes._MAP_PREFIX_TO_SLUG['http://test/person/']
 
     def test_extract_min(self):
         binding = [
@@ -210,6 +219,40 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                     'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female']},
                     u'http://test/person/root_gender': {}}
         self.assertEquals(extracted, expected)
+
+    def test_build_predicate_dict(self):
+        expected_predicate_dict = {'comment': u'G\xeanero.',
+                                   'range': {'graph': 'test',
+                                             '@id': 'test:Gender',
+                                             'title': u'G\xeanero da Pessoa'},
+                                   'graph': 'test',
+                                   'maxItems': u'1',
+                                   'format': 'uri',
+                                   'minItems': u'1',
+                                   'title': u'Sexo',
+                                   'enum': [u'http://test/data/Gender/Male',
+                                            u'http://test/data/Gender/Female'],
+                                   'type': 'string'}
+        # params
+        name = u'http://test/person/gender'
+        predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/gender'},
+                     u'range': {u'type': u'uri', u'value': u'http://test/person/Gender'},
+                     u'grafo_do_range': {u'type': u'uri', u'value': u'http://test/person/'},
+                     u'label_do_range': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero da Pessoa'},
+                     u'title': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Sexo'},
+                     u'predicate_graph': {u'type': u'uri', u'value': u'http://test/person/'},
+                     u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero.'},
+                     u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}}
+        cardinalities = {u'http://test/person/gender': {'enum': [u'http://test/data/Gender/Male',
+                                                                  u'http://test/data/Gender/Female'],
+                                                          u'http://test/person/Gender': {'minItems': u'1', 'maxItems': u'1'}}}
+        context = prefixes.MemorizeContext()
+        context.prefix_to_slug('http://test/person')
+        # test call
+        effective_predicate_dict = build_predicate_dict(name, predicate, cardinalities, context)
+        self.assertEquals(expected_predicate_dict, effective_predicate_dict)
+
+#        u'http://semantica.globo.com/person/fullName': {u'http://www.w3.org/2001/XMLSchema#string': {'maxItems': u'1'}},
 
 
 class AuxiliaryFunctionsTestCase2(unittest.TestCase):

@@ -87,7 +87,14 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         def mock_query_predicates(class_uri, context, callback):
             fake_response = mock.MagicMock(body="""
             { "results": { "bindings": [
+                  { "predicate": { "type": "uri", "value": "http://test/person/root_gender" },
+                    "predicate_graph": { "type": "uri", "value": "http://test/person/" },
+                    "type": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty" },
+                    "range": { "type": "uri", "value": "http://test/person/Gender" },
+                    "title": { "type": "literal", "xml:lang": "pt", "value": "Root (to be removed from answer)" },
+                    "grafo_do_range": { "type": "uri", "value": "http://test/person/" }},
                   { "predicate": { "type": "uri", "value": "http://test/person/gender" },
+                    "super_property": {"type": "uri", "value": "http://test/person/root_gender"},
                     "predicate_graph": { "type": "uri", "value": "http://test/person/" },
                     "predicate_comment": { "type": "literal", "xml:lang": "pt", "value": "G\u00EAnero." },
                     "type": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty" },
@@ -96,7 +103,6 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                     "grafo_do_range": { "type": "uri", "value": "http://test/person/" },
                     "label_do_range": { "type": "literal", "xml:lang": "pt", "value": "G\u00EAnero da Pessoa" }}]}}
             """)
-
             callback(fake_response, context)
 
         def mock_query_cardinalities(class_uri, class_schema, final_callback, context, callback):
@@ -186,14 +192,9 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
     def test_extract_options(self):
         binding = [
             {u'predicate': {u'type': u'uri',
-                            u'value': u'http://test/person/root_gender'},
-             u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'}},
-            {u'predicate': {u'type': u'uri',
                             u'value': u'http://test/person/gender'},
              u'enumerated_value': {u'type': u'uri',
                                    u'value': u'http://test/data/Gender/Male'},
-             u'super_property': {u'type': u'uri',
-                                 u'value': u'http://test/person/root_gender'},
              u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'},
              u'enumerated_value_label': {u'xml:lang': u'pt', u'type': u'literal',
                                          u'value': u'Masculino'}},
@@ -207,8 +208,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         ]
         extracted = _extract_cardinalities(binding)
         expected = {u'http://test/person/gender': {
-                    'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female']},
-                    u'http://test/person/root_gender': {}}
+                    'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female']}}
         self.assertEquals(extracted, expected)
 
 

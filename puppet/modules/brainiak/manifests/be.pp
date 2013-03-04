@@ -97,9 +97,13 @@ class brainiak::be inherits api_semantica::be {
 
 
     ## Essa parte é para apagar gunicorn V2 do api-semantica pois agora o V2 e do Brainiak
+    service{ "api_semantica-gunicorn-be2":
+        ensure => stopped;
+    }
     file {
         "/etc/init.d/api_semantica-gunicorn-be2":
-            ensure  => absent;
+            ensure  => absent,
+            require => Service["api_semantica-gunicorn-be2"];
         "/opt/etc/profile.d/api_semantica-gunicorn-be2.sh":
             ensure  => absent;
         "/opt/etc/profile.d/django-manage-api_semantica-be2.sh":
@@ -107,8 +111,9 @@ class brainiak::be inherits api_semantica::be {
         "/opt/api_semantica/gunicorn-be2":
             ensure  => absent,
             recurse => true, # enable recursive directory management
-            purge => true, # purge all unmanaged junk
-            force => true; # also purge subdirs and links etc.
+            purge   => true, # purge all unmanaged junk
+            force   => true, # also purge subdirs and links etc.
+            require => File["/etc/init.d/api_semantica-gunicorn-be2"];
         "/opt/api_semantica/app2":
             ensure  => absent;
     }

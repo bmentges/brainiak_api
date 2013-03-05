@@ -68,5 +68,6 @@ class InstanceResource(RequestHandler):
         if response is None:
             self.set_status(204)
         else:
+            # TODO JSON parsing to JSON Schema format
             self.write(response)
         self.finish()

@@ -62,8 +62,11 @@ class InstanceResource(RequestHandler):
 
     @asynchronous
     @gen.engine
-    def get(self, context_name, schema_name, instance_id):
-        response = yield gen.Task(get_instance, context_name, schema_name, instance_id)
+    def get(self, context_name, class_name, instance_id):
+        response = yield gen.Task(get_instance, context_name, class_name, instance_id)
         self.set_header('Access-Control-Allow-Origin', '*')
-        self.write(response)
+        if response is None:
+            self.set_status(204)
+        else:
+            self.write(response)
         self.finish()

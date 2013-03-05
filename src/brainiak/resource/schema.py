@@ -2,7 +2,7 @@
 
 import json
 from tornado import gen
-from brainiak.prefixes import MemorizeContext, shorten_uri
+from brainiak.prefixes import MemorizeContext, shorten_uri, prefix_from_uri
 from brainiak.triplestore import query_sparql
 from brainiak.result_handler import *
 from brainiak import settings
@@ -60,12 +60,13 @@ def assemble_schema_dict(short_uri, title, predicates, context, **kw):
 def query_class_schema(class_uri, context, callback):
     QUERY_TEMPLATE = """
         SELECT DISTINCT ?title ?comment
+        FROM <%(graph_uri)s>
         WHERE {
             <%(class_uri)s> a owl:Class .
             {<%(class_uri)s> rdfs:label ?title . FILTER(langMatches(lang(?title), "PT")) . }
             {<%(class_uri)s> rdfs:comment ?comment . FILTER(langMatches(lang(?comment), "PT")) .}
         }
-        """ % {"class_uri": class_uri}
+        """ % {"class_uri": class_uri, "graph_uri": prefix_from_uri(class_uri)}
     # self.logger.info("%s" % QUERY_TEMPLATE)
     query_sparql(callback, QUERY_TEMPLATE, context)
 
@@ -167,6 +168,7 @@ def _extract_cardinalities(bindings):
 def query_cardinalities(class_uri, class_schema, final_callback, context, callback):
     QUERY_TEMPLATE = u"""
     SELECT DISTINCT ?predicate ?min ?max ?range ?enumerated_value ?enumerated_value_label
+    FROM <%(graph_uri)s>
     WHERE {
         <%(class_uri)s> rdfs:subClassOf ?s OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
         ?s owl:onProperty ?predicate .
@@ -182,7 +184,7 @@ def query_cardinalities(class_uri, class_schema, final_callback, context, callba
             OPTIONAL { ?enumerated_value rdfs:label ?enumerated_value_label } .
         }
     }
-    """ % {"class_uri": class_uri}
+    """ % {"class_uri": class_uri, "graph_uri": prefix_from_uri(class_uri)}
     # self.logger.info("%s" % str(QUERY))
     query_sparql(callback, QUERY_TEMPLATE, class_schema, final_callback, context)
 
@@ -202,6 +204,7 @@ def query_predicates(class_uri, context, callback):
 def _query_predicate_with_lang(class_uri, context, callback):
     QUERY_TEMPLATE = """
     SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
+    FROM <%(graph_uri)s>
     WHERE {
         <%(class_uri)s> rdfs:subClassOf ?domain_class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
         GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
@@ -214,7 +217,7 @@ def _query_predicate_with_lang(class_uri, context, callback):
         FILTER(langMatches(lang(?predicate_comment), "%(lang)s")) .
         OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . FILTER(langMatches(lang(?label_do_range), "%(lang)s")) . } } .
         OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
-    }""" % {'class_uri': class_uri, 'lang': 'PT'}
+    }""" % {'class_uri': class_uri, "graph_uri": prefix_from_uri(class_uri), 'lang': 'PT'}
     # self.logger.info(QUERY_TEMPLATE)
     query_sparql(callback, QUERY_TEMPLATE, context)
 
@@ -222,6 +225,7 @@ def _query_predicate_with_lang(class_uri, context, callback):
 def _query_predicate_without_lang(class_uri, context, callback):
     QUERY_TEMPLATE = """
     SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
+    FROM <%(graph_uri)s>
     WHERE {
         <%(class_uri)s> rdfs:subClassOf ?domain_class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
         GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
@@ -232,6 +236,6 @@ def _query_predicate_without_lang(class_uri, context, callback):
         FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
         OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . } } .
         OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
-    }""" % {'class_uri': class_uri}
+    }""" % {'class_uri': class_uri, "graph_uri": prefix_from_uri(class_uri)}
     # self.logger.info(QUERY_TEMPLATE)
     query_sparql(callback, QUERY_TEMPLATE, context)

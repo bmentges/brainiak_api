@@ -31,6 +31,4 @@ def query_all_properties_and_objects(context_name, class_name, instance_id, call
         'context_name': context_name,
         'class_name': class_name,
     }
-    #self.logger.info(query)
-    print "\n\n\n", query, "\n\n\n"
     query_sparql(callback, query)

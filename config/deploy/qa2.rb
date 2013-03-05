@@ -5,8 +5,8 @@ role :docs, "api-semantica-be01.vb.qa02.globoi.com", :no_release => true
 
 set :sparql_endpoint, "http://qa2.virtuoso.globoi.com:8890/sparql-auth"
 
-
-
+# Lazy...
+set :password, 'busca'
 
 # Used by puppet module in Capistrano
 set :puppetmaster_env, "qa2"

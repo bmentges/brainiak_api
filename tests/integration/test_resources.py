@@ -11,18 +11,17 @@ class TestInstanceResource(TestHandlerBase):
 
     SAMPLE_JSON_INSTANCE = {}
 
-#    def test_get_instance_with_nonexistent_uri(self):
-#        self.http_client.fetch(self.get_url('/person/Gender/Alien'), self.stop)
-#        response = self.wait()
-#        self.assertEqual(response.code, 404)
-#
-#    def test_get_instance(self):
-#        self.http_client.fetch(self.get_url('/person/Gender/Male'), self.stop)
-#        response = self.wait()
-#        self.assertEqual(response.code, 200)
-#        json_received = json.loads(response.body)
-#        self.assertEqual(json_received, self.SAMPLE_JSON_INSTANCE)
-#
+    def test_get_instance_with_nonexistent_uri(self):
+        self.http_client.fetch(self.get_url('/person/Gender/Alien'), self.stop)
+        response = self.wait()
+        self.assertEqual(response.code, 204)
+
+    def test_get_instance(self):
+        self.http_client.fetch(self.get_url('/person/Gender/Male'), self.stop)
+        response = self.wait()
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received, self.SAMPLE_JSON_INSTANCE)
 
 
 class TestSchemaResource(TestHandlerBase):

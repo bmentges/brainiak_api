@@ -25,8 +25,10 @@ def get_instance(context_name, class_name, instance_id, callback):
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = "SELECT ?p ?o {<%(prefix)s/%(context_name)s/%(class_name)s/%(instance_id)s> a <%(prefix)s/%(context_name)s/%(class_name)s>; ?p ?o}"
 
+
 def query_all_properties_and_objects(context_name, class_name, instance_id, callback):
-    query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % {'instance_id': instance_id,
+    query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % {
+        'instance_id': instance_id,
         'prefix': URI_PREFIX,
         'context_name': context_name,
         'class_name': class_name,

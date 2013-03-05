@@ -9,7 +9,38 @@ from tests import TestHandlerBase
 
 class TestInstanceResource(TestHandlerBase):
 
-    SAMPLE_JSON_INSTANCE = {}
+    GENDER_MALE_JSON_INSTANCE = {
+        "head": {
+            "link": [],
+            "vars": [
+                "p",
+                "o"]
+        },
+        "results": {
+            "distinct": False,
+            "ordered": True,
+            "bindings": [{
+                "p": {
+                    "type": "uri",
+                    "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+                },
+                "o": {
+                    "type": "uri",
+                    "value": "http://semantica.globo.com/person/Gender"
+                }
+            }, {
+                "p": {
+                    "type": "uri",
+                    "value": "http://www.w3.org/2000/01/rdf-schema#label"
+                },
+                "o": {
+                    "type": "literal",
+                    "xml:lang": "pt",
+                    "value": "Masculino"
+                }
+            }]
+        }
+    }
 
     def test_get_instance_with_nonexistent_uri(self):
         self.http_client.fetch(self.get_url('/person/Gender/Alien'), self.stop)
@@ -21,7 +52,7 @@ class TestInstanceResource(TestHandlerBase):
         response = self.wait()
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
-        self.assertEqual(json_received, self.SAMPLE_JSON_INSTANCE)
+        self.assertEqual(json_received, self.GENDER_MALE_JSON_INSTANCE)
 
 
 class TestSchemaResource(TestHandlerBase):

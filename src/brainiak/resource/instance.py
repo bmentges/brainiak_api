@@ -15,7 +15,7 @@ def get_instance(context_name, class_name, instance_id, callback):
     """
     query_response = yield gen.Task(query_all_properties_and_objects, context_name, class_name, instance_id)
     result_dict = json.loads(query_response.body)
-    #import pdb; pdb.set_trace()
+
     if is_result_empty(result_dict):
         callback(None)
     else:

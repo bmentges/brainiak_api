@@ -5,9 +5,9 @@ import unittest
 from tornado import gen
 import mock
 
-from brainiak.resource import schema
+import brainiak.schema.resource as schema
 from brainiak import prefixes
-from brainiak.resource.schema import _extract_cardinalities, build_predicate_dict
+from brainiak.schema.resource import _extract_cardinalities, build_predicate_dict
 from tests import TornadoAsyncTestCase
 
 

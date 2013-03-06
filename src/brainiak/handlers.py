@@ -5,7 +5,7 @@ from tornado.web import asynchronous, HTTPError, RequestHandler
 
 from brainiak import settings, triplestore
 from brainiak import __version__
-from brainiak.resource.schema import get_schema
+from brainiak.schema.resource import get_schema
 #from brainiak.resource.instance import get_instance
 
 

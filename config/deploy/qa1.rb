@@ -1,5 +1,5 @@
 # Servers
-role :app, "cittavld45.globoi.com"  # deploys app source to filer
+role :app, "filer.qa01.globoi.com"  # deploys app source to filer
 role :restart, "cittavld45.globoi.com", :no_release => true # application
 role :docs, "cittavld45.globoi.com", :no_release => true  
 

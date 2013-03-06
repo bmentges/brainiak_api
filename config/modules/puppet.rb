@@ -30,8 +30,8 @@ def onetime
   sessions.values.each {|session| session.close}
   sessions.clear
   
-  puts "Sleeping 10s..."
-  sleep 10
+  puts "Sleeping 3s..."
+  sleep 3
   
   # Run puppet-setup
   sudo "/opt/local/bin/puppet-setup"

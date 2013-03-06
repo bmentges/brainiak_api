@@ -7,15 +7,16 @@ Dir['vendor/gems/*/recipes/*.rb','vendor/plugins/*/recipes/*.rb'].each { |plugin
 
 load 'config/deploy'
 load 'config/filter.rb'
-#load 'config/modules/puppet' # Load puppet module to execute puppet-setup every deploy, keeping the environment sync
+load 'config/modules/puppet' # Load puppet module to execute puppet-setup every deploy, keeping the environment sync
 
+before "deploy", "deploy:setup"
 before "deploy:restart", "deploy:clean_local"
 before "deploy:restart", "deploy:cleanup"
 
 #
 # Sempre executo o puppet para garantir o ambiente
 #
-#before "deploy:restart", "puppet:all"
+before "deploy:restart", "puppet:all"
 
 namespace :deploy do
     task :finalize_update do
@@ -37,8 +38,8 @@ namespace :deploy do
 
     # :restart redefinido para reinciar o gunicorn da APP_v2 (brainiak) apenas
     task :restart, :roles => :restart do
-        puts "Reiniciando o GUNICORN 2..."
-        run "sudo /etc/init.d/api_semantica-gunicorn-be2.brainiak restart 2> /dev/null"
+        puts "Reiniciando o GUNICORN 2 do BRAINIAK..."
+        run "sudo /etc/init.d/brainiak-gunicorn-be restart 2> /dev/null"
     end
 
 

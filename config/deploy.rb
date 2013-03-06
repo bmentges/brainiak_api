@@ -7,7 +7,7 @@ set :default_stage, "dev"
 set :application, "brainiak"
 set :project, "#{application}"
 
-set :deploy_to, "/mnt/projetos/deploy-be/api_semantica/app2"
+set :deploy_to, "/mnt/projetos/deploy-be/api_semantica/#{application}/app"
 set :docs_html, "#{deploy_to}/current/docs"
 
 before "deploy:update", "python:filter"

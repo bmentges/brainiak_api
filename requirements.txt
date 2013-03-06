@@ -3,4 +3,4 @@ tornado-auth-digest==2.4.post3
 
 SPARQLWrapper==1.5.0-authdigest
 
---extra-index-url=http://pypi.globoi.com/simple/
+--extra-index-url=http://pypi.globoi.com/

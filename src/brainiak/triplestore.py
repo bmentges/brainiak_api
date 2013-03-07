@@ -13,6 +13,8 @@ from brainiak import settings
 AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
 
 
+# TODO: compute runtime
+# TODO: log query and runtime
 def query_sparql(callback, query, *args, **kw):
     """
     Simple interface that given a SPARQL query string returns a string representing a SPARQL results bindings
@@ -21,6 +23,7 @@ def query_sparql(callback, query, *args, **kw):
     """
     connection = VirtuosoConnection()
     connection.query(callback, query, *args, **kw)
+
 
 SPARQL_RESULTS_FORMAT = {
     "json": "application/sparql-results+json",

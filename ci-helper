@@ -10,10 +10,10 @@ unit() {
     set -e
     pushd $PROJECT_PATH
     echo "Executando testes de unidade..."
-    cp src/api_semantica/settings_ci.py src/api_semantica/settings.py
+    cp src/brainiak/settings_ci.py src/brainiak/settings.py
     make install
     make unit
-    git checkout -- src/api_semantica/settings.py
+    git checkout -- src/brainiak/settings.py
     popd
 }
 
@@ -21,10 +21,10 @@ integration() {
     set -e
     pushd $PROJECT_PATH
     echo "Executando testes funcionais..."
-    cp src/api_semantica/settings_ci.py src/api_semantica/settings.py
+    cp src/brainiak/settings_ci.py src/api_semantica/settings.py
     make install
     make integration
-    git checkout -- src/api_semantica/settings.py
+    git checkout -- src/brainiak/settings.py
     popd
 }
 

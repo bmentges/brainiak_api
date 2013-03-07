@@ -7,15 +7,16 @@ Dir['vendor/gems/*/recipes/*.rb','vendor/plugins/*/recipes/*.rb'].each { |plugin
 
 load 'config/deploy'
 load 'config/filter.rb'
-#load 'config/modules/puppet' # Load puppet module to execute puppet-setup every deploy, keeping the environment sync
+load 'config/modules/puppet' # Load puppet module to execute puppet-setup every deploy, keeping the environment sync
 
+before "deploy", "deploy:setup"
 before "deploy:restart", "deploy:clean_local"
 before "deploy:restart", "deploy:cleanup"
 
 #
 # Sempre executo o puppet para garantir o ambiente
 #
-#before "deploy:restart", "puppet:all"
+before "deploy:restart", "puppet:all"
 
 namespace :deploy do
     task :finalize_update do
@@ -29,7 +30,7 @@ namespace :deploy do
         system "tar chzf docs.tar.gz docs"
         put File.read("docs.tar.gz"), "/tmp/docs.tar.gz", :via => :scp
         run "cd /tmp && tar xzf docs.tar.gz"
-        run 'cd /tmp/docs && export PATH="/opt/api_semantica/virtualenv/bin:$PATH" && export PYTHONPATH="' + deploy_to + '/current:$PYTHONPATH" && make html'
+        run 'cd /tmp/docs && export PATH="/opt/api_semantica/brainiak/virtualenv/bin:$PATH" && export PYTHONPATH="' + deploy_to + '/current:$PYTHONPATH" && make html'
         run "mv /tmp/docs/build/html #{docs_html}"
         run 'cd /tmp && rm -rf docs && rm docs.tar.gz'
         system "rm docs.tar.gz"
@@ -37,8 +38,8 @@ namespace :deploy do
 
     # :restart redefinido para reinciar o gunicorn da APP_v2 (brainiak) apenas
     task :restart, :roles => :restart do
-        puts "Reiniciando o GUNICORN 2..."
-        run "sudo /etc/init.d/api_semantica-gunicorn-be2.brainiak restart 2> /dev/null"
+        puts "Reiniciando o GUNICORN 2 do BRAINIAK..."
+        run "sudo /etc/init.d/brainiak-gunicorn-be restart 2> /dev/null"
     end
 
 

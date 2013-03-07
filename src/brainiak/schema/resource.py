@@ -5,7 +5,6 @@ from tornado import gen
 
 from brainiak import settings
 from brainiak.prefixes import MemorizeContext, shorten_uri, prefix_from_uri
-from brainiak.schema.queries import QUERY_CARDINALITIES, QUERY_CLASS_SCHEMA, QUERY_PREDICATES_WITH_LANG, QUERY_PREDICATES_WITHOUT_LANG
 from brainiak.result_handler import *
 from brainiak.triplestore import query_sparql
 from brainiak.type_mapper import items_from_type, OBJECT_PROPERTY, DATATYPE_PROPERTY, items_from_range

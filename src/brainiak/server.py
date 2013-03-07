@@ -4,7 +4,7 @@ from tornado.ioloop import IOLoop
 from tornado.web import Application as TornadoApplication
 
 from brainiak import __doc__, log, settings
-from brainiak.urls import resources
+from brainiak import urls
 
 server = None
 
@@ -12,7 +12,7 @@ server = None
 class Application(TornadoApplication):
 
     def __init__(self, debug=False):
-        super(Application, self).__init__(resources, debug=debug)
+        super(Application, self).__init__(urls.get_routes(), debug=debug)
 
 application = Application()
 

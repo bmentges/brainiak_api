@@ -71,3 +71,27 @@ class InstanceResource(RequestHandler):
             # TODO JSON parsing to JSON Schema format
             self.write(response)
         self.finish()
+
+
+class InstanceFilterResource(RequestHandler):
+
+    DEFAULT_PER_PAGE = "10"
+    DEFAULT_PAGE = "0"
+
+    def __init__(self, *args, **kwargs):
+        super(InstanceFilterResource, self).__init__(*args, **kwargs)
+
+    @asynchronous
+    @gen.engine
+    def get(self, context_name, class_name):
+        query_params = {
+            "class_uri": "{0}/{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
+            "page": self.DEFAULT_PAGE,
+            "per_page": self.DEFAULT_PER_PAGE,
+            "predicate": "?predicate",
+            "object": "?object"}
+
+        for (query_param, default_value) in optional_params.items():
+            optional_params[query_param] = self.get_argument(query_param, default_value)
+
+        # FIXME: UNDER DEV!!!

@@ -9,19 +9,19 @@ from brainiak.schema.resource import get_schema
 from brainiak.instance.resource import get_instance
 
 
-class HealthcheckResource(RequestHandler):
+class HealthcheckHandler(RequestHandler):
 
     def get(self):
         self.write("WORKING")
 
 
-class VersionResource(RequestHandler):
+class VersionHandler(RequestHandler):
 
     def get(self):
         self.write(__version__)
 
 
-class VirtuosoStatusResource(RequestHandler):
+class VirtuosoStatusHandler(RequestHandler):
 
     def get(self):
         if settings.ENVIRONMENT == 'prod':
@@ -30,10 +30,10 @@ class VirtuosoStatusResource(RequestHandler):
         self.write(triplestore.status())
 
 
-class SchemaResource(RequestHandler):
+class SchemaHandler(RequestHandler):
 
     def __init__(self, *args, **kwargs):
-        super(SchemaResource, self).__init__(*args, **kwargs)
+        super(SchemaHandler, self).__init__(*args, **kwargs)
 
     @asynchronous
     @gen.engine
@@ -46,19 +46,10 @@ class SchemaResource(RequestHandler):
             self.write(response)
         self.finish()
 
-    # @asynchronous
-    # @gen.engine
-    # def post(self, context_name, collection_name, schema_name):
-    #     #data = yield gen.Task(self._entities.add, context_name, collection_name, self.request.body)
-    #     self.set_status(201)
-    #     #self.set_header('Location', headers.location(self.request, data['slug']))
-    #     self.finish()
-
-
-class InstanceResource(RequestHandler):
+class InstanceHandler(RequestHandler):
 
     def __init__(self, *args, **kwargs):
-        super(InstanceResource, self).__init__(*args, **kwargs)
+        super(InstanceHandler, self).__init__(*args, **kwargs)
 
     @asynchronous
     @gen.engine

@@ -34,12 +34,24 @@ _MAP_SLUG_TO_PREFIX = {
 _MAP_PREFIX_TO_SLUG = {v: k for k, v in _MAP_SLUG_TO_PREFIX.items()}
 
 
+class PrefixError(Exception):
+    pass
+
+
 def prefix_from_uri(uri):
     return uri[:uri.rfind("/") + 1]
 
 
-def slug_to_prefix(prefix):
+def safe_slug_to_prefix(prefix):
     return _MAP_SLUG_TO_PREFIX.get(prefix, prefix)
+
+
+def slug_to_prefix(slug):
+    try:
+        prefix = _MAP_SLUG_TO_PREFIX[slug]
+    except KeyError:
+        raise PrefixError("Prefix is not defined for slug {0}".format(slug))
+    return prefix
 
 
 def prefix_to_slug(prefix):
@@ -52,7 +64,7 @@ def uri_to_slug(uri):
 
 def extract_prefix(uri):
     prefixes = _MAP_PREFIX_TO_SLUG.keys()
-    # Inspired by code  from Vaughn Cato
+    # Inspired by code from Vaughn Cato
     uri_prefix = filter(uri.startswith, prefixes + [''])[0]
     return uri_prefix
 
@@ -64,6 +76,12 @@ def shorten_uri(uri):
         return "{0}:{1}".format(prefix_to_slug(uri_prefix), item)
     else:
         return uri
+
+
+def expand_uri(short_uri):
+    slug, item = short_uri.split(":")
+    prefix = slug_to_prefix(slug)
+    return "{0}/{1}".format(prefix, item)
 
 
 class MemorizeContext(object):

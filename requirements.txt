@@ -1,1 +1,1 @@
-puppet/modules/brainiak/files/requirements.txt
+-r puppet/modules/brainiak/files/requirements.txt

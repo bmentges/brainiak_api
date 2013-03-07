@@ -21,7 +21,7 @@ integration() {
     set -e
     pushd $PROJECT_PATH
     echo "Executando testes funcionais..."
-    cp src/brainiak/settings_ci.py src/api_semantica/settings.py
+    cp src/brainiak/settings_ci.py src/brainiak/settings.py
     make install
     make integration
     git checkout -- src/brainiak/settings.py

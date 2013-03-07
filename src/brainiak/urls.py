@@ -1,12 +1,15 @@
-# -*- coding: utf-8 -*-
-from brainiak.handlers import SchemaResource, VersionResource, \
-    HealthcheckResource, VirtuosoStatusResource, InstanceResource, InstanceFilterResource
+from brainiak.handlers import SchemaHandler, VersionHandler, \
+    HealthcheckHandler, VirtuosoStatusHandler, InstanceHandler, InstanceFilterHandler
 
-resources = [
-    (r'/(?P<context_name>.+)/(?P<class_name>.+)/_filter', InstanceFilterResource),
-    (r'/(?P<context_name>.+)/(?P<class_name>.+)/_schema', SchemaResource),
-    (r'/(?P<context_name>.+)/(?P<class_name>.+)/(?P<instance_id>.+)', InstanceResource),
-    (r'/healthcheck', HealthcheckResource),
-    (r'/version', VersionResource),
-    (r'/status/virtuoso', VirtuosoStatusResource)
-]
+from tornado.web import URLSpec
+
+
+def get_routes():
+    return [
+        URLSpec(r'/healthcheck', HealthcheckHandler),
+        URLSpec(r'/version', VersionHandler),
+        URLSpec(r'/status/virtuoso', VirtuosoStatusHandler),
+        URLSpec(r'/(?P<context_name>.+)/(?P<class_name>.+)/_filter', InstanceFilterHandler),
+        URLSpec(r'/(?P<context_name>.+)/(?P<class_name>.+)/_schema', SchemaHandler),
+        URLSpec(r'/(?P<context_name>.+)/(?P<class_name>.+)/(?P<instance_id>.+)', InstanceHandler)
+    ]

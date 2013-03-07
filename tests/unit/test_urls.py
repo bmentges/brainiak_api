@@ -4,6 +4,7 @@ from unittest import TestCase
 from brainiak.handlers import SchemaHandler, VersionHandler, \
     HealthcheckHandler, VirtuosoStatusHandler, InstanceHandler
 
+
 class RouteTestCase(TestCase):
 
     def test_healthcheck(self):
@@ -26,7 +27,7 @@ class RouteTestCase(TestCase):
         VALID_SCHEMA_RESOURCE_SUFFIX = '/person/Gender/_schema'
         match_pattern = regex.match(VALID_SCHEMA_RESOURCE_SUFFIX)
 
-        expected_params = {"context_name":  "person", "class_name": "Gender"}
+        expected_params = {"context_name": "person", "class_name": "Gender"}
         self.assertTrue(self._groups_match(match_pattern, expected_params))
 
     def test_invalid_schema_resource(self):
@@ -36,13 +37,12 @@ class RouteTestCase(TestCase):
 
         self.assertFalse(self._groups_match(match_pattern, {}))
 
-
-    def test_invalid_schema_resource(self):
+    def test_invalid_schema_resource_with_unexpected_params(self):
         regex = self._regex_for(SchemaHandler)
         VALID_SCHEMA_RESOURCE_SUFFIX = '/person/Gender/_schema'
         match_pattern = regex.match(VALID_SCHEMA_RESOURCE_SUFFIX)
 
-        unexpected_params = {"context_name":  "person", 
+        unexpected_params = {"context_name": "person",
                              "class_name": "Gender",
                              "unexpected_param": "param"}
         self.assertFalse(self._groups_match(match_pattern, unexpected_params))
@@ -52,7 +52,7 @@ class RouteTestCase(TestCase):
         INVALID_SCHEMA_RESOURCE_SUFFIX = '/person/Gender/_class_schema'
         match_pattern = regex.match(INVALID_SCHEMA_RESOURCE_SUFFIX)
 
-        unexpected_params = {"context_name":  "person", "class_name": "Gender"}
+        unexpected_params = {"context_name": "person", "class_name": "Gender"}
         self.assertFalse(self._groups_match(match_pattern, unexpected_params))
 
     def test_instance_resource(self):
@@ -70,7 +70,6 @@ class RouteTestCase(TestCase):
 
         expected_params = {"context_name": "person", "class_name": "Gender", "crazy_parameter": "crazy_value"}
         self.assertFalse(self._groups_match(match_pattern, expected_params))
-
 
     def _regex_for(self, klass):
         return filter(lambda u: u.handler_class == klass, urls.get_routes())[0].regex

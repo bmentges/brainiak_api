@@ -5,8 +5,8 @@ from tornado.web import asynchronous, HTTPError, RequestHandler
 
 from brainiak import settings, triplestore
 from brainiak import __version__
-from brainiak.resource.schema import get_schema
-#from brainiak.resource.instance import get_instance
+from brainiak.schema.resource import get_schema
+from brainiak.instance.resource import get_instance
 
 
 class HealthcheckResource(RequestHandler):
@@ -55,15 +55,19 @@ class SchemaResource(RequestHandler):
     #     self.finish()
 
 
-# class InstanceResource(RequestHandler):
+class InstanceResource(RequestHandler):
 
-#     def __init__(self, *args, **kwargs):
-#         super(InstanceResource, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(InstanceResource, self).__init__(*args, **kwargs)
 
-#     @asynchronous
-#     @gen.engine
-#     def get(self, context_name, schema_name, instance_id):
-#         response = yield gen.Task(get_instance, context_name, schema_name, instance_id)
-#         self.set_header('Access-Control-Allow-Origin', '*')
-#         self.write(response)
-#         self.finish()
+    @asynchronous
+    @gen.engine
+    def get(self, context_name, class_name, instance_id):
+        response = yield gen.Task(get_instance, context_name, class_name, instance_id)
+        self.set_header('Access-Control-Allow-Origin', '*')
+        if response is None:
+            self.set_status(204)
+        else:
+            # TODO JSON parsing to JSON Schema format
+            self.write(response)
+        self.finish()

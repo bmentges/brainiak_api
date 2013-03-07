@@ -1,6 +1,1 @@
-pycurl==7.19.0
-tornado-auth-digest==2.4.post3
-
-SPARQLWrapper==1.5.0-authdigest
-
---extra-index-url=http://pypi.globoi.com/simple/
+-r puppet/modules/brainiak/files/requirements.txt

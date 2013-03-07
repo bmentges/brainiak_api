@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from brainiak.prefixes import prefix_to_slug, slug_to_prefix, shorten_uri, MemorizeContext, uri_to_slug, prefix_from_uri
+from brainiak.prefixes import expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError
 
 
 class PrefixesTestCase(unittest.TestCase):
@@ -12,8 +12,17 @@ class PrefixesTestCase(unittest.TestCase):
     def test_uri_to_slug(self):
         self.assertEquals(uri_to_slug('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 'rdf')
 
-    def test_slug_to_prefix(self):
-        self.assertEquals(slug_to_prefix('rdf'), 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+    def test_safe_slug_to_prefix_when_prefix_is_defined(self):
+        self.assertEquals(safe_slug_to_prefix('rdf'), 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+
+    def test_safe_slug_to_prefix_when_prefix_is_not_defined(self):
+        self.assertEquals(safe_slug_to_prefix('bigoletinha'), 'bigoletinha')
+
+    def test_slug_to_prefix_when_prefix_is_defined(self):
+        self.assertEquals(slug_to_prefix('dct'), 'http://purl.org/dc/terms/')
+
+    def test_slug_to_prefix_when_prefix_is_not_defined(self):
+        self.assertRaises(PrefixError, slug_to_prefix, 'alchueyr')
 
     def test_shorten_uri_success(self):
         self.assertEquals(shorten_uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), "rdf:type")
@@ -23,6 +32,9 @@ class PrefixesTestCase(unittest.TestCase):
 
     def test_prefix_from_uri(self):
         self.assertEquals("http://test/person/", prefix_from_uri("http://test/person/Person"))
+
+    def test_expand_uri(self):
+        self.assertEquals("http://www.w3.org/2003/01/geo/wgs84_pos#/Brasil", expand_uri("geo:Brasil"))
 
 
 class MemorizeContextTestCase(unittest.TestCase):

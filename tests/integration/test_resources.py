@@ -50,9 +50,9 @@ class TestInstanceResource(TestHandlerBase):
     def test_get_instance(self):
         self.http_client.fetch(self.get_url('/person/Gender/Male'), self.stop)
         response = self.wait()
-        self.assertEqual(response.code, 204)
-        #json_received = json.loads(response.body)
-        #self.assertEqual(json_received, self.GENDER_MALE_JSON_INSTANCE)
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received, self.GENDER_MALE_JSON_INSTANCE)
 
 
 class TestSchemaResource(TestHandlerBase):

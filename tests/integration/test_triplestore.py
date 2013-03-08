@@ -1,8 +1,9 @@
 from mock import patch
 
-from brainiak import triplestore
-from tests import TornadoAsyncTestCase
-
+from brainiak import triplestore, server
+from brainiak.greenlet_tornado import greenlet_test
+from tests import TornadoAsyncTestCase, HTTPError
+import greenlet
 
 SIMPLE_COUNT_CLASSES_QUERY = "SELECT COUNT(*) WHERE {?s a owl:Class}"
 
@@ -20,6 +21,9 @@ class EndpointConfig:
 
 class TriplestoreTestCase(TornadoAsyncTestCase):
 
+    application = lambda: None
+    application._wsgi = None
+
     def is_response_ok(self, response, *args, **kw):
         self.assertEquals(response.code, 200)
         self.stop()
@@ -32,30 +36,34 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         self.assertEquals(response.code, 401)
         self.stop()
 
-    @patch("brainiak.triplestore.settings",
-           SPARQL_ENDPOINT=EndpointConfig.URL,
-           )
-    def test_query_ok(self, settings):
-        virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
-        virtuoso_connection.query(self.is_response_ok, SIMPLE_COUNT_CLASSES_QUERY)
-        self.wait()
-
+    @greenlet_test
     @patch("brainiak.triplestore.settings",
            SPARQL_ENDPOINT=EndpointConfig.URL,
            )
     def test_query_ok_with_get_method(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
-        virtuoso_connection.query(self.is_response_ok, SIMPLE_COUNT_CLASSES_QUERY, method="GET")
-        self.wait()
+        response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY, method="GET")
+        self.assertEquals(response.code, 200)
 
-    @patch("brainiak.triplestore.settings",
-           SPARQL_ENDPOINT=EndpointConfig.URL,
-           )
+    @greenlet_test
+    @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.URL)
+    def test_query_ok(self, settings):
+        virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
+        response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY)
+        self.assertEquals(response.code, 200)
+
+
+    @greenlet_test
+    @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.URL)
     def test_malformed_query(self, settings):
         MALFORMED_QUERY = "SELECT A MALFORMED QUERY {?s ?p ?o}"
         virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
-        virtuoso_connection.query(self.is_malformed_query, MALFORMED_QUERY)
-        self.wait()
+        try:
+            virtuoso_connection.query(MALFORMED_QUERY)
+        except HTTPError as ex:
+            self.assertEquals(ex.code, 400)
+        else:
+            self.fail("HTTPError not raised")
 
     # Authentication HAPPY paths
     @patch("brainiak.triplestore.settings",

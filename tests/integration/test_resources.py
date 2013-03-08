@@ -2,12 +2,13 @@
 import json
 
 
-from brainiak import __version__
-from brainiak import settings
-from tests import TestHandlerBase
+from brainiak import __version__, settings
+from brainiak.greenlet_tornado import greenlet_test, greenlet_fetch
+
+from tests import TornadoAsyncTestCase
 
 
-class TestInstanceResource(TestHandlerBase):
+class TestInstanceResource(TornadoAsyncTestCase):
 
     GENDER_MALE_JSON_INSTANCE = {
         "head": {
@@ -42,20 +43,20 @@ class TestInstanceResource(TestHandlerBase):
         }
     }
 
+    @greenlet_test
     def test_get_instance_with_nonexistent_uri(self):
-        self.http_client.fetch(self.get_url('/person/Gender/Alien'), self.stop)
-        response = self.wait()
+        response = greenlet_fetch(self.get_url('/person/Gender/Alien'))
         self.assertEqual(response.code, 204)
 
+    @greenlet_test
     def test_get_instance(self):
-        self.http_client.fetch(self.get_url('/person/Gender/Male'), self.stop)
-        response = self.wait()
+        response = greenlet_fetch(self.get_url('/person/Gender/Male'))
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         self.assertEqual(json_received, self.GENDER_MALE_JSON_INSTANCE)
 
 
-class TestSchemaResource(TestHandlerBase):
+class TestSchemaResource(TornadoAsyncTestCase):
 
     SAMPLE_SCHEMA_JSON = {
         u'schema': {
@@ -72,16 +73,16 @@ class TestSchemaResource(TestHandlerBase):
 
     maxDiff = None
 
+    @greenlet_test
     def test_schema_handler(self):
-        self.http_client.fetch(self.get_url('/person/Gender/_schema'), self.stop)
-        response = self.wait()
+        response = greenlet_fetch(self.get_url('/person/Gender/_schema'))
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
 
+    @greenlet_test
     def test_schema_handler_class_undefined(self):
-        self.http_client.fetch(self.get_url('/animals/Ornithorhynchus/_schema'), self.stop)
-        response = self.wait()
+        response = greenlet_fetch(self.get_url('/animals/Ornithorhynchus/_schema'))
         self.assertEqual(response.code, 204)
         self.assertFalse(response.body)
 

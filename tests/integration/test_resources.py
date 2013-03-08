@@ -4,8 +4,7 @@ import json
 
 from brainiak import __version__, settings
 from brainiak.greenlet_tornado import greenlet_test, greenlet_fetch
-
-from tests import TornadoAsyncTestCase
+from tests import TornadoAsyncTestCase, TornadoAsyncHTTPTestCase
 
 
 class TestInstanceResource(TornadoAsyncTestCase):
@@ -87,7 +86,7 @@ class TestSchemaResource(TornadoAsyncTestCase):
         self.assertFalse(response.body)
 
 
-class TestHealthcheckResource(TestHandlerBase):
+class TestHealthcheckResource(TornadoAsyncHTTPTestCase):
 
     def test_healthcheck(self):
         response = self.fetch('/healthcheck', method='GET')
@@ -95,15 +94,14 @@ class TestHealthcheckResource(TestHandlerBase):
         self.assertTrue(response.body, "WORKING")
 
 
-class TestVersionResource(TestHandlerBase):
-
+class TestVersionResource(TornadoAsyncTestCase):
     def test_healthcheck(self):
         response = self.fetch('/version', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, __version__)
 
 
-class TestVirtuosoStatusResource(TestHandlerBase):
+class TestVirtuosoStatusResource(TornadoAsyncTestCase):
 
     def setUp(self):
         self.original_settings_env = settings.ENVIRONMENT

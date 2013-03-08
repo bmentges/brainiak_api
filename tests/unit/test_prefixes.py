@@ -36,6 +36,12 @@ class PrefixesTestCase(unittest.TestCase):
     def test_expand_uri(self):
         self.assertEquals("http://www.w3.org/2003/01/geo/wgs84_pos#/Brasil", expand_uri("geo:Brasil"))
 
+    def test_expand_uri_that_is_already_a_uri(self):
+        self.assertEquals("http://oi", expand_uri("http://oi"))
+
+    def test_expand_uri_that_is_already_a_uri_with_https(self):
+        self.assertEquals("https://secure", expand_uri("https://secure"))
+
 
 class MemorizeContextTestCase(unittest.TestCase):
 

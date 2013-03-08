@@ -1,0 +1,9 @@
+@prefix tpedia: <http://tatipedia.org/> .
+
+tpedia:john a tpedia:Person ;
+            tpedia:likes tpedia:JiuJitsu .
+
+tpedia:mary a tpedia:Person ;
+            tpedia:likes tpedia:Capoeira ;
+            tpedia:likes tpedia:JiuJitsu ;
+            tpedia:dislikes tpedia:BungeeJump .

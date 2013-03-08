@@ -192,7 +192,7 @@ def query_predicates(class_uri, context):
     if not response['results']['bindings']:
         return _query_predicate_without_lang(class_uri, context)
     else:
-        return (tornado_response, context)
+        return tornado_response
 
 
 def _query_predicate_with_lang(class_uri, context):

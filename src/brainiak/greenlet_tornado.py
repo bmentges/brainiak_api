@@ -66,9 +66,10 @@ def greenlet_fetch(request, **kwargs):
     assert gr.parent is not None, "greenlet_fetch() can only be called (possibly indirectly) from a RequestHandler method wrapped by the greenlet_asynchronous decorator."
 
     def callback(response):
-        #gr.switch(response)
+        gr.switch(response)
         # Make sure we are on the master greenlet before we switch.
-        IOLoop.instance().add_callback(partial(gr.switch, response))
+        #IOLoop.instance().add_callback(partial(gr.switch, response))
+        #io_loop.add_callback(partial(gr.switch, response))
 
     http_client = tornado.httpclient.AsyncHTTPClient(io_loop=io_loop)
     http_client.fetch(request, callback, **kwargs)
@@ -105,20 +106,21 @@ def greenlet_asynchronous(wrapped_method):
     return wrapper
 
 
-def greenlet_engine(wrapped_method):
+def greenlet_test(wrapped_method):
     """
     Decorator that allows you to make async calls as if they were synchronous, by pausing the callstack and resuming it later.
 
     This decorator is meant to be used on the functions that implement primitives of the API.
     """
-    @tornado.web.asynchronous
     @wraps(wrapped_method)
     def wrapper(self, *args, **kwargs):
 
         def greenlet_base_func():
             wrapped_method(self, *args, **kwargs)
+            self.stop()
 
         gr = greenlet.greenlet(greenlet_base_func)
         gr.switch()
+        self.wait()
 
     return wrapper

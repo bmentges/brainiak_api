@@ -10,6 +10,17 @@ from SPARQLWrapper import Wrapper, JSON
 from brainiak import settings
 
 
+def build_json(bindings):
+    return {
+        u'head': {u'link': [], u'vars': [u'subject']},
+        u'results': {
+            u'bindings': bindings,
+            u'distinct': False,
+            u'ordered': True
+        }
+    }
+
+
 class SimpleTestCase(unittest.TestCase):
 
     maxDiff = None

@@ -46,6 +46,7 @@ class SchemaHandler(RequestHandler):
             self.write(response)
         self.finish()
 
+
 class InstanceHandler(RequestHandler):
 
     def __init__(self, *args, **kwargs):
@@ -62,6 +63,10 @@ class InstanceHandler(RequestHandler):
             # TODO JSON parsing to JSON Schema format
             self.write(response)
         self.finish()
+
+#localhost:5100/person/Person/_filter?predicate=person:Joao
+#localhost:5100/person/Person/_filter?predicate=http://Joao
+#localhost:5100/person/Person/_filter?object=http://Falou
 
 
 class InstanceFilterHandler(RequestHandler):

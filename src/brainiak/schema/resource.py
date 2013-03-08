@@ -10,27 +10,25 @@ from brainiak.triplestore import query_sparql
 from brainiak.type_mapper import items_from_type, OBJECT_PROPERTY, DATATYPE_PROPERTY, items_from_range
 
 
-@gen.engine
-def get_schema(context_name, schema_name, callback):
+def get_schema(context_name, schema_name):
     class_uri = "/".join((settings.URI_PREFIX, context_name, schema_name))
     context = MemorizeContext()
     short_uri = context.shorten_uri(class_uri)
 
-    response = yield gen.Task(query_class_schema, class_uri, context)
-    tornado_response = response.args[0]
+    tornado_response = query_class_schema(class_uri, context)
     class_schema = json.loads(tornado_response.body)
     if not class_schema["results"]["bindings"]:
-        callback(None)
+        return
 
-    response = yield gen.Task(get_predicates_and_cardinalities, class_uri, class_schema, context)
-    class_schema, predicates_and_cardinalities = response.args
+    response = get_predicates_and_cardinalities(class_uri, class_schema, context)
+    class_schema, predicates_and_cardinalities = response
 
     response_dict = assemble_schema_dict(short_uri,
                                          get_one_value(class_schema, "title"),
                                          predicates_and_cardinalities,
                                          context,
                                          comment=get_one_value(class_schema, "comment"))
-    callback(response_dict)
+    return response_dict
 
 
 def assemble_schema_dict(short_uri, title, predicates, context, **kw):
@@ -58,7 +56,7 @@ def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     return response
 
 
-def query_class_schema(class_uri, context, callback):
+def query_class_schema(class_uri, context):
     query = """
         SELECT DISTINCT ?title ?comment
         FROM <%(graph_uri)s>
@@ -68,18 +66,17 @@ def query_class_schema(class_uri, context, callback):
             {<%(class_uri)s> rdfs:comment ?comment . FILTER(langMatches(lang(?comment), "PT")) .}
         }
         """ % {"class_uri": class_uri, "graph_uri": prefix_from_uri(class_uri)}
-    query_sparql(callback, query, context)
+    return query_sparql(query, context)
 
 
-@gen.engine
-def get_predicates_and_cardinalities(class_uri, class_schema, context, callback):
-    response = yield gen.Task(query_cardinalities, class_uri, class_schema, callback, context)
-    tornado_response, class_schema, callback, context = response.args
+def get_predicates_and_cardinalities(class_uri, class_schema, context):
+    response = query_cardinalities(class_uri, class_schema, context)
+    tornado_response = response
     query_result = json.loads(tornado_response.body)
     cardinalities = _extract_cardinalities(query_result['results']['bindings'])
 
-    response = yield gen.Task(query_predicates, class_uri, context)
-    tornado_response, context = response.args
+    response = query_predicates(class_uri, context)
+    tornado_response = response
     predicates = json.loads(tornado_response.body)
     predicate_definitions = predicates['results']['bindings']
     range_dict = {p['predicate']['value']: p['range']['value'] for p in predicate_definitions}
@@ -102,7 +99,7 @@ def get_predicates_and_cardinalities(class_uri, class_schema, context, callback)
     for p in remove_super_predicates:
         del predicates_dict[shorten_uri(p)]
 
-    callback(class_schema, predicates_dict)
+    return (class_schema, predicates_dict)
 
 
 def build_predicate_dict(name, predicate, cardinalities, context):
@@ -165,7 +162,7 @@ def _extract_cardinalities(bindings):
     return cardinalities
 
 
-def query_cardinalities(class_uri, class_schema, final_callback, context, callback):
+def query_cardinalities(class_uri, class_schema, context):
     query = """
         SELECT DISTINCT ?predicate ?min ?max ?range ?enumerated_value ?enumerated_value_label
         FROM <%(graph_uri)s>
@@ -184,22 +181,21 @@ def query_cardinalities(class_uri, class_schema, final_callback, context, callba
                 OPTIONAL { ?enumerated_value rdfs:label ?enumerated_value_label } .
             }
         }""" % {"class_uri": class_uri, "graph_uri": prefix_from_uri(class_uri)}
-    query_sparql(callback, query, class_schema, final_callback, context)
+    return query_sparql(query, class_schema, context)
 
 
-@gen.engine
-def query_predicates(class_uri, context, callback):
-    resp = yield gen.Task(_query_predicate_with_lang, class_uri, context)
-    tornado_response, context = resp.args
+def query_predicates(class_uri, context):
+    resp = _query_predicate_with_lang(class_uri, context)
+    tornado_response = resp
 
     response = json.loads(tornado_response.body)
     if not response['results']['bindings']:
-        _query_predicate_without_lang(class_uri, context, callback)
+        return _query_predicate_without_lang(class_uri, context)
     else:
-        callback(tornado_response, context)
+        return (tornado_response, context)
 
 
-def _query_predicate_with_lang(class_uri, context, callback):
+def _query_predicate_with_lang(class_uri, context):
     query = """
         SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
         FROM <%(graph_uri)s>
@@ -216,10 +212,10 @@ def _query_predicate_with_lang(class_uri, context, callback):
             OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . FILTER(langMatches(lang(?label_do_range), "%(lang)s")) . } } .
             OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
         }""" % {'class_uri': class_uri, "graph_uri": prefix_from_uri(class_uri), 'lang': 'PT'}
-    query_sparql(callback, query, context)
+    return query_sparql(query, context)
 
 
-def _query_predicate_without_lang(class_uri, context, callback):
+def _query_predicate_without_lang(class_uri, context):
     query = """
         SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
         FROM <%(graph_uri)s>
@@ -234,4 +230,4 @@ def _query_predicate_without_lang(class_uri, context, callback):
             OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . } } .
             OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
         }""" % {'class_uri': class_uri, "graph_uri": prefix_from_uri(class_uri)}
-    query_sparql(callback, query, context)
+    return query_sparql(query, context)

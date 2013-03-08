@@ -41,6 +41,7 @@ from functools import wraps, partial
 
 io_loop = None
 
+
 def greenlet_set_ioloop(param_io_loop=None):
     global io_loop
     io_loop = param_io_loop or IOLoop.instance()
@@ -102,6 +103,7 @@ def greenlet_asynchronous(wrapped_method):
         gr.switch()
 
     return wrapper
+
 
 def greenlet_engine(wrapped_method):
     """

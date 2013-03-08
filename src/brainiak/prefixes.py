@@ -78,7 +78,15 @@ def shorten_uri(uri):
         return uri
 
 
+def is_uri(something):
+    if something.startswith("http://") or something.startswith("https://"):
+        return True
+    return False
+
+
 def expand_uri(short_uri):
+    if is_uri(short_uri):
+        return short_uri
     slug, item = short_uri.split(":")
     prefix = slug_to_prefix(slug)
     return "{0}/{1}".format(prefix, item)

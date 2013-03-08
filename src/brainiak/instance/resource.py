@@ -57,22 +57,19 @@ def filter_instances(context_name, params, callback):
 
 
 QUERY_FILTER_INSTANCE = """
-SELECT * {
-
-    ?subject a <{class_uri}>;
-             {predicate} {object}} .
+SELECT DISTINCT ?subject {
+    ?subject a <%(class_uri)s>;
+             %(predicate)s %(object)s .
+}
 """
 
 
 def query_filter_instances(context_name, query_params, callback):
     potential_uris = ["object", "predicate"]
+
     for key in potential_uris:
-        value = query_params[key]
-        if not value.startswith("?"):
-            query_params[key] = "<%s>" % object_
+        if not query_params[key].startswith("?"):
+            query_params[key] = "<%s>" % expand_uri(query_params[key])
 
-    if not query_params["predicate"].startswith("?"):
-        query_params["predicate"] = "<%s>" % query_params["predicate"]
-
-    query = QUERY_FILTER_INSTANCE.format(**query_params)
+    query = QUERY_FILTER_INSTANCE % query_params
     query_sparql(callback, query)

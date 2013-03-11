@@ -28,7 +28,6 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         schema.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
         super(TornadoAsyncTestCase, self).tearDown()
 
-    @greenlet_test
     def test_query_get_schema(self):
         expected_response = {
             "schema": {
@@ -60,7 +59,7 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         self.assertIn("@id", schema_response)
         self.assertIn("properties", schema_response)
         # FIXME: enhance the structure of the response
-
+        self.stop()
 
 class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
     maxDiff = None
@@ -77,7 +76,6 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         schema._extract_cardinalities = self.original_extract_cardinalities
         super(TornadoAsyncTestCase, self).tearDown()
 
-    @greenlet_test
     def test_get_predicates_and_cardinalities(self):
         context = prefixes.MemorizeContext()
         class_uri = "http://test/person/gender"
@@ -152,6 +150,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                  }
         }
         self.assertEquals(response_predicates_and_cardinalities, expected_predicates_and_cardinalities)
+        self.stop()
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):

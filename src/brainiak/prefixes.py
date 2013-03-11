@@ -2,9 +2,8 @@
 
 """
 This module uses the following nomenclature:
-
- uri = http://a/b/c/D
- prefix = http://a/b/c
+ uri = http://a/b/cD
+ prefix = http://a/b/c/ or http://a/b/c#
  item_ = D
  slug = x
  short_uri = x:D
@@ -89,7 +88,7 @@ def expand_uri(short_uri):
         return short_uri
     slug, item = short_uri.split(":")
     prefix = slug_to_prefix(slug)
-    return "{0}/{1}".format(prefix, item)
+    return "{0}{1}".format(prefix, item)
 
 
 class MemorizeContext(object):

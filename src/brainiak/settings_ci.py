@@ -15,4 +15,4 @@ LOG_FILEPATH = '/tmp/brainiak.log'
 LOG_LEVEL = logging.DEBUG
 LOG_NAME = "brainiak"
 
-URI_PREFIX = "http://semantica.globo.com"
+URI_PREFIX = "http://semantica.globo.com/"

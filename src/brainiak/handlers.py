@@ -83,7 +83,9 @@ class InstanceFilterHandler(RequestHandler):
         for (query_param, default_value) in query_params.items():
             query_params[query_param] = self.get_argument(query_param, default_value)
 
-        response = filter_instances(context_name, query_params)
         self.set_header('Access-Control-Allow-Origin', '*')
-
-        self.write(response)
+        response = filter_instances(context_name, query_params)
+        if response is None:
+            self.set_status(204)
+        else:
+            self.write(response)

@@ -2,9 +2,7 @@
 
 import json
 import unittest
-from tornado import gen
 import mock
-from brainiak.greenlet_tornado import greenlet_test
 
 import brainiak.schema.resource as schema
 from brainiak import prefixes
@@ -29,15 +27,6 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         super(TornadoAsyncTestCase, self).tearDown()
 
     def test_query_get_schema(self):
-        expected_response = {
-            "schema": {
-                'class': 'http://test.domain.com/test_context/test_class',
-                'comment': False,
-                'label': False,
-                'predicates': None
-            }
-        }
-
         # Mocks
         def mock_query_class_schema(class_uri, remember):
             class_schema = {"results": {"bindings": [{"dummy_key": "dummy_value"}]}}
@@ -47,19 +36,22 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         schema.query_class_schema = mock_query_class_schema
 
         def mock_get_predicates_and_cardinalities(class_uri, class_schema, remember):
-            return None
+            return "property_dict"
 
         schema.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
 
         response = schema.get_schema("test_context", "test_class")
-
         schema_response = response["schema"]
+
         self.assertIn("title", schema_response)
         self.assertIn("type", schema_response)
         self.assertIn("@id", schema_response)
         self.assertIn("properties", schema_response)
+
+        self.assertEquals(schema_response["properties"], "property_dict")
         # FIXME: enhance the structure of the response
         self.stop()
+
 
 class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
     maxDiff = None
@@ -284,6 +276,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
 
     def test_query_predicates_successful_with_lang(self):
         response_text = '{"results": {"bindings": [1]}}'
+
         class ResponseWithBindings():
             body = response_text
 

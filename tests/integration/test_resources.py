@@ -1,9 +1,8 @@
 # coding: utf-8
 import json
 
-
 from brainiak import __version__, settings
-from brainiak.greenlet_tornado import greenlet_test, greenlet_fetch
+from brainiak.greenlet_tornado import greenlet_test, greenlet_fetch, greenlet_set_ioloop
 from tests import TornadoAsyncTestCase, TornadoAsyncHTTPTestCase
 
 
@@ -114,6 +113,7 @@ class TestVirtuosoStatusResource(TornadoAsyncTestCase):
         settings.ENVIRONMENT = "prod"
         response = self.fetch('/status/virtuoso', method='GET')
         self.assertEqual(response.code, 404)
+        self.stop()
 
     def test_virtuoso_status_in_non_prod(self):
         settings.ENVIRONMENT = "local"

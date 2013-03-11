@@ -18,7 +18,8 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {u'label': u'Feminino', u'subject': u'http://semantica.globo.com/person/Gender/Female'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['items'], expected_items)
+        for item in received_response['items']:
+            self.assertIn(item, expected_items)
         self.assertEqual(received_response['item_count'], 3)
 
     def test_filter_with_object_as_string(self):

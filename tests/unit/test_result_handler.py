@@ -1,6 +1,6 @@
 import unittest
 
-from brainiak.result_handler import get_one_value, filter_values, is_result_empty
+from brainiak.result_handler import compress_keys_and_values, get_one_value, filter_values, is_result_empty
 
 
 class ResultHandlerTestCase(unittest.TestCase):
@@ -44,6 +44,22 @@ class ResultHandlerTestCase(unittest.TestCase):
         expected = ["Pessoa"]
         result = filter_values(self.RESULT_DICT_WITH_LANG, "label")
         self.assertEquals(expected, result)
+
+    def test_compress_keys_and_values(self):
+        trilogy_from_virtuoso = {'results': {'bindings': [
+            {u'title': {u'type': u'literal', u'value': u"The Hitchhiker's Guide to the Galaxy"}, u'year': {u'type': u'literal', u'value': "1979"}},
+            {u'title': {u'type': u'literal', u'value': u"The Restaurant at the End of the Universe Life"}, u'year': {u'type': u'literal', u'value': "1980"}},
+            {u'title': {u'type': u'literal', u'value': u"Life, the Universe and Everything"}, u'year': {u'type': u'literal', u'value': "1982"}},
+            {u'title': {u'type': u'literal', u'value': u"So Long, and Thanks for All the Fish"}, u'year': {u'type': u'literal', u'value': "1984"}},
+            {u'title': {u'type': u'literal', u'value': u"Mostly Harmless"}, u'year': {u'type': u'literal', u'value': "1992"}}]}}
+        compressed_list = compress_keys_and_values(trilogy_from_virtuoso)
+        expected_list = [
+            {u'title': u"The Hitchhiker's Guide to the Galaxy", u'year': u"1979"},
+            {u'title': u"The Restaurant at the End of the Universe Life", u'year': u"1980"},
+            {u'title': u"Life, the Universe and Everything", u'year': u"1982"},
+            {u'title': u"So Long, and Thanks for All the Fish", u'year': u"1984"},
+            {u'title': u"Mostly Harmless", u'year': u"1992"}]
+        self.assertEquals(compressed_list, expected_list)
 
 
 class GetOneTestCase(unittest.TestCase):

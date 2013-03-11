@@ -54,10 +54,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     def test_filter_with_no_results(self):
         response = self.fetch('/person/Gender/_filter?object=Xubiru', method='GET')
-        received_response = json.loads(response.body)
-        self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['items'], [])
-        self.assertEqual(received_response['item_count'], 0)
+        self.assertEqual(response.code, 204)
 
 
 def build_json(bindings):

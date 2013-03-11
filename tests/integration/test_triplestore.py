@@ -2,7 +2,8 @@ from mock import patch
 
 from brainiak import triplestore
 from brainiak.greenlet_tornado import greenlet_test
-from tests import TornadoAsyncTestCase, HTTPError
+from tests import TornadoAsyncTestCase
+from tornado.httpclient import HTTPError
 
 SIMPLE_COUNT_CLASSES_QUERY = "SELECT COUNT(*) WHERE {?s a owl:Class}"
 

@@ -8,20 +8,19 @@ from brainiak.settings import URI_PREFIX
 from brainiak.triplestore import query_sparql
 
 
-@gen.engine
-def get_instance(context_name, class_name, instance_id, callback):
+def get_instance(context_name, class_name, instance_id):
     """
     Given a URI, verify that the type corresponds to the class being passed as a parameter
     Retrieve all properties and objects of this URI (subject)
     """
-    query_response = yield gen.Task(query_all_properties_and_objects, context_name, class_name, instance_id)
+    query_response = query_all_properties_and_objects(context_name, class_name, instance_id)
     result_dict = json.loads(query_response.body)
 
     if is_result_empty(result_dict):
-        callback(None)
+        return
     else:
         # TODO handling dict
-        callback(result_dict)
+        return result_dict
 
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
@@ -31,14 +30,15 @@ SELECT ?p ?o {
 """
 
 
-def query_all_properties_and_objects(context_name, class_name, instance_id, callback):
+def query_all_properties_and_objects(context_name, class_name, instance_id):
     query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % {
         'instance_id': instance_id,
         'prefix': URI_PREFIX,
         'context_name': context_name,
         'class_name': class_name,
     }
-    query_sparql(callback, query)
+
+    return query_sparql(query)
 
 
 QUERY_FILTER_INSTANCE = """
@@ -50,7 +50,7 @@ SELECT DISTINCT ?subject, ?label {
 """
 
 
-def query_filter_instances(context_name, query_params, callback):
+def query_filter_instances(context_name, query_params):
     potential_uris = ["object", "predicate"]
 
     for key in potential_uris:
@@ -62,16 +62,15 @@ def query_filter_instances(context_name, query_params, callback):
                 query_params[key] = '"%s"@pt' % value
 
     query = QUERY_FILTER_INSTANCE % query_params
-    query_sparql(callback, query)
+    return query_sparql(query)
 
 
-@gen.engine
-def filter_instances(context_name, query_params, callback):
-    query_response = yield gen.Task(query_filter_instances, context_name, query_params)
+def filter_instances(context_name, query_params):
+    query_response = query_filter_instances(context_name, query_params)
     result_dict = json.loads(query_response.body)
 
     if is_result_empty(result_dict):
-        callback({'items': [], 'item_count': 0})
+        return {'items': [], 'item_count': 0}
     else:
         items_list = compress_keys_and_values(result_dict)
-        callback({'items': items_list, 'item_count': len(items_list)})
+        return {'items': items_list, 'item_count': len(items_list)}

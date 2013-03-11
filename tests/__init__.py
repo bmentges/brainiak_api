@@ -1,6 +1,5 @@
 from tornado.ioloop import IOLoop
 from tornado.testing import AsyncTestCase, AsyncHTTPTestCase
-from tornado.httpclient import HTTPError
 from brainiak import server
 
 

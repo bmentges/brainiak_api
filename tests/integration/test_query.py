@@ -32,4 +32,4 @@ class DummyQueryTestCase(QueryTestCase):
 
     def test_dummy_query(self):
         response = self.query(DUMMY_QUERY)
-        self.assertEquals(response, EXPECTED_JSON)
+        self.assertEqual(response, EXPECTED_JSON)

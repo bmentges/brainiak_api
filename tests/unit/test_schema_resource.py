@@ -48,7 +48,7 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         self.assertIn("@id", schema_response)
         self.assertIn("properties", schema_response)
 
-        self.assertEquals(schema_response["properties"], "property_dict")
+        self.assertEqual(schema_response["properties"], "property_dict")
         # FIXME: enhance the structure of the response
         self.stop()
 
@@ -141,7 +141,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                            }
                  }
         }
-        self.assertEquals(response_predicates_and_cardinalities, expected_predicates_and_cardinalities)
+        self.assertEqual(response_predicates_and_cardinalities, expected_predicates_and_cardinalities)
         self.stop()
 
 
@@ -169,7 +169,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         ]
         extracted = _extract_cardinalities(binding)
         expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': u'1'}}}
-        self.assertEquals(extracted, expected)
+        self.assertEqual(extracted, expected)
 
     def test_extract_max(self):
         binding = [
@@ -184,7 +184,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         ]
         extracted = _extract_cardinalities(binding)
         expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'maxItems': u'1'}}}
-        self.assertEquals(extracted, expected)
+        self.assertEqual(extracted, expected)
 
     def test_extract_options(self):
         binding = [
@@ -206,7 +206,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         extracted = _extract_cardinalities(binding)
         expected = {u'http://test/person/gender': {
                     'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female']}}
-        self.assertEquals(extracted, expected)
+        self.assertEqual(extracted, expected)
 
     def test_build_predicate_dict_with_object_property(self):
         expected_predicate_dict = {'comment': u'G\xeanero.',
@@ -238,7 +238,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         context.prefix_to_slug('http://test/person')
         # test call
         effective_predicate_dict = build_predicate_dict(name, predicate, cardinalities, context)
-        self.assertEquals(expected_predicate_dict, effective_predicate_dict)
+        self.assertEqual(expected_predicate_dict, effective_predicate_dict)
 
     def test_build_predicate_dict_with_datatype_property(self):
         expected_predicate_dict = {'comment': u'Nome completo da pessoa',
@@ -260,7 +260,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         context.prefix_to_slug('http://test/person')
         # test call
         effective_predicate_dict = build_predicate_dict(name, predicate, cardinalities, context)
-        self.assertEquals(expected_predicate_dict, effective_predicate_dict)
+        self.assertEqual(expected_predicate_dict, effective_predicate_dict)
 #        u'http://semantica.globo.com/person/fullName': {u'http://www.w3.org/2001/XMLSchema#string': {'maxItems': u'1'}},
 
 
@@ -283,7 +283,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         schema._query_predicate_with_lang = lambda class_uri, context: ResponseWithBindings()
 
         response = schema.query_predicates("class_uri", {})
-        self.assertEquals(response.body, response_text)
+        self.assertEqual(response.body, response_text)
 
     def test_query_predicates_successful_without_lang(self):
         response_text = '{"results": {"bindings": []}}'
@@ -297,4 +297,4 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         schema._query_predicate_without_lang = lambda class_uri, context: MockResponse(response_without_lang_text)
 
         response = schema.query_predicates("class_uri", {})
-        self.assertEquals(response.body, response_without_lang_text)
+        self.assertEqual(response.body, response_without_lang_text)

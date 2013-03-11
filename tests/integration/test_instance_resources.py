@@ -23,7 +23,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(received_response['item_count'], 3)
 
     def test_filter_with_object_as_string(self):
-        response = self.fetch('/person/Gender/_filter?object=Masculino', method='GET')
+        response = self.fetch('/person/Gender/_filter?o=Masculino', method='GET')
         expected_items = [{u'label': u'Masculino', u'subject': u'http://semantica.globo.com/person/Gender/Male'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
@@ -32,7 +32,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     def test_filter_with_predicate_as_uri(self):
         url = urllib.quote("http://www.w3.org/2000/01/rdf-schema#label")
-        response = self.fetch('/person/Gender/_filter?predicate=%s' % url, method='GET')
+        response = self.fetch('/person/Gender/_filter?p=%s' % url, method='GET')
         expected_items = [
             {u'label': u'Masculino', u'subject': u'http://semantica.globo.com/person/Gender/Male'},
             {u'label': u'Transg\xeanero', u'subject': u'http://semantica.globo.com/person/Gender/Transgender'},
@@ -45,7 +45,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
         url = urllib.quote("rdfs:label")
-        response = self.fetch('/person/Gender/_filter?predicate=%s&object=Feminino' % url, method='GET')
+        response = self.fetch('/person/Gender/_filter?p=%s&o=Feminino' % url, method='GET')
         expected_items = [{u'label': u'Feminino', u'subject': u'http://semantica.globo.com/person/Gender/Female'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
@@ -53,7 +53,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(received_response['item_count'], 1)
 
     def test_filter_with_no_results(self):
-        response = self.fetch('/person/Gender/_filter?object=Xubiru', method='GET')
+        response = self.fetch('/person/Gender/_filter?o=Xubiru', method='GET')
         self.assertEqual(response.code, 204)
 
 
@@ -75,8 +75,8 @@ class InstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_predicate_and_object(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "predicate": "<http://tatipedia.org/likes>",
-            "object": "<http://tatipedia.org/Capoeira>"
+            "p": "<http://tatipedia.org/likes>",
+            "o": "<http://tatipedia.org/Capoeira>"
         }
 
         query = QUERY_FILTER_INSTANCE % params
@@ -91,8 +91,8 @@ class InstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_object(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "predicate": "?predicate",
-            "object": "<http://tatipedia.org/BungeeJump>"
+            "p": "?predicate",
+            "o": "<http://tatipedia.org/BungeeJump>"
         }
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
@@ -106,8 +106,8 @@ class InstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_predicate(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "predicate": "<http://tatipedia.org/dislikes>",
-            "object": "?object"
+            "p": "<http://tatipedia.org/dislikes>",
+            "o": "?object"
         }
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
@@ -121,8 +121,8 @@ class InstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_predicate_with_multiple_response(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "predicate": "<http://tatipedia.org/likes>",
-            "object": "?object"
+            "p": "<http://tatipedia.org/likes>",
+            "o": "?object"
         }
         query = QUERY_FILTER_INSTANCE % params
         computed_bindings = self.query(query)['results']['bindings']
@@ -139,8 +139,8 @@ class InstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_object_represented_as_string(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "predicate": "?predicate",
-            "object": '"Aikido"'
+            "p": "?predicate",
+            "o": '"Aikido"'
         }
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)

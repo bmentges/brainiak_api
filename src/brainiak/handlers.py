@@ -77,8 +77,8 @@ class InstanceFilterHandler(RequestHandler):
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "page": self.DEFAULT_PAGE,
             "per_page": self.DEFAULT_PER_PAGE,
-            "predicate": "?predicate",
-            "object": "?object"}
+            "p": "?predicate",
+            "o": "?object"}
 
         for (query_param, default_value) in query_params.items():
             query_params[query_param] = self.get_argument(query_param, default_value)

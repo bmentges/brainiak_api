@@ -18,14 +18,14 @@ class TriplestoreInitTestCase(TornadoAsyncTestCase):
         expected = "http://myhost:8080/sparql"
         virtuoso_connection = triplestore.VirtuosoConnection()
         result = virtuoso_connection.endpoint_url
-        self.assertEquals(expected, result)
+        self.assertEqual(expected, result)
 
     @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT="http://myhost:8080/sparql")
     def test_init_connection_endpoint_full_url_defined_in_settings(self, settings):
         expected = "http://myhost:8080/sparql"
         virtuoso_connection = triplestore.VirtuosoConnection()
         result = virtuoso_connection.endpoint_url
-        self.assertEquals(expected, result)
+        self.assertEqual(expected, result)
 
 
 class TriplestoreSetCredentialsTestCase(TornadoAsyncTestCase):
@@ -89,25 +89,25 @@ class TestCaseStatus(unittest.TestCase):
 
         received_msg = triplestore.status("USER", "PASSWORD")
         expected_msg = "<br>".join(["accessed without auth", "accessed with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x)"])
-        self.assertEquals(received_msg, expected_msg)
+        self.assertEqual(received_msg, expected_msg)
 
     def test_without_auth_works_but_with_auth_doesnt(self):
         SPARQLWrapper.SPARQLWrapper.iteration = 0
         SPARQLWrapper.SPARQLWrapper.exception_iterations = [1]
         received_msg = triplestore.status("USER", "PASSWORD")
         expected_msg = "<br>".join(["accessed without auth", "didn't access with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x) because: ERROR 1"])
-        self.assertEquals(received_msg, expected_msg)
+        self.assertEqual(received_msg, expected_msg)
 
     def test_without_auth_doesnt_work_but_with_auth_works(self):
         SPARQLWrapper.SPARQLWrapper.iteration = 0
         SPARQLWrapper.SPARQLWrapper.exception_iterations = [0]
         received_msg = triplestore.status("USER", "PASSWORD")
         expected_msg = "<br>".join(["didn't access without auth because: ERROR 0", "accessed with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x)"])
-        self.assertEquals(received_msg, expected_msg)
+        self.assertEqual(received_msg, expected_msg)
 
     def test_both_without_auth_and_with_auth_dont_work(self):
         SPARQLWrapper.SPARQLWrapper.iteration = 0
         SPARQLWrapper.SPARQLWrapper.exception_iterations = [0, 1]
         received_msg = triplestore.status("USER", "PASSWORD")
         expected_msg = "<br>".join(["didn't access without auth because: ERROR 0", "didn't access with auth (USER : 1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x) because: ERROR 1"])
-        self.assertEquals(received_msg, expected_msg)
+        self.assertEqual(received_msg, expected_msg)

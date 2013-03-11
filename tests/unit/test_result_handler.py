@@ -18,7 +18,7 @@ class ResultHandlerTestCase(unittest.TestCase):
 
     def test_get_result(self):
         expected = "http://test.domain.com/G1/Video"
-        self.assertEquals(expected, get_one_value(self.CLASS, "videoClass"))
+        self.assertEqual(expected, get_one_value(self.CLASS, "videoClass"))
 
     def test_get_result_empty(self):
         self.assertFalse(get_one_value(self.CLASS, "chave_inexistente"))
@@ -43,7 +43,7 @@ class ResultHandlerTestCase(unittest.TestCase):
     def test_filter_values_with_lang(self):
         expected = ["Pessoa"]
         result = filter_values(self.RESULT_DICT_WITH_LANG, "label")
-        self.assertEquals(expected, result)
+        self.assertEqual(expected, result)
 
     def test_compress_keys_and_values(self):
         trilogy_from_virtuoso = {'results': {'bindings': [
@@ -59,7 +59,7 @@ class ResultHandlerTestCase(unittest.TestCase):
             {u'title': u"Life, the Universe and Everything", u'year': u"1982"},
             {u'title': u"So Long, and Thanks for All the Fish", u'year': u"1984"},
             {u'title': u"Mostly Harmless", u'year': u"1992"}]
-        self.assertEquals(compressed_list, expected_list)
+        self.assertEqual(compressed_list, expected_list)
 
 
 class GetOneTestCase(unittest.TestCase):
@@ -72,9 +72,9 @@ class GetOneTestCase(unittest.TestCase):
     def test_get_result(self):
         computed = get_one_value(self.response, "videoClass")
         expected = "http://test.domain.com/G1/Video"
-        self.assertEquals(computed, expected)
+        self.assertEqual(computed, expected)
 
     def test_get_result_empty(self):
         computed = get_one_value(self.response, "chave_inexistente")
         expected = False
-        self.assertEquals(computed, expected)
+        self.assertEqual(computed, expected)

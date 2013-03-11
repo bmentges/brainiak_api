@@ -89,7 +89,7 @@ class InstancesQueryTestCase(QueryTestCase):
                     u'label': {u'type': u'literal', u'value': u'Mary Land'}}]
         expected = build_json(bindings)
 
-        self.assertEquals(computed, expected)
+        self.assertEqual(computed, expected)
 
     def test_instance_filter_query_by_object(self):
         params = {
@@ -104,7 +104,7 @@ class InstancesQueryTestCase(QueryTestCase):
                      u'label': {u'type': u'literal', u'value': u'Mary Land'}}]
         expected = build_json(bindings)
 
-        self.assertEquals(computed, expected)
+        self.assertEqual(computed, expected)
 
     def test_instance_filter_query_by_predicate(self):
         params = {
@@ -119,7 +119,7 @@ class InstancesQueryTestCase(QueryTestCase):
                      u'label': {u'type': u'literal', u'value': u'Mary Land'}}]
         expected = build_json(bindings)
 
-        self.assertEquals(computed, expected)
+        self.assertEqual(computed, expected)
 
     def test_instance_filter_query_by_predicate_with_multiple_response(self):
         params = {
@@ -135,7 +135,7 @@ class InstancesQueryTestCase(QueryTestCase):
 
         expected = build_json(computed_bindings)
 
-        self.assertEquals(len(computed_bindings), 2)
+        self.assertEqual(len(computed_bindings), 2)
         for item in computed_bindings:
             self.assertIn(item, expected_bindings)
 
@@ -153,4 +153,4 @@ class InstancesQueryTestCase(QueryTestCase):
 
         expected = build_json(bindings)
 
-        self.assertEquals(computed, expected)
+        self.assertEqual(computed, expected)

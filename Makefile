@@ -21,7 +21,7 @@ test: clean pep8 pep8_tests
 
 unit: clean
 	@echo "Running unit tests..."
-	@nosetests -s  --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/unit --with-xunit
+	@nosetests -vv --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/unit --with-xunit
 
 integration: clean
 	@echo "Running integration tests..."

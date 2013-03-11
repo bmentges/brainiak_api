@@ -1,12 +1,17 @@
 # coding: utf-8
 import json
+from tornado.httpclient import AsyncHTTPClient
+from tornado.testing import AsyncHTTPTestCase
 
-from brainiak import __version__, settings
-from brainiak.greenlet_tornado import greenlet_test, greenlet_fetch, greenlet_set_ioloop
-from tests import TornadoAsyncTestCase, TornadoAsyncHTTPTestCase
+from brainiak import greenlet_tornado
+from brainiak import __version__, settings, server
+from tests import TornadoAsyncHTTPTestCase
 
 
-class TestInstanceResource(TornadoAsyncTestCase):
+class TestInstanceResource(TornadoAsyncHTTPTestCase):
+
+    def get_app(self):
+        return server.Application()
 
     GENDER_MALE_JSON_INSTANCE = {
         "head": {
@@ -41,20 +46,18 @@ class TestInstanceResource(TornadoAsyncTestCase):
         }
     }
 
-    @greenlet_test
     def test_get_instance_with_nonexistent_uri(self):
-        response = greenlet_fetch(self.get_url('/person/Gender/Alien'))
-        self.assertEqual(response.code, 204)
+        response = self.fetch('/person/Gender/Alien')
+        self.assertEquals(response.code, 204)
 
-    @greenlet_test
     def test_get_instance(self):
-        response = greenlet_fetch(self.get_url('/person/Gender/Male'))
-        self.assertEqual(response.code, 200)
+        response = self.fetch('/person/Gender/Male')
+        self.assertEquals(response.code, 200)
         json_received = json.loads(response.body)
-        self.assertEqual(json_received, self.GENDER_MALE_JSON_INSTANCE)
+        self.assertEquals(json_received, self.GENDER_MALE_JSON_INSTANCE)
 
 
-class TestSchemaResource(TornadoAsyncTestCase):
+class TestSchemaResource(TornadoAsyncHTTPTestCase):
 
     SAMPLE_SCHEMA_JSON = {
         u'schema': {
@@ -71,16 +74,14 @@ class TestSchemaResource(TornadoAsyncTestCase):
 
     maxDiff = None
 
-    @greenlet_test
     def test_schema_handler(self):
-        response = greenlet_fetch(self.get_url('/person/Gender/_schema'))
+        response = self.fetch('/person/Gender/_schema')
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
 
-    @greenlet_test
     def test_schema_handler_class_undefined(self):
-        response = greenlet_fetch(self.get_url('/animals/Ornithorhynchus/_schema'))
+        response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 204)
         self.assertFalse(response.body)
 
@@ -93,14 +94,14 @@ class TestHealthcheckResource(TornadoAsyncHTTPTestCase):
         self.assertTrue(response.body, "WORKING")
 
 
-class TestVersionResource(TornadoAsyncTestCase):
+class TestVersionResource(TornadoAsyncHTTPTestCase):
     def test_healthcheck(self):
         response = self.fetch('/version', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, __version__)
 
 
-class TestVirtuosoStatusResource(TornadoAsyncTestCase):
+class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
 
     def setUp(self):
         self.original_settings_env = settings.ENVIRONMENT

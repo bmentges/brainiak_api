@@ -51,8 +51,10 @@ AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
 
 def greenlet_set_ioloop(io_loop=None):
     global _io_loop, _http_client
-    _io_loop = io_loop or IOLoop.instance()
-    _http_client = tornado.httpclient.AsyncHTTPClient(io_loop=_io_loop)
+    if io_loop is None:
+        _io_loop = IOLoop.instance()
+    else:
+        _io_loop = io_loop
 
 
 def greenlet_fetch(request, **kwargs):
@@ -69,7 +71,6 @@ def greenlet_fetch(request, **kwargs):
     Returns an HTTPResponse object, or raises a tornado.httpclient.HTTPError exception
     on error (such as a timeout).
     """
-
     gr = greenlet.getcurrent()
     assert gr.parent is not None, "greenlet_fetch() can only be called (possibly indirectly) from a RequestHandler method wrapped by the greenlet_asynchronous decorator."
 
@@ -78,7 +79,7 @@ def greenlet_fetch(request, **kwargs):
         # Make sure we are on the master greenlet before we switch.
         #IOLoop.instance().add_callback(partial(gr.switch, response))
         #io_loop.add_callback(partial(gr.switch, response))
-
+    _http_client = tornado.httpclient.AsyncHTTPClient(io_loop=_io_loop)
     _http_client.fetch(request, callback, **kwargs)
 
     # Now, yield control back to the master greenlet, and wait for data to be sent to us.

@@ -6,7 +6,7 @@ from tornado.web import asynchronous, HTTPError, RequestHandler
 from brainiak import settings, triplestore
 from brainiak import __version__
 from brainiak.schema.resource import get_schema
-from brainiak.instance.resource import get_instance
+from brainiak.instance.resource import filter_instances, get_instance
 
 
 class HealthcheckHandler(RequestHandler):
@@ -75,7 +75,7 @@ class InstanceFilterHandler(RequestHandler):
     DEFAULT_PAGE = "0"
 
     def __init__(self, *args, **kwargs):
-        super(InstanceFilterResource, self).__init__(*args, **kwargs)
+        super(InstanceFilterHandler, self).__init__(*args, **kwargs)
 
     @asynchronous
     @gen.engine
@@ -87,6 +87,15 @@ class InstanceFilterHandler(RequestHandler):
             "predicate": "?predicate",
             "object": "?object"}
 
-        for (query_param, default_value) in optional_params.items():
-            optional_params[query_param] = self.get_argument(query_param, default_value)
-        # FIXME: UNDER DEV!!!
+        for (query_param, default_value) in query_params.items():
+            query_params[query_param] = self.get_argument(query_param, default_value)
+
+        response = yield gen.Task(filter_instances, context_name, query_params)
+        self.set_header('Access-Control-Allow-Origin', '*')
+        #import pdb; pdb.set_trace()
+        if response is None:
+            self.set_status(204)
+        else:
+            # TODO JSON parsing to JSON Schema format
+            self.write(str(response))
+        self.finish()

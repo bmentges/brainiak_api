@@ -20,9 +20,7 @@ def get_schema(context_name, schema_name):
     if not class_schema["results"]["bindings"]:
         return
 
-    response = get_predicates_and_cardinalities(class_uri, class_schema, context)
-    class_schema, predicates_and_cardinalities = response
-
+    predicates_and_cardinalities = get_predicates_and_cardinalities(class_uri, class_schema, context)
     response_dict = assemble_schema_dict(short_uri,
                                          get_one_value(class_schema, "title"),
                                          predicates_and_cardinalities,
@@ -36,8 +34,8 @@ def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     effective_context.update(context.context)
 
     links = [{"rel": property_name,
-              "href": "/{0}/collection/{1}".format(*(short_uri.split(':')))}
-             for property_name, short_uri in context.object_properties.items()]
+              "href": "/{0}/collection/{1}".format(*(uri.split(':')))}
+             for property_name, uri in context.object_properties.items()]
     schema = {
         "type": "object",
         "@id": short_uri,
@@ -99,7 +97,7 @@ def get_predicates_and_cardinalities(class_uri, class_schema, context):
     for p in remove_super_predicates:
         del predicates_dict[shorten_uri(p)]
 
-    return (class_schema, predicates_dict)
+    return predicates_dict
 
 
 def build_predicate_dict(name, predicate, cardinalities, context):

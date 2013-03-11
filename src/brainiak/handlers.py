@@ -52,14 +52,13 @@ class InstanceHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         super(InstanceHandler, self).__init__(*args, **kwargs)
 
-    @asynchronous
-    @gen.engine
+    @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
-        response = yield gen.Task(get_instance, context_name, class_name, instance_id)
+        response = get_instance(context_name, class_name, instance_id)
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
             self.set_status(204)
         else:
             # TODO JSON parsing to JSON Schema format
             self.write(response)
-        self.finish()
+        # self.finish() -- this is automagically called by greenlet_asynchronous

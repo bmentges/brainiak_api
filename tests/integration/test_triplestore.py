@@ -3,7 +3,7 @@ from mock import patch
 from tornado.httpclient import HTTPError
 
 from brainiak import triplestore
-from brainiak.greenlet_tornado import greenlet_test
+from brainiak import greenlet_tornado
 from tests import TornadoAsyncTestCase
 
 SIMPLE_COUNT_CLASSES_QUERY = "SELECT COUNT(*) WHERE {?s a owl:Class}"
@@ -21,32 +21,29 @@ class EndpointConfig:
 
 
 class TriplestoreTestCase(TornadoAsyncTestCase):
+    pass
 
-    application = lambda: None
-    application._wsgi = None
-
-    @greenlet_test
     @patch("brainiak.triplestore.settings",
            SPARQL_ENDPOINT=EndpointConfig.URL,
            )
+    @greenlet_tornado.greenlet_test
     def test_query_ok_with_get_method(self, settings):
-        virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
+        virtuoso_connection = triplestore.VirtuosoConnection()
         response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY, method="GET")
         self.assertEquals(response.code, 200)
 
-    @greenlet_test
     @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.URL)
+    @greenlet_tornado.greenlet_test
     def test_query_ok(self, settings):
-        virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
+        virtuoso_connection = triplestore.VirtuosoConnection()
         response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY)
         self.assertEquals(response.code, 200)
 
-
-    @greenlet_test
     @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.URL)
+    @greenlet_tornado.greenlet_test
     def test_malformed_query(self, settings):
         MALFORMED_QUERY = "SELECT A MALFORMED QUERY {?s ?p ?o}"
-        virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
+        virtuoso_connection = triplestore.VirtuosoConnection()
         try:
             virtuoso_connection.query(MALFORMED_QUERY)
         except HTTPError as ex:
@@ -55,28 +52,25 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
             self.fail("HTTPError not raised")
 
     # Authentication HAPPY paths
-    @greenlet_test
     @patch("brainiak.triplestore.settings",
            SPARQL_ENDPOINT=EndpointConfig.AUTHENTICATED_URL,
            SPARQL_ENDPOINT_AUTH_MODE=EndpointConfig.DIGEST,
            SPARQL_ENDPOINT_USER=EndpointConfig.USER,
            SPARQL_ENDPOINT_PASSWORD=EndpointConfig.PASSWORD)
+    @greenlet_tornado.greenlet_test
     def test_authenticated_access_to_authenticated_endpoint(self, settings):
-        virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
+        virtuoso_connection = triplestore.VirtuosoConnection()
         response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY)
         self.assertEquals(response.code, 200)
 
-    def test_not_authenticated_acess_to_not_authenticated_endpoint(self):
-        pass  # test_query_ok (above)
-
     # Authentication UNHAPPY paths
-    @greenlet_test
     @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.AUTHENTICATED_URL)
+    @greenlet_tornado.greenlet_test
     def test_not_authenticated_access_to_authenticated_endpoint(self, settings):
         del settings.SPARQL_ENDPOINT_AUTH_MODE
         del settings.SPARQL_ENDPOINT_USER
         del settings.SPARQL_ENDPOINT_PASSWORD
-        virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
+        virtuoso_connection = triplestore.VirtuosoConnection()
         try:
             virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY)
         except HTTPError as ex:
@@ -84,14 +78,13 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         else:
             self.fail("HTTPError not raised")
 
-
-    @greenlet_test
     @patch("brainiak.triplestore.settings",
            SPARQL_ENDPOINT=EndpointConfig.URL,
            SPARQL_ENDPOINT_AUTH_MODE=EndpointConfig.DIGEST,
            SPARQL_ENDPOINT_USER=EndpointConfig.USER,
            SPARQL_ENDPOINT_PASSWORD=EndpointConfig.PASSWORD)
+    @greenlet_tornado.greenlet_test
     def test_authenticated_access_to_not_authenticated_endpoint(self, settings):
-        virtuoso_connection = triplestore.VirtuosoConnection(self.io_loop)
+        virtuoso_connection = triplestore.VirtuosoConnection()
         response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY)
         self.assertEquals(response.code, 200)

@@ -45,13 +45,13 @@ QUERY_FILTER_INSTANCE = """
 SELECT DISTINCT ?subject, ?label {
     ?subject a <%(class_uri)s>;
              rdfs:label ?label;
-             %(predicate)s %(object)s .
+             %(p)s %(o)s .
 }
 """
 
 
 def query_filter_instances(context_name, query_params):
-    potential_uris = ["object", "predicate"]
+    potential_uris = ["o", "p"]
 
     for key in potential_uris:
         value = query_params[key]

@@ -34,7 +34,10 @@ class PrefixesTestCase(unittest.TestCase):
         self.assertEquals("http://test/person/", prefix_from_uri("http://test/person/Person"))
 
     def test_expand_uri(self):
-        self.assertEquals("http://www.w3.org/2003/01/geo/wgs84_pos#/Brasil", expand_uri("geo:Brasil"))
+        self.assertEquals("http://www.w3.org/2003/01/geo/wgs84_pos#Brasil", expand_uri("geo:Brasil"))
+
+    def test_expand_uri(self):
+        self.assertEquals("http://schema.org/whatever", expand_uri("schema:whatever"))
 
     def test_expand_uri_that_is_already_a_uri(self):
         self.assertEquals("http://oi", expand_uri("http://oi"))

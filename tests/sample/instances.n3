@@ -1,9 +1,13 @@
 @prefix tpedia: <http://tatipedia.org/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 tpedia:john a tpedia:Person ;
-            tpedia:likes tpedia:JiuJitsu .
+            rdfs:label "John Jones";
+            tpedia:likes tpedia:JiuJitsu ;
+            tpedia:likes "Aikido" .
 
 tpedia:mary a tpedia:Person ;
+            rdfs:label "Mary Land";
             tpedia:likes tpedia:Capoeira ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:dislikes tpedia:BungeeJump .

@@ -12,5 +12,15 @@ def filter_values(result_dict, key):
     return [item[key]['value'] for item in result_dict['results']['bindings'] if item.get(key)]
 
 
+def compress_keys_and_values(result_dict):
+    result_list = []
+    for item in result_dict['results']['bindings']:
+        row = {}
+        for key in item:
+            row[key] = item[key]['value']
+        result_list.append(row)
+    return result_list
+
+
 def is_result_empty(result_dict):
     return len(result_dict['results']['bindings']) == 0

@@ -30,14 +30,14 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
     def test_query_ok_with_get_method(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection()
         response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY, method="GET")
-        self.assertEquals(response.code, 200)
+        self.assertEqual(response.code, 200)
 
     @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.URL)
     @greenlet_tornado.greenlet_test
     def test_query_ok(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection()
         response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY)
-        self.assertEquals(response.code, 200)
+        self.assertEqual(response.code, 200)
 
     @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.URL)
     @greenlet_tornado.greenlet_test
@@ -47,7 +47,7 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         try:
             virtuoso_connection.query(MALFORMED_QUERY)
         except HTTPError as ex:
-            self.assertEquals(ex.code, 400)
+            self.assertEqual(ex.code, 400)
         else:
             self.fail("HTTPError not raised")
 
@@ -61,7 +61,7 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
     def test_authenticated_access_to_authenticated_endpoint(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection()
         response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY)
-        self.assertEquals(response.code, 200)
+        self.assertEqual(response.code, 200)
 
     # Authentication UNHAPPY paths
     @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.AUTHENTICATED_URL)
@@ -74,7 +74,7 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         try:
             virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY)
         except HTTPError as ex:
-            self.assertEquals(ex.code, 401)
+            self.assertEqual(ex.code, 401)
         else:
             self.fail("HTTPError not raised")
 
@@ -87,4 +87,4 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
     def test_authenticated_access_to_not_authenticated_endpoint(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection()
         response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY)
-        self.assertEquals(response.code, 200)
+        self.assertEqual(response.code, 200)

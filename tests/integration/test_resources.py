@@ -48,13 +48,13 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
 
     def test_get_instance_with_nonexistent_uri(self):
         response = self.fetch('/person/Gender/Alien')
-        self.assertEquals(response.code, 204)
+        self.assertEqual(response.code, 204)
 
     def test_get_instance(self):
         response = self.fetch('/person/Gender/Male')
-        self.assertEquals(response.code, 200)
+        self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
-        self.assertEquals(json_received, self.GENDER_MALE_JSON_INSTANCE)
+        self.assertEqual(json_received, self.GENDER_MALE_JSON_INSTANCE)
 
 
 class TestSchemaResource(TornadoAsyncHTTPTestCase):

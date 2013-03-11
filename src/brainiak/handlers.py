@@ -92,10 +92,6 @@ class InstanceFilterHandler(RequestHandler):
 
         response = yield gen.Task(filter_instances, context_name, query_params)
         self.set_header('Access-Control-Allow-Origin', '*')
-        #import pdb; pdb.set_trace()
-        if response is None:
-            self.set_status(204)
-        else:
-            # TODO JSON parsing to JSON Schema format
-            self.write(str(response))
+
+        self.write(response)
         self.finish()

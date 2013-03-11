@@ -7,25 +7,33 @@ from tests.sparql import QueryTestCase
 
 class TestFilterInstanceResource(TestHandlerBase):
 
+    maxDiff = None
+
     def test_filter_without_params(self):
         response = self.fetch('/person/Gender/_filter', method='GET')
-        expected_response = {'items': [
+        expected_items = [
             {u'label': u'Masculino', u'subject': u'http://semantica.globo.com/person/Gender/Male'},
             {u'label': u'Transg\xeanero', u'subject': u'http://semantica.globo.com/person/Gender/Transgender'},
-            {u'label': u'Feminino', u'subject': u'http://semantica.globo.com/person/Gender/Female'}]}
+            {u'label': u'Feminino', u'subject': u'http://semantica.globo.com/person/Gender/Female'}]
+        received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(eval(response.body), expected_response)
+        self.assertEqual(received_response['items'], expected_items)
+        self.assertEqual(received_response['item_count'], 3)
 
     def test_filter_with_object_as_string(self):
         response = self.fetch('/person/Gender/_filter?object=Masculino', method='GET')
-        expected_response = {'items': [
-            {u'label': u'Masculino', u'subject': u'http://semantica.globo.com/person/Gender/Male'}]}
+        expected_items = [{u'label': u'Masculino', u'subject': u'http://semantica.globo.com/person/Gender/Male'}]
+        received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(eval(response.body), expected_response)
+        self.assertEqual(received_response['items'], expected_items)
+        self.assertEqual(received_response['item_count'], 1)
 
     def test_filter_with_no_results(self):
         response = self.fetch('/person/Gender/_filter?object=Xubiru', method='GET')
-        self.assertEqual(response.code, 204)
+        received_response = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+        self.assertEqual(received_response['items'], [])
+        self.assertEqual(received_response['item_count'], 0)
 
 
 def build_json(bindings):

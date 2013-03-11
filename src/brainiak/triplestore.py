@@ -2,27 +2,23 @@ import md5
 import urllib
 
 import SPARQLWrapper
-from tornado import gen
-from tornado.ioloop import IOLoop
-from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+from tornado.httpclient import HTTPRequest
 from tornado.httputil import url_concat
 
 from brainiak import settings
-
-
-AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
+from brainiak.greenlet_tornado import greenlet_fetch
 
 
 # TODO: compute runtime
 # TODO: log query and runtime
-def query_sparql(callback, query, *args, **kw):
+def query_sparql(query, *args, **kw):
     """
     Simple interface that given a SPARQL query string returns a string representing a SPARQL results bindings
     in JSON format. For now it only works with Virtuoso, but in futurw we intend to support other databases
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
     connection = VirtuosoConnection()
-    connection.query(callback, query, *args, **kw)
+    return connection.query(query, *args, **kw)
 
 
 SPARQL_RESULTS_FORMAT = {
@@ -39,7 +35,7 @@ DEFAULT_CONTENT_TYPE = URL_ENCODED
 
 class VirtuosoConnection(object):
 
-    def __init__(self, io_loop=None):
+    def __init__(self):
         if hasattr(settings, "SPARQL_ENDPOINT"):
             self.endpoint_url = settings.SPARQL_ENDPOINT
         else:
@@ -47,8 +43,6 @@ class VirtuosoConnection(object):
             self.port = settings.SPARQL_ENDPOINT_PORT
             self.endpoint_url = self.host + ":" + str(self.port) + "/sparql"
 
-        self.io_loop = io_loop or IOLoop.instance()
-        self.client = AsyncHTTPClient(io_loop=io_loop)
         self._set_credentials()
 
     def _set_credentials(self):
@@ -59,8 +53,7 @@ class VirtuosoConnection(object):
         except AttributeError:
             self.user = self.password = self.auth_mode = None
 
-    @gen.engine
-    def query(self, callback, query, *args, **kw):
+    def query(self, query, *args, **kw):
         method = kw.get("method", "POST")
         result_format = kw.get("result_format", DEFAULT_FORMAT)
         content_type = DEFAULT_CONTENT_TYPE
@@ -88,10 +81,9 @@ class VirtuosoConnection(object):
                               body=body,
                               auth_username=self.user,
                               auth_password=self.password,
-                              auth_mode=self.auth_mode
-                              )
-        response = yield gen.Task(self.client.fetch, request)
-        callback(response, *args, **kw)
+                              auth_mode=self.auth_mode)
+        response = greenlet_fetch(request)
+        return response
 
 
 class VirtuosoException(Exception):

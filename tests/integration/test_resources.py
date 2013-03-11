@@ -1,13 +1,17 @@
 # coding: utf-8
 import json
+from tornado.httpclient import AsyncHTTPClient
+from tornado.testing import AsyncHTTPTestCase
+
+from brainiak import greenlet_tornado
+from brainiak import __version__, settings, server
+from tests import TornadoAsyncHTTPTestCase
 
 
-from brainiak import __version__
-from brainiak import settings
-from tests import TestHandlerBase
+class TestInstanceResource(TornadoAsyncHTTPTestCase):
 
-
-class TestInstanceResource(TestHandlerBase):
+    def get_app(self):
+        return server.Application()
 
     GENDER_MALE_JSON_INSTANCE = {
         "head": {
@@ -43,19 +47,17 @@ class TestInstanceResource(TestHandlerBase):
     }
 
     def test_get_instance_with_nonexistent_uri(self):
-        self.http_client.fetch(self.get_url('/person/Gender/Alien'), self.stop)
-        response = self.wait()
-        self.assertEqual(response.code, 404)
+        response = self.fetch('/person/Gender/Alien')
+        self.assertEquals(response.code, 204)
 
     def test_get_instance(self):
-        self.http_client.fetch(self.get_url('/person/Gender/Male'), self.stop)
-        response = self.wait()
-        self.assertEqual(response.code, 200)
+        response = self.fetch('/person/Gender/Male')
+        self.assertEquals(response.code, 200)
         json_received = json.loads(response.body)
-        self.assertEqual(json_received, self.GENDER_MALE_JSON_INSTANCE)
+        self.assertEquals(json_received, self.GENDER_MALE_JSON_INSTANCE)
 
 
-class TestSchemaResource(TestHandlerBase):
+class TestSchemaResource(TornadoAsyncHTTPTestCase):
 
     SAMPLE_SCHEMA_JSON = {
         u'schema': {
@@ -73,20 +75,18 @@ class TestSchemaResource(TestHandlerBase):
     maxDiff = None
 
     def test_schema_handler(self):
-        self.http_client.fetch(self.get_url('/person/Gender/_schema'), self.stop)
-        response = self.wait()
+        response = self.fetch('/person/Gender/_schema')
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
 
     def test_schema_handler_class_undefined(self):
-        self.http_client.fetch(self.get_url('/animals/Ornithorhynchus/_schema'), self.stop)
-        response = self.wait()
+        response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 204)
         self.assertFalse(response.body)
 
 
-class TestHealthcheckResource(TestHandlerBase):
+class TestHealthcheckResource(TornadoAsyncHTTPTestCase):
 
     def test_healthcheck(self):
         response = self.fetch('/healthcheck', method='GET')
@@ -94,15 +94,14 @@ class TestHealthcheckResource(TestHandlerBase):
         self.assertTrue(response.body, "WORKING")
 
 
-class TestVersionResource(TestHandlerBase):
-
+class TestVersionResource(TornadoAsyncHTTPTestCase):
     def test_healthcheck(self):
         response = self.fetch('/version', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, __version__)
 
 
-class TestVirtuosoStatusResource(TestHandlerBase):
+class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
 
     def setUp(self):
         self.original_settings_env = settings.ENVIRONMENT
@@ -115,6 +114,7 @@ class TestVirtuosoStatusResource(TestHandlerBase):
         settings.ENVIRONMENT = "prod"
         response = self.fetch('/status/virtuoso', method='GET')
         self.assertEqual(response.code, 404)
+        self.stop()
 
     def test_virtuoso_status_in_non_prod(self):
         settings.ENVIRONMENT = "local"

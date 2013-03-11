@@ -2,11 +2,11 @@ import json
 import urllib
 
 from brainiak.instance.resource import QUERY_FILTER_INSTANCE
-from tests import TestHandlerBase
+from tests import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 
-class TestFilterInstanceResource(TestHandlerBase):
+class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     maxDiff = None
 

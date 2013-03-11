@@ -5,7 +5,7 @@ import SPARQLWrapper
 import tornado
 from mock import patch
 
-from brainiak import triplestore
+from brainiak import triplestore, greenlet_tornado
 from tests import TornadoAsyncTestCase
 
 
@@ -26,17 +26,6 @@ class TriplestoreInitTestCase(TornadoAsyncTestCase):
         virtuoso_connection = triplestore.VirtuosoConnection()
         result = virtuoso_connection.endpoint_url
         self.assertEquals(expected, result)
-
-    @patch('tornado.ioloop.IOLoop', am_i_a_mock=True)
-    @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT="http://myhost:8080/sparql")
-    def test_init_connection_io_loop_as_a_param(self, io_loop, settings):
-        virtuoso_connection = triplestore.VirtuosoConnection(io_loop)
-        self.assertTrue(virtuoso_connection.io_loop.am_i_a_mock)
-
-    @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT="http://myhost:8080/sparql")
-    def test_init_connection_io_loop_default(self, settings):
-        virtuoso_connection = triplestore.VirtuosoConnection()
-        self.assertTrue(isinstance(virtuoso_connection.io_loop, tornado.ioloop.IOLoop))
 
 
 class TriplestoreSetCredentialsTestCase(TornadoAsyncTestCase):

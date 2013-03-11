@@ -39,7 +39,8 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {u'label': u'Feminino', u'subject': u'http://semantica.globo.com/person/Gender/Female'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['items'], expected_items)
+        for item in received_response['items']:
+            self.assertIn(item, expected_items)
         self.assertEqual(received_response['item_count'], 3)
 
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
@@ -127,14 +128,16 @@ class InstancesQueryTestCase(QueryTestCase):
             "object": "?object"
         }
         query = QUERY_FILTER_INSTANCE % params
-        computed = self.query(query)
+        computed_bindings = self.query(query)['results']['bindings']
 
-        bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'}, u'label': {u'type': u'literal', u'value': u'Mary Land'}},
+        expected_bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'}, u'label': {u'type': u'literal', u'value': u'Mary Land'}},
                     {u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'}, u'label': {u'type': u'literal', u'value': u'John Jones'}}]
 
-        expected = build_json(bindings)
+        expected = build_json(computed_bindings)
 
-        self.assertEquals(computed, expected)
+        self.assertEquals(len(computed_bindings), 2)
+        for item in computed_bindings:
+            self.assertIn(item, expected_bindings)
 
     def test_instance_filter_query_by_object_represented_as_string(self):
         params = {

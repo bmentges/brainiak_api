@@ -6,7 +6,7 @@ from tornado.httpclient import HTTPRequest
 from tornado.httputil import url_concat
 
 from brainiak import settings
-from brainiak.greenlet_tornado import greenlet_fetch, greenlet_set_ioloop
+from brainiak.greenlet_tornado import greenlet_fetch
 
 
 # TODO: compute runtime
@@ -35,7 +35,7 @@ DEFAULT_CONTENT_TYPE = URL_ENCODED
 
 class VirtuosoConnection(object):
 
-    def __init__(self, io_loop=None):
+    def __init__(self):
         if hasattr(settings, "SPARQL_ENDPOINT"):
             self.endpoint_url = settings.SPARQL_ENDPOINT
         else:
@@ -43,7 +43,6 @@ class VirtuosoConnection(object):
             self.port = settings.SPARQL_ENDPOINT_PORT
             self.endpoint_url = self.host + ":" + str(self.port) + "/sparql"
 
-        greenlet_set_ioloop(io_loop)
         self._set_credentials()
 
     def _set_credentials(self):

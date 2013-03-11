@@ -12,7 +12,7 @@ from brainiak.type_mapper import items_from_type, OBJECT_PROPERTY, DATATYPE_PROP
 
 @gen.engine
 def get_schema(context_name, schema_name, callback):
-    class_uri = "/".join((settings.URI_PREFIX, context_name, schema_name))
+    class_uri = settings.URI_PREFIX + "/".join((context_name, schema_name))
     context = MemorizeContext()
     short_uri = context.shorten_uri(class_uri)
 

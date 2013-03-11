@@ -58,15 +58,11 @@ class InstanceHandler(RequestHandler):
         response = yield gen.Task(get_instance, context_name, class_name, instance_id)
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            self.set_status(204)
+            self.set_status(404)
         else:
             # TODO JSON parsing to JSON Schema format
             self.write(response)
         self.finish()
-
-#localhost:5100/person/Person/_filter?predicate=person:Joao
-#localhost:5100/person/Person/_filter?predicate=http://Joao
-#localhost:5100/person/Person/_filter?object=http://Falou
 
 
 class InstanceFilterHandler(RequestHandler):
@@ -81,7 +77,7 @@ class InstanceFilterHandler(RequestHandler):
     @gen.engine
     def get(self, context_name, class_name):
         query_params = {
-            "class_uri": "{0}/{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
+            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "page": self.DEFAULT_PAGE,
             "per_page": self.DEFAULT_PER_PAGE,
             "predicate": "?predicate",

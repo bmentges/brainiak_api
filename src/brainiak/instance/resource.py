@@ -70,7 +70,7 @@ def filter_instances(context_name, query_params):
     result_dict = json.loads(query_response.body)
 
     if is_result_empty(result_dict):
-        return {'items': [], 'item_count': 0}
+        return None
     else:
         items_list = compress_keys_and_values(result_dict)
         return {'items': items_list, 'item_count': len(items_list)}

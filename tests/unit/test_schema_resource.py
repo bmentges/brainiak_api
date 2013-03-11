@@ -4,6 +4,7 @@ import json
 import unittest
 from tornado import gen
 import mock
+from brainiak.greenlet_tornado import greenlet_test
 
 import brainiak.schema.resource as schema
 from brainiak import prefixes
@@ -27,7 +28,7 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         schema.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
         super(TornadoAsyncTestCase, self).tearDown()
 
-    @gen.engine
+    @greenlet_test
     def test_query_get_schema(self):
         expected_response = {
             "schema": {
@@ -39,19 +40,19 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         }
 
         # Mocks
-        def mock_query_class_schema(class_uri, remember, callback):
+        def mock_query_class_schema(class_uri, remember):
             class_schema = {"results": {"bindings": [{"dummy_key": "dummy_value"}]}}
             tornado_response = MockResponse(class_schema)
-            callback(tornado_response, remember)
+            return tornado_response
 
         schema.query_class_schema = mock_query_class_schema
 
-        def mock_get_predicates_and_cardinalities(class_uri, class_schema, remember, callback):
-            callback(class_schema, None)
+        def mock_get_predicates_and_cardinalities(class_uri, class_schema, remember):
+            return None
 
         schema.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
 
-        response = yield gen.Task(schema.get_schema, "test_context", "test_class")
+        response = schema.get_schema("test_context", "test_class")
 
         schema_response = response["schema"]
         self.assertIn("title", schema_response)
@@ -59,7 +60,6 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         self.assertIn("@id", schema_response)
         self.assertIn("properties", schema_response)
         # FIXME: enhance the structure of the response
-        self.stop()
 
 
 class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
@@ -77,14 +77,14 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         schema._extract_cardinalities = self.original_extract_cardinalities
         super(TornadoAsyncTestCase, self).tearDown()
 
-    @gen.engine
+    @greenlet_test
     def test_get_predicates_and_cardinalities(self):
         context = prefixes.MemorizeContext()
         class_uri = "http://test/person/gender"
         class_schema = None
 
         # Mocks
-        def mock_query_predicates(class_uri, context, callback):
+        def mock_query_predicates(class_uri, context):
             fake_response = mock.MagicMock(body="""
             { "results": { "bindings": [
                   { "predicate": { "type": "uri", "value": "http://test/person/root_gender" },
@@ -103,9 +103,9 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                     "grafo_do_range": { "type": "uri", "value": "http://test/person/" },
                     "label_do_range": { "type": "literal", "xml:lang": "pt", "value": "G\u00EAnero da Pessoa" }}]}}
             """)
-            callback(fake_response, context)
+            return fake_response
 
-        def mock_query_cardinalities(class_uri, class_schema, final_callback, context, callback):
+        def mock_query_cardinalities(class_uri, class_schema, context):
             fake_response = mock.MagicMock(body="""
                 {"results": {
                     "bindings": [
@@ -129,14 +129,12 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                         }
                     ]}
                 }""")
-            callback(fake_response, class_schema, final_callback, context)
+            return fake_response
 
         schema.query_cardinalities = mock_query_cardinalities
         schema.query_predicates = mock_query_predicates
 
-        response = yield gen.Task(schema.get_predicates_and_cardinalities,
-                                  class_uri, class_schema, context)
-        response_class_schema, response_predicates_and_cardinalities = response.args
+        response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(class_uri, class_schema, context)
         expected_predicates_and_cardinalities = {
             u'http://test/person/gender':
                 {'comment': u'G\xeanero.',
@@ -153,7 +151,6 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                            }
                  }
         }
-        self.assertEquals(response_class_schema, class_schema)
         self.assertEquals(response_predicates_and_cardinalities, expected_predicates_and_cardinalities)
 
 
@@ -287,43 +284,25 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         schema._query_predicate_without_lang = self.original_query_predicate_without_lang
 
     def test_query_predicates_successful_with_lang(self):
-
-        callback_stack = []
-
-        def first_callback(tornado_response, context):
-            callback_stack.append(1)
-
+        response_text = '{"results": {"bindings": [1]}}'
         class ResponseWithBindings():
-            body = '{"results": {"bindings": [1]}}'
+            body = response_text
 
-        class ResponseMock():
-            args = [ResponseWithBindings(), {}]
+        schema._query_predicate_with_lang = lambda class_uri, context: ResponseWithBindings()
 
-        schema._query_predicate_with_lang = lambda class_uri, context, callback: callback(ResponseMock())
-
-        schema.query_predicates("class_uri", {}, first_callback)
-        self.assertEquals(callback_stack, [1])
+        response = schema.query_predicates("class_uri", {})
+        self.assertEquals(response.body, response_text)
 
     def test_query_predicates_successful_without_lang(self):
+        response_text = '{"results": {"bindings": []}}'
+        response_without_lang_text = '{"results": {"bindings": [1]}}'
 
-        callback_stack = []
+        class MockResponse():
+            def __init__(self, param):
+                self.body = param
 
-        def first_callback(tornado_response, context=None):
-            callback_stack.append(1)
+        schema._query_predicate_with_lang = lambda class_uri, context: MockResponse(response_text)
+        schema._query_predicate_without_lang = lambda class_uri, context: MockResponse(response_without_lang_text)
 
-        class ResponseWithoutBindings():
-            body = '{"results": {"bindings": []}}'
-
-        class ResponseToQueryWithLang():
-            args = [ResponseWithoutBindings(), {}]
-
-        class ResponseToQueryWithoutLang():
-            def __init__(self):
-                callback_stack.append(2)
-                self.args = [ResponseWithoutBindings(), {}]
-
-        schema._query_predicate_with_lang = lambda class_uri, context, callback: callback(ResponseToQueryWithLang())
-        schema._query_predicate_without_lang = lambda class_uri, context, callback: callback(ResponseToQueryWithoutLang())
-
-        schema.query_predicates("class_uri", {}, first_callback)
-        self.assertEquals(callback_stack, [2, 1])
+        response = schema.query_predicates("class_uri", {})
+        self.assertEquals(response.body, response_without_lang_text)

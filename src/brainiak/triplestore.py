@@ -2,14 +2,11 @@ import md5
 import urllib
 
 import SPARQLWrapper
-from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+from tornado.httpclient import HTTPRequest
 from tornado.httputil import url_concat
 
 from brainiak import settings
 from brainiak.greenlet_tornado import greenlet_fetch, greenlet_set_ioloop
-
-
-AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
 
 
 # TODO: compute runtime

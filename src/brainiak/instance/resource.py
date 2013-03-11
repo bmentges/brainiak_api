@@ -71,7 +71,7 @@ def filter_instances(context_name, query_params, callback):
     result_dict = json.loads(query_response.body)
 
     if is_result_empty(result_dict):
-        callback(None)
+        callback({'items': [], 'item_count': 0})
     else:
         items_list = compress_keys_and_values(result_dict)
-        callback({'items': items_list})
+        callback({'items': items_list, 'item_count': len(items_list)})

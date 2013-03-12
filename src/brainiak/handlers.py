@@ -75,12 +75,13 @@ class InstanceFilterHandler(RequestHandler):
     def get(self, context_name, class_name):
         query_params = {
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
-            # "graph_uri": TODO
+            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
+            "lang": "",
             "page": self.DEFAULT_PAGE,
             "per_page": self.DEFAULT_PER_PAGE,
             "p": "?predicate",
-            "o": "?object",
-            "lang": ""}
+            "o": "?object"
+        }
 
         for (query_param, default_value) in query_params.items():
             query_params[query_param] = self.get_argument(query_param, default_value)

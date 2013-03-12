@@ -86,6 +86,11 @@ class InstanceListHandler(RequestHandler):
         for (query_param, default_value) in query_params.items():
             query_params[query_param] = self.get_argument(query_param, default_value)
 
+        # In order to keep up with Repos, pages numbering start at 1.
+        # As for Virtuoso pages start at 0, we convert page, if provided
+        if "page" in self.request.arguments:
+            query_params["page"] = str(int(query_params["page"]) - 1)
+
         query_string_keys = set(self.request.arguments.keys())
         query_params_supported = set(query_params.keys())
         if not query_string_keys.issubset(query_params_supported):

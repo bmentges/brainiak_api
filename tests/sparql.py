@@ -208,7 +208,7 @@ class QueryTestCase(SimpleTestCase):
         if self.allow_triplestore_connection:
             self._drop_graph_from_triplestore()
 
-    def query(self, query_string):
+    def query(self, query_string, graph=None):
         endpoint = settings.SPARQL_ENDPOINT
         user = settings.SPARQL_ENDPOINT_USER
         password = settings.SPARQL_ENDPOINT_PASSWORD
@@ -217,7 +217,10 @@ class QueryTestCase(SimpleTestCase):
 
         endpoint = Wrapper.SPARQLWrapper(endpoint)
         endpoint.setCredentials(user, password, mode=mode, realm=realm)
-        endpoint.addDefaultGraph(self.graph_uri)
+        if graph is None:
+            endpoint.addDefaultGraph(self.graph_uri)
+        else:
+            endpoint.addDefaultGraph(graph)
         endpoint.setReturnFormat(JSON)
         endpoint.setQuery(query_string)
 

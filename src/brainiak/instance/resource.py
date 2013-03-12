@@ -42,7 +42,9 @@ def query_all_properties_and_objects(context_name, class_name, instance_id):
 
 
 QUERY_FILTER_INSTANCE = """
-SELECT DISTINCT ?subject, ?label {
+SELECT DISTINCT ?subject, ?label 
+FROM <%(graph_uri)s>
+WHERE {
     ?subject a <%(class_uri)s>;
              rdfs:label ?label;
              %(p)s %(o)s .
@@ -92,6 +94,7 @@ def query_filter_instances(query_params):
 
 
 def filter_instances(query_params):
+
     query_response = query_filter_instances(query_params)
     result_dict = json.loads(query_response.body)
 

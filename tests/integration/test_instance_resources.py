@@ -17,6 +17,10 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     maxDiff = None
 
+    def test_filter_with_invalid_query_string(self):
+        response = self.fetch('/person/Gender/_filter?love=u', method='GET')
+        self.assertEqual(response.code, 400)
+
     def test_filter_without_predicate_and_object(self):
         response = self.fetch('/person/Gender/_filter', method='GET')
         expected_items = [

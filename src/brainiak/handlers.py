@@ -85,6 +85,12 @@ class InstanceFilterHandler(RequestHandler):
         for (query_param, default_value) in query_params.items():
             query_params[query_param] = self.get_argument(query_param, default_value)
 
+        query_string_keys = set(self.request.arguments.keys())
+        query_params_supported = set(query_params.keys())
+        if not query_string_keys.issubset(query_params_supported):
+            self.set_status(400)
+            return
+
         self.set_header('Access-Control-Allow-Origin', '*')
         response = filter_instances(query_params)
         if response is None:

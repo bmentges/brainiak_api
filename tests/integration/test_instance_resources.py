@@ -95,7 +95,8 @@ class InstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/Person",
             "p": "<http://tatipedia.org/likes>",
             "o": "<http://tatipedia.org/Capoeira>",
-            "lang_filter": ""
+            "lang_filter": "",
+            "graph_uri": self.graph_uri
         }
 
         query = QUERY_FILTER_INSTANCE % params
@@ -112,7 +113,8 @@ class InstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/Person",
             "p": "?predicate",
             "o": "<http://tatipedia.org/BungeeJump>",
-            "lang_filter": ""
+            "lang_filter": "",
+            "graph_uri": self.graph_uri
         }
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
@@ -128,7 +130,8 @@ class InstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/Person",
             "p": "<http://tatipedia.org/dislikes>",
             "o": "?object",
-            "lang_filter": ""
+            "lang_filter": "",
+            "graph_uri": self.graph_uri
         }
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
@@ -144,7 +147,8 @@ class InstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/Person",
             "p": "<http://tatipedia.org/likes>",
             "o": "?object",
-            "lang_filter": ""
+            "lang_filter": "",
+            "graph_uri": self.graph_uri
         }
         query = QUERY_FILTER_INSTANCE % params
         computed_bindings = self.query(query)['results']['bindings']
@@ -163,7 +167,8 @@ class InstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/Person",
             "p": "?predicate",
             "o": "Aikido",
-            "lang_filter": ""
+            "lang_filter": "",
+            "graph_uri": self.graph_uri
         }
 
         query = query_filter_instances(params)
@@ -176,12 +181,32 @@ class InstancesQueryTestCase(QueryTestCase):
 
         self.assertEqual(computed, expected)
 
+    def test_instance_filter_in_inexistent_graph(self):
+        # mock
+        original_graph_uri = self.graph_uri
+        self.graph_uri = ""
+
+        params = {
+            "class_uri": "http://tatipedia.org/Person",
+            "p": "?predicate",
+            "o": "Aikido",
+            "lang_filter": "",
+            "graph_uri": "http://neverland.com"
+        }
+
+        query = query_filter_instances(params)
+        computed = self.query(query)
+
+        # unmock
+        self.graph_uri = original_graph_uri
+
     def test_query_filter_instances_with_language_restriction_to_pt(self):
         params = {
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",
             "o": "Ingles",
-            "lang": "pt"
+            "lang": "pt",
+            "graph_uri": self.graph_uri
         }
 
         query = query_filter_instances(params)
@@ -201,7 +226,8 @@ class InstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",
             "o": "?test_filter_with_object_as_string",
-            "lang": "en"
+            "lang": "en",
+            "graph_uri": self.graph_uri
         }
 
         query = query_filter_instances(params)

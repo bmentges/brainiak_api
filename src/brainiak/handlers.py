@@ -63,13 +63,13 @@ class InstanceHandler(RequestHandler):
             self.write(response)
 
 
-class InstanceFilterHandler(RequestHandler):
+class InstanceListHandler(RequestHandler):
 
     DEFAULT_PER_PAGE = "10"
     DEFAULT_PAGE = "0"
 
     def __init__(self, *args, **kwargs):
-        super(InstanceFilterHandler, self).__init__(*args, **kwargs)
+        super(InstanceListHandler, self).__init__(*args, **kwargs)
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):

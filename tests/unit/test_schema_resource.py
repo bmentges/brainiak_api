@@ -41,7 +41,7 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         schema.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
 
         response = schema.get_schema("test_context", "test_class")
-        schema_response = response["schema"]
+        schema_response = response
 
         self.assertIn("title", schema_response)
         self.assertIn("type", schema_response)

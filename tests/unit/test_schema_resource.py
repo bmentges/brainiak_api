@@ -5,8 +5,10 @@ import unittest
 import mock
 
 import brainiak.schema.resource as schema
+from brainiak.result_handler import build_predicate_dict
 from brainiak import prefixes
-from brainiak.schema.resource import _extract_cardinalities, build_predicate_dict
+from brainiak.schema.resource import _extract_cardinalities
+
 from tests import TornadoAsyncTestCase
 
 

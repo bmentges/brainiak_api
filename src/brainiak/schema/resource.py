@@ -35,7 +35,7 @@ def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     effective_context.update(context.context)
 
     links = [{"rel": property_name,
-              "href": "/{0}/collection/{1}".format(*(uri.split(':')))}
+              "href": "/{0}/{1}".format(*(uri.split(':')))}
              for property_name, uri in context.object_properties.items()]
     schema = {
         "type": "object",
@@ -50,9 +50,7 @@ def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     if comment:
         schema["comment"] = comment
 
-    response = {"schema": schema}
-
-    return response
+    return schema
 
 
 def query_class_schema(class_uri, context):

@@ -113,7 +113,6 @@ def query_filter_instances(query_params):
 
 
 def filter_instances(query_params):
-
     query_response = query_filter_instances(query_params)
     result_dict = json.loads(query_response.body)
 

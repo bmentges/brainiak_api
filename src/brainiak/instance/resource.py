@@ -50,7 +50,10 @@ WHERE {
              %(p)s %(o)s .
     %(lang_filter)s
 }
+ORDER BY ASC (xsd:string(?label))
 """
+#OFFSET 0
+#LIMIT 10
 
 
 QUERY_FILTER_LABEL_BY_LANGUAGE = """

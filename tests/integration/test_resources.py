@@ -10,38 +10,44 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
     def get_app(self):
         return server.Application()
 
-    GENDER_MALE_JSON_INSTANCE = {
-        "head": {
-            "link": [],
-            "vars": [
-                "p",
-                "o"]
-        },
-        "results": {
-            "distinct": False,
-            "ordered": True,
-            "bindings": [{
-                "p": {
-                    "type": "uri",
-                    "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-                },
-                "o": {
-                    "type": "uri",
-                    "value": "http://semantica.globo.com/person/Gender"
-                }
-            }, {
-                "p": {
-                    "type": "uri",
-                    "value": "http://www.w3.org/2000/01/rdf-schema#label"
-                },
-                "o": {
-                    "type": "literal",
-                    "xml:lang": "pt",
-                    "value": "Masculino"
-                }
-            }]
-        }
-    }
+    # GENDER_MALE_JSON_INSTANCE = {
+    #     "@id": "http://localhost:54725/person/Gender/Male",
+    #     "$schema": "http://localhost:54725/person/Gender/_schema",
+    #     "type": "object"
+    # }
+
+    #     {
+    #     "head": {
+    #         "link": [],
+    #         "vars": [
+    #             "p",
+    #             "o"]
+    #     },
+    #     "results": {
+    #         "distinct": False,
+    #         "ordered": True,
+    #         "bindings": [{
+    #             "p": {
+    #                 "type": "uri",
+    #                 "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+    #             },
+    #             "o": {
+    #                 "type": "uri",
+    #                 "value": "http://semantica.globo.com/person/Gender"
+    #             }
+    #         }, {
+    #             "p": {
+    #                 "type": "uri",
+    #                 "value": "http://www.w3.org/2000/01/rdf-schema#label"
+    #             },
+    #             "o": {
+    #                 "type": "literal",
+    #                 "xml:lang": "pt",
+    #                 "value": "Masculino"
+    #             }
+    #         }]
+    #     }
+    # }
 
     def test_get_instance_with_nonexistent_uri(self):
         response = self.fetch('/person/Gender/Alien')
@@ -51,7 +57,8 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         response = self.fetch('/person/Gender/Male')
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
-        self.assertEqual(json_received, self.GENDER_MALE_JSON_INSTANCE)
+        self.assertTrue(json_received['$schema'].endswith('_schema'))
+        self.assertEqual(json_received['type'], 'object')
 
 
 class TestSchemaResource(TornadoAsyncHTTPTestCase):

@@ -75,16 +75,18 @@ class InstanceFilterHandler(RequestHandler):
     def get(self, context_name, class_name):
         query_params = {
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
+            # "graph_uri": TODO
             "page": self.DEFAULT_PAGE,
             "per_page": self.DEFAULT_PER_PAGE,
             "p": "?predicate",
-            "o": "?object"}
+            "o": "?object",
+            "lang": ""}
 
         for (query_param, default_value) in query_params.items():
             query_params[query_param] = self.get_argument(query_param, default_value)
 
         self.set_header('Access-Control-Allow-Origin', '*')
-        response = filter_instances(context_name, query_params)
+        response = filter_instances(query_params)
         if response is None:
             self.set_status(404)
         else:

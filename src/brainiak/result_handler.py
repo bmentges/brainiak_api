@@ -62,7 +62,7 @@ def build_predicate_dict(name, predicate, cardinalities, context):
     return predicate_dict
 
 
-def convert_bindings_dict(context, bindings, cardinalities=None):
+def convert_bindings_dict(context, bindings, cardinalities):
     range_dict = {p['predicate']['value']: p['range']['value'] for p in bindings}
 
     predicates_dict = {}

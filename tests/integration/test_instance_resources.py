@@ -29,16 +29,26 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {u'label': u'Transg\xeanero', u'subject': u'http://semantica.globo.com/person/Gender/Transgender'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['items'], expected_items)
         self.assertEqual(received_response['item_count'], 3)
+        self.assertEqual(received_response['items'], expected_items)
+
+    def test_list_by_page(self):
+        response = self.fetch('/person/Gender/_filter?page=1&per_page=2', method='GET')
+        expected_items = [
+            {u'label': u'Feminino', u'subject': u'http://semantica.globo.com/person/Gender/Female'},
+            {u'label': u'Masculino', u'subject': u'http://semantica.globo.com/person/Gender/Male'}]
+        received_response = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+        self.assertEqual(received_response['item_count'], 2)
+        self.assertEqual(received_response['items'], expected_items)
 
     def test_filter_with_object_as_string(self):
         response = self.fetch('/person/Gender/_filter?o=Masculino&lang=pt', method='GET')
         expected_items = [{u'label': u'Masculino', u'subject': u'http://semantica.globo.com/person/Gender/Male'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['items'], expected_items)
         self.assertEqual(received_response['item_count'], 1)
+        self.assertEqual(received_response['items'], expected_items)
 
     def test_filter_with_predicate_as_uri(self):
         url = urllib.quote("http://www.w3.org/2000/01/rdf-schema#label")
@@ -49,8 +59,8 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {u'label': u'Transg\xeanero', u'subject': u'http://semantica.globo.com/person/Gender/Transgender'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['items'], expected_items)
         self.assertEqual(received_response['item_count'], 3)
+        self.assertEqual(received_response['items'], expected_items)
 
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
         url = urllib.quote("rdfs:label")
@@ -58,8 +68,8 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         expected_items = [{u'label': u'Feminino', u'subject': u'http://semantica.globo.com/person/Gender/Female'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['items'], expected_items)
         self.assertEqual(received_response['item_count'], 1)
+        self.assertEqual(received_response['items'], expected_items)
 
     def test_filter_with_no_results(self):
         response = self.fetch('/person/Gender/_filter?o=Xubiru&lang=pt', method='GET')
@@ -94,7 +104,9 @@ class InstancesQueryTestCase(QueryTestCase):
             "p": "<http://tatipedia.org/likes>",
             "o": "<http://tatipedia.org/Capoeira>",
             "lang_filter": "",
-            "graph_uri": self.graph_uri
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0"
         }
 
         query = QUERY_FILTER_INSTANCE % params
@@ -112,7 +124,9 @@ class InstancesQueryTestCase(QueryTestCase):
             "p": "?predicate",
             "o": "<http://tatipedia.org/BungeeJump>",
             "lang_filter": "",
-            "graph_uri": self.graph_uri
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0"
         }
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
@@ -129,7 +143,9 @@ class InstancesQueryTestCase(QueryTestCase):
             "p": "<http://tatipedia.org/dislikes>",
             "o": "?object",
             "lang_filter": "",
-            "graph_uri": self.graph_uri
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0"
         }
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
@@ -146,7 +162,9 @@ class InstancesQueryTestCase(QueryTestCase):
             "p": "<http://tatipedia.org/likes>",
             "o": "?object",
             "lang_filter": "",
-            "graph_uri": self.graph_uri
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0"
         }
         query = QUERY_FILTER_INSTANCE % params
         computed_bindings = self.query(query)['results']['bindings']
@@ -165,7 +183,9 @@ class InstancesQueryTestCase(QueryTestCase):
             "p": "?predicate",
             "o": "Aikido",
             "lang_filter": "",
-            "graph_uri": self.graph_uri
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0"
         }
 
         query = query_filter_instances(params)
@@ -179,24 +199,19 @@ class InstancesQueryTestCase(QueryTestCase):
         self.assertEqual(computed, expected)
 
     def test_instance_filter_in_inexistent_graph(self):
-        # mock
-        original_graph_uri = self.graph_uri
-        self.graph_uri = ""
-
         params = {
             "class_uri": "http://tatipedia.org/Person",
             "p": "?predicate",
             "o": "Aikido",
             "lang_filter": "",
-            "graph_uri": "http://neverland.com"
+            "graph_uri": "http://neverland.com",
+            "per_page": "10",
+            "page": "0"
         }
 
         query = query_filter_instances(params)
-        response = self.query(query)
+        response = self.query(query, params["graph_uri"])
         self.assertFalse(response["results"]["bindings"])
-
-        # unmock
-        self.graph_uri = original_graph_uri
 
     def test_query_filter_instances_with_language_restriction_to_pt(self):
         params = {
@@ -204,7 +219,9 @@ class InstancesQueryTestCase(QueryTestCase):
             "p": "http://tatipedia.org/speak",
             "o": "Ingles",
             "lang": "pt",
-            "graph_uri": self.graph_uri
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0"
         }
 
         query = query_filter_instances(params)
@@ -218,13 +235,55 @@ class InstancesQueryTestCase(QueryTestCase):
         self.assertEqual(len(computed_bindings), 2)
         self.assertEqual(computed_bindings, expected_bindings)
 
+    def test_query_page_0(self):
+        params = {
+            "class_uri": "http://tatipedia.org/Place",
+            "p": "http://tatipedia.org/speak",
+            "o": "Ingles",
+            "lang": "pt",
+            "graph_uri": self.graph_uri,
+            "per_page": "1",
+            "page": "0"
+        }
+
+        query = query_filter_instances(params)
+
+        computed_bindings = self.query(query)["results"]["bindings"]
+        expected_bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'},
+                     u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Londres'}}]
+
+        self.assertEqual(len(computed_bindings), 1)
+        self.assertEqual(computed_bindings, expected_bindings)
+
+    def test_query_page_1(self):
+        params = {
+            "class_uri": "http://tatipedia.org/Place",
+            "p": "http://tatipedia.org/speak",
+            "o": "Ingles",
+            "lang": "pt",
+            "graph_uri": self.graph_uri,
+            "per_page": "1",
+            "page": "1"
+        }
+
+        query = query_filter_instances(params)
+
+        computed_bindings = self.query(query)["results"]["bindings"]
+        expected_bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/new_york'},
+                     u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nova Iorque'}}]
+
+        self.assertEqual(len(computed_bindings), 1)
+        self.assertEqual(computed_bindings, expected_bindings)
+
     def test_query_filter_instances_with_language_restriction_to_en(self):
         params = {
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",
             "o": "?test_filter_with_object_as_string",
             "lang": "en",
-            "graph_uri": self.graph_uri
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0"
         }
 
         query = query_filter_instances(params)

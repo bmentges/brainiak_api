@@ -1,5 +1,5 @@
 pycurl==7.19.0
-tornado-auth-digest==2.4.1-auth-digest
+tornado-auth-digest==2.4.post4-digest
 gunicorn==0.14.6
 rdflib==3.2.3
 SPARQLWrapper==1.5.0-authdigest

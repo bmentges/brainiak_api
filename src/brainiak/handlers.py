@@ -54,12 +54,11 @@ class InstanceHandler(RequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
-        response = get_instance(context_name, class_name, instance_id)
+        response = get_instance(self.request, context_name, class_name, instance_id)
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
             self.set_status(404)
         else:
-            # TODO JSON parsing to JSON Schema format
             self.write(response)
 
 

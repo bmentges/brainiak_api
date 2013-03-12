@@ -41,7 +41,7 @@ class SchemaHandler(RequestHandler):
         response = get_schema(context_name, class_name)
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            self.set_status(204)
+            self.set_status(404)
         else:
             self.write(response)
         # self.finish() -- this is automagically called by greenlet_asynchronous
@@ -57,7 +57,7 @@ class InstanceHandler(RequestHandler):
         response = get_instance(context_name, class_name, instance_id)
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            self.set_status(204)
+            self.set_status(404)
         else:
             # TODO JSON parsing to JSON Schema format
             self.write(response)
@@ -86,6 +86,6 @@ class InstanceFilterHandler(RequestHandler):
         self.set_header('Access-Control-Allow-Origin', '*')
         response = filter_instances(context_name, query_params)
         if response is None:
-            self.set_status(204)
+            self.set_status(404)
         else:
             self.write(response)

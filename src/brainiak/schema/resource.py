@@ -195,7 +195,6 @@ def query_predicates(class_uri, context):
 def _query_predicate_with_lang(class_uri, context):
     query = """
         SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
-        FROM <%(graph_uri)s>
         WHERE {
             <%(class_uri)s> rdfs:subClassOf ?domain_class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
             GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
@@ -215,7 +214,6 @@ def _query_predicate_with_lang(class_uri, context):
 def _query_predicate_without_lang(class_uri, context):
     query = """
         SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
-        FROM <%(graph_uri)s>
         WHERE {
             <%(class_uri)s> rdfs:subClassOf ?domain_class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
             GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .

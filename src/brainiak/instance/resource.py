@@ -8,19 +8,38 @@ from brainiak.result_handler import compress_keys_and_values, is_result_empty
 from brainiak.settings import URI_PREFIX
 
 
-def get_instance(context_name, class_name, instance_id):
+def get_instance(request, context_name, class_name, instance_id):
     """
     Given a URI, verify that the type corresponds to the class being passed as a parameter
     Retrieve all properties and objects of this URI (subject)
     """
     query_response = query_all_properties_and_objects(context_name, class_name, instance_id)
-    result_dict = json.loads(query_response.body)
+    query_result_dict = json.loads(query_response.body)
 
-    if is_result_empty(result_dict):
+    if is_result_empty(query_result_dict):
         return
     else:
         # TODO handling dict
-        return result_dict
+        return assemble_instance_json(request, context_name, class_name, instance_id, query_result_dict)
+
+
+def assemble_instance_json(request, context_name, class_name, instance_id, query_result_dict):
+    base_url = request.headers.get("Host")
+
+    # links = [{"rel": property_name,
+    #           "href": "/{0}/{1}".format(*(uri.split(':')))}
+    #          for property_name, uri in context.object_properties.items()]
+
+    instance = {
+        "type": "object",
+        "@id": request.full_url(),
+        #"@context": effective_context,
+        "$schema": "http://{0}/{1}/{2}/_schema".format(base_url, context_name, class_name),
+        #"title": title,
+        #"links": links,
+        #"properties": predicates
+    }
+    return instance
 
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """

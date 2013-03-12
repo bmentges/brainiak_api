@@ -195,7 +195,8 @@ class InstancesQueryTestCase(QueryTestCase):
         }
 
         query = query_filter_instances(params)
-        computed = self.query(query)
+        response = self.query(query)
+        self.assertFalse(response["results"]["bindings"])
 
         # unmock
         self.graph_uri = original_graph_uri

@@ -58,7 +58,6 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         self.assertTrue(json_received['$schema'].endswith('_schema'))
-        self.assertEqual(json_received['type'], 'object')
 
 
 class TestSchemaResource(TornadoAsyncHTTPTestCase):

@@ -28,6 +28,14 @@ def is_result_empty(result_dict):
     return len(result_dict['results']['bindings']) == 0
 
 
+def build_items_dict(context, bindings):
+    items_dict = {}
+    for item in bindings:
+        key = context.shorten_uri(item["p"]["value"])
+        value = context.shorten_uri(item["o"]["value"])
+        items_dict[key] = value
+    return items_dict
+
 def build_predicate_dict(name, predicate, cardinalities, context):
     predicate_dict = {}
     predicate_type = predicate['type']['value']
@@ -60,6 +68,7 @@ def build_predicate_dict(name, predicate, cardinalities, context):
     if "predicate_comment" in simplified_predicate:  # Para Video que não tem isso
         predicate_dict["comment"] = simplified_predicate["predicate_comment"]
     return predicate_dict
+
 
 
 def convert_bindings_dict(context, bindings, cardinalities):

@@ -32,14 +32,12 @@ def assemble_instance_json(request, context_name, class_name, query_result_dict)
               for property_name, uri in context.object_properties.items()]
 
     instance = {
-        "type": "object",
         "@id": request.full_url(),
         "@context": context.context,
         "$schema": "http://{0}/{1}/{2}/_schema".format(base_url, context_name, class_name),
-        #"title": title,
         "links": links,
-        "items": items,
     }
+    instance.update(items)
     return instance
 
 

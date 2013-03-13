@@ -41,7 +41,7 @@ class SchemaHandler(RequestHandler):
         response = get_schema(context_name, class_name)
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            self.set_status(204)
+            self.set_status(404)
         else:
             self.write(response)
         # self.finish() -- this is automagically called by greenlet_asynchronous
@@ -54,38 +54,51 @@ class InstanceHandler(RequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
-        response = get_instance(context_name, class_name, instance_id)
+        response = get_instance(self.request, context_name, class_name, instance_id)
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            self.set_status(204)
+            self.set_status(404)
         else:
-            # TODO JSON parsing to JSON Schema format
             self.write(response)
 
 
-class InstanceFilterHandler(RequestHandler):
+class InstanceListHandler(RequestHandler):
 
     DEFAULT_PER_PAGE = "10"
     DEFAULT_PAGE = "0"
 
     def __init__(self, *args, **kwargs):
-        super(InstanceFilterHandler, self).__init__(*args, **kwargs)
+        super(InstanceListHandler, self).__init__(*args, **kwargs)
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
         query_params = {
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
+            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
+            "lang": "",
             "page": self.DEFAULT_PAGE,
             "per_page": self.DEFAULT_PER_PAGE,
             "p": "?predicate",
-            "o": "?object"}
+            "o": "?object"
+        }
 
         for (query_param, default_value) in query_params.items():
             query_params[query_param] = self.get_argument(query_param, default_value)
 
+        # In order to keep up with Repos, pages numbering start at 1.
+        # As for Virtuoso pages start at 0, we convert page, if provided
+        if "page" in self.request.arguments:
+            query_params["page"] = str(int(query_params["page"]) - 1)
+
+        query_string_keys = set(self.request.arguments.keys())
+        query_params_supported = set(query_params.keys())
+        if not query_string_keys.issubset(query_params_supported):
+            self.set_status(400)
+            return
+
         self.set_header('Access-Control-Allow-Origin', '*')
-        response = filter_instances(context_name, query_params)
+        response = filter_instances(query_params)
         if response is None:
-            self.set_status(204)
+            self.set_status(404)
         else:
             self.write(response)

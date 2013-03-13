@@ -5,8 +5,10 @@ import unittest
 import mock
 
 import brainiak.schema.resource as schema
+from brainiak.result_handler import build_predicate_dict
 from brainiak import prefixes
-from brainiak.schema.resource import _extract_cardinalities, build_predicate_dict
+from brainiak.schema.resource import _extract_cardinalities
+
 from tests import TornadoAsyncTestCase
 
 
@@ -41,7 +43,7 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         schema.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
 
         response = schema.get_schema("test_context", "test_class")
-        schema_response = response["schema"]
+        schema_response = response
 
         self.assertIn("title", schema_response)
         self.assertIn("type", schema_response)

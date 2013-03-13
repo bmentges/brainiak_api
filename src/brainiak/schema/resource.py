@@ -5,9 +5,8 @@ from tornado import gen
 
 from brainiak import settings
 from brainiak.prefixes import MemorizeContext, shorten_uri, prefix_from_uri
-from brainiak.result_handler import *
+from brainiak.result_handler import get_one_value, convert_bindings_dict
 from brainiak.triplestore import query_sparql
-from brainiak.type_mapper import items_from_type, OBJECT_PROPERTY, DATATYPE_PROPERTY, items_from_range
 
 
 def get_schema(context_name, schema_name):
@@ -35,7 +34,7 @@ def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     effective_context.update(context.context)
 
     links = [{"rel": property_name,
-              "href": "/{0}/collection/{1}".format(*(uri.split(':')))}
+              "href": "/{0}/{1}".format(*(uri.split(':')))}
              for property_name, uri in context.object_properties.items()]
     schema = {
         "type": "object",
@@ -50,9 +49,7 @@ def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     if comment:
         schema["comment"] = comment
 
-    response = {"schema": schema}
-
-    return response
+    return schema
 
 
 def query_class_schema(class_uri, context):
@@ -77,62 +74,8 @@ def get_predicates_and_cardinalities(class_uri, class_schema, context):
     response = query_predicates(class_uri, context)
     tornado_response = response
     predicates = json.loads(tornado_response.body)
-    predicate_definitions = predicates['results']['bindings']
-    range_dict = {p['predicate']['value']: p['range']['value'] for p in predicate_definitions}
 
-    predicates_dict = {}
-    remove_super_predicates = []
-    for predicate in predicate_definitions:
-        predicate_name = predicate['predicate']['value']
-        try:
-            super_property = predicate['super_property']['value']
-        except KeyError:
-            super_property = None
-        if (super_property in range_dict) and (range_dict[super_property] == predicate['range']['value']):
-            remove_super_predicates.append(super_property)
-        predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, context)
-        predicates_dict[context.shorten_uri(predicate_name)] = predicate_dict
-
-    # Avoid enumerating redundant predicates when a more specific predicate prevails over
-    # an inherited predicate with the same range
-    for p in remove_super_predicates:
-        del predicates_dict[shorten_uri(p)]
-
-    return predicates_dict
-
-
-def build_predicate_dict(name, predicate, cardinalities, context):
-    predicate_dict = {}
-    predicate_type = predicate['type']['value']
-    range_class_uri = predicate['range']['value']
-    range_key = context.shorten_uri(range_class_uri)
-
-    if predicate_type == OBJECT_PROPERTY:
-        predicate_dict["range"] = {'@id': range_key,
-                                   'graph': context.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
-                                   'title': predicate.get('label_do_range', {}).get('value', "")}
-        context.add_object_property(predicate['predicate']['value'], range_key)
-
-    elif predicate_type == DATATYPE_PROPERTY:
-        # Have a datatype property
-        predicate_dict.update(items_from_range(range_class_uri))
-
-    if (name in cardinalities) and (range_class_uri in cardinalities[name]):
-        predicate_restriction = cardinalities[name]
-        predicate_dict.update(predicate_restriction[range_class_uri])
-        if "enum" in predicate_restriction:
-            # FIXME: simplify value returned from cardinalities to avoid ugly code below
-            predicate_dict["enum"] = predicate_restriction["enum"]
-
-    simplified_predicate = {attribute: predicate[attribute]['value'] for attribute in predicate}
-    add_items = items_from_type(simplified_predicate["type"])
-    if add_items:
-        predicate_dict.update(add_items)
-    predicate_dict["title"] = simplified_predicate["title"]
-    predicate_dict["graph"] = context.prefix_to_slug(simplified_predicate["predicate_graph"])
-    if "predicate_comment" in simplified_predicate:  # Para Video que não tem isso
-        predicate_dict["comment"] = simplified_predicate["predicate_comment"]
-    return predicate_dict
+    return convert_bindings_dict(context, predicates['results']['bindings'], cardinalities)
 
 
 def _extract_cardinalities(bindings):
@@ -164,7 +107,6 @@ def _extract_cardinalities(bindings):
 def query_cardinalities(class_uri, class_schema, context):
     query = """
         SELECT DISTINCT ?predicate ?min ?max ?range ?enumerated_value ?enumerated_value_label
-        FROM <%(graph_uri)s>
         WHERE {
             <%(class_uri)s> rdfs:subClassOf ?s OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
             ?s owl:onProperty ?predicate .
@@ -179,7 +121,7 @@ def query_cardinalities(class_uri, class_schema, context):
                 OPTIONAL { ?list_node rdf:first ?enumerated_value } .
                 OPTIONAL { ?enumerated_value rdfs:label ?enumerated_value_label } .
             }
-        }""" % {"class_uri": class_uri, "graph_uri": prefix_from_uri(class_uri)}
+        }""" % {"class_uri": class_uri}
     return query_sparql(query, class_schema, context)
 
 
@@ -197,7 +139,6 @@ def query_predicates(class_uri, context):
 def _query_predicate_with_lang(class_uri, context):
     query = """
         SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
-        FROM <%(graph_uri)s>
         WHERE {
             <%(class_uri)s> rdfs:subClassOf ?domain_class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
             GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
@@ -210,14 +151,13 @@ def _query_predicate_with_lang(class_uri, context):
             FILTER(langMatches(lang(?predicate_comment), "%(lang)s")) .
             OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . FILTER(langMatches(lang(?label_do_range), "%(lang)s")) . } } .
             OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
-        }""" % {'class_uri': class_uri, "graph_uri": prefix_from_uri(class_uri), 'lang': 'PT'}
+        }""" % {'class_uri': class_uri, 'lang': 'PT'}
     return query_sparql(query, context)
 
 
 def _query_predicate_without_lang(class_uri, context):
     query = """
         SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
-        FROM <%(graph_uri)s>
         WHERE {
             <%(class_uri)s> rdfs:subClassOf ?domain_class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
             GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
@@ -228,5 +168,5 @@ def _query_predicate_without_lang(class_uri, context):
             FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
             OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . } } .
             OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
-        }""" % {'class_uri': class_uri, "graph_uri": prefix_from_uri(class_uri)}
+        }""" % {'class_uri': class_uri}
     return query_sparql(query, context)

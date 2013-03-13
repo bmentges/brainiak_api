@@ -4,7 +4,7 @@ from tornado import gen
 
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri, MemorizeContext
-from brainiak.result_handler import compress_keys_and_values, is_result_empty, convert_bindings_dict
+from brainiak.result_handler import compress_keys_and_values, is_result_empty, build_items_dict
 from brainiak.settings import URI_PREFIX
 
 
@@ -26,7 +26,7 @@ def get_instance(request, context_name, class_name, instance_id):
 def assemble_instance_json(request, context_name, class_name, query_result_dict):
     context = MemorizeContext()
     base_url = request.headers.get("Host")
-    #predicates = convert_bindings_dict(context, query_result_dict['results']['bindings'], None)
+    items = build_items_dict(context, query_result_dict['results']['bindings'])
     links = [{"rel": property_name,
              "href": "/{0}/{1}".format(*(uri.split(':')))}
               for property_name, uri in context.object_properties.items()]
@@ -38,7 +38,7 @@ def assemble_instance_json(request, context_name, class_name, query_result_dict)
         "$schema": "http://{0}/{1}/{2}/_schema".format(base_url, context_name, class_name),
         #"title": title,
         "links": links,
-        #"properties": predicates
+        "items": items,
     }
     return instance
 

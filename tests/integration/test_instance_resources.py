@@ -94,9 +94,11 @@ class InstancesQueryTestCase(QueryTestCase):
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql
         triplestore.query_sparql = lambda query: query
+        self.original_query_filter_instances = resource.query_filter_instances
 
     def tearDown(self):
         triplestore.query_sparql = self.original_query_sparql
+        resource.query_filter_instances = self.original_query_filter_instances
 
     def test_instance_filter_query_by_predicate_and_object(self):
         params = {
@@ -309,13 +311,23 @@ class InstancesQueryTestCase(QueryTestCase):
         resource.query_filter_instances = original
 
     def test_filter_instances_result_is_not_empty(self):
-        # mock
-        original = resource.query_filter_instances
         resource.query_filter_instances = lambda params: MockResponse({"results": {"bindings": [{"jj:armlock": {"type": None, "value": "Armlock"}}]}})
+        response = resource.filter_instances({"class_uri": "some_class"})
 
-        response = resource.filter_instances({})
+        expected_links = [
+            {
+                'href': "some_class",
+                'rel': "self"
+            },
+            {
+                'href': "some_class/{resource_id}",
+                'rel': "item"
+            },
+            {
+                'href': "some_class",
+                'method': "POST",
+                'rel': "create"
+            }]
         self.assertEquals(response["items"], [{u'jj:armlock': u'Armlock'}])
         self.assertEquals(response["item_count"], 1)
-
-        # unmock
-        resource.query_filter_instances = original
+        self.assertEquals(response["links"], expected_links)

@@ -110,7 +110,6 @@ def query_filter_instances(query_params):
         query_params["lang_filter"] = ""
 
     query = QUERY_FILTER_INSTANCE % query_params
-
     return triplestore.query_sparql(query)
 
 
@@ -122,4 +121,28 @@ def filter_instances(query_params):
         return None
     else:
         items_list = compress_keys_and_values(result_dict)
-        return {'items': items_list, 'item_count': len(items_list)}
+        return build_json(items_list, query_params)
+
+
+def build_json(items_list, query_params):
+    class_uri = query_params["class_uri"]
+    json = {
+        'items': items_list,
+        'item_count': len(items_list),
+        'links': [
+            {
+                'href': class_uri,
+                'rel': "self"
+            },
+            {
+                'href': "%s/{resource_id}" % class_uri,
+                'rel': "item"
+            },
+            {
+                'href': class_uri,
+                'method': "POST",
+                'rel': "create"
+            }
+        ]
+    }
+    return json

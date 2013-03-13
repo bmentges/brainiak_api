@@ -11,3 +11,13 @@ tpedia:mary a tpedia:Person ;
             tpedia:likes tpedia:Capoeira ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:dislikes tpedia:BungeeJump .
+
+tpedia:new_york a tpedia:Place ;
+                rdfs:label "Nova Iorque"@pt ;
+                rdfs:label "New York"@en ;
+                tpedia:speak "Ingles"@pt .
+
+tpedia:london a tpedia:Place ;
+                rdfs:label "Londres"@pt ;
+                rdfs:label "London"@en ;
+                tpedia:speak "Ingles"@pt .

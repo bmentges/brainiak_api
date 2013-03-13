@@ -13,7 +13,7 @@ This module uses the following nomenclature:
 _MAP_SLUG_TO_PREFIX = {
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
-    'owl': 'http://www.w3.org/2002/07/owl#"owl="http://www.w3.org/2002/07/owl#',
+    'owl': 'http://www.w3.org/2002/07/owl#',
     'dc': 'http://purl.org/dc/elements/1.1/',
     'dct': 'http://purl.org/dc/terms/',
     'foaf': 'http://xmlns.com/foaf/0.1/',
@@ -71,7 +71,11 @@ def shorten_uri(uri):
     uri_prefix = extract_prefix(uri)
     if uri_prefix:
         item = uri[len(uri_prefix):]
-        return "{0}:{1}".format(prefix_to_slug(uri_prefix), item)
+        if "/" in item:
+            # compression was not perfect because the uri is longer than just slug:item
+            return uri
+        else:
+            return "{0}:{1}".format(prefix_to_slug(uri_prefix), item)
     else:
         return uri
 

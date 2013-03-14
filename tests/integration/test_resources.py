@@ -1,6 +1,6 @@
 # coding: utf-8
 import json
-
+from mock import patch
 from brainiak import __version__, settings, server
 from tests import TornadoAsyncHTTPTestCase
 
@@ -24,14 +24,14 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
 class TestSchemaResource(TornadoAsyncHTTPTestCase):
 
     SAMPLE_SCHEMA_JSON = {
-            u'$schema': u'http://json-schema.org/draft-03/schema#',
-            u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
-            u'@id': u'person:Gender',
-            u'links': [],
-            u'properties': {},
-            u'title': u"Gênero da Pessoa",
-            u'comment': u"Gênero de uma pessoa.",
-            u'type': u'object'
+        u'$schema': u'http://json-schema.org/draft-03/schema#',
+        u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
+        u'@id': u'person:Gender',
+        u'links': [],
+        u'properties': {},
+        u'title': u"Gênero da Pessoa",
+        u'comment': u"Gênero de uma pessoa.",
+        u'type': u'object'
     }
 
     maxDiff = None
@@ -109,7 +109,8 @@ class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
     def tearDown(self):
         settings.ENVIRONMENT = self.original_settings_env
 
-    def test_virtuoso_status_in_prod(self):
+    @patch("brainiak.handlers.log")  # test fails otherwise because log.logger is None
+    def test_virtuoso_status_in_prod(self, log):
         settings.ENVIRONMENT = "prod"
         response = self.fetch('/status/virtuoso', method='GET')
         self.assertEqual(response.code, 404)

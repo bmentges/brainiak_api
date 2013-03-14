@@ -1,7 +1,6 @@
 import logging
 from logging.handlers import WatchedFileHandler, SysLogHandler
 from syslog import LOG_SYSLOG
-import sys
 
 from brainiak.settings import LOG_FILEPATH, LOG_LEVEL, LOG_NAME
 
@@ -30,9 +29,9 @@ How to use:
 
 (2) Log info, debug, error, warnings, etc:
 
-    from brainiak.log import logger
-    logger.error("Error msg")
-    logger.debug("Debug msg")
+    from brainiak import log
+    log.logger.error("Error msg")
+    log.logger.debug("Debug msg")
 
 Requirements:
 

@@ -4,7 +4,7 @@ from tornado import gen
 
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri, MemorizeContext
-from brainiak.result_handler import compress_keys_and_values, is_result_empty, build_items_dict
+from brainiak.result_handler import compress_keys_and_values, is_result_empty
 from brainiak.settings import URI_PREFIX
 
 
@@ -21,6 +21,15 @@ def get_instance(request, context_name, class_name, instance_id):
     else:
         # TODO handling dict
         return assemble_instance_json(request, context_name, class_name, query_result_dict)
+
+
+def build_items_dict(context, bindings):
+    items_dict = {}
+    for item in bindings:
+        key = context.shorten_uri(item["p"]["value"])
+        value = context.shorten_uri(item["o"]["value"])
+        items_dict[key] = value
+    return items_dict
 
 
 def assemble_instance_json(request, context_name, class_name, query_result_dict):

@@ -57,4 +57,4 @@ WHERE {?person <http://graph.sample/name> ?name}
 
 #     def test_subproperty_entailment_query(self):
 #         response_bindings = self.query(QUERY_ENTAILMENT)["results"]["bindings"]
-#         import pdb; pdb.set_trace()
+#         assert False

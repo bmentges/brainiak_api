@@ -75,8 +75,15 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
 
     maxDiff = None
 
-    def test_schema_handler(self):
-        response = self.fetch('/person/Gender/_schema')
+    # def test_schema_handler_without_lang(self):
+    #     response = self.fetch('/person/Gender/_schema')
+    #     self.assertEqual(response.code, 200)
+    #     json_received = json.loads(response.body)
+    #     import pdb; pdb.set_trace()
+    #     self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
+
+    def test_schema_handler_with_lang(self):
+        response = self.fetch('/person/Gender/_schema?lang=pt')
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)

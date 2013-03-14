@@ -38,7 +38,16 @@ class SchemaHandler(RequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-        response = get_schema(context_name, class_name)
+        query_params = {
+            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
+            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
+            "lang": ""
+        }
+
+        for (query_param, default_value) in query_params.items():
+            query_params[query_param] = self.get_argument(query_param, default_value)
+
+        response = get_schema(query_params)
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
             self.set_status(404)

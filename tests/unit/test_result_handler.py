@@ -61,6 +61,22 @@ class ResultHandlerTestCase(unittest.TestCase):
             {u'title': u"Mostly Harmless", u'year': u"1992"}]
         self.assertEqual(compressed_list, expected_list)
 
+    def test_compress_keys_and_values_with_keymap(self):
+        trilogy_from_virtuoso = {'results': {'bindings': [
+            {u'title': {u'type': u'literal', u'value': u"The Hitchhiker's Guide to the Galaxy"}, u'year': {u'type': u'literal', u'value': "1979"}},
+            {u'title': {u'type': u'literal', u'value': u"The Restaurant at the End of the Universe Life"}, u'year': {u'type': u'literal', u'value': "1980"}},
+            {u'title': {u'type': u'literal', u'value': u"Life, the Universe and Everything"}, u'year': {u'type': u'literal', u'value': "1982"}},
+            {u'title': {u'type': u'literal', u'value': u"So Long, and Thanks for All the Fish"}, u'year': {u'type': u'literal', u'value': "1984"}},
+            {u'title': {u'type': u'literal', u'value': u"Mostly Harmless"}, u'year': {u'type': u'literal', u'value': "1992"}}]}}
+        compressed_list = compress_keys_and_values(trilogy_from_virtuoso, {'title': 'custom_title', 'year': 'custom_year'})
+        expected_list = [
+            {u'custom_title': u"The Hitchhiker's Guide to the Galaxy", u'custom_year': u"1979"},
+            {u'custom_title': u"The Restaurant at the End of the Universe Life", u'custom_year': u"1980"},
+            {u'custom_title': u"Life, the Universe and Everything", u'custom_year': u"1982"},
+            {u'custom_title': u"So Long, and Thanks for All the Fish", u'custom_year': u"1984"},
+            {u'custom_title': u"Mostly Harmless", u'custom_year': u"1992"}]
+        self.assertEqual(compressed_list, expected_list)
+
 
 class GetOneTestCase(unittest.TestCase):
 

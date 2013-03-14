@@ -12,13 +12,13 @@ server = None
 class Application(TornadoApplication):
 
     def __init__(self, debug=False):
+        log.initialize()
         super(Application, self).__init__(urls.get_routes(), debug=debug)
 
 application = Application()
 
 
 def main(args):  # pragma: no cover
-    log.initialize()
     application = Application(debug=args.debug)
     server = HTTPServer(application)
     server.listen(settings.SERVER_PORT)

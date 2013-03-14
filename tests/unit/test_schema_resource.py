@@ -112,12 +112,12 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                          "predicate": {"type": "uri", "value": "http://test/person/gender"},
                          "range": {"type": "uri", "value": "http://test/person/Gender"}
                         },
-                        {"enumerated_value": {"type": "uri", "value": "http://test/data/Gender/Male"},
+                        {"enumerated_value": {"type": "uri", "value": "http://test/person/Gender/Male"},
                          "enumerated_value_label": {"type": "literal", "value": "Masculino", "xml:lang": "pt"},
                          "predicate": {"type": "uri", "value": "http://test/person/gender"},
                          "range": {"type": "bnode", "value": "nodeID://b72146"}
                         },
-                        {"enumerated_value": {"type": "uri", "value": "http://test/data/Gender/Female"},
+                        {"enumerated_value": {"type": "uri", "value": "http://test/person/Gender/Female"},
                          "enumerated_value_label": {"type": "literal", "value": "Feminino", "xml:lang": "pt"},
                          "predicate": {"type": "uri", "value": "http://test/person/gender"},
                          "range": {"type": "bnode", "value": "nodeID://b72146"}
@@ -138,7 +138,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
             u'http://test/person/gender':
                 {'comment': u'G\xeanero.',
                  'title': u'Sexo',
-                 'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female'],
+                 'enum': [u'http://test/person/Gender/Male', u'http://test/person/Gender/Female'],
                  'graph': u'http://test/person/',
                  'format': 'uri',
                  'maxItems': u'1',
@@ -200,21 +200,21 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
             {u'predicate': {u'type': u'uri',
                             u'value': u'http://test/person/gender'},
              u'enumerated_value': {u'type': u'uri',
-                                   u'value': u'http://test/data/Gender/Male'},
+                                   u'value': u'http://test/person/Gender/Male'},
              u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'},
              u'enumerated_value_label': {u'xml:lang': u'pt', u'type': u'literal',
                                          u'value': u'Masculino'}},
             {u'predicate': {u'type': u'uri',
                             u'value': u'http://test/person/gender'},
              u'enumerated_value': {u'type': u'uri',
-                                   u'value': u'http://test/data/Gender/Female'},
+                                   u'value': u'http://test/person/Gender/Female'},
              u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'},
              u'enumerated_value_label': {u'xml:lang': u'pt', u'type': u'literal',
                                          u'value': u'Feminino'}}
         ]
         extracted = _extract_cardinalities(binding)
         expected = {u'http://test/person/gender': {
-                    'enum': [u'http://test/data/Gender/Male', u'http://test/data/Gender/Female']}}
+                    'enum': [u'http://test/person/Gender/Male', u'http://test/person/Gender/Female']}}
         self.assertEqual(extracted, expected)
 
     def test_build_predicate_dict_with_object_property(self):
@@ -227,8 +227,8 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                    'format': 'uri',
                                    'minItems': u'1',
                                    'title': u'Sexo',
-                                   'enum': [u'http://test/data/Gender/Male',
-                                            u'http://test/data/Gender/Female'],
+                                   'enum': [u'http://test/person/Gender/Male',
+                                            u'http://test/person/Gender/Female'],
                                    'type': 'string'}
         # params
         name = u'http://test/person/gender'
@@ -240,8 +240,8 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'predicate_graph': {u'type': u'uri', u'value': u'http://test/person/'},
                      u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero.'},
                      u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}}
-        cardinalities = {u'http://test/person/gender': {'enum': [u'http://test/data/Gender/Male',
-                                                                  u'http://test/data/Gender/Female'],
+        cardinalities = {u'http://test/person/gender': {'enum': [u'http://test/person/Gender/Male',
+                                                                  u'http://test/person/Gender/Female'],
                                                           u'http://test/person/Gender': {'minItems': u'1', 'maxItems': u'1'}}}
         context = prefixes.MemorizeContext()
         context.prefix_to_slug('http://test/person')

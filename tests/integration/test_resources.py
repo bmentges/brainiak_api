@@ -10,7 +10,8 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
     def get_app(self):
         return server.Application()
 
-    def test_get_instance_with_nonexistent_uri(self):
+    @patch("brainiak.handlers.log")
+    def test_get_instance_with_nonexistent_uri(self, log):
         response = self.fetch('/person/Gender/Alien')
         self.assertEqual(response.code, 404)
 
@@ -42,10 +43,11 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         json_received = json.loads(response.body)
         self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
 
-    def test_schema_handler_with_invalid_params(self):
+    @patch("brainiak.handlers.log")
+    def test_schema_handler_with_invalid_params(self, log):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
-        self.assertEqual(response.body, '<html><title>400: Bad Request</title><body>400: Bad Request</body></html>')
+        self.assertEqual(response.body, '{"error": "HTTP error: 400\\nArgument hello passed is not supported"}')
 
     # TODO: We should test with old models as well.
     # However, we need to isolate ontologies snippets from upper and from base
@@ -79,10 +81,11 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
     #     json_received = json.loads(response.body)
     #     self.assertEqual(json_received, self.OLD_SCHEMA_JSON)
 
-    def test_schema_handler_class_undefined(self):
+    @patch("brainiak.handlers.log")
+    def test_schema_handler_class_undefined(self, log):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, "<html><title>404: Not Found</title><body>404: Not Found</body></html>")
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\n"}')
 
 
 class TestHealthcheckResource(TornadoAsyncHTTPTestCase):

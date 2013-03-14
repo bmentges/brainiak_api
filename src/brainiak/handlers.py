@@ -43,7 +43,6 @@ class SchemaHandler(RequestHandler):
             "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
             "lang": ""
         }
-
         for (query_param, default_value) in query_params.items():
             query_params[query_param] = self.get_argument(query_param, default_value)
 

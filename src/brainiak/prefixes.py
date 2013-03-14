@@ -26,8 +26,7 @@ _MAP_SLUG_TO_PREFIX = {
     'event': 'http://purl.org/NET/c4dm/event.owl#',
     'place': 'http://semantica.globo.com/place/',
     'person': 'http://semantica.globo.com/person/',
-    'organization': 'http://semantica.globo.com/organization/',
-    'act': 'http://semantica.globo.com/data/Activity/'
+    'organization': 'http://semantica.globo.com/organization/'
 }
 
 _MAP_PREFIX_TO_SLUG = {v: k for k, v in _MAP_SLUG_TO_PREFIX.items()}

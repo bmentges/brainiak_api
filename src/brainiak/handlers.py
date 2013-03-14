@@ -1,28 +1,69 @@
 # -*- coding: utf-8 -*-
-
-from tornado import gen
-from tornado.web import asynchronous, HTTPError, RequestHandler
+from tornado.web import HTTPError, RequestHandler
+import httplib
+import sys
+import traceback
 
 from brainiak import settings, triplestore
 from brainiak import __version__
-from brainiak.greenlet_tornado import greenlet_asynchronous
 from brainiak.schema.resource import get_schema
 from brainiak.instance.resource import filter_instances, get_instance
+from greenlet_tornado import greenlet_asynchronous
+from brainiak import log
 
 
-class HealthcheckHandler(RequestHandler):
+class BrainiakRequestHandler(RequestHandler):
+
+    def _request_summary(self):
+        return "{0} {1} ({2})".format(
+            self.request.method, self.request.host, self.request.remote_ip)
+
+    def _handle_request_exception(self, e):
+        if hasattr(e, "status_code") and e.status_code in httplib.responses:
+            status_code = e.status_code
+        else:
+            status_code = 500
+        error_message = "[{0}] on {1}".format(status_code, self._request_summary())
+        if isinstance(e, HTTPError):
+            if e.log_message:
+                error_message += "\n  {0}".format(e.log_message)
+            if status_code == 500:
+                log.logger.error("Unknown HTTP error [{0}]:\n  {1}\n".format(e.status_code, error_message))
+                self.send_error(status_code, exc_info=sys.exc_info(), message=e.log_message)
+            else:
+                log.logger.error("HTTP error: {0}\n".format(error_message))
+                self.send_error(status_code, message=e.log_message)
+
+        else:
+            log.logger.error("Uncaught exception: {0}\n".format(error_message), exc_info=True)
+            self.send_error(status_code, exc_info=sys.exc_info())
+
+    def write_error(self, status_code, **kwargs):
+        error_message = "HTTP error: %d" % status_code
+        if "message" in kwargs and kwargs.get("message") is not None:
+            error_message += "\n{0}".format(kwargs.get("message"))
+        if "exc_info" in kwargs:
+            etype, value, tb = kwargs.get("exc_info")
+            exception_msg = ''.join(traceback.format_exception(etype, value, tb))
+            error_message += "\nException:\n{0}".format(exception_msg)
+
+        error_json = {"error": error_message}
+        self.finish(error_json)
+
+
+class HealthcheckHandler(BrainiakRequestHandler):
 
     def get(self):
         self.write("WORKING")
 
 
-class VersionHandler(RequestHandler):
+class VersionHandler(BrainiakRequestHandler):
 
     def get(self):
         self.write(__version__)
 
 
-class VirtuosoStatusHandler(RequestHandler):
+class VirtuosoStatusHandler(BrainiakRequestHandler):
 
     def get(self):
         if settings.ENVIRONMENT == 'prod':
@@ -31,7 +72,7 @@ class VirtuosoStatusHandler(RequestHandler):
         self.write(triplestore.status())
 
 
-class SchemaHandler(RequestHandler):
+class SchemaHandler(BrainiakRequestHandler):
 
     def __init__(self, *args, **kwargs):
         super(SchemaHandler, self).__init__(*args, **kwargs)
@@ -47,7 +88,7 @@ class SchemaHandler(RequestHandler):
         # self.finish() -- this is automagically called by greenlet_asynchronous
 
 
-class InstanceHandler(RequestHandler):
+class InstanceHandler(BrainiakRequestHandler):
 
     def __init__(self, *args, **kwargs):
         super(InstanceHandler, self).__init__(*args, **kwargs)
@@ -62,7 +103,7 @@ class InstanceHandler(RequestHandler):
             self.write(response)
 
 
-class InstanceListHandler(RequestHandler):
+class InstanceListHandler(BrainiakRequestHandler):
 
     DEFAULT_PER_PAGE = "10"
     DEFAULT_PAGE = "0"

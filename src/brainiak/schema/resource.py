@@ -9,18 +9,17 @@ from brainiak.result_handler import get_one_value, convert_bindings_dict
 from brainiak.triplestore import query_sparql
 
 
-def get_schema(context_name, schema_name):
-    class_uri = settings.URI_PREFIX + "/".join((context_name, schema_name))
+def get_schema(query_params):
 
     context = MemorizeContext()
-    short_uri = context.shorten_uri(class_uri)
+    short_uri = context.shorten_uri(query_params["class_uri"])
 
-    tornado_response = query_class_schema(class_uri, context)
+    tornado_response = query_class_schema(query_params)
     class_schema = json.loads(tornado_response.body)
     if not class_schema["results"]["bindings"]:
         return
 
-    predicates_and_cardinalities = get_predicates_and_cardinalities(class_uri, class_schema, context)
+    predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
     response_dict = assemble_schema_dict(short_uri,
                                          get_one_value(class_schema, "title"),
                                          predicates_and_cardinalities,
@@ -52,27 +51,43 @@ def assemble_schema_dict(short_uri, title, predicates, context, **kw):
     return schema
 
 
-def query_class_schema(class_uri, context):
-    query = """
-        SELECT DISTINCT ?title ?comment
-        FROM <%(graph_uri)s>
-        WHERE {
-            <%(class_uri)s> a owl:Class .
-            {<%(class_uri)s> rdfs:label ?title . FILTER(langMatches(lang(?title), "PT")) . }
-            {<%(class_uri)s> rdfs:comment ?comment . FILTER(langMatches(lang(?comment), "PT")) .}
-        }
-        """ % {"class_uri": class_uri, "graph_uri": prefix_from_uri(class_uri)}
-    return query_sparql(query, context)
+QUERY_FILTER_TITLE = 'FILTER(langMatches(lang(?title), "%s")) .'
+QUERY_FILTER_COMMENT = 'FILTER(langMatches(lang(?comment), "%s")) .'
+QUERY_CLASS_SCHEMA = """
+SELECT DISTINCT ?title ?comment
+FROM <%(graph_uri)s>
+WHERE {
+    <%(class_uri)s> a owl:Class ;
+                    rdfs:label ?title . %(filter_title)s
+    OPTIONAL {<%(class_uri)s> rdfs:comment ?comment . %(filter_comment)s} .
+}
+"""
 
 
-def get_predicates_and_cardinalities(class_uri, class_schema, context):
-    response = query_cardinalities(class_uri, class_schema, context)
-    tornado_response = response
+def build_class_schema_query(params):
+    """
+    Note: if params["lang"] is not False (e.g. "pt"), the following variables
+    are filtered according to the lang provided:
+    - rdfs:label
+    - rdfs:comment (optional)
+    """
+    lang = params["lang"]
+    params["filter_title"] = (QUERY_FILTER_TITLE % lang) if lang else ""
+    params["filter_comment"] = (QUERY_FILTER_COMMENT % lang) if lang else ""
+    return QUERY_CLASS_SCHEMA % params
+
+
+def query_class_schema(query_params):
+    query = build_class_schema_query(query_params)
+    return query_sparql(query)
+
+
+def get_predicates_and_cardinalities(context, query_params):
+    tornado_response = query_cardinalities(query_params)
     query_result = json.loads(tornado_response.body)
     cardinalities = _extract_cardinalities(query_result['results']['bindings'])
 
-    response = query_predicates(class_uri, context)
-    tornado_response = response
+    tornado_response = query_predicates(query_params)
     predicates = json.loads(tornado_response.body)
 
     return convert_bindings_dict(context, predicates['results']['bindings'], cardinalities)
@@ -104,7 +119,7 @@ def _extract_cardinalities(bindings):
     return cardinalities
 
 
-def query_cardinalities(class_uri, class_schema, context):
+def query_cardinalities(query_params):
     query = """
         SELECT DISTINCT ?predicate ?min ?max ?range ?enumerated_value ?enumerated_value_label
         WHERE {
@@ -121,22 +136,22 @@ def query_cardinalities(class_uri, class_schema, context):
                 OPTIONAL { ?list_node rdf:first ?enumerated_value } .
                 OPTIONAL { ?enumerated_value rdfs:label ?enumerated_value_label } .
             }
-        }""" % {"class_uri": class_uri}
-    return query_sparql(query, class_schema, context)
+        }""" % query_params
+    return query_sparql(query)
 
 
-def query_predicates(class_uri, context):
-    resp = _query_predicate_with_lang(class_uri, context)
+def query_predicates(query_params):
+    resp = _query_predicate_with_lang(query_params)
     tornado_response = resp
 
     response = json.loads(tornado_response.body)
     if not response['results']['bindings']:
-        return _query_predicate_without_lang(class_uri, context)
+        return _query_predicate_without_lang(query_params)
     else:
         return tornado_response
 
 
-def _query_predicate_with_lang(class_uri, context):
+def _query_predicate_with_lang(query_params):
     query = """
         SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
         WHERE {
@@ -151,11 +166,11 @@ def _query_predicate_with_lang(class_uri, context):
             FILTER(langMatches(lang(?predicate_comment), "%(lang)s")) .
             OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . FILTER(langMatches(lang(?label_do_range), "%(lang)s")) . } } .
             OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
-        }""" % {'class_uri': class_uri, 'lang': 'PT'}
-    return query_sparql(query, context)
+        }""" % query_params
+    return query_sparql(query)
 
 
-def _query_predicate_without_lang(class_uri, context):
+def _query_predicate_without_lang(query_params):
     query = """
         SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
         WHERE {
@@ -168,5 +183,5 @@ def _query_predicate_without_lang(class_uri, context):
             FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
             OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . } } .
             OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
-        }""" % {'class_uri': class_uri}
-    return query_sparql(query, context)
+        }""" % query_params
+    return query_sparql(query)

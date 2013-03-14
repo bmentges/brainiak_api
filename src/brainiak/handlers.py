@@ -58,6 +58,9 @@ class BrainiakRequestHandler(RequestHandler):
         for (query_param, default_value) in immutable_params.items():
             overriden_params[query_param] = self.get_argument(query_param, default_value)
 
+        if overriden_params["lang"] == "undefined":
+            overriden_params["lang"] = False
+
         query_string_keys = set(self.request.arguments.keys())
         query_params_supported = set(overriden_params.keys())
         for arg in self.request.arguments:
@@ -69,7 +72,7 @@ class BrainiakRequestHandler(RequestHandler):
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            raise HTTPError(404, log_message="")
+            raise HTTPError(404, log_message="Xubiru")
         else:
             self.write(response)
             # self.finish() -- this is automagically called by greenlet_asynchronous

@@ -18,7 +18,8 @@ def get_schema(query_params):
         return
 
     predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
-    response_dict = assemble_schema_dict(short_uri,
+    response_dict = assemble_schema_dict(query_params,
+                                         short_uri,
                                          get_one_value(class_schema, "title"),
                                          predicates_and_cardinalities,
                                          context,
@@ -26,8 +27,8 @@ def get_schema(query_params):
     return response_dict
 
 
-def assemble_schema_dict(short_uri, title, predicates, context, **kw):
-    effective_context = {"@language": "pt"}
+def assemble_schema_dict(query_params, short_uri, title, predicates, context, **kw):
+    effective_context = {"@language": query_params.get("lang")}
     effective_context.update(context.context)
 
     links = [{"rel": property_name,

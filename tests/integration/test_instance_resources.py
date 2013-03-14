@@ -1,5 +1,6 @@
 import json
 import urllib
+from mock import patch
 
 from brainiak import triplestore
 from brainiak.instance import resource
@@ -17,7 +18,8 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     maxDiff = None
 
-    def test_filter_with_invalid_query_string(self):
+    @patch("brainiak.handlers.log")
+    def test_filter_with_invalid_query_string(self, log):
         response = self.fetch('/person/Gender?love=u', method='GET')
         self.assertEqual(response.code, 400)
 
@@ -71,7 +73,8 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(received_response['item_count'], 1)
         self.assertEqual(received_response['items'], expected_items)
 
-    def test_filter_with_no_results(self):
+    @patch("brainiak.handlers.log")
+    def test_filter_with_no_results(self, log):
         response = self.fetch('/person/Gender?o=Xubiru&lang=pt', method='GET')
         self.assertEqual(response.code, 404)
 

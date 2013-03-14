@@ -7,18 +7,21 @@ from brainiak.result_handler import compress_keys_and_values, is_result_empty
 from brainiak.settings import URI_PREFIX
 
 
-def get_instance(request, context_name, class_name, instance_id):
+def get_instance(query_params):
     """
     Given a URI, verify that the type corresponds to the class being passed as a parameter
     Retrieve all properties and objects of this URI (subject)
     """
-    query_response = query_all_properties_and_objects(context_name, class_name, instance_id)
+    query_response = query_all_properties_and_objects(query_params['context_name'],
+                                                      query_params['class_name'],
+                                                      query_params['instance_id'])
     query_result_dict = json.loads(query_response.body)
 
     if is_result_empty(query_result_dict):
         return
     else:
-        return assemble_instance_json(request, context_name, class_name, query_result_dict)
+        return assemble_instance_json(query_params,
+                                      query_result_dict)
 
 
 def build_items_dict(context, bindings):
@@ -30,8 +33,9 @@ def build_items_dict(context, bindings):
     return items_dict
 
 
-def assemble_instance_json(request, context_name, class_name, query_result_dict):
+def assemble_instance_json(query_params, query_result_dict):
     context = MemorizeContext()
+    request = query_params['request']
     base_url = request.headers.get("Host")
     items = build_items_dict(context, query_result_dict['results']['bindings'])
     links = [{"rel": property_name,
@@ -40,8 +44,9 @@ def assemble_instance_json(request, context_name, class_name, query_result_dict)
 
     instance = {
         "@id": request.full_url(),
+        "@type": "{0}:{1}".format(query_params['context_name'], query_params['class_name']),
         "@context": context.context,
-        "$schema": "http://{0}/{1}/{2}/_schema".format(base_url, context_name, class_name),
+        "$schema": "http://{0}/{1}/{2}/_schema".format(base_url, query_params['context_name'], query_params['class_name']),
         "links": links,
     }
     instance.update(items)

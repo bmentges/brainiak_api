@@ -131,7 +131,7 @@ class InstanceHandler(BrainiakRequestHandler):
         }
         query_params = self.override_defaults_with_arguments(query_params)
 
-        response = get_instance(self.request, context_name, class_name, instance_id)
+        response = get_instance(query_params)
 
         self.finalize(response)
 

@@ -45,7 +45,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_with_invalid_params(self):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
-        self.assertFalse(response.body)
+        self.assertEqual(response.body, '<html><title>400: Bad Request</title><body>400: Bad Request</body></html>')
 
     # TODO: We should test with old models as well.
     # However, we need to isolate ontologies snippets from upper and from base
@@ -82,7 +82,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_class_undefined(self):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)
-        self.assertFalse(response.body)
+        self.assertEqual(response.body, "<html><title>404: Not Found</title><body>404: Not Found</body></html>")
 
 
 class TestHealthcheckResource(TornadoAsyncHTTPTestCase):

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-from tornado import gen
 
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri, MemorizeContext
@@ -19,7 +18,6 @@ def get_instance(request, context_name, class_name, instance_id):
     if is_result_empty(query_result_dict):
         return
     else:
-        # TODO handling dict
         return assemble_instance_json(request, context_name, class_name, query_result_dict)
 
 

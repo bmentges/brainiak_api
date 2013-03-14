@@ -1,0 +1,21 @@
+@prefix : <http://example.onto/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+
+# http://example.onto/Place
+:Place a owl:Class ;
+       rdfs:label "Lugar"@pt ;
+       rdfs:label "Place"@en ;
+       rdfs:comment "Search in the dictionary."@en ;
+       rdfs:comment "Procure no dicionario."@pt .
+
+# http://example.onto/PlaceWithoutLanguage
+:PlaceWithoutLanguage a owl:Class ;
+       rdfs:label "Place" ;
+       rdfs:comment "Search in the dictionary." .
+
+# http://example.onto/Lugar
+:Lugar a owl:Class ;
+       rdfs:label "Lugar" .
+

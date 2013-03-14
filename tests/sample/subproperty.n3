@@ -6,7 +6,6 @@
 example:name owl:DatatypeProperty ;
              rdfs:subPropertyOf rdfs:label .
 
-
 <andreia> example:name "Andreia Kumpera"
 <icaro> example:name "Icaro Medeiros"
 <jefferson> example:name "Jefferson Braga"

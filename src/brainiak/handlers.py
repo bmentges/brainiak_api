@@ -72,7 +72,7 @@ class BrainiakRequestHandler(RequestHandler):
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            raise HTTPError(404, log_message="Xubiru")
+            raise HTTPError(404, log_message="")
         else:
             self.write(response)
             # self.finish() -- this is automagically called by greenlet_asynchronous

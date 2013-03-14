@@ -18,11 +18,11 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
     maxDiff = None
 
     def test_filter_with_invalid_query_string(self):
-        response = self.fetch('/person/Gender/_filter?love=u', method='GET')
+        response = self.fetch('/person/Gender?love=u', method='GET')
         self.assertEqual(response.code, 400)
 
     def test_filter_without_predicate_and_object(self):
-        response = self.fetch('/person/Gender/_filter', method='GET')
+        response = self.fetch('/person/Gender', method='GET')
         expected_items = [
             {u'title': u'Feminino', u'@id': u'http://semantica.globo.com/person/Gender/Female'},
             {u'title': u'Masculino', u'@id': u'http://semantica.globo.com/person/Gender/Male'},
@@ -33,7 +33,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(received_response['items'], expected_items)
 
     def test_list_by_page(self):
-        response = self.fetch('/person/Gender/_filter?page=1&per_page=2', method='GET')
+        response = self.fetch('/person/Gender?page=1&per_page=2', method='GET')
         expected_items = [
             {u'title': u'Feminino', u'@id': u'http://semantica.globo.com/person/Gender/Female'},
             {u'title': u'Masculino', u'@id': u'http://semantica.globo.com/person/Gender/Male'}]
@@ -43,7 +43,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(received_response['items'], expected_items)
 
     def test_filter_with_object_as_string(self):
-        response = self.fetch('/person/Gender/_filter?o=Masculino&lang=pt', method='GET')
+        response = self.fetch('/person/Gender?o=Masculino&lang=pt', method='GET')
         expected_items = [{u'title': u'Masculino', u'@id': u'http://semantica.globo.com/person/Gender/Male'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
@@ -52,7 +52,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     def test_filter_with_predicate_as_uri(self):
         url = urllib.quote("http://www.w3.org/2000/01/rdf-schema#label")
-        response = self.fetch('/person/Gender/_filter?p=%s&lang=pt' % url, method='GET')
+        response = self.fetch('/person/Gender?p=%s&lang=pt' % url, method='GET')
         expected_items = [
             {u'title': u'Feminino', u'@id': u'http://semantica.globo.com/person/Gender/Female'},
             {u'title': u'Masculino', u'@id': u'http://semantica.globo.com/person/Gender/Male'},
@@ -64,7 +64,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
         url = urllib.quote("rdfs:label")
-        response = self.fetch('/person/Gender/_filter?p=%s&o=Feminino&lang=pt' % url, method='GET')
+        response = self.fetch('/person/Gender?p=%s&o=Feminino&lang=pt' % url, method='GET')
         expected_items = [{u'title': u'Feminino', u'@id': u'http://semantica.globo.com/person/Gender/Female'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
@@ -72,7 +72,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(received_response['items'], expected_items)
 
     def test_filter_with_no_results(self):
-        response = self.fetch('/person/Gender/_filter?o=Xubiru&lang=pt', method='GET')
+        response = self.fetch('/person/Gender?o=Xubiru&lang=pt', method='GET')
         self.assertEqual(response.code, 404)
 
 

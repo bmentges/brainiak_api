@@ -72,8 +72,8 @@ def build_class_schema_query(params):
     - rdfs:comment (optional)
     """
     lang = params["lang"]
-    params["filter_title"] = QUERY_FILTER_TITLE % lang if lang else ""
-    params["filter_comment"] = QUERY_FILTER_COMMENT % lang if lang else ""
+    params["filter_title"] = (QUERY_FILTER_TITLE % lang) if lang else ""
+    params["filter_comment"] = (QUERY_FILTER_COMMENT % lang) if lang else ""
     return QUERY_CLASS_SCHEMA % params
 
 

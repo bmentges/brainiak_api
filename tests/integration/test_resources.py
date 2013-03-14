@@ -73,20 +73,35 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
             u'type': u'object'
     }
 
-    maxDiff = None
+    OLD_SCHEMA_JSON = {
+        u'$schema': u'http://json-schema.org/draft-03/schema#',
+        u'@context': {u'@language': u'pt',
+                   u'rdf': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+                   u'rdfs': u'http://www.w3.org/2000/01/rdf-schema#'},
+        u'@id': u'http://semantica.globo.com/base/Acordo',
+        u'links': [],
+        u'properties': {u'http://teste.com/thumbnail': {u'graph': u'http://teste.com/',
+                                                     u'title': u'Icone',
+                                                     u'type': u'any'},
+                     u'rdfs:label': {u'graph': u'http://teste.com/',
+                                     u'title': u'Nome Popular',
+                                     u'type': u'any'}},
+        u'title': u'Acordo',
+        u'type': u'object'}
 
-    # def test_schema_handler_without_lang(self):
-    #     response = self.fetch('/person/Gender/_schema')
-    #     self.assertEqual(response.code, 200)
-    #     json_received = json.loads(response.body)
-    #     import pdb; pdb.set_trace()
-    #     self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
+    maxDiff = None
 
     def test_schema_handler_with_lang(self):
         response = self.fetch('/person/Gender/_schema?lang=pt')
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
+
+    def test_schema_handler_without_lang(self):
+        response = self.fetch('/base/Acordo/_schema?graph_uri=http%3A//semantica.globo.com/')
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received, self.OLD_SCHEMA_JSON)
 
     def test_schema_handler_class_undefined(self):
         response = self.fetch('/animals/Ornithorhynchus/_schema')

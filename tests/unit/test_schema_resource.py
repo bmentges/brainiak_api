@@ -30,19 +30,25 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
 
     def test_query_get_schema(self):
         # Mocks
-        def mock_query_class_schema(class_uri, remember):
+        def mock_query_class_schema(params):
             class_schema = {"results": {"bindings": [{"dummy_key": "dummy_value"}]}}
             tornado_response = MockResponse(class_schema)
             return tornado_response
 
         schema.query_class_schema = mock_query_class_schema
 
-        def mock_get_predicates_and_cardinalities(class_uri, class_schema, remember):
+        def mock_get_predicates_and_cardinalities(context, params):
             return "property_dict"
 
         schema.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
 
-        response = schema.get_schema("test_context", "test_class")
+        params = {
+            "class_uri": "test_class",
+            "graph_uri": "test_graph",
+            "lang": "en"
+        }
+
+        response = schema.get_schema(params)
         schema_response = response
 
         self.assertIn("title", schema_response)
@@ -71,12 +77,9 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         super(TornadoAsyncTestCase, self).tearDown()
 
     def test_get_predicates_and_cardinalities(self):
-        context = prefixes.MemorizeContext()
-        class_uri = "http://test/person/gender"
-        class_schema = None
 
         # Mocks
-        def mock_query_predicates(class_uri, context):
+        def mock_query_predicates(params):
             fake_response = mock.MagicMock(body="""
             { "results": { "bindings": [
                   { "predicate": { "type": "uri", "value": "http://test/person/root_gender" },
@@ -97,7 +100,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
             """)
             return fake_response
 
-        def mock_query_cardinalities(class_uri, class_schema, context):
+        def mock_query_cardinalities(params):
             fake_response = mock.MagicMock(body="""
                 {"results": {
                     "bindings": [
@@ -126,7 +129,11 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         schema.query_cardinalities = mock_query_cardinalities
         schema.query_predicates = mock_query_predicates
 
-        response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(class_uri, class_schema, context)
+        context = prefixes.MemorizeContext()
+        params = {"class_uri": "http://test/person/gender",
+                  "class_schema": None}
+
+        response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(context, params)
         expected_predicates_and_cardinalities = {
             u'http://test/person/gender':
                 {'comment': u'G\xeanero.',
@@ -282,9 +289,9 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         class ResponseWithBindings():
             body = response_text
 
-        schema._query_predicate_with_lang = lambda class_uri, context: ResponseWithBindings()
+        schema._query_predicate_with_lang = lambda params: ResponseWithBindings()
 
-        response = schema.query_predicates("class_uri", {})
+        response = schema.query_predicates({"class_uri": "class_uri", "lang": ""})
         self.assertEqual(response.body, response_text)
 
     def test_query_predicates_successful_without_lang(self):
@@ -295,8 +302,13 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
             def __init__(self, param):
                 self.body = param
 
-        schema._query_predicate_with_lang = lambda class_uri, context: MockResponse(response_text)
-        schema._query_predicate_without_lang = lambda class_uri, context: MockResponse(response_without_lang_text)
+        schema._query_predicate_with_lang = lambda params: MockResponse(response_text)
+        schema._query_predicate_without_lang = lambda params: MockResponse(response_without_lang_text)
 
-        response = schema.query_predicates("class_uri", {})
+        params = {
+            "class_uri": "class_uri",
+            "graph_uri": "graph_uri",
+            "lang": ""
+        }
+        response = schema.query_predicates(params)
         self.assertEqual(response.body, response_without_lang_text)

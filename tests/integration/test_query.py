@@ -1,4 +1,3 @@
-from brainiak.queries import DUMMY_QUERY
 from tests.sparql import QueryTestCase
 
 
@@ -25,6 +24,9 @@ EXPECTED_JSON = {
 }
 
 
+DUMMY_QUERY = "SELECT * WHERE {?s ?p ?o}"
+
+
 class DummyQueryTestCase(QueryTestCase):
     allow_triplestore_connection = True
     #graph_uri = "http://graph.sample"
@@ -37,3 +39,22 @@ class DummyQueryTestCase(QueryTestCase):
         self.assertEqual(len(response_bindings), len(expected_binding))
         for item in expected_binding:
             self.assertIn(item, response_bindings)
+
+
+QUERY_ENTAILMENT = """
+SELECT ?name
+WHERE {?person <http://graph.sample/name> ?name}
+"""
+
+
+# For more information on query entailment:
+# http://www.w3.org/TR/sparql11-overview/
+# session "5 SPARQL 1.1 Entailment Regimes"
+
+# class SubpropertyEntailmentQueryTestCase(QueryTestCase):
+#     allow_triplestore_connection = True
+#     fixtures = ["tests/sample/subproperty.n3"]
+
+#     def test_subproperty_entailment_query(self):
+#         response_bindings = self.query(QUERY_ENTAILMENT)["results"]["bindings"]
+#         assert False

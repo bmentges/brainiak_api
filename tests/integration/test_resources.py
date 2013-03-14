@@ -58,6 +58,11 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         json_received = json.loads(response.body)
         self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
 
+    def test_schema_handler_with_invalid_params(self):
+        response = self.fetch('/person/Gender/_schema?hello=world')
+        self.assertEqual(response.code, 400)
+        self.assertFalse(response.body)
+
     def test_schema_handler_without_lang(self):
         response = self.fetch('/base/Acordo/_schema?graph_uri=http%3A//semantica.globo.com/')
         self.assertEqual(response.code, 200)

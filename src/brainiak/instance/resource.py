@@ -42,11 +42,22 @@ def assemble_instance_json(query_params, query_result_dict):
              "href": "/{0}/{1}".format(*(uri.split(':')))}
               for property_name, uri in context.object_properties.items()]
 
+    self_url = request.full_url()
+    schema_url = "http://{0}/{1}/{2}/_schema".format(base_url, query_params['context_name'], query_params['class_name'])
+
+    action_links = [
+        {'rel': 'self', 'href': self_url},
+        {'rel': 'describedBy', 'href': schema_url},
+        {'rel': 'edit', 'method': 'PATCH', 'href': self_url},
+        {'rel': 'delete', 'method': 'DELETE', 'href': self_url},
+    ]
+    links.extend(action_links)
+
     instance = {
-        "@id": request.full_url(),
+        "@id": self_url,
         "@type": "{0}:{1}".format(query_params['context_name'], query_params['class_name']),
         "@context": context.context,
-        "$schema": "http://{0}/{1}/{2}/_schema".format(base_url, query_params['context_name'], query_params['class_name']),
+        "$schema": schema_url,
         "links": links,
     }
     instance.update(items)

@@ -149,6 +149,7 @@ class InstanceListHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
+
         query_params = {
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
@@ -159,12 +160,12 @@ class InstanceListHandler(BrainiakRequestHandler):
             "o": "?object"
         }
 
+        query_params = self.override_defaults_with_arguments(query_params)
+
         # In order to keep up with Repos, pages numbering start at 1.
         # As for Virtuoso pages start at 0, we convert page, if provided
         if "page" in self.request.arguments:
             query_params["page"] = str(int(query_params["page"]) - 1)
-
-        query_params = self.override_defaults_with_arguments(query_params)
 
         response = filter_instances(query_params)
 

@@ -14,6 +14,7 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
     def test_get_instance_with_nonexistent_uri(self, log):
         response = self.fetch('/person/Gender/Alien')
         self.assertEqual(response.code, 404)
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\n"}')
 
     def test_get_instance(self):
         response = self.fetch('/person/Gender/Male')
@@ -117,7 +118,6 @@ class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
         settings.ENVIRONMENT = "prod"
         response = self.fetch('/status/virtuoso', method='GET')
         self.assertEqual(response.code, 404)
-        self.stop()
 
     def test_virtuoso_status_in_non_prod(self):
         settings.ENVIRONMENT = "local"

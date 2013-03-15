@@ -73,10 +73,9 @@ def query_all_properties_and_objects(context_name, class_name, instance_id):
 
 QUERY_FILTER_INSTANCE = """
 SELECT DISTINCT ?subject ?label
-FROM <%(graph_uri)s>
 WHERE {
     ?subject a <%(class_uri)s>;
-             rdfs:label ?label;
+             rdfs:label ?label option (transitive, t_distinct, t_min(0));
              %(p)s %(o)s .
     %(lang_filter)s
 }

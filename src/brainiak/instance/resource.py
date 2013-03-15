@@ -137,7 +137,9 @@ def filter_instances(query_params):
 
 
 def build_json(items_list, query_params):
-    class_uri = query_params["class_uri"]
+    class_uri = 'http://{0}/{1}/{2}'.format(query_params["request"].headers.get("Host"),
+                                            query_params["context_name"],
+                                            query_params["class_name"])
     json = {
         'items': items_list,
         'item_count': len(items_list),

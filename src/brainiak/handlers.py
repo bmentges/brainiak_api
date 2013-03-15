@@ -149,8 +149,10 @@ class InstanceListHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-
         query_params = {
+            "context_name": context_name,
+            "class_name": class_name,
+            "request": self.request,
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
             "lang": self.get_argument("lang", settings.DEFAULT_LANG),

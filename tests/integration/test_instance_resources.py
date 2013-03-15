@@ -8,8 +8,10 @@ from brainiak.instance.resource import filter_instances, query_filter_instances,
 from tests import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
+
 class MockRequest(object):
     headers = {'Host': 'localhost:5100'}
+
 
 class MockResponse(object):
     def __init__(self, body):
@@ -234,10 +236,12 @@ class InstancesQueryTestCase(QueryTestCase):
         query = query_filter_instances(params)
 
         computed_bindings = self.query(query)["results"]["bindings"]
-        expected_bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'},
-                     u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Londres'}},
-                    {u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/new_york'},
-                     u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nova Iorque'}}]
+        expected_bindings = [{u'subject': {
+                                u'type': u'uri', u'value': u'http://tatipedia.org/london'},
+                                u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Londres'}},
+                             {u'subject': {
+                                 u'type': u'uri', u'value': u'http://tatipedia.org/new_york'},
+                                 u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nova Iorque'}}]
 
         self.assertEqual(len(computed_bindings), 2)
         self.assertEqual(computed_bindings, expected_bindings)
@@ -256,8 +260,9 @@ class InstancesQueryTestCase(QueryTestCase):
         query = query_filter_instances(params)
 
         computed_bindings = self.query(query)["results"]["bindings"]
-        expected_bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'},
-                     u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Londres'}}]
+        expected_bindings = [{u'subject': {
+                                    u'type': u'uri', u'value': u'http://tatipedia.org/london'},
+                                    u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Londres'}}]
 
         self.assertEqual(len(computed_bindings), 1)
         self.assertEqual(computed_bindings, expected_bindings)
@@ -277,7 +282,7 @@ class InstancesQueryTestCase(QueryTestCase):
 
         computed_bindings = self.query(query)["results"]["bindings"]
         expected_bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/new_york'},
-                     u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nova Iorque'}}]
+                              u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nova Iorque'}}]
 
         self.assertEqual(len(computed_bindings), 1)
         self.assertEqual(computed_bindings, expected_bindings)
@@ -297,9 +302,9 @@ class InstancesQueryTestCase(QueryTestCase):
 
         computed_bindings = self.query(query)["results"]["bindings"]
         expected_bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'},
-                     u'label': {u'xml:lang': u'en', u'type': u'literal', u'value': u'London'}},
-                    {u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/new_york'},
-                     u'label': {u'xml:lang': u'en', u'type': u'literal', u'value': u'New York'}}]
+                              u'label': {u'xml:lang': u'en', u'type': u'literal', u'value': u'London'}},
+                             {u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/new_york'},
+                              u'label': {u'xml:lang': u'en', u'type': u'literal', u'value': u'New York'}}]
 
         self.assertEqual(len(computed_bindings), 2)
         self.assertEqual(computed_bindings, expected_bindings)

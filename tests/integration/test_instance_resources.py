@@ -8,6 +8,8 @@ from brainiak.instance.resource import filter_instances, query_filter_instances,
 from tests import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
+class MockRequest(object):
+    headers = {'Host': 'localhost:5100'}
 
 class MockResponse(object):
     def __init__(self, body):
@@ -315,19 +317,21 @@ class InstancesQueryTestCase(QueryTestCase):
 
     def test_filter_instances_result_is_not_empty(self):
         resource.query_filter_instances = lambda params: MockResponse({"results": {"bindings": [{"jj:armlock": {"type": None, "value": "Armlock"}}]}})
-        response = resource.filter_instances({"class_uri": "some_class"})
+        response = resource.filter_instances({"context_name": "ctx",
+                                              "class_name": "klass",
+                                              "request": MockRequest()})
 
         expected_links = [
             {
-                'href': "some_class",
+                'href': "http://localhost:5100/ctx/klass",
                 'rel': "self"
             },
             {
-                'href': "some_class/{resource_id}",
+                'href': "http://localhost:5100/ctx/klass/{resource_id}",
                 'rel': "item"
             },
             {
-                'href': "some_class",
+                'href': "http://localhost:5100/ctx/klass",
                 'method': "POST",
                 'rel': "create"
             }]

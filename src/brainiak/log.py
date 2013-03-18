@@ -1,4 +1,3 @@
-import logging
 from logging.handlers import WatchedFileHandler, SysLogHandler
 from syslog import LOG_SYSLOG
 

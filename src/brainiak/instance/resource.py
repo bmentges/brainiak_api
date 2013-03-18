@@ -83,7 +83,7 @@ def query_all_properties_and_objects(context_name, class_name, instance_id):
 
 
 QUERY_FILTER_INSTANCE = """
-DEFINE input:inference <%(graph_uri)sproperty_ruleset>
+DEFINE input:inference <http://semantica.globo.com/ruleset>
 SELECT DISTINCT ?subject ?label
 WHERE {
     ?subject a <%(class_uri)s> ;

@@ -5,7 +5,7 @@ import SPARQLWrapper
 from tornado.httpclient import HTTPRequest
 from tornado.httputil import url_concat
 
-from brainiak import settings
+from brainiak import settings, log
 from brainiak.greenlet_tornado import greenlet_fetch
 
 
@@ -82,6 +82,7 @@ class VirtuosoConnection(object):
                               auth_username=self.user,
                               auth_password=self.password,
                               auth_mode=self.auth_mode)
+        log.logger.info("SPARQL query\n" + query)
         response = greenlet_fetch(request)
         return response
 

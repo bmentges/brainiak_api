@@ -1,5 +1,6 @@
 from logging.handlers import WatchedFileHandler, SysLogHandler
 from syslog import LOG_SYSLOG
+import logging
 
 from brainiak.settings import LOG_FILEPATH, LOG_LEVEL, LOG_NAME
 

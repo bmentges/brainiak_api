@@ -72,11 +72,12 @@ def query_all_properties_and_objects(context_name, class_name, instance_id):
 
 
 QUERY_FILTER_INSTANCE = """
+DEFINE input:inference <http://tpedia.org/property_ruleset>
 SELECT DISTINCT ?subject ?label
 WHERE {
-    ?subject a <%(class_uri)s>;
-             rdfs:label ?label option (transitive, t_distinct, t_min(0));
-             %(p)s %(o)s .
+    ?subject a <%(class_uri)s> ;
+             rdfs:label ?label ;
+             %(p)s %(o)s.
     %(lang_filter)s
 }
 ORDER BY ASC (xsd:string(?label))

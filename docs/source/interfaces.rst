@@ -21,6 +21,16 @@ For the meaning and rationale of these concepts in our API,
 see :ref:`concept_context`, :ref:`concept_schema`, :ref:`concept_collection`,
 and :ref:`concept_instance`.
 
+Interfaces
+==========
+
+.. toctree::
+   :maxdepth: 3
+
+   interfaces/schema/schema.rst
+   interfaces/instance/instance.rst
+
+
 Interface examples
 ------------------
 
@@ -37,26 +47,6 @@ List all schemas of a context
 .. code-block:: http
 
   GET 'http://localhost:5100/place'
-
-Get a specific schema of a context
-----------------------------------
-
-.. code-block:: http
-
-  GET 'http://localhost:5100/place/City/_schema'
-
-Why _schema? In our data model we have a clear distinction between class schemas
-(structure of instances) and data (instances), and by using a request like
-GET <context>/<class> we could not have a clear distinction whether we want
-the whole collection of instances of this specific class or we want the schema of a class.
-
-Thus, the _schema suffix is used to distinguish these two use cases.
-
-Status 200: The class exists, the response body is a JSON representing the class schema.
-
-.. include :: examples/country_schema_json.rst
-
-Status 204: The class does not exist.
 
 Create schema
 -------------

@@ -14,7 +14,7 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
     def test_get_instance_with_nonexistent_uri(self, log):
         response = self.fetch('/person/Gender/Alien')
         self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, '{"error": "HTTP error: 404\\n"}')
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nInstance not found in triplestore."}')
 
     def test_get_instance(self):
         response = self.fetch('/person/Gender/Male')
@@ -86,7 +86,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_class_undefined(self, log):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, '{"error": "HTTP error: 404\\n"}')
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nClass not found in triplestore."}')
 
 
 class TestHealthcheckResource(TornadoAsyncHTTPTestCase):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from brainiak.prefixes import MemorizeContext, shorten_uri
+from brainiak.prefixes import MemorizeContext, shorten_uri, prefix_from_uri
 from brainiak.result_handler import get_one_value
 from brainiak.triplestore import query_sparql
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_type, items_from_range, OBJECT_PROPERTY

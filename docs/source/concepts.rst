@@ -9,8 +9,8 @@ our `ubiquitous language <http://martinfowler.com/bliki/UbiquitousLanguage.html>
 Context
 -------
 
-Context is an isolated data space, defined by some unique context_id.
-This context_id will also be used as a namespace.
+Context is an isolated data space, defined by some unique ``context_id``.
+This ``context_id`` will also be used as a namespace.
 
 A context can represent, for example, the product or the app being developed.
 
@@ -20,8 +20,7 @@ Schema
 ------
 
 Usually database models work with a clear distinction between instances (data) and schema (metadata).
-We also make this distinction on the API interface, although we have the same URL pattern to handle
-both schemas and non-schemas (aka instances).
+We also make this distinction on the API interface.
 
 A *Schema* is a priviledged instance that defines the structure of the data (non-schema instances) being stored.
 To avoid confusion, we avoid referring to Schemas calling them *instances*, a term we reserve for *non-schema* instances.

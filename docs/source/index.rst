@@ -9,7 +9,7 @@ Welcome to brainiak's documentation!
 Brainiak is a Linked Data RESTful API.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    concepts.rst
    interfaces.rst

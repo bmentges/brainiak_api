@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from tornado import gen
-
-from brainiak import settings
-from brainiak.prefixes import MemorizeContext, shorten_uri, prefix_from_uri
+from brainiak.prefixes import MemorizeContext
 from brainiak.result_handler import get_one_value, convert_bindings_dict
 from brainiak.triplestore import query_sparql
 

@@ -10,7 +10,7 @@ SPARQL_ENDPOINT_PASSWORD = os.environ['GLB_API_SEMANTICA_VIRTUOSO_PWD']
 SPARQL_ENDPOINT_AUTH_MODE = "digest"
 SPARQL_ENDPOINT_REALM = "SPARQL"
 
-LOG_FILEPATH = "/opt/logs/brainiak/tornado-be/brainiak.log"
+LOG_FILEPATH = "/opt/logs/brainiak/gunicorn-be/gunicorn-be.log"
 LOG_LEVEL = logging.DEBUG
 LOG_NAME = "brainiak"
 

@@ -61,7 +61,6 @@ class BrainiakRequestHandler(RequestHandler):
         if overriden_params["lang"] == "undefined":
             overriden_params["lang"] = False
 
-        query_string_keys = set(self.request.arguments.keys())
         query_params_supported = set(overriden_params.keys())
         for arg in self.request.arguments:
             if arg not in query_params_supported:

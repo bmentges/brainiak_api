@@ -5,10 +5,12 @@ DEBUG = False
 ENVIRONMENT = '<%= puppetmaster_env %>'
 
 SPARQL_ENDPOINT = '<%= sparql_endpoint %>'
-SPARQL_ENDPOINT_USER = os.environ['GLB_API_SEMANTICA_VIRTUOSO_USR'] 
+SPARQL_ENDPOINT_USER = os.environ['GLB_API_SEMANTICA_VIRTUOSO_USR']
 SPARQL_ENDPOINT_PASSWORD = os.environ['GLB_API_SEMANTICA_VIRTUOSO_PWD']
 SPARQL_ENDPOINT_AUTH_MODE = "digest"
 SPARQL_ENDPOINT_REALM = "SPARQL"
+
+DEFAULT_LANG = "pt"
 
 LOG_FILEPATH = "/opt/logs/brainiak/tornado-be/brainiak.log"
 LOG_LEVEL = logging.DEBUG

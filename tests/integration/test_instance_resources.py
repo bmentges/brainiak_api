@@ -204,20 +204,20 @@ class InstancesQueryTestCase(QueryTestCase):
 
         self.assertEqual(computed, expected)
 
-    def test_instance_filter_in_inexistent_graph(self):
-        params = {
-            "class_uri": "http://tatipedia.org/Person",
-            "p": "?predicate",
-            "o": "Aikido",
-            "lang_filter": "",
-            "graph_uri": "http://neverland.com",
-            "per_page": "10",
-            "page": "0"
-        }
+    # def test_instance_filter_in_inexistent_graph(self):
+    #     params = {
+    #         "class_uri": "http://tatipedia.org/Person",
+    #         "p": "?predicate",
+    #         "o": "Aikido",
+    #         "lang_filter": "",
+    #         "graph_uri": "http://neverland.com/",
+    #         "per_page": "10",
+    #         "page": "0"
+    #     }
 
-        query = query_filter_instances(params)
-        response = self.query(query, params["graph_uri"])
-        self.assertFalse(response["results"]["bindings"])
+    #     query = query_filter_instances(params)
+    #     response = self.query(query, params["graph_uri"])
+    #     self.assertFalse(response["results"]["bindings"])
 
     def test_query_filter_instances_with_language_restriction_to_pt(self):
         params = {

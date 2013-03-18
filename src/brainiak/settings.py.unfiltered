@@ -12,7 +12,7 @@ SPARQL_ENDPOINT_REALM = "SPARQL"
 
 DEFAULT_LANG = "pt"
 
-LOG_FILEPATH = "/opt/logs/brainiak/tornado-be/brainiak.log"
+LOG_FILEPATH = "/opt/logs/brainiak/gunicorn-be/gunicorn-be.log"
 LOG_LEVEL = logging.DEBUG
 LOG_NAME = "brainiak"
 

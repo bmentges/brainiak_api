@@ -93,6 +93,7 @@ def build_json(bindings):
 class InstancesQueryTestCase(QueryTestCase):
     allow_triplestore_connection = True
     fixtures = ["tests/sample/instances.n3"]
+    graph_uri = "http://tatipedia.org/"
 
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql

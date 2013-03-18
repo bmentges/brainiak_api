@@ -10,9 +10,11 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
     def get_app(self):
         return server.Application()
 
-    def test_get_instance_with_nonexistent_uri(self):
+    @patch("brainiak.handlers.log")
+    def test_get_instance_with_nonexistent_uri(self, log):
         response = self.fetch('/person/Gender/Alien')
         self.assertEqual(response.code, 404)
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\n"}')
 
     def test_get_instance(self):
         response = self.fetch('/person/Gender/Male')
@@ -42,10 +44,11 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         json_received = json.loads(response.body)
         self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
 
-    def test_schema_handler_with_invalid_params(self):
+    @patch("brainiak.handlers.log")
+    def test_schema_handler_with_invalid_params(self, log):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
-        self.assertFalse(response.body)
+        self.assertEqual(response.body, '{"error": "HTTP error: 400\\nArgument hello passed is not supported"}')
 
     # TODO: We should test with old models as well.
     # However, we need to isolate ontologies snippets from upper and from base
@@ -74,15 +77,16 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
     #     u'type': u'object'}
     #
     # def test_schema_handler_without_lang(self):
-    #     response = self.fetch('/base/Acordo/_schema?graph_uri=http%3A//semantica.globo.com/')
+    #     response = self.fetch('/base/Acordo/_schema?graph_uri=http%3A//semantica.globo.com/&lang=undefined')
     #     self.assertEqual(response.code, 200)
     #     json_received = json.loads(response.body)
     #     self.assertEqual(json_received, self.OLD_SCHEMA_JSON)
 
-    def test_schema_handler_class_undefined(self):
+    @patch("brainiak.handlers.log")
+    def test_schema_handler_class_undefined(self, log):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)
-        self.assertFalse(response.body)
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\n"}')
 
 
 class TestHealthcheckResource(TornadoAsyncHTTPTestCase):
@@ -114,7 +118,6 @@ class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
         settings.ENVIRONMENT = "prod"
         response = self.fetch('/status/virtuoso', method='GET')
         self.assertEqual(response.code, 404)
-        self.stop()
 
     def test_virtuoso_status_in_non_prod(self):
         settings.ENVIRONMENT = "local"

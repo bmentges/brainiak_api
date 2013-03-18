@@ -14,6 +14,9 @@ from brainiak import log
 
 class BrainiakRequestHandler(RequestHandler):
 
+    def __init__(self, *args, **kwargs):
+        super(BrainiakRequestHandler, self).__init__(*args, **kwargs)
+
     def _request_summary(self):
         return "{0} {1} ({2})".format(
             self.request.method, self.request.host, self.request.remote_ip)
@@ -50,6 +53,29 @@ class BrainiakRequestHandler(RequestHandler):
         error_json = {"error": error_message}
         self.finish(error_json)
 
+    def override_defaults_with_arguments(self, immutable_params):
+        overriden_params = {}
+        for (query_param, default_value) in immutable_params.items():
+            overriden_params[query_param] = self.get_argument(query_param, default_value)
+
+        if overriden_params["lang"] == "undefined":
+            overriden_params["lang"] = False
+
+        query_params_supported = set(overriden_params.keys())
+        for arg in self.request.arguments:
+            if arg not in query_params_supported:
+                raise HTTPError(400, log_message="Argument {0} passed is not supported".format(arg))
+
+        return overriden_params
+
+    def finalize(self, response):
+        self.set_header('Access-Control-Allow-Origin', '*')
+        if response is None:
+            raise HTTPError(404, log_message="")
+        else:
+            self.write(response)
+            # self.finish() -- this is automagically called by greenlet_asynchronous
+
 
 class HealthcheckHandler(BrainiakRequestHandler):
 
@@ -82,25 +108,13 @@ class SchemaHandler(BrainiakRequestHandler):
         query_params = {
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
-            "lang": ""
+            "lang": self.get_argument("lang", settings.DEFAULT_LANG)
         }
-
-        for (query_param, default_value) in query_params.items():
-            query_params[query_param] = self.get_argument(query_param, default_value)
-
-        query_string_keys = set(self.request.arguments.keys())
-        query_params_supported = set(query_params.keys())
-        if not query_string_keys.issubset(query_params_supported):
-            self.set_status(400)
-            return
+        query_params = self.override_defaults_with_arguments(query_params)
 
         response = get_schema(query_params)
-        self.set_header('Access-Control-Allow-Origin', '*')
-        if response is None:
-            self.set_status(404)
-        else:
-            self.write(response)
-        # self.finish() -- this is automagically called by greenlet_asynchronous
+
+        self.finalize(response)
 
 
 class InstanceHandler(BrainiakRequestHandler):
@@ -110,12 +124,18 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
-        response = get_instance(self.request, context_name, class_name, instance_id)
-        self.set_header('Access-Control-Allow-Origin', '*')
-        if response is None:
-            self.set_status(404)
-        else:
-            self.write(response)
+        query_params = {
+            "context_name": context_name,
+            "class_name": class_name,
+            "instance_id": instance_id,
+            "request": self.request,
+            "lang": self.get_argument("lang", settings.DEFAULT_LANG)
+        }
+        query_params = self.override_defaults_with_arguments(query_params)
+
+        response = get_instance(query_params)
+
+        self.finalize(response)
 
 
 class InstanceListHandler(BrainiakRequestHandler):
@@ -129,32 +149,25 @@ class InstanceListHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name, class_name):
         query_params = {
+            "context_name": context_name,
+            "class_name": class_name,
+            "request": self.request,
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
-            "lang": "",
+            "lang": self.get_argument("lang", settings.DEFAULT_LANG),
             "page": self.DEFAULT_PAGE,
             "per_page": self.DEFAULT_PER_PAGE,
             "p": "?predicate",
             "o": "?object"
         }
 
-        for (query_param, default_value) in query_params.items():
-            query_params[query_param] = self.get_argument(query_param, default_value)
+        query_params = self.override_defaults_with_arguments(query_params)
 
         # In order to keep up with Repos, pages numbering start at 1.
         # As for Virtuoso pages start at 0, we convert page, if provided
         if "page" in self.request.arguments:
             query_params["page"] = str(int(query_params["page"]) - 1)
 
-        query_string_keys = set(self.request.arguments.keys())
-        query_params_supported = set(query_params.keys())
-        if not query_string_keys.issubset(query_params_supported):
-            self.set_status(400)
-            return
-
-        self.set_header('Access-Control-Allow-Origin', '*')
         response = filter_instances(query_params)
-        if response is None:
-            self.set_status(404)
-        else:
-            self.write(response)
+
+        self.finalize(response)

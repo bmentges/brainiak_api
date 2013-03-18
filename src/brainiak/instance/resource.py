@@ -72,7 +72,7 @@ def query_all_properties_and_objects(context_name, class_name, instance_id):
 
 
 QUERY_FILTER_INSTANCE = """
-DEFINE input:inference <http://tpedia.org/property_ruleset>
+DEFINE input:inference <%(graph_uri)sproperty_ruleset>
 SELECT DISTINCT ?subject ?label
 WHERE {
     ?subject a <%(class_uri)s> ;

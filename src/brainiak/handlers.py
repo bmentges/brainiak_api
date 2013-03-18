@@ -116,6 +116,13 @@ class SchemaHandler(BrainiakRequestHandler):
 
         self.finalize(response)
 
+    def finalize(self, response):
+        self.set_header('Access-Control-Allow-Origin', '*')
+        if response is None:
+            raise HTTPError(404, log_message="Class not found in triplestore.")
+        else:
+            self.write(response)
+
 
 class InstanceHandler(BrainiakRequestHandler):
 

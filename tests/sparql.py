@@ -57,7 +57,7 @@ ISQL_CMD = 'echo "%s" | %s'
 ISQL_UP = "DB.DBA.TTLP_MT_LOCAL_FILE('%(ttl)s', '', '%(graph)s');"
 ISQL_DOWN = "SPARQL CLEAR GRAPH <%(graph)s>;"
 ISQL_SERVER = "select server_root();"
-ISQL_INFERENCE = "rdfs_rule_set('http://tpedia.org/property_ruleset', '%s');"
+ISQL_INFERENCE = "rdfs_rule_set('%(graph_uri)sproperty_ruleset', '%(graph_uri)s');"
 
 
 def mocked_query(self):
@@ -141,7 +141,7 @@ def remove_ttl_from_virtuoso_dir(ttl):
 
 
 def enable_inference_at_graph(graph_uri):
-    cmd = ISQL_INFERENCE % graph_uri
+    cmd = ISQL_INFERENCE % {"graph_uri": graph_uri}
     virtuoso_response = run_isql(cmd)
 
 

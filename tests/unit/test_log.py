@@ -39,4 +39,4 @@ class LogTestCase(unittest.TestCase):
         self.assertEqual(log.logger, None)
         self.assertEqual(log.handlers, [])
         log.initialize()
-        self.assertEqual(log.logger.handlers, log.handlers)
+        self.assertTrue(set(log.handlers).issubset(set(log.logger.handlers)))

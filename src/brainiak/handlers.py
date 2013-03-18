@@ -119,7 +119,7 @@ class SchemaHandler(BrainiakRequestHandler):
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            raise HTTPError(404, log_message="Class not found in triplestore.")
+            raise HTTPError(404, log_message="Class not found in the triplestore.")
         else:
             self.write(response)
 
@@ -147,7 +147,7 @@ class InstanceHandler(BrainiakRequestHandler):
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            raise HTTPError(404, log_message="Instance not found in triplestore.")
+            raise HTTPError(404, log_message="Instance not found in the triplestore.")
         else:
             self.write(response)
 
@@ -185,3 +185,10 @@ class InstanceListHandler(BrainiakRequestHandler):
         response = filter_instances(query_params)
 
         self.finalize(response)
+
+    def finalize(self, response):
+        self.set_header('Access-Control-Allow-Origin', '*')
+        if response is None:
+            raise HTTPError(404, log_message="There is no instances of this class in the triplestore.")
+        else:
+            self.write(response)

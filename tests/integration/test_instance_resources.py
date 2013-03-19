@@ -12,8 +12,9 @@ from tests.sparql import QueryTestCase
 class MockRequest(object):
     headers = {'Host': 'localhost:5100'}
 
-    def __init__(self, querystring):
-        self.query = querystring
+    def __init__(self, query_string):
+        self.query = query_string
+        self.uri = "http://%s/ctx/klass?%s" % (self.headers['Host'], query_string)
 
 
 class MockResponse(object):
@@ -367,17 +368,24 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
         self.assertEquals(response, None)
 
     def test_filter_instances_result_is_not_empty(self):
+        query_string = "page=2&per_page=3"
         sample_json = {"results": {"bindings": []}}
-        count_json = {"results": {"bindings": [{"total": {"value": "19"}}]}}
+        count_json = {"results": {"bindings": [{"total": {"value": "12"}}]}}
         resource.query_filter_instances = lambda params: MockResponse(sample_json)
         resource.query_count_filter_intances = lambda params: MockResponse(count_json)
         response = resource.filter_instances({"context_name": "ctx",
                                               "class_name": "klass",
-                                              "request": MockRequest("page=2&per_page=3")})
+                                              "request": MockRequest(query_string),
+                                              "per_page": "3",
+                                              "page": "2"})
         expected_links = [
             {
-                'href': "http://localhost:5100/ctx/klass",
+                'href': "http://localhost:5100/ctx/klass?page=2&per_page=3",
                 'rel': "self"
+            },
+            {
+                'href': "http://localhost:5100/ctx/klass",
+                'rel': "list"
             },
             {
                 'href': "http://localhost:5100/ctx/klass/{resource_id}",
@@ -389,9 +397,37 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
                 'rel': "create"
             },
             {
+                'href': "http://localhost:5100/ctx/klass/{resource_id}",
+                'method': "DELETE",
+                'rel': "delete"
+
+            },
+            {
+                'href': "http://localhost:5100/ctx/klass/{resource_id}",
+                'method': "PATCH",
+                'rel': "edit"
+
+            },
+            {
                 'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
                 'method': "GET",
                 'rel': "first"
-            }]
-        self.assertEquals(response["item_count"], 19)
+            },
+            {
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=4",
+                'method': "GET",
+                'rel': "last"
+            },
+            {
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
+                'method': "GET",
+                'rel': "prev"
+            },
+            {
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=3",
+                'method': "GET",
+                'rel': "next"
+            }
+        ]
+        self.assertEquals(response["item_count"], 12)
         self.assertEquals(response["links"], expected_links)

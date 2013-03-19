@@ -57,7 +57,7 @@ ISQL_CMD = 'echo "%s" | %s'
 ISQL_UP = "DB.DBA.TTLP_MT_LOCAL_FILE('%(ttl)s', '', '%(graph)s');"
 ISQL_DOWN = "SPARQL CLEAR GRAPH <%(graph)s>;"
 ISQL_SERVER = "select server_root();"
-ISQL_INFERENCE = "rdfs_rule_set('http://semantica.globo.com/ruleset', '%(graph_uri)s');"
+ISQL_INFERENCE = "rdfs_rule_set('%(graph_uri)sruleset', '%(graph_uri)s');"
 
 
 def mocked_query(self):

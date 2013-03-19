@@ -41,20 +41,30 @@ class DummyQueryTestCase(QueryTestCase):
             self.assertIn(item, response_bindings)
 
 
-QUERY_ENTAILMENT = """
-SELECT ?name
-WHERE {?person <http://graph.sample/name> ?name}
+QUERY_PROPERTY_ENTAILMENT = """
+DEFINE input:inference <http://tatipedia.org/property_ruleset>
+SELECT DISTINCT ?subject ?label
+WHERE {
+    ?subject a <http://tatipedia.org/Place>;
+             rdfs:label ?label  .
+    FILTER (langMatches(lang(?label), "pt"))
+}
 """
 
 
-# For more information on query entailment:
-# http://www.w3.org/TR/sparql11-overview/
-# session "5 SPARQL 1.1 Entailment Regimes"
+class SubpropertyEntailmentQueryTestCase(QueryTestCase):
+    allow_triplestore_connection = True
+    graph_uri = "http://tatipedia.org/"
+    fixtures = ["tests/sample/subproperty.n3"]
 
-# class SubpropertyEntailmentQueryTestCase(QueryTestCase):
-#     allow_triplestore_connection = True
-#     fixtures = ["tests/sample/subproperty.n3"]
-
-#     def test_subproperty_entailment_query(self):
-#         response_bindings = self.query(QUERY_ENTAILMENT)["results"]["bindings"]
-#         assert False
+    def test_subproperty_entailment_query(self):
+        response_bindings = self.query(QUERY_PROPERTY_ENTAILMENT)["results"]["bindings"]
+        expected_bindings = [
+            {u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nova Iorque'},
+             u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/new_york'}},
+            {u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Londres'},
+             u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'}},
+            {u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Munique'},
+             u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/munich'}}
+        ]
+        self.assertEqual(response_bindings, expected_bindings)

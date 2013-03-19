@@ -83,7 +83,7 @@ def query_all_properties_and_objects(context_name, class_name, instance_id):
 
 
 QUERY_COUNT_FILTER_INSTANCE = """
-DEFINE input:inference <http://tatipedia.org/property_ruleset>
+DEFINE input:inference <http://semantica.globo.com/property_ruleset>
 SELECT DISTINCT count (distinct ?subject) as ?total
 WHERE {
     ?subject a <%(class_uri)s> ;

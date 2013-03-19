@@ -43,16 +43,13 @@ from functools import wraps, partial
 
 # singleton objects
 _io_loop = None
-_http_client = None
 
 # Use cURL
 AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
 
 
 def greenlet_set_ioloop(io_loop=None):
-    global _io_loop, _http_client
-    #_http_client = tornado.httpclient.AsyncHTTPClient(io_loop=_io_loop)
-
+    global _io_loop
     if io_loop is None:
         _io_loop = IOLoop.instance()
     else:
@@ -80,9 +77,9 @@ def greenlet_fetch(request, **kwargs):
         gr.switch(response)
         # Make sure we are on the master greenlet before we switch.
         #IOLoop.instance().add_callback(partial(gr.switch, response))
-        #io_loop.add_callback(partial(gr.switch, response))
-    _http_client = tornado.httpclient.AsyncHTTPClient(io_loop=_io_loop)
-    _http_client.fetch(request, callback, **kwargs)
+        #_io_loop.add_callback(partial(gr.switch, response))
+    http_client = tornado.httpclient.AsyncHTTPClient(io_loop=_io_loop)
+    http_client.fetch(request, callback, **kwargs)
 
     # Now, yield control back to the master greenlet, and wait for data to be sent to us.
     response = gr.parent.switch()

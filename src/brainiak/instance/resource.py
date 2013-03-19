@@ -173,8 +173,21 @@ def filter_instances(query_params):
     return build_json(items_list, total_items, query_params)
 
 
+from urlparse import parse_qs
+from urllib import urlencode
+
+
+def set_query_string_parameter(query_string, param_name, param_value):
+    query_params = parse_qs(query_string)
+    query_params[param_name] = [param_value]
+    new_query_string = urlencode(query_params, doseq=True)
+    return new_query_string
+
+
 def build_json(items_list, total_items, query_params):
-    class_uri = 'http://{0}/{1}/{2}'.format(query_params["request"].headers.get("Host"),
+    request = query_params["request"]
+    query_string = request.query
+    class_uri = 'http://{0}/{1}/{2}'.format(request.headers.get("Host"),
                                             query_params["context_name"],
                                             query_params["class_name"])
     json = {
@@ -193,6 +206,11 @@ def build_json(items_list, total_items, query_params):
                 'href': class_uri,
                 'method': "POST",
                 'rel': "create"
+            },
+            {
+                'href': "%s?%s" % (class_uri, set_query_string_parameter(query_string, "page", "1")),
+                'method': "GET",
+                'rel': "first"
             }
         ]
     }

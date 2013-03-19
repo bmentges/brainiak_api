@@ -102,7 +102,6 @@ WHERE {
              %(p)s %(o)s.
     %(lang_filter)s
 }
-ORDER BY ASC (xsd:string(?label))
 LIMIT %(per_page)s
 OFFSET %(page)s
 """

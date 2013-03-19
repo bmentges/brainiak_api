@@ -5,6 +5,7 @@ from tornado.web import Application as TornadoApplication
 
 from brainiak import __doc__, log, settings
 from brainiak import urls
+from brainiak.greenlet_tornado import greenlet_set_ioloop
 
 server = None
 
@@ -22,7 +23,9 @@ def main(args):  # pragma: no cover
     application = Application(debug=args.debug)
     server = HTTPServer(application)
     server.listen(settings.SERVER_PORT)
-    IOLoop.instance().start()
+    io_loop = IOLoop.instance()
+    greenlet_set_ioloop(io_loop)
+    io_loop.start()
 
 
 if __name__ == '__main__':

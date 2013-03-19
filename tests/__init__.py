@@ -1,5 +1,14 @@
+from unittest import TestCase
 from tornado.testing import AsyncTestCase, AsyncHTTPTestCase
 from brainiak import server, greenlet_tornado
+
+
+class SpecialListTestCase(TestCase):
+
+    def assertPseudoEqual(self, list1, list2):
+        self.assertEqual(len(list1), len(list2))
+        for item in list1:
+            self.assertIn(item, list2)
 
 
 class TornadoAsyncTestCase(AsyncTestCase):

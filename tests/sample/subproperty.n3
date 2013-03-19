@@ -1,13 +1,18 @@
-@prefix example: <http://graph.sample/> .
+@prefix tpedia: <http://tatipedia.org/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-
-
-example:name owl:DatatypeProperty ;
-             rdfs:subPropertyOf rdfs:label .
-
-<andreia> example:name "Andreia Kumpera"
-<icaro> example:name "Icaro Medeiros"
-<jefferson> example:name "Jefferson Braga"
-<rodrigo> example:name "Rodigo Senra"
-<tatiana> example:name "Tatiana Al-Chueyr"
+ 
+tpedia:new_york a tpedia:Place ;
+                rdfs:label "Nova Iorque"@pt ;
+                rdfs:label "New York"@en .
+ 
+tpedia:london a tpedia:Place ;
+                rdfs:label "Londres"@pt ;
+                rdfs:label "London"@en .
+ 
+tpedia:name rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf rdfs:label .
+ 
+tpedia:munich a tpedia:Place ;
+                tpedia:name "Munique"@pt ;
+                tpedia:name "Munich"@en .

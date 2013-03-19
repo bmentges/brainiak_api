@@ -5,6 +5,7 @@ from brainiak import triplestore
 from brainiak.prefixes import expand_uri, MemorizeContext
 from brainiak.result_handler import compress_keys_and_values, get_one_value, is_result_empty
 from brainiak.settings import URI_PREFIX
+from brainiak.utils.links import build_links
 
 
 def get_instance(query_params):
@@ -18,7 +19,7 @@ def get_instance(query_params):
     query_result_dict = json.loads(query_response.body)
 
     if is_result_empty(query_result_dict):
-        return
+        return None
     else:
         return assemble_instance_json(query_params,
                                       query_result_dict)
@@ -173,110 +174,19 @@ def filter_instances(query_params):
     return build_json(items_list, total_items, query_params)
 
 
-from math import ceil
-from urllib import urlencode
-from urlparse import parse_qs
-
-
-# TODO: UNIT TEST
-def set_query_string_parameter(query_string, param_name, param_value):
-    query_params = parse_qs(query_string)
-    query_params[param_name] = [param_value]
-    new_query_string = urlencode(query_params, doseq=True)
-    return new_query_string
-
-
-# TODO: UNIT TEST
-def get_last_page(total_items, per_page):
-    return int(ceil(total_items / float(per_page)))
-
-
-# TODO: UNIT TEST
-def get_previous_page(page):
-    if page > 1:
-        return page - 1
-    else:
-        return False
-
-
-# TODO: UNIT TEST
-def get_next_page(page, last_page):
-    if page < last_page:
-        return page + 1
-    else:
-        return False
-
-
 def build_json(items_list, total_items, query_params):
     request = query_params["request"]
-    query_string = request.query
     class_uri = 'http://{0}/{1}/{2}'.format(request.headers.get("Host"),
                                             query_params["context_name"],
                                             query_params["class_name"])
 
-    page = int(query_params["page"])
-    per_page = int(query_params["per_page"])
-    last_page = get_last_page(total_items, per_page)
-
-    links = [
-        {
-            'href': request.uri,
-            'rel': "self"
-        },
-        {
-            'href': class_uri,
-            'rel': "list"
-        },
-        {
-            'href': "%s/{resource_id}" % class_uri,
-            'rel': "item"
-        },
-        {
-            'href': class_uri,
-            'method': "POST",
-            'rel': "create"
-        },
-        {
-            'href': "%s/{resource_id}" % class_uri,
-            'method': "DELETE",
-            'rel': "delete"
-
-        },
-        {
-            'href': "%s/{resource_id}" % class_uri,
-            'method': "PATCH",
-            'rel': "edit"
-
-        },
-        {
-            'href': "%s?%s" % (class_uri, set_query_string_parameter(query_string, "page", "1")),
-            'method': "GET",
-            'rel': "first"
-        },
-        {
-            'href': "%s?%s" % (class_uri, set_query_string_parameter(query_string, "page", last_page)),
-            'method': "GET",
-            'rel': "last"
-        }
-    ]
-
-    previous_page = get_previous_page(page)
-    if previous_page:
-        item = {
-            'href': "%s?%s" % (class_uri, set_query_string_parameter(query_string, "page", previous_page)),
-            'method': "GET",
-            'rel': "prev"
-        }
-        links.append(item)
-
-    next_page = get_next_page(page, last_page)
-    if next_page:
-        item = {
-            'href': "%s?%s" % (class_uri, set_query_string_parameter(query_string, "page", next_page)),
-            'method': "GET",
-            'rel': "next"
-        }
-        links.append(item)
+    links = build_links(
+        class_uri,
+        page=int(query_params["page"]),
+        per_page=int(query_params["per_page"]),
+        request_uri=request.uri,
+        total_items=total_items,
+        query_string=request.query)
 
     json = {
         'items': items_list,

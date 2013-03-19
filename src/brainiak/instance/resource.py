@@ -3,7 +3,7 @@ import json
 
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri, MemorizeContext
-from brainiak.result_handler import compress_keys_and_values, is_result_empty
+from brainiak.result_handler import compress_keys_and_values, get_one_value, is_result_empty
 from brainiak.settings import URI_PREFIX
 
 
@@ -82,6 +82,17 @@ def query_all_properties_and_objects(context_name, class_name, instance_id):
     return triplestore.query_sparql(query)
 
 
+QUERY_COUNT_FILTER_INSTANCE = """
+DEFINE input:inference <http://semantica.globo.com/property_ruleset>
+SELECT DISTINCT count (distinct ?subject) as ?total
+WHERE {
+    ?subject a <%(class_uri)s> ;
+             rdfs:label ?label ;
+             %(p)s %(o)s.
+    %(lang_filter)s
+}
+"""
+
 QUERY_FILTER_INSTANCE = """
 DEFINE input:inference <http://semantica.globo.com/ruleset>
 SELECT DISTINCT ?subject ?label
@@ -91,7 +102,6 @@ WHERE {
              %(p)s %(o)s.
     %(lang_filter)s
 }
-ORDER BY ASC (xsd:string(?label))
 LIMIT %(per_page)s
 OFFSET %(page)s
 """
@@ -109,7 +119,7 @@ def lang_support(lang):
         return ""
 
 
-def query_filter_instances(query_params):
+def process_params(query_params):
     """
     Important note: when "lang" is defined in query_params,
     the languge provided:
@@ -120,7 +130,7 @@ def query_filter_instances(query_params):
     language_tag = lang_support(query_params.get("lang"))
 
     for key in potential_uris:
-        value = query_params[key]
+        value = query_params.get(key, "")
         if (not value.startswith("?")):
             if (":" in value):
                 query_params[key] = "<%s>" % expand_uri(value)
@@ -132,28 +142,44 @@ def query_filter_instances(query_params):
     else:
         query_params["lang_filter"] = ""
 
+    return query_params
+
+
+def query_filter_instances(query_params):
     query = QUERY_FILTER_INSTANCE % query_params
-    return triplestore.query_sparql(query)
+    query_response = triplestore.query_sparql(query)
+    return query_response
+
+
+def query_count_filter_intances(query_params):
+    query = QUERY_COUNT_FILTER_INSTANCE % query_params
+    query_response = triplestore.query_sparql(query)
+    return query_response
 
 
 def filter_instances(query_params):
+    query_params = process_params(query_params)
+    query_response = query_count_filter_intances(query_params)
+
+    result_dict = json.loads(query_response.body)
+    total_items = int(get_one_value(result_dict, 'total'))
+
+    if not total_items:
+        return None
+
     query_response = query_filter_instances(query_params)
     result_dict = json.loads(query_response.body)
-
-    if is_result_empty(result_dict):
-        return None
-    else:
-        items_list = compress_keys_and_values(result_dict)
-        return build_json(items_list, query_params)
+    items_list = compress_keys_and_values(result_dict)
+    return build_json(items_list, total_items, query_params)
 
 
-def build_json(items_list, query_params):
+def build_json(items_list, total_items, query_params):
     class_uri = 'http://{0}/{1}/{2}'.format(query_params["request"].headers.get("Host"),
                                             query_params["context_name"],
                                             query_params["class_name"])
     json = {
         'items': items_list,
-        'item_count': len(items_list),
+        'item_count': total_items,
         'links': [
             {
                 'href': class_uri,

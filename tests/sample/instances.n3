@@ -2,12 +2,12 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 tpedia:john a tpedia:Person ;
-            rdfs:label "John Jones";
+            rdfs:label "John Jones" ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:likes "Aikido" .
 
 tpedia:mary a tpedia:Person ;
-            rdfs:label "Mary Land";
+            rdfs:label "Mary Land" ;
             tpedia:likes tpedia:Capoeira ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:dislikes tpedia:BungeeJump .
@@ -21,3 +21,14 @@ tpedia:london a tpedia:Place ;
                 rdfs:label "Londres"@pt ;
                 rdfs:label "London"@en ;
                 tpedia:speak "Ingles"@pt .
+
+
+tpedia:Platypus a tpedia:Species ;
+                rdfs:label "Ornitorrinco"@pt ;
+                tpedia:order tpedia:Monotremata ;
+                tpedia:livesIn tpedia:Australia .
+
+tpedia:Echidna a tpedia:Species ;
+                 rdfs:label "Equidna"@pt ;
+                 tpedia:order tpedia:Monotremata ;
+                 tpedia:livesIn tpedia:NewGuinea .

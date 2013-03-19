@@ -189,6 +189,6 @@ class InstanceListHandler(BrainiakRequestHandler):
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            raise HTTPError(404, log_message="There is no instances of this class in the triplestore.")
+            raise HTTPError(404, log_message="There are no instances of this class in the triplestore.")
         else:
             self.write(response)

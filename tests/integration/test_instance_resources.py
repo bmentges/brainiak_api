@@ -12,6 +12,9 @@ from tests.sparql import QueryTestCase
 class MockRequest(object):
     headers = {'Host': 'localhost:5100'}
 
+    def __init__(self, querystring):
+        self.query = querystring
+
 
 class MockResponse(object):
     def __init__(self, body):
@@ -364,20 +367,13 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
         self.assertEquals(response, None)
 
     def test_filter_instances_result_is_not_empty(self):
-        sample_json = {
-            "results": {
-                "bindings": [
-                    {"jj:armlock": {"type": None, "value": "Armlock"}}
-                ]
-            }
-        }
-        count_json = {"results": {"bindings": [{"total": {"value": "1"}}]}}
+        sample_json = {"results": {"bindings": []}}
+        count_json = {"results": {"bindings": [{"total": {"value": "19"}}]}}
         resource.query_filter_instances = lambda params: MockResponse(sample_json)
         resource.query_count_filter_intances = lambda params: MockResponse(count_json)
         response = resource.filter_instances({"context_name": "ctx",
                                               "class_name": "klass",
-                                              "request": MockRequest()})
-
+                                              "request": MockRequest("page=2&per_page=3")})
         expected_links = [
             {
                 'href': "http://localhost:5100/ctx/klass",
@@ -391,7 +387,11 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
                 'href': "http://localhost:5100/ctx/klass",
                 'method': "POST",
                 'rel': "create"
+            },
+            {
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
+                'method': "GET",
+                'rel': "first"
             }]
-        self.assertEquals(response["items"], [{u'jj:armlock': u'Armlock'}])
-        self.assertEquals(response["item_count"], 1)
+        self.assertEquals(response["item_count"], 19)
         self.assertEquals(response["links"], expected_links)

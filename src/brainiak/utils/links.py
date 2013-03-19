@@ -11,12 +11,10 @@ def set_query_string_parameter(query_string, param_name, param_value):
     return new_query_string
 
 
-# TODO: UNIT TEST
 def get_last_page(total_items, per_page):
     return int(ceil(total_items / float(per_page)))
 
 
-# TODO: UNIT TEST
 def get_previous_page(page):
     if page > 1:
         return page - 1

@@ -42,7 +42,7 @@ class DummyQueryTestCase(QueryTestCase):
 
 
 QUERY_PROPERTY_ENTAILMENT = """
-DEFINE input:inference <http://tatipedia.org/property_ruleset>
+DEFINE input:inference <http://tatipedia.org/ruleset>
 SELECT DISTINCT ?subject ?label
 WHERE {
     ?subject a <http://tatipedia.org/Place>;
@@ -67,4 +67,4 @@ class SubpropertyEntailmentQueryTestCase(QueryTestCase):
             {u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Munique'},
              u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/munich'}}
         ]
-        self.assertEqual(response_bindings, expected_bindings)
+        self.assertEqual(sorted(response_bindings), sorted(expected_bindings))

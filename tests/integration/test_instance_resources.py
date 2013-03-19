@@ -100,7 +100,7 @@ def build_json(bindings):
 class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
     allow_triplestore_connection = True
     fixtures = ["tests/sample/instances.n3"]
-    graph_uri = "http://tatipedia.org"
+    graph_uri = "http://tatipedia.org/"
 
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql
@@ -124,7 +124,7 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
             "page": "0"
         }
         expected = {'class_uri': 'http://tatipedia.org/Species',
-                    'graph_uri': 'http://tatipedia.org',
+                    'graph_uri': 'http://tatipedia.org/',
                     'lang': 'pt',
                     'lang_filter': '\n    FILTER(langMatches(lang(?label), "pt")) .\n',
                     'o': '<http://dbpedia.org/ontology/Australia>',

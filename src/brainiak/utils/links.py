@@ -36,7 +36,10 @@ def build_links(class_uri, page, per_page, request_uri, total_items, query_strin
         {
             'href': request_uri,
             'rel': "self"
-        },
+        }
+    ]
+
+    action_links = [
         {
             'href': class_uri,
             'rel': "list"
@@ -61,7 +64,11 @@ def build_links(class_uri, page, per_page, request_uri, total_items, query_strin
             'method': "PATCH",
             'rel': "edit"
 
-        },
+        }
+    ]
+    links.extend(action_links)
+
+    navigation_links = [
         {
             'href': "%s?%s" % (class_uri, set_query_string_parameter(query_string, "page", "1")),
             'method': "GET",
@@ -81,7 +88,7 @@ def build_links(class_uri, page, per_page, request_uri, total_items, query_strin
             'method': "GET",
             'rel': "prev"
         }
-        links.append(item)
+        navigation_links.append(item)
 
     next_page = get_next_page(page, last_page)
     if next_page:
@@ -90,5 +97,8 @@ def build_links(class_uri, page, per_page, request_uri, total_items, query_strin
             'method': "GET",
             'rel': "next"
         }
-        links.append(item)
+        navigation_links.append(item)
+
+    links.extend(navigation_links)
+
     return links

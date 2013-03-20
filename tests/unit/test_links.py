@@ -1,6 +1,6 @@
 import unittest
 
-from brainiak.utils.links import get_last_page, get_next_page, get_previous_page, set_query_string_parameter
+from brainiak.utils.links import build_links, get_last_page, get_next_page, get_previous_page, set_query_string_parameter
 
 
 class LinksTestCase(unittest.TestCase):
@@ -49,3 +49,223 @@ class LinksTestCase(unittest.TestCase):
         computed = get_last_page(total_items, per_page)
         expected = 4
         self.assertEqual(computed, expected)
+
+    def test_build_links_without_previous_without_next(self):
+        class_uri = "http://class.uri"
+        page = 1
+        per_page = 1
+        request_uri = "http://request.uri"
+        total_items = 1
+        query_string = ""
+        computed = build_links(class_uri, page, per_page, request_uri, total_items, query_string)
+        expected = [
+            {
+                'href': "http://request.uri",
+                'rel': "self"
+            },
+            {
+                'href': "http://class.uri",
+                'rel': "list"
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'rel': "item"
+            },
+            {
+                'href': "http://class.uri",
+                'method': "POST",
+                'rel': "create"
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'method': "DELETE",
+                'rel': "delete"
+
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'method': "PATCH",
+                'rel': "edit"
+
+            },
+            {
+                'href': "http://class.uri?page=1",
+                'method': "GET",
+                'rel': "first"
+            },
+            {
+                'href': "http://class.uri?page=1",
+                'method': "GET",
+                'rel': "last"
+            }
+        ]
+
+    def test_build_links_without_previous_with_next(self):
+        class_uri = "http://class.uri"
+        page = 1
+        per_page = 1
+        request_uri = "http://request.uri"
+        total_items = 2
+        query_string = ""
+        computed = build_links(class_uri, page, per_page, request_uri, total_items, query_string)
+        expected = [
+            {
+                'href': "http://request.uri",
+                'rel': "self"
+            },
+            {
+                'href': "http://class.uri",
+                'rel': "list"
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'rel': "item"
+            },
+            {
+                'href': "http://class.uri",
+                'method': "POST",
+                'rel': "create"
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'method': "DELETE",
+                'rel': "delete"
+
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'method': "PATCH",
+                'rel': "edit"
+
+            },
+            {
+                'href': "http://class.uri?page=1",
+                'method': "GET",
+                'rel': "first"
+            },
+            {
+                'href': "http://class.uri?page=2",
+                'method': "GET",
+                'rel': "last"
+            },
+            {
+                'href': "http://class.uri?page=2",
+                'method': "GET",
+                'rel': "next"
+            }
+        ]
+
+    def test_build_links_with_previous_without_next(self):
+        class_uri = "http://class.uri"
+        page = 2
+        per_page = 1
+        request_uri = "http://request.uri"
+        total_items = 2
+        query_string = ""
+        computed = build_links(class_uri, page, per_page, request_uri, total_items, query_string)
+        expected = [
+            {
+                'href': "http://request.uri",
+                'rel': "self"
+            },
+            {
+                'href': "http://class.uri",
+                'rel': "list"
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'rel': "item"
+            },
+            {
+                'href': "http://class.uri",
+                'method': "POST",
+                'rel': "create"
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'method': "DELETE",
+                'rel': "delete"
+
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'method': "PATCH",
+                'rel': "edit"
+
+            },
+            {
+                'href': "http://class.uri?page=1",
+                'method': "GET",
+                'rel': "first"
+            },
+            {
+                'href': "http://class.uri?page=2",
+                'method': "GET",
+                'rel': "last"
+            },
+            {
+                'href': "http://class.uri?page=1",
+                'method': "GET",
+                'rel': "prev"
+            }
+        ]
+
+    def test_build_links_with_previous_with_next(self):
+        class_uri = "http://class.uri"
+        page = 2
+        per_page = 1
+        request_uri = "http://request.uri"
+        total_items = 3
+        query_string = ""
+        computed = build_links(class_uri, page, per_page, request_uri, total_items, query_string)
+        expected = [
+            {
+                'href': "http://request.uri",
+                'rel': "self"
+            },
+            {
+                'href': "http://class.uri",
+                'rel': "list"
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'rel': "item"
+            },
+            {
+                'href': "http://class.uri",
+                'method': "POST",
+                'rel': "create"
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'method': "DELETE",
+                'rel': "delete"
+
+            },
+            {
+                'href': "http://class.uri/{resource_id}",
+                'method': "PATCH",
+                'rel': "edit"
+
+            },
+            {
+                'href': "http://class.uri?page=1",
+                'method': "GET",
+                'rel': "first"
+            },
+            {
+                'href': "http://class.uri?page=3",
+                'method': "GET",
+                'rel': "last"
+            },
+            {
+                'href': "http://class.uri?page=1",
+                'method': "GET",
+                'rel': "prev"
+            },
+            {
+                'href': "http://class.uri?page=3",
+                'method': "GET",
+                'rel': "next"
+            }
+        ]

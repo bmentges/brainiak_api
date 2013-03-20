@@ -1,4 +1,0 @@
-Managing Instances
-==================
-
-Bla bla

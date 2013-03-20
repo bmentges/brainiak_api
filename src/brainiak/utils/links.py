@@ -34,10 +34,7 @@ def build_links(class_uri, page, per_page, request_uri, total_items, query_strin
     resource_uri = "%s/{resource_id}" % class_uri
 
     links = [
-        {
-            'href': request_uri,
-            'rel': "self"
-        }
+        {'rel': "self", 'href': request_uri}
     ]
 
     action_links = [

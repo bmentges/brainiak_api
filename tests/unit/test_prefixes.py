@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from brainiak.prefixes import expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError
+from brainiak.prefixes import _MAP_SLUG_TO_PREFIX, expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError
 
 
 class PrefixesTestCase(unittest.TestCase):
+
+    def test_prefix_contains_obligatory_keys(self):
+        existing_keys = sorted(_MAP_SLUG_TO_PREFIX.keys())
+        expected_keys = ['base', 'dbpedia', 'dc', 'dct', 'ego', 'esportes', 'event', 'foaf', 'g1', 'geo', 'glb', 'organization', 'owl', 'person', 'place', 'rdf', 'rdfs', 'schema', 'time', 'tvg', 'upper', 'xsd']
+        self.assertEqual(len(existing_keys), 22)
+        self.assertEqual(existing_keys, expected_keys)
 
     def test_prefix_to_slug(self):
         self.assertEqual(prefix_to_slug('http://www.w3.org/1999/02/22-rdf-syntax-ns#'), 'rdf')

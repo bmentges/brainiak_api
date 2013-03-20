@@ -459,7 +459,7 @@ class InstancesQueryTestCase(QueryTestCase):
             {
                 'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
                 'method': "GET",
-                'rel': "prev"
+                'rel': "previous"
             },
             {
                 'href': "http://localhost:5100/ctx/klass?per_page=3&page=3",

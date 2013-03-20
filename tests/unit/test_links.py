@@ -226,7 +226,7 @@ class LinksTestCase(unittest.TestCase):
             {
                 'href': "http://class.uri?page=1",
                 'method': "GET",
-                'rel': "prev"
+                'rel': "previous"
             }
         ]
         self.assertEqual(computed, expected)
@@ -288,7 +288,7 @@ class LinksTestCase(unittest.TestCase):
             {
                 'href': "http://class.uri?page=1",
                 'method': "GET",
-                'rel': "prev"
+                'rel': "previous"
             },
             {
                 'href': "http://class.uri?page=3",

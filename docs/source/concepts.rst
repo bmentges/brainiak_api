@@ -55,3 +55,41 @@ Instance
 Instances must be easily retrieved and "instance queries" must be really simple
 for developers to understand as they will do way more requests on instances than on schemas.
 As such, the interface for manipulating instances also accept JSON as content_type as most of the RESTful APIs do.
+
+Links in response
+-----------------
+
+In hypermedia APIs you should be able to navigate through API services from the ``/``.
+In each service there is a link to other related resources. For example, if you
+query for a specific resource (a entry in a database), in the response you should
+get links to actions related to that resource, like editing it, removing it, etc.
+
+Therefore, in the response we have a ``links`` section like this:
+
+.. highlight:: json
+
+::
+
+    {
+        "links": [
+            {
+                "href": "http://localhost:5100/person/Gender/Male",
+                "rel": "self"
+            },
+            {
+
+                "href": "http://localhost:5100/person/Gender/_schema",
+                "rel": "describedBy"
+            },
+            {
+                "href": "http://localhost:5100/person/Gender/Male",
+                "method": "PATCH",
+                "rel": "edit"
+            },
+            {
+                "href": "http://localhost:5100/person/Gender/Male",
+                "method": "DELETE",
+                "rel": "delete"
+            }
+        ]
+    }

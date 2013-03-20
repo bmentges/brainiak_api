@@ -68,7 +68,7 @@ def build_links(class_uri, page, per_page, request_uri, total_items, query_strin
         item = {
             'href': "%s?%s" % (class_uri, set_query_string_parameter(query_string, "page", previous_page)),
             'method': "GET",
-            'rel': "prev"
+            'rel': "previous"
         }
         navigation_links.append(item)
 

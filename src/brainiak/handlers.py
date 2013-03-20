@@ -205,7 +205,10 @@ class InstanceListHandler(BrainiakRequestHandler):
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            msg = "Instances of class ({class_name}) in graph ({context_name}) were not found."
+            if "p" in self.query_params or "o" in self.query_params:
+                filter_message = " with filter predicate={p} object={o} ".format(**self.query_params)
+                self.query_params["filter_message"] = filter_message
+            msg = "Instances of class ({class_uri}) in graph ({graph_uri}) {filter_message} were not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)

@@ -1,6 +1,7 @@
 import unittest
 
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value, filter_values, is_result_empty
+from brainiak.prefixes import MemorizeContext
 
 
 class ResultHandlerTestCase(unittest.TestCase):
@@ -75,6 +76,36 @@ class ResultHandlerTestCase(unittest.TestCase):
             {u'custom_title': u"Life, the Universe and Everything", u'custom_year': u"1982"},
             {u'custom_title': u"So Long, and Thanks for All the Fish", u'custom_year': u"1984"},
             {u'custom_title': u"Mostly Harmless", u'custom_year': u"1992"}]
+        self.assertEqual(compressed_list, expected_list)
+
+    def test_compress_keys_and_values_with_ignore_keys(self):
+        trilogy_from_virtuoso = {'results': {'bindings': [
+            {u'title': {u'type': u'literal', u'value': u"The Hitchhiker's Guide to the Galaxy"}, u'year': {u'type': u'literal', u'value': "1979"}},
+            {u'title': {u'type': u'literal', u'value': u"The Restaurant at the End of the Universe Life"}, u'year': {u'type': u'literal', u'value': "1980"}},
+            {u'title': {u'type': u'literal', u'value': u"Life, the Universe and Everything"}, u'year': {u'type': u'literal', u'value': "1982"}},
+            {u'title': {u'type': u'literal', u'value': u"So Long, and Thanks for All the Fish"}, u'year': {u'type': u'literal', u'value': "1984"}},
+            {u'title': {u'type': u'literal', u'value': u"Mostly Harmless"}, u'year': {u'type': u'literal', u'value': "1992"}}]}}
+        compressed_list = compress_keys_and_values(trilogy_from_virtuoso, ignore_keys=['year'])
+        expected_list = [
+            {u'title': u"The Hitchhiker's Guide to the Galaxy"},
+            {u'title': u"The Restaurant at the End of the Universe Life"},
+            {u'title': u"Life, the Universe and Everything"},
+            {u'title': u"So Long, and Thanks for All the Fish"},
+            {u'title': u"Mostly Harmless"}]
+        self.assertEqual(compressed_list, expected_list)
+
+    def test_compress_keys_and_values_with_context_and_value_that_is_uri(self):
+        trilogy_from_virtuoso = {'results': {'bindings': [{'key': {'type': 'uri', 'value': 'http://xmlns.com/foaf/0.1/value'}}]}}
+        context = MemorizeContext()
+        compressed_list = compress_keys_and_values(trilogy_from_virtuoso, context=context)
+        expected_list = [{'key': 'foaf:value'}]
+        self.assertEqual(compressed_list, expected_list)
+
+    def test_compress_keys_and_values_with_context_and_value_that_is_not_uri(self):
+        trilogy_from_virtuoso = {'results': {'bindings': [{'key': {'type': 'not_uri', 'value': 'http://xmlns.com/foaf/0.1/value'}}]}}
+        context = MemorizeContext()
+        compressed_list = compress_keys_and_values(trilogy_from_virtuoso, context=context)
+        expected_list = [{'key': 'http://xmlns.com/foaf/0.1/value'}]
         self.assertEqual(compressed_list, expected_list)
 
 

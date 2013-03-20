@@ -8,9 +8,10 @@ class PrefixesTestCase(unittest.TestCase):
 
     def test_prefix_contains_obligatory_keys(self):
         existing_keys = sorted(_MAP_SLUG_TO_PREFIX.keys())
-        expected_keys = ['base', 'dbpedia', 'dc', 'dct', 'ego', 'esportes', 'event', 'foaf', 'g1',
-            'geo', 'glb', 'organization', 'owl', 'person', 'place', 'rdf', 'rdfs', 'schema', 'time',
-            'tvg', 'upper', 'xsd']
+        expected_keys = ['base', 'dbpedia', 'dc', 'dct', 'ego', 'esportes',
+            'event', 'foaf', 'g1', 'geo', 'glb', 'organization', 'owl',
+            'person', 'place', 'rdf', 'rdfs', 'schema', 'time', 'tvg',
+            'upper', 'xsd']
         self.assertEqual(len(existing_keys), 22)
         self.assertEqual(existing_keys, expected_keys)
 

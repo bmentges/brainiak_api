@@ -213,9 +213,6 @@ class InstanceListHandler(BrainiakRequestHandler):
 
 class UnmatchedHandler(BrainiakRequestHandler):
 
-    CORS_ORIGIN = '*'
-    CORS_HEADERS = 'Content-Type'
-
     def default_action(self):
         raise HTTPError(404, log_message="The URL ({0}) is not recognized.".format(self.request.full_url()))
 

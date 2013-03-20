@@ -51,6 +51,7 @@ def assemble_instance_json(query_params, query_result_dict):
         {'rel': 'describedBy', 'href': schema_url},
         {'rel': 'edit', 'method': 'PATCH', 'href': self_url},
         {'rel': 'delete', 'method': 'DELETE', 'href': self_url},
+        {'rel': 'replace', 'method': 'PUT', 'href': self_url}
     ]
     links.extend(action_links)
 
@@ -159,6 +160,7 @@ def query_count_filter_intances(query_params):
 
 
 def filter_instances(query_params):
+
     query_params = process_params(query_params)
     query_response = query_count_filter_intances(query_params)
 
@@ -170,7 +172,7 @@ def filter_instances(query_params):
 
     query_response = query_filter_instances(query_params)
     result_dict = json.loads(query_response.body)
-    items_list = compress_keys_and_values(result_dict)
+    items_list = compress_keys_and_values(result_dict, keymap={"label": "title", "subject": "@id"}, ignore_keys=["total"])
     return build_json(items_list, total_items, query_params)
 
 
@@ -191,6 +193,7 @@ def build_json(items_list, total_items, query_params):
     json = {
         'items': items_list,
         'item_count': total_items,
-        'links': links
+        'links': links,
+        "@language": query_params.get("lang")
     }
     return json

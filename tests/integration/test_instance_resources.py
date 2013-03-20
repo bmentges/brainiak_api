@@ -107,12 +107,12 @@ class InstancesQueryTestCase(QueryTestCase):
         self.original_query_sparql = triplestore.query_sparql
         triplestore.query_sparql = lambda query: query
         self.original_query_filter_instances = resource.query_filter_instances
-        self.original_query_count_filter_instances = resource.query_count_filter_intances
+        self.original_query_count_filter_instances = resource.query_count_filter_instances
 
     def tearDown(self):
         triplestore.query_sparql = self.original_query_sparql
         resource.query_filter_instances = self.original_query_filter_instances
-        resource.query_count_filter_intances = self.original_query_count_filter_instances
+        resource.query_count_filter_instances = self.original_query_count_filter_instances
 
     def test_process_params(self):
         params = {
@@ -393,7 +393,7 @@ class InstancesQueryTestCase(QueryTestCase):
     def test_filter_instances_result_is_empty(self):
         # mock
         resource.query_filter_instances = lambda params: MockResponse({"results": {"bindings": []}})
-        resource.query_count_filter_intances = lambda params: MockResponse({"results": {"bindings": []}})
+        resource.query_count_filter_instances = lambda params: MockResponse({"results": {"bindings": []}})
 
         params = {"o": "", "p": "", "class_uri": ""}
         response = resource.filter_instances(params)
@@ -404,7 +404,7 @@ class InstancesQueryTestCase(QueryTestCase):
         sample_json = {"results": {"bindings": []}}
         count_json = {"results": {"bindings": [{"total": {"value": "12"}}]}}
         resource.query_filter_instances = lambda params: MockResponse(sample_json)
-        resource.query_count_filter_intances = lambda params: MockResponse(count_json)
+        resource.query_count_filter_instances = lambda params: MockResponse(count_json)
         response = resource.filter_instances({"context_name": "ctx",
                                               "class_name": "klass",
                                               "request": MockRequest(query_string),

@@ -89,6 +89,12 @@ class LinksTestCase(unittest.TestCase):
 
             },
             {
+                'href': "http://class.uri/{resource_id}",
+                'method': "PUT",
+                'rel': "replace"
+
+            },
+            {
                 'href': "http://class.uri?page=1",
                 'method': "GET",
                 'rel': "first"
@@ -99,6 +105,7 @@ class LinksTestCase(unittest.TestCase):
                 'rel': "last"
             }
         ]
+        self.assertEqual(computed, expected)
 
     def test_build_links_without_previous_with_next(self):
         class_uri = "http://class.uri"
@@ -139,6 +146,12 @@ class LinksTestCase(unittest.TestCase):
 
             },
             {
+                'href': "http://class.uri/{resource_id}",
+                'method': "PUT",
+                'rel': "replace"
+
+            },
+            {
                 'href': "http://class.uri?page=1",
                 'method': "GET",
                 'rel': "first"
@@ -154,6 +167,7 @@ class LinksTestCase(unittest.TestCase):
                 'rel': "next"
             }
         ]
+        self.assertEqual(computed, expected)
 
     def test_build_links_with_previous_without_next(self):
         class_uri = "http://class.uri"
@@ -194,6 +208,12 @@ class LinksTestCase(unittest.TestCase):
 
             },
             {
+                'href': "http://class.uri/{resource_id}",
+                'method': "PUT",
+                'rel': "replace"
+
+            },
+            {
                 'href': "http://class.uri?page=1",
                 'method': "GET",
                 'rel': "first"
@@ -209,6 +229,7 @@ class LinksTestCase(unittest.TestCase):
                 'rel': "prev"
             }
         ]
+        self.assertEqual(computed, expected)
 
     def test_build_links_with_previous_with_next(self):
         class_uri = "http://class.uri"
@@ -249,6 +270,12 @@ class LinksTestCase(unittest.TestCase):
 
             },
             {
+                'href': "http://class.uri/{resource_id}",
+                'method': "PUT",
+                'rel': "replace"
+
+            },
+            {
                 'href': "http://class.uri?page=1",
                 'method': "GET",
                 'rel': "first"
@@ -269,3 +296,4 @@ class LinksTestCase(unittest.TestCase):
                 'rel': "next"
             }
         ]
+        self.assertEqual(computed, expected)

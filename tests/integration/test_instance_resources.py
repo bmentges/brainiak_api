@@ -400,7 +400,7 @@ class InstancesQueryTestCase(QueryTestCase):
         self.assertEquals(response, None)
 
     def test_filter_instances_result_is_not_empty(self):
-        query_string = "page=2&per_page=3"
+        query_string = "page=2&per_page=3"  # page based on API (begins with 1)
         sample_json = {"results": {"bindings": []}}
         count_json = {"results": {"bindings": [{"total": {"value": "12"}}]}}
         resource.query_filter_instances = lambda params: MockResponse(sample_json)
@@ -409,7 +409,7 @@ class InstancesQueryTestCase(QueryTestCase):
                                               "class_name": "klass",
                                               "request": MockRequest(query_string),
                                               "per_page": "3",
-                                              "page": "2"})
+                                              "page": "1"})  # page based on virtuoso (begins with 0)
         expected_links = [
             {
                 'href': "http://localhost:5100/ctx/klass?page=2&per_page=3",

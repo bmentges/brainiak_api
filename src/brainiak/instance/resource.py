@@ -3,7 +3,7 @@ import json
 
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri, MemorizeContext
-from brainiak.result_handler import compress_keys_and_values, get_one_value, is_result_empty
+from brainiak.utils.sparql import compress_keys_and_values, get_one_value, is_result_empty
 from brainiak.settings import URI_PREFIX
 from brainiak.utils.links import build_links
 

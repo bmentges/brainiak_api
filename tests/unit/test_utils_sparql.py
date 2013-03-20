@@ -1,6 +1,6 @@
 import unittest
 
-from brainiak.result_handler import compress_keys_and_values, get_one_value, filter_values, is_result_empty
+from brainiak.utils.sparql import compress_keys_and_values, get_one_value, filter_values, is_result_empty
 
 
 class ResultHandlerTestCase(unittest.TestCase):

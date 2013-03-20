@@ -29,6 +29,17 @@ _MAP_SLUG_TO_PREFIX = {
     'organization': 'http://semantica.globo.com/organization/'
 }
 
+OLD_PREFIXES = {
+    "glb": "http://semantica.globo.com/",
+    "base": "http://semantica.globo.com/base/",
+    "ego": "http://semantica.globo.com/ego/",
+    "esportes": "http://semantica.globo.com/esportes/",
+    "g1": "http://semantica.globo.com/G1/",
+    "tvg": "http://semantica.globo.com/tvg/"
+}
+
+_MAP_SLUG_TO_PREFIX.update(OLD_PREFIXES)
+
 _MAP_PREFIX_TO_SLUG = {v: k for k, v in _MAP_SLUG_TO_PREFIX.items()}
 
 

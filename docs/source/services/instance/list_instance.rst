@@ -38,14 +38,14 @@ Possible responses
 Status 200
 __________
 
-If the instance exists, the response body is a JSON with all instance information and links to related actions.
+If instances with the specified filter exist, the response body is a JSON with all instances information and links to related actions.
 
 .. include :: examples/get_instance_200.rst
 
 Status 404
 __________
 
-If the instance does not exist, the response is a 404 with a JSON
+If there is no instances matching the filter, the response is a 404 with a JSON
 informing the error
 
 .. include :: examples/get_instance_404.rst

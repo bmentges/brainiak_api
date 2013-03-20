@@ -127,7 +127,7 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
         expected = {'class_uri': 'http://tatipedia.org/Species',
                     'graph_uri': 'http://tatipedia.org/',
                     'lang': 'pt',
-                    'lang_filter': '\n    FILTER(langMatches(lang(?label), "pt")) .\n',
+                    'lang_filter': '\n    FILTER(langMatches(lang(?label), "pt") or langMatches(lang(?label), "")) .\n',
                     'o': '<http://dbpedia.org/ontology/Australia>',
                     'p': '<http://tatipedia.org/livesIn>',
                     'page': '0',
@@ -148,7 +148,7 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
         params = process_params(params)
         query = QUERY_COUNT_FILTER_INSTANCE % params
         computed = self.query(query)["results"]["bindings"]
-        expected = [{u'total': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'type': u'typed-literal', u'value': u'2'}}]
+        expected = [{u'total': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'type': u'typed-literal', u'value': u'3'}}]
         self.assertEqual(computed, expected)
 
     def test_instance_filter_query_by_predicate_and_object(self):
@@ -302,6 +302,38 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
         ]
 
         self.assertEqual(len(computed_bindings), 2)
+        self.assertPseudoEqual(computed_bindings, expected_bindings)
+
+    def test_query_filter_instances_with_language_restriction_to_pt_and_any(self):
+        params = {
+            "class_uri": "http://tatipedia.org/Species",
+            "p": "http://tatipedia.org/order",
+            "o": "http://tatipedia.org/Monotremata",
+            "lang_filter": "pt",
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0"
+        }
+        params = process_params(params)
+        query = query_filter_instances(params)
+
+        computed_bindings = self.query(query)["results"]["bindings"]
+        expected_bindings = [
+                                {
+                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Platypus'},
+                                    u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Ornitorrinco'}
+                                },
+                                {
+                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Echidna'},
+                                    u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Equidna'}
+                                },
+                                {
+                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Teinolophos'},
+                                    u'label': {u'type': u'literal', u'value': "Teinolophos trusleri"}
+                                }
+        ]
+
+        self.assertEqual(len(computed_bindings), 3)
         self.assertPseudoEqual(computed_bindings, expected_bindings)
 
     def test_query_page_0(self):

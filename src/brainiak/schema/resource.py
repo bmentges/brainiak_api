@@ -50,8 +50,8 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     return schema
 
 
-QUERY_FILTER_TITLE = 'FILTER(langMatches(lang(?title), "%s")) .'
-QUERY_FILTER_COMMENT = 'FILTER(langMatches(lang(?comment), "%s")) .'
+QUERY_FILTER_TITLE = 'FILTER(langMatches(lang(?title), "%s") or langMatches(lang(?title), "")) .'
+QUERY_FILTER_COMMENT = 'FILTER(langMatches(lang(?comment), "%s") or langMatches(lang(?comment), "")) .'
 QUERY_CLASS_SCHEMA = """
 SELECT DISTINCT ?title ?comment
 FROM <%(graph_uri)s>
@@ -140,8 +140,7 @@ def query_cardinalities(query_params):
 
 
 def query_predicates(query_params):
-    resp = _query_predicate_with_lang(query_params)
-    tornado_response = resp
+    tornado_response = _query_predicate_with_lang(query_params)
 
     response = json.loads(tornado_response.body)
     if not response['results']['bindings']:
@@ -161,8 +160,8 @@ def _query_predicate_with_lang(query_params):
             ?predicate rdf:type ?type .
             OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
             FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
-            FILTER(langMatches(lang(?title), "%(lang)s")) .
-            FILTER(langMatches(lang(?predicate_comment), "%(lang)s")) .
+            FILTER(langMatches(lang(?title), "%(lang)s") or langMatches(lang(?title), "")) .
+            FILTER(langMatches(lang(?predicate_comment), "%(lang)s") or langMatches(lang(?predicate_comment), "")) .
             OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . FILTER(langMatches(lang(?label_do_range), "%(lang)s")) . } } .
             OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
         }""" % query_params

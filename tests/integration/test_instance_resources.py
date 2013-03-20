@@ -441,6 +441,12 @@ class InstancesQueryTestCase(QueryTestCase):
 
             },
             {
+                'href': "http://localhost:5100/ctx/klass/{resource_id}",
+                'method': "PUT",
+                'rel': "replace"
+
+            },
+            {
                 'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
                 'method': "GET",
                 'rel': "first"

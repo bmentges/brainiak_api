@@ -29,7 +29,7 @@ def get_next_page(page, last_page):
 
 
 def build_links(class_uri, page, per_page, request_uri, total_items, query_string):
-
+    page += 1  # user pagination begins with 1, virtuoso begins with 0
     last_page = get_last_page(total_items, per_page)
 
     links = [

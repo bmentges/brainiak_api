@@ -84,7 +84,7 @@ def query_all_properties_and_objects(context_name, class_name, instance_id):
 
 
 QUERY_COUNT_FILTER_INSTANCE = """
-DEFINE input:inference <http://semantica.globo.com/property_ruleset>
+DEFINE input:inference <http://semantica.globo.com/ruleset>
 SELECT DISTINCT count (distinct ?subject) as ?total
 WHERE {
     ?subject a <%(class_uri)s> ;
@@ -152,15 +152,16 @@ def query_filter_instances(query_params):
     return query_response
 
 
-def query_count_filter_intances(query_params):
+def query_count_filter_instances(query_params):
     query = QUERY_COUNT_FILTER_INSTANCE % query_params
     query_response = triplestore.query_sparql(query)
     return query_response
 
 
 def filter_instances(query_params):
+
     query_params = process_params(query_params)
-    query_response = query_count_filter_intances(query_params)
+    query_response = query_count_filter_instances(query_params)
 
     result_dict = json.loads(query_response.body)
     total_items = int(get_one_value(result_dict, 'total'))

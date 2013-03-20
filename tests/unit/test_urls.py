@@ -1,4 +1,4 @@
-from brainiak import urls
+from brainiak import handlers
 from unittest import TestCase
 
 from brainiak.handlers import SchemaHandler, VersionHandler, \
@@ -72,7 +72,7 @@ class RouteTestCase(TestCase):
         self.assertFalse(self._groups_match(match_pattern, expected_params))
 
     def _regex_for(self, klass):
-        return filter(lambda u: u.handler_class == klass, urls.get_routes())[0].regex
+        return filter(lambda u: u.handler_class == klass, handlers.get_routes())[0].regex
 
     def _groups_match(self, match, groups):
         if match is None or len(groups) == 0:

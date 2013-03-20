@@ -34,7 +34,7 @@ def filter_values(result_dict, key):
     return [item[key]['value'] for item in result_dict['results']['bindings'] if item.get(key)]
 
 
-def compress_keys_and_values(result_dict, keymap={"label": "title", "subject": "@id"}, ignore_keys=["total"], context=None):
+def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=None):
     """
     Return a list of compacted items of the 'bindings' list of a Virtuoso response dict.
 
@@ -43,6 +43,25 @@ def compress_keys_and_values(result_dict, keymap={"label": "title", "subject": "
     >>> result_dict = {'results': {'bindings': [{'key': {'type': 'some type', 'value': 'some value'}}, {'key': {'type': 'some type', 'value': 'another value'}}]}}
     >>> compress_keys_and_values(result_dict)
     [{'key': 'some value'}, {'key': 'another value'}]
+
+    Optional params:
+
+    - keymap = {'key': 'renamed_key'}: renames resulting dict 'key' by 'renamed_key'
+    - ignore_keys = ['key']: list of keys that shouldn't be returned
+    - context (instance of MemorizeContext): shortens URIs according to provided context
+
+    >>> compress_keys_and_values(result_dict, keymap={'key': 'renamed_key'})
+    [{'renamed_key': 'some value'}, {'renamed_key': 'another value'}]
+
+    >>> compress_keys_and_values(result_dict, ignore_keys=['key'])
+    []
+
+    >>> from brainiak.prefixes import MemorizeContext
+    >>> result_dict = {'results': {'bindings': [{'key': {'type': 'uri', 'value': 'http://xmlns.com/foaf/0.1/value'}}]}}
+    >>> context = MemorizeContext()
+    >>> compress_keys_and_values(result_dict, context=context)
+    [{'key': 'foaf:value'}]
+
     """
     result_list = []
     for item in result_dict['results']['bindings']:

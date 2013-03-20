@@ -3,7 +3,6 @@ from urllib import urlencode
 from urlparse import parse_qs
 
 
-# TODO: UNIT TEST
 def set_query_string_parameter(query_string, param_name, param_value):
     query_params = parse_qs(query_string)
     query_params[param_name] = [param_value]
@@ -22,7 +21,6 @@ def get_previous_page(page):
         return False
 
 
-# TODO: UNIT TEST
 def get_next_page(page, last_page):
     if page < last_page:
         return page + 1

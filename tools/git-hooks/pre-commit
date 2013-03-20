@@ -87,7 +87,6 @@ def main(all_files):
 
 
 if __name__ == '__main__':
-    print "Running pre-commit hook by @brunocarvalho and modified by @icaromedeiros"
     all_files = False
     if len(sys.argv) > 1 and sys.argv[1] == '--all-files':
         all_files = True

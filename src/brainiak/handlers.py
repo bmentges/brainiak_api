@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from tornado.web import HTTPError, RequestHandler
+from tornado.web import URLSpec
+
 import httplib
 import sys
 import traceback
@@ -10,6 +12,18 @@ from brainiak.schema.resource import get_schema
 from brainiak.instance.resource import filter_instances, get_instance
 from greenlet_tornado import greenlet_asynchronous
 from brainiak import log
+
+
+def get_routes():
+    return [
+        URLSpec(r'/healthcheck', HealthcheckHandler),
+        URLSpec(r'/version', VersionHandler),
+        URLSpec(r'/status/virtuoso', VirtuosoStatusHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema', SchemaHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)', InstanceHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)', InstanceListHandler),
+        URLSpec(r'/.*$', UnmatchedHandler),
+    ]
 
 
 class BrainiakRequestHandler(RequestHandler):
@@ -47,7 +61,7 @@ class BrainiakRequestHandler(RequestHandler):
             error_message += "\n{0}".format(kwargs.get("message"))
         if "exc_info" in kwargs:
             etype, value, tb = kwargs.get("exc_info")
-            exception_msg = ''.join(traceback.format_exception(etype, value, tb))
+            exception_msg = '\n'.join(traceback.format_exception(etype, value, tb))
             error_message += "\nException:\n{0}".format(exception_msg)
 
         error_json = {"error": error_message}
@@ -106,20 +120,23 @@ class SchemaHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name, class_name):
         query_params = {
+            "context_name": context_name,
+            "class_name": class_name,
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
             "lang": self.get_argument("lang", settings.DEFAULT_LANG)
         }
-        query_params = self.override_defaults_with_arguments(query_params)
+        self.query_params = self.override_defaults_with_arguments(query_params)
 
-        response = get_schema(query_params)
+        response = get_schema(self.query_params)
 
         self.finalize(response)
 
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            raise HTTPError(404, log_message="Class not found in the triplestore.")
+            msg = "Class ({class_name}) in graph ({context_name}) was not found."
+            raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
 
@@ -138,16 +155,17 @@ class InstanceHandler(BrainiakRequestHandler):
             "request": self.request,
             "lang": self.get_argument("lang", settings.DEFAULT_LANG)
         }
-        query_params = self.override_defaults_with_arguments(query_params)
+        self.query_params = self.override_defaults_with_arguments(query_params)
 
-        response = get_instance(query_params)
+        response = get_instance(self.query_params)
 
         self.finalize(response)
 
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            raise HTTPError(404, log_message="Instance not found in the triplestore.")
+            msg = "Instance ({instance_id}) of class ({class_name}) in graph ({context_name}) was not found."
+            raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
 
@@ -174,21 +192,49 @@ class InstanceListHandler(BrainiakRequestHandler):
             "p": "?predicate",
             "o": "?object"
         }
-
-        query_params = self.override_defaults_with_arguments(query_params)
-
+        self.query_params = self.override_defaults_with_arguments(query_params)
         # In order to keep up with Repos, pages numbering start at 1.
         # As for Virtuoso pages start at 0, we convert page, if provided
         if "page" in self.request.arguments:
-            query_params["page"] = str(int(query_params["page"]) - 1)
+            self.query_params["page"] = str(int(self.query_params["page"]) - 1)
 
-        response = filter_instances(query_params)
+        response = filter_instances(self.query_params)
 
         self.finalize(response)
 
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
-            raise HTTPError(404, log_message="There are no instances of this class in the triplestore.")
+            if "p" in self.query_params or "o" in self.query_params:
+                filter_message = " with filter predicate={p} object={o} ".format(**self.query_params)
+                self.query_params["filter_message"] = filter_message
+            msg = "Instances of class ({class_uri}) in graph ({graph_uri}) {filter_message} were not found."
+            raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
+
+
+class UnmatchedHandler(BrainiakRequestHandler):
+
+    def default_action(self):
+        raise HTTPError(404, log_message="The URL ({0}) is not recognized.".format(self.request.full_url()))
+
+    @greenlet_asynchronous
+    def get(self):
+        self.default_action()
+
+    @greenlet_asynchronous
+    def post(self):
+        self.default_action()
+
+    @greenlet_asynchronous
+    def put(self):
+        self.default_action()
+
+    @greenlet_asynchronous
+    def delete(self):
+        self.default_action()
+
+    @greenlet_asynchronous
+    def patch(self):
+        self.default_action()

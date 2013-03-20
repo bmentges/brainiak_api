@@ -32,3 +32,9 @@ tpedia:Echidna a tpedia:Species ;
                  rdfs:label "Equidna"@pt ;
                  tpedia:order tpedia:Monotremata ;
                  tpedia:livesIn tpedia:NewGuinea .
+
+tpedia:Teinolophos a tpedia:Species ;
+                     rdfs:label "Teinolophos trusleri" ;
+                     tpedia:order tpedia:Monotremata ;
+                     tpedia:livesIn tpedia:Australia ;
+                     tpedia:status tpedia:Extinct .

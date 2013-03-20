@@ -33,13 +33,19 @@ Interface examples
 
     GET 'http://localhost:5100'
 
-**List all schemas of a context**
+**List all collections of a context**
 
 .. code-block:: http
 
   GET 'http://localhost:5100/place'
 
-**Get a schema of a context**
+**List all instances of a collection**
+
+.. code-block:: http
+
+  GET 'http://localhost:5100/place/Country'
+
+**Get a schema of a collection**
 
 .. code-block:: http
 
@@ -49,7 +55,7 @@ Try it yourself: `Schema for Country`_
 
 .. _Schema for Country: ../place/Country/_schema
 
-**Get a instance**
+**Get a instance of a collection**
 
 .. code-block:: http
 

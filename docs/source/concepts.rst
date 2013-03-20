@@ -70,26 +70,26 @@ Therefore, in the response we have a ``links`` section like this:
 
 ::
 
-    {
-        "links": [
-            {
-                "href": "http://localhost:5100/person/Gender/Male",
-                "rel": "self"
-            },
-            {
+  {
+    "links": [
+      {
+        "href": "http://localhost:5100/person/Gender/Male",
+        "rel": "self"
+      },
+      {
 
-                "href": "http://localhost:5100/person/Gender/_schema",
-                "rel": "describedBy"
-            },
-            {
-                "href": "http://localhost:5100/person/Gender/Male",
-                "method": "PATCH",
-                "rel": "edit"
-            },
-            {
-                "href": "http://localhost:5100/person/Gender/Male",
-                "method": "DELETE",
-                "rel": "delete"
-            }
-        ]
-    }
+        "href": "http://localhost:5100/person/Gender/_schema",
+        "rel": "describedBy"
+      },
+      {
+        "href": "http://localhost:5100/person/Gender/Male",
+        "method": "PATCH",
+        "rel": "edit"
+      },
+      {
+        "href": "http://localhost:5100/person/Gender/Male",
+        "method": "DELETE",
+        "rel": "delete"
+      }
+    ]
+  }

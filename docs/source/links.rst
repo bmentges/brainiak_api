@@ -10,29 +10,29 @@ Therefore, in the response we have a ``links`` section like this:
 
 ::
 
-    {
-        "links": [
-            {
-                "href": "http://localhost:5100/person/Gender/Male",
-                "rel": "self"
-            },
-            {
+  {
+    "links": [
+      {
+        "href": "http://localhost:5100/person/Gender/Male",
+        "rel": "self"
+      },
+      {
 
-                "href": "http://localhost:5100/person/Gender/_schema",
-                "rel": "describedBy"
-            },
-            {
-                "href": "http://localhost:5100/person/Gender/Male",
-                "method": "PATCH",
-                "rel": "edit"
-            },
-            {
-                "href": "http://localhost:5100/person/Gender/Male",
-                "method": "DELETE",
-                "rel": "delete"
-            }
-        ]
-    }
+        "href": "http://localhost:5100/person/Gender/_schema",
+        "rel": "describedBy"
+      },
+      {
+        "href": "http://localhost:5100/person/Gender/Male",
+        "method": "PATCH",
+        "rel": "edit"
+      },
+      {
+        "href": "http://localhost:5100/person/Gender/Male",
+        "method": "DELETE",
+        "rel": "delete"
+      }
+    ]
+  }
 
 The possible link relations are (defined in the ``rel`` key):
 
@@ -125,11 +125,13 @@ This is useful to a resource that retrives possible values for that predicate
 in a class. For example, in a ``links`` section in a schema for Person:
 
 .. highlight:: json
-    {
 
-        "href": "http://localhost:5100/place/Country",
-        "rel": "upper:nationality"
-    }
+::
+
+  {
+    "href": "http://localhost:5100/place/Country",
+    "rel": "upper:nationality"
+  }
 
 This link states that Person has an attribute ``upper:nationality``
 and the possible values can be retrieved by using the resource

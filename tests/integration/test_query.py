@@ -68,3 +68,24 @@ class SubpropertyEntailmentQueryTestCase(QueryTestCase):
              u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/munich'}}
         ]
         self.assertEqual(sorted(response_bindings), sorted(expected_bindings))
+
+
+QUERY_LIST_GRAPHS = """
+SELECT DISTINCT ?graph
+WHERE {
+    GRAPH ?graph {?s ?p ?o}
+}
+"""
+
+
+class GraphQueryTestCase(QueryTestCase):
+    allow_triplestore_connection = True
+    graph_uri = "http://xubirupedia.org/"
+    fixtures = ["tests/sample/subproperty.n3"]
+
+    def test_list_graphs(self):
+        response_bindings = self.query(QUERY_LIST_GRAPHS)["results"]["bindings"]
+        expected_item = {
+            u'graph': {u'type': u'uri', u'value': u'http://xubirupedia.org/'}
+        }
+        self.assertIn(expected_item, response_bindings)

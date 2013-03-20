@@ -5,7 +5,7 @@ from mock import patch
 from brainiak import triplestore
 from brainiak.instance import resource
 from brainiak.instance.resource import filter_instances, process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
-from tests import TornadoAsyncHTTPTestCase, SpecialListTestCase
+from tests import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 
@@ -22,7 +22,7 @@ class MockResponse(object):
         self.body = json.dumps(body)
 
 
-class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, SpecialListTestCase):
+class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     maxDiff = None
 
@@ -40,7 +40,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, SpecialListTestCase):
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 3)
-        self.assertPseudoEqual(received_response['items'], expected_items)
+        self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
     def test_list_by_page(self):
         response = self.fetch('/person/Gender?page=1&per_page=2', method='GET')
@@ -58,7 +58,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, SpecialListTestCase):
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 1)
-        self.assertPseudoEqual(received_response['items'], expected_items)
+        self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
     def test_filter_with_predicate_as_uri(self):
         url = urllib.quote("http://www.w3.org/2000/01/rdf-schema#label")
@@ -70,7 +70,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, SpecialListTestCase):
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 3)
-        self.assertPseudoEqual(received_response['items'], expected_items)
+        self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
         url = urllib.quote("rdfs:label")
@@ -98,7 +98,7 @@ def build_json(bindings):
     }
 
 
-class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
+class InstancesQueryTestCase(QueryTestCase):
     allow_triplestore_connection = True
     fixtures = ["tests/sample/instances.n3"]
     graph_uri = "http://tatipedia.org/"
@@ -133,7 +133,7 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
                     'page': '0',
                     'per_page': '10'}
         computed = process_params(params)
-        self.assertEquals(expected, computed)
+        self.assertEqual(expected, computed)
 
     def test_count_query(self):
         params = {
@@ -236,7 +236,7 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
         expected = build_json(computed_bindings)
 
         self.assertEqual(len(computed_bindings), 2)
-        self.assertPseudoEqual(computed_bindings, expected_bindings)
+        self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 
     def test_instance_filter_query_by_object_represented_as_string(self):
         params = {
@@ -302,7 +302,7 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
         ]
 
         self.assertEqual(len(computed_bindings), 2)
-        self.assertPseudoEqual(computed_bindings, expected_bindings)
+        self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 
     def test_query_filter_instances_with_language_restriction_to_pt_and_any(self):
         params = {
@@ -334,7 +334,7 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
         ]
 
         self.assertEqual(len(computed_bindings), 3)
-        self.assertPseudoEqual(computed_bindings, expected_bindings)
+        self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 
     def test_query_page_0(self):
         params = {
@@ -388,7 +388,7 @@ class InstancesQueryTestCase(QueryTestCase, SpecialListTestCase):
                               u'label': {u'xml:lang': u'en', u'type': u'literal', u'value': u'New York'}}]
 
         self.assertEqual(len(computed_bindings), 2)
-        self.assertPseudoEqual(computed_bindings, expected_bindings)
+        self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 
     def test_filter_instances_result_is_empty(self):
         # mock

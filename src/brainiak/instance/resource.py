@@ -109,7 +109,7 @@ OFFSET %(page)s
 
 
 QUERY_FILTER_LABEL_BY_LANGUAGE = """
-    FILTER(langMatches(lang(?label), "%(lang)s")) .
+    FILTER(langMatches(lang(?label), "%(lang)s") or langMatches(lang(?label), "")) .
 """
 
 

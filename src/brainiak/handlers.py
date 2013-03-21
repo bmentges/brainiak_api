@@ -9,8 +9,8 @@ import traceback
 from brainiak import settings, triplestore
 from brainiak import __version__
 from brainiak.schema.resource import get_schema
-from brainiak.instance.resource import filter_instances, get_instance
-from brainiak.instance.delete_instance import delete_instance
+from brainiak.instance.get_resource import get_instance
+from brainiak.instance.list_resource import filter_instances
 from greenlet_tornado import greenlet_asynchronous
 from brainiak import log
 

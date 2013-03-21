@@ -3,7 +3,7 @@ from mock import patch as patch_mock
 
 from tornado.web import Application, HTTPError
 
-from brainiak.handlers import BrainiakRequestHandler, UnmatchedHandler
+from brainiak.handlers import BrainiakRequestHandler
 from tests import TornadoAsyncHTTPTestCase
 
 

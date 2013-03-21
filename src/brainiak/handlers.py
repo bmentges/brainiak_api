@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from tornado.web import HTTPError, RequestHandler
-from tornado.web import URLSpec
+from tornado.web import HTTPError, RequestHandler, URLSpec
+from tornado.httpclient import HTTPResponse
 
 import httplib
 import sys
@@ -11,7 +11,7 @@ from brainiak import __version__
 from brainiak.schema.resource import get_schema
 from brainiak.instance.get_resource import get_instance
 from brainiak.instance.list_resource import filter_instances
-from brainiak.instance.delete_instance import delete_instance
+from brainiak.instance.delete_resource import delete_instance
 from brainiak.prefixes import safe_slug_to_prefix
 from greenlet_tornado import greenlet_asynchronous
 from brainiak import log
@@ -175,7 +175,6 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def delete(self, context_name, class_name, instance_id):
-        # TODO graph_uri, instance_uri
         query_params = {
             "context_name": context_name,
             "class_name": class_name,
@@ -185,7 +184,12 @@ class InstanceHandler(BrainiakRequestHandler):
         }
         self.query_params = self.override_defaults_with_arguments(query_params)
 
-        response = delete_instance(self.query_params)
+        deleted = delete_instance(self.query_params)
+
+        if deleted:
+            response = 204
+        else:
+            response = None
 
         self.finalize(response)
 
@@ -194,8 +198,11 @@ class InstanceHandler(BrainiakRequestHandler):
         if response is None:
             msg = "Instance ({instance_id}) of class ({class_name}) in graph ({context_name}) was not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
-        else:
+        elif isinstance(response, dict):
             self.write(response)
+        elif isinstance(response, int):  # status code
+            self.set_status(response)
+            self.finish()
 
 
 class InstanceListHandler(BrainiakRequestHandler):

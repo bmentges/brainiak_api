@@ -191,7 +191,7 @@ class InstanceHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         elif isinstance(response, dict):
             self.write(response)
-        elif type(response, int):  # status code
+        elif isinstance(response, int):  # status code
             self.set_status(response)
             self.finish()
 

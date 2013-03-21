@@ -3,30 +3,10 @@ import urllib
 from mock import patch
 
 from brainiak import triplestore
-from brainiak.instance import resource
-from brainiak.instance.resource import filter_instances, process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
-from tests import TornadoAsyncHTTPTestCase
+from brainiak.instance import list_resource
+from brainiak.instance.list_resource import filter_instances, process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
+from tests import TornadoAsyncHTTPTestCase, MockRequest, MockResponse
 from tests.sparql import QueryTestCase
-
-
-class MockRequest(object):
-    headers = {'Host': 'localhost:5100'}
-
-    def __init__(self, query_string="", instance=""):
-        self.query = query_string
-        self.uri = "http://%s/ctx/klass" % self.headers['Host']
-        if instance:
-            self.uri = "%s/%s" % (self.uri, instance)
-        if query_string:
-            self.uri = "%s?%s" % (self.uri, query_string)
-
-    def full_url(self):
-        return self.uri
-
-
-class MockResponse(object):
-    def __init__(self, body):
-        self.body = json.dumps(body)
 
 
 class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
@@ -105,7 +85,7 @@ def build_json(bindings):
     }
 
 
-class InstancesQueryTestCase(QueryTestCase):
+class FilterInstancesQueryTestCase(QueryTestCase):
     allow_triplestore_connection = True
     fixtures = ["tests/sample/instances.n3"]
     graph_uri = "http://tatipedia.org/"
@@ -113,13 +93,13 @@ class InstancesQueryTestCase(QueryTestCase):
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql
         triplestore.query_sparql = lambda query: query
-        self.original_query_filter_instances = resource.query_filter_instances
-        self.original_query_count_filter_instances = resource.query_count_filter_instances
+        self.original_query_filter_instances = list_resource.query_filter_instances
+        self.original_query_count_filter_instances = list_resource.query_count_filter_instances
 
     def tearDown(self):
         triplestore.query_sparql = self.original_query_sparql
-        resource.query_filter_instances = self.original_query_filter_instances
-        resource.query_count_filter_instances = self.original_query_count_filter_instances
+        list_resource.query_filter_instances = self.original_query_filter_instances
+        list_resource.query_count_filter_instances = self.original_query_count_filter_instances
 
     def test_process_params(self):
         params = {
@@ -399,20 +379,20 @@ class InstancesQueryTestCase(QueryTestCase):
 
     def test_filter_instances_result_is_empty(self):
         # mock
-        resource.query_filter_instances = lambda params: MockResponse({"results": {"bindings": []}})
-        resource.query_count_filter_instances = lambda params: MockResponse({"results": {"bindings": []}})
+        list_resource.query_filter_instances = lambda params: MockResponse({"results": {"bindings": []}})
+        list_resource.query_count_filter_instances = lambda params: MockResponse({"results": {"bindings": []}})
 
         params = {"o": "", "p": "", "class_uri": ""}
-        response = resource.filter_instances(params)
+        response = list_resource.filter_instances(params)
         self.assertEquals(response, None)
 
     def test_filter_instances_result_is_not_empty(self):
         query_string = "page=2&per_page=3"  # page based on API (begins with 1)
         sample_json = {"results": {"bindings": []}}
         count_json = {"results": {"bindings": [{"total": {"value": "12"}}]}}
-        resource.query_filter_instances = lambda params: MockResponse(sample_json)
-        resource.query_count_filter_instances = lambda params: MockResponse(count_json)
-        response = resource.filter_instances({"context_name": "ctx",
+        list_resource.query_filter_instances = lambda params: MockResponse(sample_json)
+        list_resource.query_count_filter_instances = lambda params: MockResponse(count_json)
+        response = list_resource.filter_instances({"context_name": "ctx",
                                               "class_name": "klass",
                                               "request": MockRequest(query_string),
                                               "per_page": "3",
@@ -476,52 +456,3 @@ class InstancesQueryTestCase(QueryTestCase):
         ]
         self.assertEquals(response["item_count"], 12)
         self.assertEquals(response["links"], expected_links)
-
-    def test_assemble_instance_json_links(self):
-        query_params = {'request': MockRequest(instance="instance"), 'context_name': 'ctx', 'class_name': 'klass'}
-        query_result_dict = {'results': {'bindings': []}}
-        resource.build_items_dict = lambda context, bindings: {}
-        computed = resource.assemble_instance_json(query_params, query_result_dict)
-        expected_links = [
-            {'rel': 'self', 'href': 'http://localhost:5100/ctx/klass/instance'},
-            {'rel': 'describedBy', 'href': 'http://localhost:5100/ctx/klass/_schema'},
-            {'rel': 'edit', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'PATCH'},
-            {'rel': 'delete', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'PUT'}
-        ]
-
-        self.assertEqual(computed["@id"], "http://localhost:5100/ctx/klass/instance")
-        self.assertEqual(computed["@type"], "ctx:klass")
-        self.assertEqual(computed["@context"], {})
-        self.assertEqual(computed["$schema"], 'http://localhost:5100/ctx/klass/_schema')
-        self.assertEqual(computed["links"], expected_links)
-
-    def test_assemble_instance_json_links_with_context(self):
-
-        class InnerContextMock():
-            pass
-
-        class ContextMock():
-            context = InnerContextMock()
-            object_properties = {"person": "person:Person"}
-
-        context = ContextMock()
-        query_params = {'request': MockRequest(instance="instance"), 'context_name': 'ctx', 'class_name': 'klass'}
-        query_result_dict = {'results': {'bindings': []}}
-        resource.build_items_dict = lambda context, bindings: {}
-
-        computed = resource.assemble_instance_json(query_params, query_result_dict, context)
-        expected_links = [
-            {'rel': 'self', 'href': 'http://localhost:5100/ctx/klass/instance'},
-            {'rel': 'describedBy', 'href': 'http://localhost:5100/ctx/klass/_schema'},
-            {'rel': 'edit', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'PATCH'},
-            {'rel': 'delete', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'PUT'},
-            {'rel': 'person', 'href': '/person/Person'}
-        ]
-
-        self.assertEqual(computed["@id"], "http://localhost:5100/ctx/klass/instance")
-        self.assertEqual(computed["@type"], "ctx:klass")
-        self.assertIsInstance(computed["@context"], InnerContextMock)
-        self.assertEqual(computed["$schema"], 'http://localhost:5100/ctx/klass/_schema')
-        self.assertEqual(sorted(computed["links"]), sorted(expected_links))

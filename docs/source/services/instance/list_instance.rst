@@ -42,14 +42,6 @@ If instances with the specified filter exist, the response body is a JSON with a
 
 .. include :: examples/get_instance_200.rst
 
-Status 404
-__________
-
-If there is no instances matching the filter, the response is a 404 with a JSON
-informing the error
-
-.. include :: examples/get_instance_404.rst
-
 Status 400
 __________
 
@@ -57,3 +49,11 @@ If there are unknown parameters in the request, the response is a 400
 with a JSON informing the wrong parameters and the accepted ones.
 
 .. include :: examples/get_instance_400.rst
+
+Status 404
+__________
+
+If there is no instances matching the filter, the response is a 404 with a JSON
+informing the error
+
+.. include :: examples/get_instance_404.rst

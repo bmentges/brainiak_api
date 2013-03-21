@@ -48,7 +48,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_with_invalid_params(self, log):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
-        self.assertEqual(response.body, '{"error": "HTTP error: 400\\nArgument hello passed is not supported"}')
+        self.assertEqual(response.body, '{"error": "HTTP error: 400\\nArgument hello is not supported"}')
 
     # TODO: We should test with old models as well.
     # However, we need to isolate ontologies snippets from upper and from base

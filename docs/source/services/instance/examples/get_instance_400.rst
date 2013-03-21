@@ -4,5 +4,5 @@
 
     {
 
-        "error": "HTTP error: 400\nArgument wrong_param passed is not supported"
+        "error": "HTTP error: 400\nArgument wrong_param is not supported"
     }

@@ -1,4 +1,5 @@
 # coding: utf-8
+import re
 
 
 def get_one_value(result_dict, key):
@@ -81,3 +82,35 @@ def is_result_empty(result_dict):
     Return True if result_dict['results']['bindings'] has no items, False otherwise.
     """
     return not result_dict['results']['bindings']
+
+
+def some_triples_deleted(result_dict, graph_uri):
+    """
+    Return True if result_dict['results']['bindings'][0]['callret-0']['value'] has a message like
+    "Delete from <a>, 1 (or less) triples -- done"
+
+    If the message is like "Delete from <a>, 0 triples -- nothing to do" False is returned
+
+    If no patterns matched, raise an Exception, probably Virtuoso message changed
+
+    >>> result_dict = { "head": { "link": [], "vars": ["callret-0"] }, "results": { "distinct": false, "ordered": true, "bindings": [{ "callret-0": { "type": "literal", "value": "Delete from <a>, 1 (or less) triples -- done" }} ] } }
+    >>> zero_triples_deleted(result_dict)
+    >>> True
+
+    """
+    try:
+        query_result_message = result_dict['results']['bindings'][0]['callret-0']['value']
+    except:
+        raise UnexpectedResultException("Unknown result format: " + str(result_dict))
+    delete_successful_message = "Delete from <%s>, ([0-9]*) \(or less\) triples -- done" % graph_uri
+    not_found_message = "Delete from <%s>, 0 triples -- nothing to do" % graph_uri
+
+    if re.search(delete_successful_message, query_result_message):
+        return True
+    elif re.search(not_found_message, query_result_message):
+        return False
+    else:
+        raise UnexpectedResultException("Unknown result format: " + str(result_dict))
+
+class UnexpectedResultException(Exception):
+    pass

@@ -11,11 +11,6 @@ from brainiak.schema.resource import _extract_cardinalities
 from tests import TornadoAsyncTestCase
 
 
-class MockResponse(object):
-    def __init__(self, body):
-        self.body = json.dumps(body)
-
-
 class GetSchemaTestCase(TornadoAsyncTestCase):
     def setUp(self):
         super(TornadoAsyncTestCase, self).setUp()

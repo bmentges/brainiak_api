@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 
 from brainiak.prefixes import MemorizeContext, shorten_uri, prefix_from_uri
 from brainiak.utils.sparql import get_one_value
@@ -12,8 +11,7 @@ def get_schema(query_params):
     context = MemorizeContext()
     short_uri = context.shorten_uri(query_params["class_uri"])
 
-    tornado_response = query_class_schema(query_params)
-    class_schema = json.loads(tornado_response.body)
+    class_schema = query_class_schema(query_params)
     if not class_schema["results"]["bindings"]:
         return
 
@@ -82,12 +80,10 @@ def query_class_schema(query_params):
 
 
 def get_predicates_and_cardinalities(context, query_params):
-    tornado_response = query_cardinalities(query_params)
-    query_result = json.loads(tornado_response.body)
+    query_result = query_cardinalities(query_params)
     cardinalities = _extract_cardinalities(query_result['results']['bindings'])
 
-    tornado_response = query_predicates(query_params)
-    predicates = json.loads(tornado_response.body)
+    predicates = query_predicates(query_params)
 
     return convert_bindings_dict(context, predicates['results']['bindings'], cardinalities)
 
@@ -140,13 +136,12 @@ def query_cardinalities(query_params):
 
 
 def query_predicates(query_params):
-    tornado_response = _query_predicate_with_lang(query_params)
+    response = _query_predicate_with_lang(query_params)
 
-    response = json.loads(tornado_response.body)
     if not response['results']['bindings']:
         return _query_predicate_without_lang(query_params)
     else:
-        return tornado_response
+        return response
 
 
 def _query_predicate_with_lang(query_params):

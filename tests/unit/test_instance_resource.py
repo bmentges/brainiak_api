@@ -4,7 +4,7 @@ import unittest
 from mock import Mock
 
 from brainiak.instance import get_resource
-from tests import MockRequest, MockResponse
+from tests import MockRequest
 
 
 class TestCaseInstanceResource(unittest.TestCase):

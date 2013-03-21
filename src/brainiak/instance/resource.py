@@ -34,8 +34,9 @@ def build_items_dict(context, bindings):
     return items_dict
 
 
-def assemble_instance_json(query_params, query_result_dict):
-    context = MemorizeContext()
+def assemble_instance_json(query_params, query_result_dict, context=None):
+    if context is None:
+        context = MemorizeContext()
     request = query_params['request']
     base_url = request.headers.get("Host")
     items = build_items_dict(context, query_result_dict['results']['bindings'])

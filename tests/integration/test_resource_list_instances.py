@@ -5,7 +5,7 @@ from mock import patch
 from brainiak import triplestore
 from brainiak.instance import list_resource
 from brainiak.instance.list_resource import filter_instances, process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
-from tests import TornadoAsyncHTTPTestCase, MockRequest, MockResponse
+from tests import TornadoAsyncHTTPTestCase, MockRequest
 from tests.sparql import QueryTestCase
 
 

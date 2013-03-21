@@ -12,6 +12,7 @@ from brainiak.schema.resource import get_schema
 from brainiak.instance.get_resource import get_instance
 from brainiak.instance.list_resource import filter_instances
 from brainiak.instance.delete_instance import delete_instance
+from brainiak.prefixes import safe_slug_to_prefix
 from greenlet_tornado import greenlet_asynchronous
 from brainiak import log
 
@@ -156,12 +157,20 @@ class InstanceHandler(BrainiakRequestHandler):
             "class_name": class_name,
             "instance_id": instance_id,
             "request": self.request,
-            "lang": self.get_argument("lang", settings.DEFAULT_LANG)
+            "lang": settings.DEFAULT_LANG,
+            "instance_prefix": "",
+            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
         }
-        self.query_params = self.override_defaults_with_arguments(query_params)
 
-        response = get_instance(self.query_params)
+        query_params = self.override_defaults_with_arguments(query_params)
 
+        if query_params.get("instance_prefix"):
+            prefix = safe_slug_to_prefix(query_params["instance_prefix"])
+            query_params["instance_uri"] = "%s%s" % (prefix, query_params["instance_id"])
+
+        response = get_instance(query_params)
+
+        self.query_params = query_params
         self.finalize(response)
 
     @greenlet_asynchronous

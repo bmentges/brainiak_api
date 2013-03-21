@@ -112,5 +112,6 @@ def some_triples_deleted(result_dict, graph_uri):
     else:
         raise UnexpectedResultException("Unknown result format: " + str(result_dict))
 
+
 class UnexpectedResultException(Exception):
     pass

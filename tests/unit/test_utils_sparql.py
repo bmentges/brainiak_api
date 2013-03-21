@@ -1,7 +1,7 @@
 import unittest
 
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value, filter_values, is_result_empty, \
-        some_triples_deleted, UnexpectedResultException
+    some_triples_deleted, UnexpectedResultException
 from brainiak.prefixes import MemorizeContext
 
 
@@ -133,7 +133,6 @@ class SomeTriplesDeletedTestCase(unittest.TestCase):
     def test_deleted_triples(self):
         result_dict = {"head": {"link": [], "vars": ["callret-0"]}, "results": {"distinct": False, "ordered": True, "bindings": [{"callret-0": {"type": "literal", "value": "Delete from <a>, 1 (or less) triples -- done"}}]}}
         self.assertTrue(some_triples_deleted(result_dict, "a"))
-
 
     def test_not_deleted_triples(self):
         result_dict = {"head": {"link": [], "vars": ["callret-0"]}, "results": {"distinct": False, "ordered": True, "bindings": [{"callret-0": {"type": "literal", "value": "Delete from <a>, 0 triples -- nothing to do"}}]}}

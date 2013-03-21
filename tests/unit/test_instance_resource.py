@@ -1,7 +1,58 @@
+# -*- coding: utf-8 -*-
+import json
 import unittest
+from mock import Mock
 
 from brainiak.instance import get_resource
 from tests import MockRequest
+
+
+class TestCaseInstanceResource(unittest.TestCase):
+    def setUp(self):
+        self.original_query_all_properties_and_objects = get_resource.query_all_properties_and_objects
+        self.original_assemble_instance_json = get_resource.assemble_instance_json
+
+    def tearDown(self):
+        get_resource.query_all_properties_and_objects = self.original_query_all_properties_and_objects
+        get_resource.assemble_instance_json = self.original_assemble_instance_json
+
+    def test_get_instance_with_result(self):
+        db_response = {"results": {"bindings": ["not_empty"]}}
+
+        def mock_query_all_properties_and_objects(context_name, class_name, instance_id):
+            return db_response
+        get_resource.query_all_properties_and_objects = mock_query_all_properties_and_objects
+
+        mock_assemble_instance_json = Mock(return_value="ok")
+        get_resource.assemble_instance_json = mock_assemble_instance_json
+        query_params = {'request': MockRequest(instance="instance"),
+                        'context_name': 'place',
+                        'class_name': 'Country',
+                        'instance_id': 'Brazil'}
+
+        response = get_resource.get_instance(query_params)
+
+        self.assertEqual(response, "ok")
+        self.assertTrue(mock_assemble_instance_json.called)
+
+    def test_get_instance_without_result(self):
+        db_response = {"results": {"bindings": []}}
+
+        def mock_query_all_properties_and_objects(context_name, class_name, instance_id):
+            return db_response
+        get_resource.query_all_properties_and_objects = mock_query_all_properties_and_objects
+
+        mock_assemble_instance_json = Mock(return_value="ok")
+        get_resource.assemble_instance_json = mock_assemble_instance_json
+        query_params = {'request': MockRequest(instance="instance"),
+                        'context_name': 'place',
+                        'class_name': 'Country',
+                        'instance_id': 'Brazil'}
+
+        response = get_resource.get_instance(query_params)
+
+        self.assertEqual(response, None)
+        self.assertFalse(mock_assemble_instance_json.called)
 
 
 class AssembleTestCase(unittest.TestCase):

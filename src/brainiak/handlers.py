@@ -11,6 +11,7 @@ from brainiak import __version__
 from brainiak.schema.resource import get_schema
 from brainiak.instance.get_resource import get_instance
 from brainiak.instance.list_resource import filter_instances
+from brainiak.instance.delete_instance import delete_instance
 from greenlet_tornado import greenlet_asynchronous
 from brainiak import log
 
@@ -73,13 +74,13 @@ class BrainiakRequestHandler(RequestHandler):
         for (query_param, default_value) in immutable_params.items():
             overriden_params[query_param] = self.get_argument(query_param, default_value)
 
-        if overriden_params["lang"] == "undefined":
+        if overriden_params.get("lang", None) == "undefined":
             overriden_params["lang"] = False
 
         query_params_supported = set(overriden_params.keys())
         for arg in self.request.arguments:
             if arg not in query_params_supported:
-                raise HTTPError(400, log_message="Argument {0} passed is not supported".format(arg))
+                raise HTTPError(400, log_message="Argument {0} is not supported".format(arg))
 
         return overriden_params
 
@@ -149,6 +150,7 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
+        # TODO refactor graph_uri, class_uri, instance_uri
         query_params = {
             "context_name": context_name,
             "class_name": class_name,
@@ -159,6 +161,22 @@ class InstanceHandler(BrainiakRequestHandler):
         self.query_params = self.override_defaults_with_arguments(query_params)
 
         response = get_instance(self.query_params)
+
+        self.finalize(response)
+
+    @greenlet_asynchronous
+    def delete(self, context_name, class_name, instance_id):
+        # TODO graph_uri, instance_uri
+        query_params = {
+            "context_name": context_name,
+            "class_name": class_name,
+            "instance_id": instance_id,
+            "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
+            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
+        }
+        self.query_params = self.override_defaults_with_arguments(query_params)
+
+        response = delete_instance(self.query_params)
 
         self.finalize(response)
 

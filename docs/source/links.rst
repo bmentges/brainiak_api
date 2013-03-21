@@ -114,6 +114,11 @@ next
 
 Refers to the next item in a list (e.g. the next page)
 
+previous
+--------
+
+Refers to the previous item in a list (e.g. the previous page)
+
 Ontology relations links
 ----
 

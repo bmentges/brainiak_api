@@ -1,5 +1,3 @@
-import json
-
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri
 from brainiak.utils.links import build_links
@@ -84,16 +82,14 @@ def query_count_filter_instances(query_params):
 def filter_instances(query_params):
 
     query_params = process_params(query_params)
-    query_response = query_count_filter_instances(query_params)
+    result_dict = query_count_filter_instances(query_params)
 
-    result_dict = json.loads(query_response.body)
     total_items = int(get_one_value(result_dict, 'total'))
 
     if not total_items:
         return None
 
-    query_response = query_filter_instances(query_params)
-    result_dict = json.loads(query_response.body)
+    result_dict = query_filter_instances(query_params)
     items_list = compress_keys_and_values(result_dict, keymap={"label": "title", "subject": "@id"}, ignore_keys=["total"])
     return build_json(items_list, total_items, query_params)
 

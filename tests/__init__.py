@@ -42,8 +42,3 @@ class MockRequest(object):
 
     def full_url(self):
         return self.uri
-
-
-class MockResponse(object):
-    def __init__(self, body):
-        self.body = json.dumps(body)

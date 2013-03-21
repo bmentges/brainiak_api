@@ -1,4 +1,7 @@
-from brainiak.instance.delete_instance import query_delete, query_dependants
+from tornado.web import HTTPError
+
+from brainiak.instance.delete_resource import query_delete, query_dependants, \
+    delete_instance
 from brainiak import triplestore
 from tests.sparql import QueryTestCase
 
@@ -27,12 +30,12 @@ class DeleteQueriesTestCase(QueryTestCase):
 
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql
+        triplestore.query_sparql = lambda query: self.query(query)
 
     def tearDown(self):
         triplestore.query_sparql = self.original_query_sparql
 
     def test_dependants_query(self):
-        triplestore.query_sparql = lambda query: self.query(query)
         response_bindings = query_dependants("http://tatipedia.org/Australia")
         expected_binding = EXPECTED_DEPENDANTS_JSON
 
@@ -41,9 +44,29 @@ class DeleteQueriesTestCase(QueryTestCase):
             self.assertIn(item, response_bindings)
 
     def test_delete_query(self):
-        triplestore.query_sparql = lambda query: self.query(query)
         response = query_delete(self.graph_uri, "http://tatipedia.org/Platypus")
         expected = EXPECTED_DELETE_JSON
 
         self.assertEqual(len(response), len(expected))
         self.assertEqual(response, expected)
+
+    def test_delete_instance_with_dependendants(self):
+        query_params = {
+            "graph_uri": "http://graph.sample",
+            "instance_uri": "http://tatipedia.org/Australia"
+        }
+        self.assertRaises(HTTPError, delete_instance, query_params)
+
+    def test_delete_instance_successful(self):
+        query_params = {
+            "graph_uri": "http://graph.sample",
+            "instance_uri": "http://tatipedia.org/Platypus"
+        }
+        self.assertTrue(delete_instance(query_params))
+
+    def test_delete_instance_unsuccessful(self):
+        query_params = {
+            "graph_uri": "http://graph.sample",
+            "instance_uri": "http://tatipedia.org/NonExistentURI"
+        }
+        self.assertFalse(delete_instance(query_params))

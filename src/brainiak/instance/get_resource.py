@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
-
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri, MemorizeContext
 from brainiak.utils.sparql import is_result_empty
@@ -12,10 +10,9 @@ def get_instance(query_params):
     Given a URI, verify that the type corresponds to the class being passed as a parameter
     Retrieve all properties and objects of this URI (subject)
     """
-    query_response = query_all_properties_and_objects(query_params['context_name'],
+    query_result_dict = query_all_properties_and_objects(query_params['context_name'],
                                                       query_params['class_name'],
                                                       query_params['instance_id'])
-    query_result_dict = json.loads(query_response.body)
 
     if is_result_empty(query_result_dict):
         return None

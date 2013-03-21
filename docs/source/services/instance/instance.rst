@@ -11,3 +11,4 @@ Here we list the available services for managing them.
 
    get_instance.rst
    list_instance.rst
+   delete_instance.rst

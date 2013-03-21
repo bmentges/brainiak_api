@@ -41,7 +41,7 @@ def assemble_instance_json(query_params, query_result_dict):
     items = build_items_dict(context, query_result_dict['results']['bindings'])
     links = [{"rel": property_name,
              "href": "/{0}/{1}".format(*(uri.split(':')))}
-              for property_name, uri in context.object_properties.items()]
+             for property_name, uri in context.object_properties.items()]
 
     self_url = request.full_url()
     schema_url = "http://{0}/{1}/{2}/_schema".format(base_url, query_params['context_name'], query_params['class_name'])

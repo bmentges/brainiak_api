@@ -28,7 +28,8 @@ class TestCaseInstanceResource(unittest.TestCase):
         query_params = {'request': MockRequest(instance="instance"),
                         'context_name': 'place',
                         'class_name': 'Country',
-                        'instance_id': 'Brazil'}
+                        'instance_id': 'Brazil',
+                        'instance_uri': 'http://semantica.globo.com/place/Country/Brazil'}
 
         response = get_resource.get_instance(query_params)
 
@@ -47,7 +48,8 @@ class TestCaseInstanceResource(unittest.TestCase):
         query_params = {'request': MockRequest(instance="instance"),
                         'context_name': 'place',
                         'class_name': 'Country',
-                        'instance_id': 'Brazil'}
+                        'instance_id': 'Brazil',
+                        'instance_uri': 'http://semantica.globo.com/place/Country/Brazil'}
 
         response = get_resource.get_instance(query_params)
 

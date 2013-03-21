@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri, MemorizeContext
@@ -13,10 +12,9 @@ def get_instance(query_params):
     Given a URI, verify that the type corresponds to the class being passed as a parameter
     Retrieve all properties and objects of this URI (subject)
     """
-    query_response = query_all_properties_and_objects(query_params['context_name'],
+    query_result_dict = query_all_properties_and_objects(query_params['context_name'],
                                                       query_params['class_name'],
                                                       query_params['instance_id'])
-    query_result_dict = json.loads(query_response.body)
 
     if is_result_empty(query_result_dict):
         return None
@@ -162,16 +160,14 @@ def query_count_filter_instances(query_params):
 def filter_instances(query_params):
 
     query_params = process_params(query_params)
-    query_response = query_count_filter_instances(query_params)
+    result_dict = query_count_filter_instances(query_params)
 
-    result_dict = json.loads(query_response.body)
     total_items = int(get_one_value(result_dict, 'total'))
 
     if not total_items:
         return None
 
-    query_response = query_filter_instances(query_params)
-    result_dict = json.loads(query_response.body)
+    result_dict = query_filter_instances(query_params)
     items_list = compress_keys_and_values(result_dict, keymap={"label": "title", "subject": "@id"}, ignore_keys=["total"])
     return build_json(items_list, total_items, query_params)
 

@@ -392,8 +392,8 @@ class InstancesQueryTestCase(QueryTestCase):
 
     def test_filter_instances_result_is_empty(self):
         # mock
-        resource.query_filter_instances = lambda params: MockResponse({"results": {"bindings": []}})
-        resource.query_count_filter_instances = lambda params: MockResponse({"results": {"bindings": []}})
+        resource.query_filter_instances = lambda params: {"results": {"bindings": []}}
+        resource.query_count_filter_instances = lambda params: {"results": {"bindings": []}}
 
         params = {"o": "", "p": "", "class_uri": ""}
         response = resource.filter_instances(params)
@@ -403,8 +403,8 @@ class InstancesQueryTestCase(QueryTestCase):
         query_string = "page=2&per_page=3"  # page based on API (begins with 1)
         sample_json = {"results": {"bindings": []}}
         count_json = {"results": {"bindings": [{"total": {"value": "12"}}]}}
-        resource.query_filter_instances = lambda params: MockResponse(sample_json)
-        resource.query_count_filter_instances = lambda params: MockResponse(count_json)
+        resource.query_filter_instances = lambda params: sample_json
+        resource.query_count_filter_instances = lambda params: count_json
         response = resource.filter_instances({"context_name": "ctx",
                                               "class_name": "klass",
                                               "request": MockRequest(query_string),

@@ -1,5 +1,6 @@
 import md5
 import urllib
+import json
 
 import SPARQLWrapper
 from tornado.httpclient import HTTPRequest
@@ -18,7 +19,9 @@ def query_sparql(query, *args, **kw):
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
     connection = VirtuosoConnection()
-    return connection.query(query, *args, **kw)
+    query_response = connection.query(query, *args, **kw)
+    result_dict = json.loads(query_response.body)
+    return result_dict
 
 
 SPARQL_RESULTS_FORMAT = {

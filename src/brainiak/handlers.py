@@ -11,7 +11,7 @@ from brainiak import __version__
 from brainiak.schema.resource import get_schema
 from brainiak.instance.get_resource import get_instance
 from brainiak.instance.list_resource import filter_instances
-from brainiak.instance.delete_instance import delete_instance
+from brainiak.instance.delete_resource import delete_instance
 from greenlet_tornado import greenlet_asynchronous
 from brainiak import log
 

@@ -6,16 +6,6 @@ from mock import Mock
 from brainiak.instance import get_resource
 from tests import MockRequest, MockResponse
 
-#         {"p": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
-#          "o": {"type": "uri", "value": "http://semantica.globo.com/place/Country"}},
-#         {"p": {"type": "uri", "value": "http://www.w3.org/2000/01/rdf-schema#label"},
-#          "o": {"type": "literal", "xml:lang": "en", "value": "Brazil"}},
-#         {"p": {"type": "uri", "value": "http://www.w3.org/2000/01/rdf-schema#label"},
-#          "o": {"type": "literal", "xml:lang": "pt", "value": "Brasil"}},
-#         {"p": {"type": "uri", "value": "http://www.w3.org/2000/01/rdf-schema#comment"},
-#          "o": {"type": "literal", "xml:lang": "pt", "value": "Representa o pa\u00EDs Brasil."}}]}
-# })
-
 
 class TestCaseInstanceResource(unittest.TestCase):
     def setUp(self):
@@ -27,7 +17,7 @@ class TestCaseInstanceResource(unittest.TestCase):
         get_resource.assemble_instance_json = self.original_assemble_instance_json
 
     def test_get_instance_with_result(self):
-        db_response = MockResponse({"results": {"bindings": ["not_empty"]}})
+        db_response = {"results": {"bindings": ["not_empty"]}}
 
         def mock_query_all_properties_and_objects(context_name, class_name, instance_id):
             return db_response
@@ -46,7 +36,7 @@ class TestCaseInstanceResource(unittest.TestCase):
         self.assertTrue(mock_assemble_instance_json.called)
 
     def test_get_instance_without_result(self):
-        db_response = MockResponse({"results": {"bindings": []}})
+        db_response = {"results": {"bindings": []}}
 
         def mock_query_all_properties_and_objects(context_name, class_name, instance_id):
             return db_response

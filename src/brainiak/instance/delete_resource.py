@@ -18,8 +18,6 @@ def delete_instance(query_params):
 
     if some_triples_deleted(query_result_dict, graph_uri):
         return True
-    else:
-        return False
 
 
 QUERY_DEPENDANTS_TEMPLATE = """

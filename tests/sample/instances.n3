@@ -1,48 +1,53 @@
-@prefix tpedia: <http://tatipedia.org/> .
+@prefix tpedia: <http://tatipedia.org/test/> .
+@prefix place: <http://tatipedia.org/test/Place/> .
+@prefix person: <http://tatipedia.org/test/Person/> .
+@prefix species: <http://tatipedia.org/test/Species/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-tpedia:Place a owl:Class .
+place:Place a owl:Class .
 
-tpedia:Person a owl:Class .
+person:Person a owl:Class .
 
-tpedia:john a tpedia:Person ;
+species:Species a owl:Class .
+
+person:john a tpedia:Person ;
             rdfs:label "John Jones" ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:likes "Aikido" .
 
-tpedia:mary a tpedia:Person ;
+person:mary a tpedia:Person ;
             rdfs:label "Mary Land" ;
             tpedia:likes tpedia:Capoeira ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:dislikes tpedia:BungeeJump .
 
-tpedia:new_york a tpedia:Place ;
+place:new_york a tpedia:Place ;
                 rdfs:label "Nova Iorque"@pt ;
                 rdfs:label "New York"@en ;
                 tpedia:speak "Ingles"@pt .
 
-tpedia:london a tpedia:Place ;
+place:london a tpedia:Place ;
               rdfs:label "Londres"@pt ;
               rdfs:label "London"@en ;
               tpedia:speak "Ingles"@pt .
 
-tpedia:Australia a tpedia:Place ;
+place:Australia a tpedia:Place ;
                  rdfs:label "Austrália"@pt ;
                  tpedia:speak "Inglês"@pt .
 
-tpedia:Platypus a tpedia:Species ;
+species:Platypus a tpedia:Species ;
                 rdfs:label "Ornitorrinco"@pt ;
                 tpedia:order tpedia:Monotremata ;
-                tpedia:livesIn tpedia:Australia .
+                tpedia:livesIn place:Australia .
 
-tpedia:Echidna a tpedia:Species ;
+species:Echidna a tpedia:Species ;
                rdfs:label "Equidna"@pt ;
                tpedia:order tpedia:Monotremata ;
                tpedia:livesIn tpedia:NewGuinea .
 
-tpedia:Teinolophos a tpedia:Species ;
+species:Teinolophos a tpedia:Species ;
                    rdfs:label "Teinolophos trusleri" ;
                    tpedia:order tpedia:Monotremata ;
-                   tpedia:livesIn tpedia:Australia ;
+                   tpedia:livesIn place:Australia ;
                    tpedia:status tpedia:Extinct .

@@ -1,5 +1,3 @@
-import json
-
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri
 from brainiak.utils.links import build_links

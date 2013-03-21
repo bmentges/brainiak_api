@@ -3,23 +3,10 @@ import urllib
 from mock import patch
 
 from brainiak import triplestore
-from brainiak.instance import resource
-from brainiak.instance.resource import filter_instances, process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
-from tests import TornadoAsyncHTTPTestCase
+from brainiak.instance import list_resource
+from brainiak.instance.list_resource import filter_instances, process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
+from tests import TornadoAsyncHTTPTestCase, MockRequest, MockResponse
 from tests.sparql import QueryTestCase
-
-
-class MockRequest(object):
-    headers = {'Host': 'localhost:5100'}
-
-    def __init__(self, query_string):
-        self.query = query_string
-        self.uri = "http://%s/ctx/klass?%s" % (self.headers['Host'], query_string)
-
-
-class MockResponse(object):
-    def __init__(self, body):
-        self.body = json.dumps(body)
 
 
 class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
@@ -98,7 +85,7 @@ def build_json(bindings):
     }
 
 
-class InstancesQueryTestCase(QueryTestCase):
+class FilterInstancesQueryTestCase(QueryTestCase):
     allow_triplestore_connection = True
     fixtures = ["tests/sample/instances.n3"]
     graph_uri = "http://tatipedia.org/"
@@ -106,13 +93,13 @@ class InstancesQueryTestCase(QueryTestCase):
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql
         triplestore.query_sparql = lambda query: query
-        self.original_query_filter_instances = resource.query_filter_instances
-        self.original_query_count_filter_instances = resource.query_count_filter_instances
+        self.original_query_filter_instances = list_resource.query_filter_instances
+        self.original_query_count_filter_instances = list_resource.query_count_filter_instances
 
     def tearDown(self):
         triplestore.query_sparql = self.original_query_sparql
-        resource.query_filter_instances = self.original_query_filter_instances
-        resource.query_count_filter_instances = self.original_query_count_filter_instances
+        list_resource.query_filter_instances = self.original_query_filter_instances
+        list_resource.query_count_filter_instances = self.original_query_count_filter_instances
 
     def test_process_params(self):
         params = {
@@ -392,20 +379,20 @@ class InstancesQueryTestCase(QueryTestCase):
 
     def test_filter_instances_result_is_empty(self):
         # mock
-        resource.query_filter_instances = lambda params: {"results": {"bindings": []}}
-        resource.query_count_filter_instances = lambda params: {"results": {"bindings": []}}
+        list_resource.query_filter_instances = lambda params: MockResponse({"results": {"bindings": []}})
+        list_resource.query_count_filter_instances = lambda params: MockResponse({"results": {"bindings": []}})
 
         params = {"o": "", "p": "", "class_uri": ""}
-        response = resource.filter_instances(params)
+        response = list_resource.filter_instances(params)
         self.assertEquals(response, None)
 
     def test_filter_instances_result_is_not_empty(self):
         query_string = "page=2&per_page=3"  # page based on API (begins with 1)
         sample_json = {"results": {"bindings": []}}
         count_json = {"results": {"bindings": [{"total": {"value": "12"}}]}}
-        resource.query_filter_instances = lambda params: sample_json
-        resource.query_count_filter_instances = lambda params: count_json
-        response = resource.filter_instances({"context_name": "ctx",
+        list_resource.query_filter_instances = lambda params: MockResponse(sample_json)
+        list_resource.query_count_filter_instances = lambda params: MockResponse(count_json)
+        response = list_resource.filter_instances({"context_name": "ctx",
                                               "class_name": "klass",
                                               "request": MockRequest(query_string),
                                               "per_page": "3",

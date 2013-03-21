@@ -78,7 +78,7 @@ class BrainiakRequestHandler(RequestHandler):
         query_params_supported = set(overriden_params.keys())
         for arg in self.request.arguments:
             if arg not in query_params_supported:
-                raise HTTPError(400, log_message="Argument {0} passed is not supported".format(arg))
+                raise HTTPError(400, log_message="Argument {0} is not supported".format(arg))
 
         return overriden_params
 

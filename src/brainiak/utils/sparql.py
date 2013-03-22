@@ -1,5 +1,13 @@
 # coding: utf-8
 import re
+import uuid
+
+
+def create_instance_uri(class_uri):
+    """
+    Create an unique uri for an instance of the class provided.
+    """
+    return "%s/%s" % (class_uri, uuid.uuid4())
 
 
 def get_one_value(result_dict, key):

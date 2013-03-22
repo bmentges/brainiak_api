@@ -16,16 +16,19 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         super(TornadoAsyncTestCase, self).setUp()
         self.original_query_class_schema = schema.query_class_schema
         self.original_get_predicates_and_cardinalities = schema.get_predicates_and_cardinalities
+        self.original_query_superclasses = schema.query_superclasses
 
     def tearDown(self):
         schema.query_class_schema = self.original_query_class_schema
         schema.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
+        schema.query_superclasses = self.original_query_superclasses
         super(TornadoAsyncTestCase, self).tearDown()
 
     def test_query_get_schema(self):
         class_schema = {"results": {"bindings": [{"dummy_key": "dummy_value"}]}}
 
         schema.query_class_schema = lambda query: class_schema
+        schema.query_superclasses = lambda query: ["classeA", "classeB"]
 
         def mock_get_predicates_and_cardinalities(context, params):
             return "property_dict"

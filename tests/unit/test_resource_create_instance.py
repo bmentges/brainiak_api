@@ -1,6 +1,7 @@
 import unittest
 from brainiak.instance.create_resource import create_explicit_triples
 
+
 class CreateInstanceTestCase(unittest.TestCase):
 
     def test_create_explicit_triples_all_predicates_and_objects_are_compressed_uris(self):

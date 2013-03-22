@@ -1,6 +1,7 @@
 import unittest
+import uuid
 
-from brainiak.utils.sparql import compress_keys_and_values, get_one_value, filter_values, is_result_empty, \
+from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri, get_one_value, filter_values, is_result_empty, \
     some_triples_deleted, UnexpectedResultException
 from brainiak.prefixes import MemorizeContext
 
@@ -17,6 +18,14 @@ class ResultHandlerTestCase(unittest.TestCase):
                         u'videoClass': {u'type': u'uri', u'value': u'http://test.domain.com/G1/Video'}
                     }],
         u'ordered': True}}
+
+    def test_create_uri(self):
+        original_uuid = uuid.uuid4
+        uuid.uuid4 = lambda : "unique-id"
+        computed  = create_instance_uri("http://class_uri")
+        uuid.uuid4 = original_uuid
+        expected = "http://class_uri/unique-id"
+        self.assertEqual(computed, expected)
 
     def test_get_result(self):
         expected = "http://test.domain.com/G1/Video"

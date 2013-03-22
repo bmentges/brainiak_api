@@ -187,6 +187,7 @@ class InstanceHandler(BrainiakRequestHandler):
             "class_name": class_name,
             "instance_id": instance_id,
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
+            "instance_prefix": ""
         }
         self.query_params = self.override_defaults_with_arguments(query_params)
 

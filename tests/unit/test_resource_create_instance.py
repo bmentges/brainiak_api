@@ -85,6 +85,7 @@ class CreateTriplesTestCase(unittest.TestCase):
         ]
         self.assertEqual(sorted(response), sorted(expected))
 
+
 class UnpackTuplesTestCase(unittest.TestCase):
 
     def test_unpack_tuples(self):
@@ -97,4 +98,3 @@ class UnpackTuplesTestCase(unittest.TestCase):
         self.assertEqual(sorted(computed), sorted(expected))
         self.assertEqual(len(instance_data), 1)
         self.assertEqual(instance_data["key1"], "1a")
-

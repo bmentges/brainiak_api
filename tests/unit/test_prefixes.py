@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from brainiak.prefixes import _MAP_SLUG_TO_PREFIX, expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError
+from brainiak import prefixes
+from brainiak.prefixes import expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError, extract_prefix
 
 
 class PrefixesTestCase(unittest.TestCase):
 
     def test_prefix_contains_obligatory_keys(self):
-        existing_keys = sorted(_MAP_SLUG_TO_PREFIX.keys())
+        existing_keys = sorted(prefixes._MAP_SLUG_TO_PREFIX.keys())
         expected_keys = ['base', 'dbpedia', 'dc', 'dct', 'ego', 'esportes',
-            'eureka', 'event', 'foaf', 'g1', 'geo', 'glb', 'organization',
-            'owl', 'person', 'place', 'rdf', 'rdfs', 'schema', 'time', 'tvg',
-            'upper', 'xsd']
+                         'eureka', 'event', 'foaf', 'g1', 'geo', 'glb', 'organization',
+                         'owl', 'person', 'place', 'rdf', 'rdfs', 'schema', 'time', 'tvg',
+                         'upper', 'xsd']
         self.assertEqual(len(existing_keys), 23)
         self.assertEqual(existing_keys, expected_keys)
 
@@ -53,6 +54,23 @@ class PrefixesTestCase(unittest.TestCase):
 
     def test_expand_uri_that_is_already_a_uri_with_https(self):
         self.assertEqual("https://secure", expand_uri("https://secure"))
+
+
+class ExtractPrefixTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.original_prefix_to_slug = prefixes._MAP_PREFIX_TO_SLUG
+        prefixes._MAP_PREFIX_TO_SLUG = {}
+
+    def tearDown(self):
+        prefixes._MAP_PREFIX_TO_SLUG = self.original_prefix_to_slug
+
+    def test_prefix_is_substring_of_other_prefix(self):
+        # Mock
+        prefixes._MAP_PREFIX_TO_SLUG["http://some"] = None
+        prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/"] ="place"
+        prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/City"] = "place"
+        self.assertEqual("http://someprefix/place/City", extract_prefix("http://someprefix/place/City"))
 
 
 class MemorizeContextTestCase(unittest.TestCase):

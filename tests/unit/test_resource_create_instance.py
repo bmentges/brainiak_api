@@ -1,5 +1,5 @@
 import unittest
-from brainiak.instance.create_resource import create_explicit_triples, create_implicit_triples, join_triples, unpack_tuples
+from brainiak.instance.create_resource import create_explicit_triples, create_implicit_triples, join_prefixes, join_triples, unpack_tuples
 
 
 class CreateTriplesTestCase(unittest.TestCase):
@@ -103,6 +103,12 @@ class CreateTriplesTestCase(unittest.TestCase):
         expected = [("<http://instance>", "a", "<http://class>")]
         self.assertEqual(computed, expected)
 
+    def test_join_triples_empty(self):
+        triples = []
+        computed = join_triples(triples)
+        expected = ''
+        self.assertEqual(computed, expected)
+
     def test_join_triples(self):
         triples = [
             ("<a>", "<b>", "<c>"),
@@ -111,4 +117,16 @@ class CreateTriplesTestCase(unittest.TestCase):
         ]
         computed = join_triples(triples)
         expected = '   <a> <b> <c> .\n   <d> <e> <f> .\n   <g> <h> <i> .'
+        self.assertEqual(computed, expected)
+
+    def test_join_prefixes_empty(self):
+        prefixes = {}
+        computed = join_prefixes(prefixes)
+        expected = ''
+        self.assertEqual(computed, expected)
+
+    def test_join_prefixes(self):
+        prefixes = {"base": "http://base.com", "upper": "http://upper.com"}
+        computed = join_prefixes(prefixes)
+        expected = 'PREFIX upper: <http://upper.com>\nPREFIX base: <http://base.com>'
         self.assertEqual(computed, expected)

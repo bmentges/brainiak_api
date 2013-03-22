@@ -1,5 +1,5 @@
 import unittest
-from brainiak.instance.create_resource import create_explicit_triples, unpack_tuples
+from brainiak.instance.create_resource import create_explicit_triples, create_implicit_triples, unpack_tuples
 
 
 class CreateTriplesTestCase(unittest.TestCase):
@@ -85,9 +85,6 @@ class CreateTriplesTestCase(unittest.TestCase):
         ]
         self.assertEqual(sorted(response), sorted(expected))
 
-
-class UnpackTuplesTestCase(unittest.TestCase):
-
     def test_unpack_tuples(self):
         instance_data = {
             "key1": "1a",
@@ -98,3 +95,10 @@ class UnpackTuplesTestCase(unittest.TestCase):
         self.assertEqual(sorted(computed), sorted(expected))
         self.assertEqual(len(instance_data), 1)
         self.assertEqual(instance_data["key1"], "1a")
+
+    def test_create_implicit_triples(self):
+        instance_uri = "http://instance"
+        class_uri = "http://class"
+        computed = create_implicit_triples(instance_uri, class_uri)
+        expected = [("<http://instance>", "a", "<http://class>")]
+        self.assertEqual(computed, expected)

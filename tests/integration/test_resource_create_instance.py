@@ -15,8 +15,10 @@ JSON_CITY_GLOBOLAND = {
     },
     "upper:name": "Globoland",
     "upper:fullName": "Globoland (RJ)",
-    "rdfs:comment": "City of Globo's organizations. Historically known as PROJAC.",
-    "place:partOfState": "base:UF_RJ"
+    "rdfs:comment": "City of Globo's companies. Historically known as PROJAC.",
+    "place:partOfState": "base:UF_RJ",
+    "place:latitude": "-22.958314",
+    "place:longitude": "-43.407133"
 }
 
 
@@ -35,10 +37,10 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase):
         self.assertEqual(body["error"], u"HTTP error: 404\nClass X doesn't exist in context xubiru.")
 
     @patch("brainiak.handlers.log")
-    def test_create_instance_200(self, log):
+    def test_create_instance_201(self, log):
         payload = JSON_CITY_GLOBOLAND
         response = self.fetch('/place/City',
             method='POST',
             body=json.dumps(payload))
-        self.assertEqual(response.code, 200)
+        self.assertEqual(response.code, 201)
         self.assertEqual(response.body, "ok")

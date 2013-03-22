@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from brainiak.prefixes import MemorizeContext, shorten_uri, prefix_from_uri
-from brainiak.utils.sparql import get_one_value
-from brainiak.triplestore import query_sparql
+from brainiak.utils.sparql import get_one_value, filter_values
+from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_type, items_from_range, OBJECT_PROPERTY
 
 
@@ -15,6 +15,7 @@ def get_schema(query_params):
     if not class_schema["results"]["bindings"]:
         return
 
+    query_params["superclasses"] = query_superclasses(query_params)
     predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
     response_dict = assemble_schema_dict(query_params,
                                          short_uri,
@@ -82,7 +83,7 @@ def build_class_schema_query(params):
 
 def query_class_schema(query_params):
     query = build_class_schema_query(query_params)
-    return query_sparql(query)
+    return triplestore.query_sparql(query)
 
 
 def get_predicates_and_cardinalities(context, query_params):
@@ -138,7 +139,7 @@ def query_cardinalities(query_params):
                 OPTIONAL { ?enumerated_value rdfs:label ?enumerated_value_label } .
             }
         }""" % query_params
-    return query_sparql(query)
+    return triplestore.query_sparql(query)
 
 
 def query_predicates(query_params):
@@ -151,39 +152,75 @@ def query_predicates(query_params):
 
 
 def _query_predicate_with_lang(query_params):
+    query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
+
     query = """
-        SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
-        WHERE {
-            <%(class_uri)s> rdfs:subClassOf ?domain_class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
-            GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
-            ?predicate rdfs:range ?range .
-            ?predicate rdfs:label ?title .
-            ?predicate rdf:type ?type .
-            OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
-            FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
-            FILTER(langMatches(lang(?title), "%(lang)s") or langMatches(lang(?title), "")) .
-            FILTER(langMatches(lang(?predicate_comment), "%(lang)s") or langMatches(lang(?predicate_comment), "")) .
-            OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . FILTER(langMatches(lang(?label_do_range), "%(lang)s")) . } } .
-            OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
-        }""" % query_params
-    return query_sparql(query)
+    SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
+    WHERE {
+        {
+          GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
+        } UNION {
+          graph ?predicate_graph {?predicate rdfs:domain ?blank} .
+          ?blank a owl:Class .
+          ?blank owl:unionOf ?enumeration .
+          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
+          OPTIONAL { ?list_node rdf:first ?domain_class } .
+        }
+        %(filter_classes_clause)s
+        ?predicate rdfs:range ?range .
+        ?predicate rdfs:label ?title .
+        ?predicate rdf:type ?type .
+        OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
+        FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
+        FILTER(langMatches(lang(?title), "%(lang)s") or langMatches(lang(?title), "")) .
+        FILTER(langMatches(lang(?predicate_comment), "%(lang)s") or langMatches(lang(?predicate_comment), "")) .
+        OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . FILTER(langMatches(lang(?label_do_range), "%(lang)s")) . } } .
+        OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
+    }""" % query_params
+    return triplestore.query_sparql(query)
 
 
 def _query_predicate_without_lang(query_params):
+    query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
     query = """
-        SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
-        WHERE {
-            <%(class_uri)s> rdfs:subClassOf ?domain_class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
-            GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
-            ?predicate rdfs:range ?range .
-            ?predicate rdfs:label ?title .
-            ?predicate rdf:type ?type .
-            OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
-            FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
-            OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . } } .
-            OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
-        }""" % query_params
-    return query_sparql(query)
+    SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
+    WHERE {
+        {
+          GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
+        } UNION {
+          graph ?predicate_graph {?predicate rdfs:domain ?blank} .
+          ?blank a owl:Class .
+          ?blank owl:unionOf ?enumeration .
+          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
+          OPTIONAL { ?list_node rdf:first ?domain_class } .
+        }
+        %(filter_classes_clause)s
+        ?predicate rdfs:range ?range .
+        ?predicate rdfs:label ?title .
+        ?predicate rdf:type ?type .
+        OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
+        FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
+        OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . } } .
+        OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
+    }""" % query_params
+    return triplestore.query_sparql(query)
+
+
+def query_superclasses(query_params):
+    result_dict = _query_superclasses(query_params)
+    superclasses = filter_values(result_dict, "class")
+    return superclasses
+
+
+def _query_superclasses(query_params):
+    query = """
+    SELECT DISTINCT ?class
+    WHERE {
+        <%(class_uri)s> rdfs:subClassOf ?class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
+        ?class a owl:Class .
+    }
+    """ % query_params
+    return triplestore.query_sparql(query)
 
 
 def build_predicate_dict(name, predicate, cardinalities, context):

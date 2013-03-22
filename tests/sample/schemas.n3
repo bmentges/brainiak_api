@@ -19,3 +19,5 @@
 :Lugar a owl:Class ;
        rdfs:label "Lugar" .
 
+:City a owl:Class ;
+      rdfs:subClassOf :Place .

@@ -2,12 +2,13 @@ from brainiak.prefixes import is_compressed_uri, is_uri, shorten_uri
 from brainiak.utils.sparql import create_instance_uri, has_lang
 
 
+# TODO: test
 def create_instance(query_params, instance_data):
     instance_uri = create_instance_uri(query_params["class_uri"])
-    # create_explicit_triples(instance_uri, instance_data)
+    triples = create_explicit_triples(instance_uri, instance_data)
     # implicit triples (instance_uri a class_uri - are there more?)
     # prefixes
-    # build insert query 
+    # build insert query
     return "ok"
 
 
@@ -51,6 +52,8 @@ def create_explicit_triples(instance_uri, instance_data):
 
 # TODO: test
 TRIPLE = """   %(subject)s %(predicate)s %(object)s ."""
+
+
 def querify_triples():
     pass
 

@@ -150,7 +150,7 @@ class InstanceHandler(BrainiakRequestHandler):
     def __init__(self, *args, **kwargs):
         super(InstanceHandler, self).__init__(*args, **kwargs)
 
-    def resolve_instance_uri(query_params):
+    def resolve_instance_uri(self, query_params):
         if query_params.get("instance_prefix"):
             prefix = safe_slug_to_prefix(query_params["instance_prefix"])
             return "%s%s" % (prefix, query_params["instance_id"])

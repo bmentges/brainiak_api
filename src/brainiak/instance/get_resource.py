@@ -10,9 +10,7 @@ def get_instance(query_params):
     Given a URI, verify that the type corresponds to the class being passed as a parameter
     Retrieve all properties and objects of this URI (subject)
     """
-    query_result_dict = query_all_properties_and_objects(query_params['context_name'],
-                                                      query_params['class_name'],
-                                                      query_params['instance_uri'])
+    query_result_dict = query_all_properties_and_objects(query_params)
 
     if is_result_empty(query_result_dict):
         return None
@@ -65,17 +63,11 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
 SELECT ?p ?o {
-<%(instance_uri)s> a <%(prefix)s%(context_name)s/%(class_name)s>;
+<%(instance_uri)s> a <%(class_uri)s>;
     ?p ?o}
 """
 
 
-def query_all_properties_and_objects(context_name, class_name, instance_uri):
-    query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % {
-        'instance_uri': instance_uri,
-        'prefix': URI_PREFIX,
-        'context_name': context_name,
-        'class_name': class_name,
-    }
-
+def query_all_properties_and_objects(query_params):
+    query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % query_params
     return triplestore.query_sparql(query)

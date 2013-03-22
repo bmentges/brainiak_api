@@ -12,6 +12,9 @@ def create_instance(query_params, instance_data):
     triples.extend(implicit_triples)
     string_triples = join_triples(triples)
 
+    prefixes = instance_data.get("@context", {})
+    string_prefixes = join_prefixes(prefixes)
+
     # add prefixes
     # build insert query
     return "ok"
@@ -80,8 +83,15 @@ def join_triples(triples):
     return "\n".join(triples_strings)
 
 
-# TODO: test
-PREFIX = """PREFIX %(slug)s: <%(graph_uri)s>"""
+PREFIX = """PREFIX %s: <%s>"""
+
+
+def join_prefixes(prefixes_dict):
+    prefix_list = []
+    for (slug, graph_uri) in prefixes_dict.items():
+        prefix = PREFIX % (slug, graph_uri)
+        prefix_list.append(prefix)
+    return "\n".join(prefix_list)
 
 
 # TODO: test

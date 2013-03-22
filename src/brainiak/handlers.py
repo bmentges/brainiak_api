@@ -155,6 +155,7 @@ class InstanceHandler(BrainiakRequestHandler):
         query_params = {
             "context_name": context_name,
             "class_name": class_name,
+            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "instance_id": instance_id,
             "request": self.request,
             "lang": settings.DEFAULT_LANG,

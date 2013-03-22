@@ -19,7 +19,7 @@ class TestCaseInstanceResource(unittest.TestCase):
     def test_get_instance_with_result(self):
         db_response = {"results": {"bindings": ["not_empty"]}}
 
-        def mock_query_all_properties_and_objects(context_name, class_name, instance_id):
+        def mock_query_all_properties_and_objects(query_params):
             return db_response
         get_resource.query_all_properties_and_objects = mock_query_all_properties_and_objects
 
@@ -39,7 +39,7 @@ class TestCaseInstanceResource(unittest.TestCase):
     def test_get_instance_without_result(self):
         db_response = {"results": {"bindings": []}}
 
-        def mock_query_all_properties_and_objects(context_name, class_name, instance_id):
+        def mock_query_all_properties_and_objects(query_params):
             return db_response
         get_resource.query_all_properties_and_objects = mock_query_all_properties_and_objects
 

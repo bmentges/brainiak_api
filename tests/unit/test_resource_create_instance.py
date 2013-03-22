@@ -1,5 +1,5 @@
 import unittest
-from brainiak.instance.create_resource import create_explicit_triples, create_implicit_triples, querify_triples, unpack_tuples
+from brainiak.instance.create_resource import create_explicit_triples, create_implicit_triples, join_triples, unpack_tuples
 
 
 class CreateTriplesTestCase(unittest.TestCase):
@@ -103,12 +103,12 @@ class CreateTriplesTestCase(unittest.TestCase):
         expected = [("<http://instance>", "a", "<http://class>")]
         self.assertEqual(computed, expected)
 
-    def test_querify_triples(self):
+    def test_join_triples(self):
         triples = [
             ("<a>", "<b>", "<c>"),
             ("<d>", "<e>", "<f>"),
             ("<g>", "<h>", "<i>")
         ]
-        computed = querify_triples(triples)
+        computed = join_triples(triples)
         expected = '   <a> <b> <c> .\n   <d> <e> <f> .\n   <g> <h> <i> .'
         self.assertEqual(computed, expected)

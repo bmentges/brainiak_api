@@ -11,7 +11,6 @@ def create_instance(query_params, instance_data):
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
     triples.extend(implicit_triples)
 
-    # implicit triples (instance_uri a class_uri - are there more?)
     # prefixes
     # build insert query
     return "ok"
@@ -73,11 +72,12 @@ def create_explicit_triples(instance_uri, instance_data):
 
 
 # TODO: test
-TRIPLE = """   %(subject)s %(predicate)s %(object)s ."""
+TRIPLE = """   %s %s %s ."""
 
 
-def querify_triples():
-    pass
+def querify_triples(triples):
+    triples_strings = [TRIPLE % triple for triple in triples]
+    return "\n".join(triples_strings)
 
 
 # TODO: test

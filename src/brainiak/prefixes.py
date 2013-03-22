@@ -40,7 +40,6 @@ OLD_PREFIXES = {
 }
 
 _MAP_SLUG_TO_PREFIX.update(OLD_PREFIXES)
-
 _MAP_PREFIX_TO_SLUG = {v: k for k, v in _MAP_SLUG_TO_PREFIX.items()}
 
 
@@ -74,6 +73,9 @@ def uri_to_slug(uri):
 
 def extract_prefix(uri):
     prefixes = _MAP_PREFIX_TO_SLUG.keys()
+    # FIXME: Optmize way the two operations below
+    prefixes.sort()
+    prefixes.reverse()
     # Inspired by code from Vaughn Cato
     uri_prefix = filter(uri.startswith, prefixes + [''])[0]
     return uri_prefix

@@ -22,8 +22,18 @@ def create_explicit_triples(instance_uri, instance_data):
 
     instance = "<%s>" % instance_uri
 
+    # retrieve items that map lists and remove them from instance_data
+    list_items = [(predicate, object_) for (predicate, object_) in instance_data.items() if isinstance(object_, list)]
+    [instance_data.pop(index) for index, value in list_items]
+
+    predicate_object_tuples = instance_data.items()
+    for predicate, list_objects in list_items:
+        for object_ in list_objects:
+            predicate_object_tuples.append((predicate, object_))
+
+    # triplify list of predicate/object tuples
     triples = []
-    for (predicate_uri, object_value) in instance_data.items():
+    for (predicate_uri, object_value) in predicate_object_tuples:
         if predicate_uri != "@context":
 
             # predicate: has to be uri (compressed or not)
@@ -31,7 +41,6 @@ def create_explicit_triples(instance_uri, instance_data):
             if is_uri(predicate):
                 predicate = "<%s>" % predicate_uri
 
-            # TODO: object is a list
             # object: can be uri (compressed or not) or literal
             if is_uri(object_value):
                 object_ = "<%s>" % object_value

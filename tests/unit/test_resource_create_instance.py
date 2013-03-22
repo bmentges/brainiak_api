@@ -68,19 +68,19 @@ class CreateInstanceTestCase(unittest.TestCase):
         ]
         self.assertEqual(sorted(response), sorted(expected))
 
-    # def test_create_explicit_triples_predicates_are_uris_and_one_object_is_list(self):
-    #     instance_uri = "http://personpedia.com/Person/OscarWilde"
-    #     instance_data = {
-    #         "@context": {},
-    #         "rdfs:label": "Oscar Wilde",
-    #         "personpedia:gender": "personpedia:Male",
-    #         "personpedia:child": ["personpedia:VyvyanHolland", "personpedia:CyrilHolland"]
-    #     }
-    #     response = create_explicit_triples(instance_uri, instance_data)
-    #     expected = [
-    #         ("<http://personpedia.com/Person/OscarWilde>", "rdfs:label", '"Oscar Wilde"'),
-    #         ("<http://personpedia.com/Person/OscarWilde>", "personpedia:gender", "personpedia:Male"),
-    #         ("<http://personpedia.com/Person/OscarWilde>", "personpedia:child", "personpedia:VyvyanHolland"),
-    #         ("<http://personpedia.com/Person/OscarWilde>", "personpedia:child", "personpedia:CyrilHolland")
-    #     ]
-    #     self.assertEqual(sorted(response), sorted(expected))
+    def test_create_explicit_triples_predicates_are_uris_and_one_object_is_list(self):
+        instance_uri = "http://personpedia.com/Person/OscarWilde"
+        instance_data = {
+            "@context": {"personpedia": "http://personpedia.com"},
+            "rdfs:label": "Oscar Wilde",
+            "personpedia:gender": "personpedia:Male",
+            "personpedia:child": ["personpedia:VyvyanHolland", "personpedia:CyrilHolland"]
+        }
+        response = create_explicit_triples(instance_uri, instance_data)
+        expected = [
+            ("<http://personpedia.com/Person/OscarWilde>", "rdfs:label", '"Oscar Wilde"'),
+            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:gender", "personpedia:Male"),
+            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:child", "personpedia:VyvyanHolland"),
+            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:child", "personpedia:CyrilHolland")
+        ]
+        self.assertEqual(sorted(response), sorted(expected))

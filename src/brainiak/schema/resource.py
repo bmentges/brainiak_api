@@ -167,7 +167,15 @@ def _query_predicate_with_lang(query_params):
           OPTIONAL { ?list_node rdf:first ?domain_class } .
         }
         %(filter_classes_clause)s
-        ?predicate rdfs:range ?range .
+        {?predicate rdfs:range ?range .}
+        UNION {
+          ?predicate rdfs:range ?blank .
+          ?blank a owl:Class .
+          ?blank owl:unionOf ?enumeration .
+          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
+          OPTIONAL { ?list_node rdf:first ?range } .
+        }
+        FILTER (!isBlank(?range))
         ?predicate rdfs:label ?title .
         ?predicate rdf:type ?type .
         OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
@@ -195,7 +203,15 @@ def _query_predicate_without_lang(query_params):
           OPTIONAL { ?list_node rdf:first ?domain_class } .
         }
         %(filter_classes_clause)s
-        ?predicate rdfs:range ?range .
+        {?predicate rdfs:range ?range .}
+        UNION {
+          ?predicate rdfs:range ?blank .
+          ?blank a owl:Class .
+          ?blank owl:unionOf ?enumeration .
+          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
+          OPTIONAL { ?list_node rdf:first ?range } .
+        }
+        FILTER (!isBlank(?range))
         ?predicate rdfs:label ?title .
         ?predicate rdf:type ?type .
         OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .

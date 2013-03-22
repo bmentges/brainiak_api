@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from brainiak.prefixes import _MAP_SLUG_TO_PREFIX, expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError
+from brainiak.prefixes import _MAP_SLUG_TO_PREFIX, expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError, is_compressed_uri
 
 
 class PrefixesTestCase(unittest.TestCase):
@@ -53,6 +53,21 @@ class PrefixesTestCase(unittest.TestCase):
 
     def test_expand_uri_that_is_already_a_uri_with_https(self):
         self.assertEqual("https://secure", expand_uri("https://secure"))
+
+    def test_is_compressed_uri_given_a_literal(self):
+        self.assertEqual(is_compressed_uri("oi"), False)
+
+    def test_is_compressed_uri_given_a_compressed_uri(self):
+        self.assertEqual(is_compressed_uri("person:Person"), True)
+
+    def test_is_compressed_uri_given_a_compressed_uri_with_invalid_prefix_slug(self):
+        self.assertEqual(is_compressed_uri("unexistent:Xubi"), False)
+
+    def test_is_compressed_uri_given_a_uncompressed_uri(self):
+        self.assertEqual(is_compressed_uri("http://something.org/xubiru"), False)
+
+    def test_is_compressed_uri_given_a_compressed_and_prefixes(self):
+        self.assertEqual(is_compressed_uri("newslug:xubiru", {"newslug": "http://newslug.com"}), True)
 
 
 class MemorizeContextTestCase(unittest.TestCase):

@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
-from tornado.web import HTTPError, RequestHandler, URLSpec
-from tornado.httpclient import HTTPResponse
-
 import httplib
+import json
 import sys
 import traceback
 
-from brainiak import settings, triplestore
-from brainiak import __version__
+from tornado.web import HTTPError, RequestHandler, URLSpec
+from tornado.httpclient import HTTPResponse
+
+
+from brainiak import __version__, log, settings, triplestore
 from brainiak.schema.resource import get_schema
 from brainiak.instance.get_resource import get_instance
 from brainiak.instance.list_resource import filter_instances
 from brainiak.instance.delete_resource import delete_instance
+from brainiak.instance.create_resource import create_instance
 from brainiak.prefixes import safe_slug_to_prefix
 from greenlet_tornado import greenlet_asynchronous
-from brainiak import log
 
 
 def get_routes():
@@ -243,6 +244,7 @@ class ClassHandler(BrainiakRequestHandler):
         query_params = {
             "context_name": context_name,
             "class_name": class_name,
+            "class_prefix": "",
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "request": self.request,
             "lang": settings.DEFAULT_LANG,
@@ -252,12 +254,19 @@ class ClassHandler(BrainiakRequestHandler):
         if self.request.arguments:
             query_params = self.override_defaults_with_arguments(query_params)
 
+        # TODO: test
+        class_prefix = query_params["class_prefix"]
+        if class_prefix:
+            query_params["class_uri"] = "%s/%s" % (class_prefix, class_name)
+
         schema = get_schema(query_params)
         if schema is None:
             raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
-        response = "ok"
-        #response = create_instance(query_params)
 
+        instance_data = json.loads(self.request.body)
+        response = create_instance(query_params, instance_data)
+
+        self.set_status(201)
         self.query_params = query_params
         self.finalize(response)
 

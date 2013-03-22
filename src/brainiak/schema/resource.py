@@ -29,9 +29,15 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     effective_context = {"@language": query_params.get("lang")}
     effective_context.update(context.context)
 
-    links = [{"rel": property_name,
-              "href": "/{0}/{1}".format(*(uri.split(':')))}
-             for property_name, uri in context.object_properties.items()]
+    links = [{"rel": "create",
+              "method": "POST",
+              "href": "/{context_name}/{class_name}".format(**query_params)}]
+    obj_property_links = [{"rel": property_name,
+                           "href": "/{0}/{1}".format(*(uri.split(':')))}
+                           for property_name, uri in context.object_properties.items()]
+
+    links.extend(obj_property_links)
+
     schema = {
         "type": "object",
         "@id": short_uri,

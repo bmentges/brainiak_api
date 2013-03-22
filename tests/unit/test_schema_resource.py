@@ -33,6 +33,8 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         schema.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
 
         params = {
+            "context_name": "ctx",
+            "class_name": "klass",
             "class_uri": "test_class",
             "graph_uri": "test_graph",
             "lang": "en"

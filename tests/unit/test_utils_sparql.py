@@ -21,8 +21,8 @@ class ResultHandlerTestCase(unittest.TestCase):
 
     def test_create_uri(self):
         original_uuid = uuid.uuid4
-        uuid.uuid4 = lambda : "unique-id"
-        computed  = create_instance_uri("http://class_uri")
+        uuid.uuid4 = lambda: "unique-id"
+        computed = create_instance_uri("http://class_uri")
         uuid.uuid4 = original_uuid
         expected = "http://class_uri/unique-id"
         self.assertEqual(computed, expected)

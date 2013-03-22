@@ -29,13 +29,12 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         u'$schema': u'http://json-schema.org/draft-03/schema#',
         u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
         u'@id': u'person:Gender',
-        u'links': [],
+        u'links': [{u'href': u'/person/Gender', u'method': u'POST', u'rel': u'create'}],
         u'properties': {},
         u'title': u"Gênero da Pessoa",
         u'comment': u"Gênero de uma pessoa.",
         u'type': u'object'
     }
-
     maxDiff = None
 
     def test_schema_handler_with_lang(self):

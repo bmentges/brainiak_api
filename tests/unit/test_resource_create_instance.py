@@ -1,8 +1,8 @@
 import unittest
-from brainiak.instance.create_resource import create_explicit_triples
+from brainiak.instance.create_resource import create_explicit_triples, unpack_tuples
 
 
-class CreateInstanceTestCase(unittest.TestCase):
+class CreateTriplesTestCase(unittest.TestCase):
 
     def test_create_explicit_triples_all_predicates_and_objects_are_compressed_uris(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
@@ -84,3 +84,17 @@ class CreateInstanceTestCase(unittest.TestCase):
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:child", "personpedia:CyrilHolland")
         ]
         self.assertEqual(sorted(response), sorted(expected))
+
+class UnpackTuplesTestCase(unittest.TestCase):
+
+    def test_unpack_tuples(self):
+        instance_data = {
+            "key1": "1a",
+            "key2": ["2a", "2b"]
+        }
+        computed = unpack_tuples(instance_data)
+        expected = [("key1", "1a"), ("key2", "2a"), ("key2", "2b")]
+        self.assertEqual(sorted(computed), sorted(expected))
+        self.assertEqual(len(instance_data), 1)
+        self.assertEqual(instance_data["key1"], "1a")
+

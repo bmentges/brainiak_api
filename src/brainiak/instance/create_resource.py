@@ -4,12 +4,22 @@ from brainiak.utils.sparql import create_instance_uri, has_lang
 
 # TODO: test
 def create_instance(query_params, instance_data):
-    instance_uri = create_instance_uri(query_params["class_uri"])
+    class_uri = query_params["class_uri"]
+    instance_uri = create_instance_uri(class_uri)
+
     triples = create_explicit_triples(instance_uri, instance_data)
+    implicit_triples = create_implicit_triples(instance_uri, class_uri)
+    triples.extend(implicit_triples)
+
     # implicit triples (instance_uri a class_uri - are there more?)
     # prefixes
     # build insert query
     return "ok"
+
+
+def create_implicit_triples(instance_uri, class_uri):
+    class_triple = ("<%s>" % instance_uri, "a", "<%s>" % class_uri)
+    return [class_triple]
 
 
 def unpack_tuples(instance_data):

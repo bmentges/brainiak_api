@@ -12,6 +12,18 @@ def create_instance(query_params, instance_data):
     return "ok"
 
 
+def unpack_tuples(instance_data):
+    # retrieve items that map lists and remove them from instance_data
+    list_items = [(predicate, object_) for (predicate, object_) in instance_data.items() if isinstance(object_, list)]
+    [instance_data.pop(index) for index, value in list_items]
+
+    predicate_object_tuples = instance_data.items()
+    for predicate, list_objects in list_items:
+        for object_ in list_objects:
+            predicate_object_tuples.append((predicate, object_))
+    return predicate_object_tuples
+
+
 def create_explicit_triples(instance_uri, instance_data):
     # TODO-2:
     # lang = query_params["lang"]
@@ -21,18 +33,9 @@ def create_explicit_triples(instance_uri, instance_data):
     #     lang_tag = "@%s" % lang
 
     instance = "<%s>" % instance_uri
-
-    # retrieve items that map lists and remove them from instance_data
-    list_items = [(predicate, object_) for (predicate, object_) in instance_data.items() if isinstance(object_, list)]
-    [instance_data.pop(index) for index, value in list_items]
-
-    predicate_object_tuples = instance_data.items()
-    for predicate, list_objects in list_items:
-        for object_ in list_objects:
-            predicate_object_tuples.append((predicate, object_))
-
-    # triplify list of predicate/object tuples
+    predicate_object_tuples = unpack_tuples(instance_data)
     triples = []
+
     for (predicate_uri, object_value) in predicate_object_tuples:
         if predicate_uri != "@context":
 

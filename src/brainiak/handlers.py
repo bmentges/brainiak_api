@@ -24,7 +24,7 @@ def get_routes():
         URLSpec(r'/status/virtuoso', VirtuosoStatusHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)', InstanceHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)', InstanceListHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)', ClassHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
     ]
 
@@ -151,14 +151,15 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
-        # TODO refactor graph_uri, class_uri, instance_uri
         query_params = {
             "context_name": context_name,
             "class_name": class_name,
+            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "instance_id": instance_id,
             "request": self.request,
             "lang": settings.DEFAULT_LANG,
             "instance_prefix": "",
+            "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
             "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
         }
 
@@ -205,13 +206,13 @@ class InstanceHandler(BrainiakRequestHandler):
             self.finish()
 
 
-class InstanceListHandler(BrainiakRequestHandler):
+class ClassHandler(BrainiakRequestHandler):
 
     DEFAULT_PER_PAGE = "10"
     DEFAULT_PAGE = "0"
 
     def __init__(self, *args, **kwargs):
-        super(InstanceListHandler, self).__init__(*args, **kwargs)
+        super(ClassHandler, self).__init__(*args, **kwargs)
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
@@ -235,6 +236,29 @@ class InstanceListHandler(BrainiakRequestHandler):
 
         response = filter_instances(self.query_params)
 
+        self.finalize(response)
+
+    @greenlet_asynchronous
+    def post(self, context_name, class_name):
+        query_params = {
+            "context_name": context_name,
+            "class_name": class_name,
+            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
+            "request": self.request,
+            "lang": settings.DEFAULT_LANG,
+            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name)
+        }
+
+        if self.request.arguments:
+            query_params = self.override_defaults_with_arguments(query_params)
+
+        schema = get_schema(query_params)
+        if schema is None:
+            raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
+        response = "ok"
+        #response = create_instance(query_params)
+
+        self.query_params = query_params
         self.finalize(response)
 
     def finalize(self, response):

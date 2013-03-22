@@ -191,7 +191,7 @@ class InstanceHandler(BrainiakRequestHandler):
         }
         self.query_params = self.override_defaults_with_arguments(query_params)
 
-        query_params["instance_uri"] = self.resolve_instance_uri(query_params)
+        self.query_params["instance_uri"] = self.resolve_instance_uri(self.query_params)
 
         deleted = delete_instance(self.query_params)
 

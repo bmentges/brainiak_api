@@ -43,7 +43,7 @@ brainiak.settings must define:
 """
 
 
-def _create_handlers(filename=LOG_FILEPATH, level=LOG_LEVEL, name=LOG_NAME):
+def _create_handlers(filename=LOG_FILEPATH, level=LOG_LEVEL):
     formatter = logging.Formatter(format)
 
     # WatchedFileHandler watches the file it is logging to.

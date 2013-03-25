@@ -287,7 +287,11 @@ class CollectionHandler(BrainiakRequestHandler):
         if schema is None:
             raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
 
-        instance_data = json.loads(self.request.body)
+        try:
+            instance_data = json.loads(self.request.body)
+        except ValueError:
+            raise HTTPError(400, log_message="No JSON object could be decoded")
+
         resource_id = create_instance(query_params, instance_data)
 
         self.set_status(201)

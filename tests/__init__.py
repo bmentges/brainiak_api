@@ -30,8 +30,8 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
 
     def fetch(self, path, **kwargs):
         request = HTTPRequest(url=self.get_url(path),
-                              method=kwargs.get('method','GET'),
-                              body=kwargs.get('body',''))
+                              method=kwargs.get('method', 'GET'),
+                              body=kwargs.get('body', ''))
         request.allow_nonstandard_methods = True
         self.http_client.fetch(request, self.stop, **kwargs)
         return self.wait()

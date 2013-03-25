@@ -1,5 +1,5 @@
 Delete a Instance
-============
+=================
 
 This service deletes a instance, given its context, class name and instance id.
 

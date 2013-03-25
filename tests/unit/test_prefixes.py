@@ -2,7 +2,7 @@
 
 import unittest
 from brainiak import prefixes
-from brainiak.prefixes import expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError, extract_prefix
+from brainiak.prefixes import expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError, extract_prefix, is_compressed_uri
 
 
 class PrefixesTestCase(unittest.TestCase):
@@ -46,7 +46,7 @@ class PrefixesTestCase(unittest.TestCase):
     def test_expand_uri(self):
         self.assertEqual("http://www.w3.org/2003/01/geo/wgs84_pos#Brasil", expand_uri("geo:Brasil"))
 
-    def test_expand_uri(self):
+    def test_expand_another_uri(self):
         self.assertEqual("http://schema.org/whatever", expand_uri("schema:whatever"))
 
     def test_expand_uri_that_is_already_a_uri(self):
@@ -57,6 +57,7 @@ class PrefixesTestCase(unittest.TestCase):
 
     def test_is_compressed_uri_given_a_literal(self):
         self.assertEqual(is_compressed_uri("oi"), False)
+
 
 class ExtractPrefixTestCase(unittest.TestCase):
 
@@ -70,7 +71,7 @@ class ExtractPrefixTestCase(unittest.TestCase):
     def test_prefix_is_substring_of_other_prefix(self):
         # Mock
         prefixes._MAP_PREFIX_TO_SLUG["http://some"] = None
-        prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/"] ="place"
+        prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/"] = "place"
         prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/City"] = "place"
         self.assertEqual("http://someprefix/place/City", extract_prefix("http://someprefix/place/City"))
 

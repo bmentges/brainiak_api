@@ -6,13 +6,13 @@ import traceback
 
 from tornado.web import HTTPError, RequestHandler, URLSpec
 
-
 from brainiak import __version__, log, settings, triplestore
 from brainiak.schema import resource as schema_resource
 from brainiak.instance.get_resource import get_instance
 from brainiak.instance.list_resource import filter_instances
 from brainiak.instance.delete_resource import delete_instance
 from brainiak.instance.create_resource import create_instance
+from brainiak.instance.edit_resource import edit_instance
 from brainiak.prefixes import safe_slug_to_prefix
 from greenlet_tornado import greenlet_asynchronous
 
@@ -170,7 +170,8 @@ class InstanceHandler(BrainiakRequestHandler):
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
         }
 
-        query_params = self.override_defaults_with_arguments(query_params)
+        if self.request.arguments:
+            query_params = self.override_defaults_with_arguments(query_params)
 
         query_params["instance_uri"] = self.resolve_instance_uri(query_params)
 
@@ -180,15 +181,32 @@ class InstanceHandler(BrainiakRequestHandler):
         self.finalize(response)
 
     @greenlet_asynchronous
+    def patch(self, context_name, class_name, instance_id):
+        self.query_params = {
+            "context_name": context_name,
+            "class_name": class_name,
+            "instance_id": instance_id,
+            "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
+            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
+        }
+        if self.request.arguments:
+            self.query_params = self.override_defaults_with_arguments(self.query_params)
+
+        self.query_params["instance_uri"] = self.resolve_instance_uri(self.query_params)
+
+        response = edit_instance(self.query_params)
+        self.finalize(response)
+
+    @greenlet_asynchronous
     def delete(self, context_name, class_name, instance_id):
-        query_params = {
+        self.query_params = {
             "context_name": context_name,
             "class_name": class_name,
             "instance_id": instance_id,
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
             "instance_prefix": ""
         }
-        self.query_params = self.override_defaults_with_arguments(query_params)
+        self.query_params = self.override_defaults_with_arguments(self.query_params)
 
         self.query_params["instance_uri"] = self.resolve_instance_uri(self.query_params)
 

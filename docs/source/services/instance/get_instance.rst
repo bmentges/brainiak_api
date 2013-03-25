@@ -1,5 +1,5 @@
 Get a Instance
-============
+==============
 
 This service retrieves all information about a instance, given its context, class name and instance id.
 

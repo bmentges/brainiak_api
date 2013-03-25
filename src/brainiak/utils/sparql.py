@@ -3,6 +3,10 @@ import re
 import uuid
 
 
+def has_lang(literal):
+    return literal[-3:].startswith("@")
+
+
 def create_instance_uri(class_uri):
     """
     Create an unique uri for an instance of the class provided.

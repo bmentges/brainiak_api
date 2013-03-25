@@ -274,6 +274,7 @@ class CollectionHandler(BrainiakRequestHandler):
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
+            # TODO separate filter message logic (e.g. if response is None and ("p" in self.query_params or "o" in self.query_params))
             filter_message = []
             if self.query_params['p'] != "?predicate":
                 filter_message.append(" with predicate={0} ".format(self.query_params['p']))

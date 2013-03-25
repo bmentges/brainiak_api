@@ -1,5 +1,5 @@
 Create a Instance
-==============
+=================
 
 This service allows the creation of a new instance, provided its context, class name and JSON.
 
@@ -34,7 +34,7 @@ Optional query string parameters
 If no **class_prefix** had been provided, the class URI above would be resolved as: http://semantica.globo.com/place/City. As **class_prefix** was defined, the class URI will be: http://dbpedia.org/City.
 
 Possible responses
--------------------
+------------------
 
 
 Status 201

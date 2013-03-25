@@ -1,7 +1,7 @@
 import unittest
 import uuid
 
-from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri, get_one_value, filter_values, is_result_empty, \
+from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri, get_one_value, filter_values, has_lang, is_result_empty, \
     some_triples_deleted, UnexpectedResultException
 from brainiak.prefixes import MemorizeContext
 
@@ -154,3 +154,12 @@ class SomeTriplesDeletedTestCase(unittest.TestCase):
     def test_delete_triples_unkown_result_message(self):
         result_dict = {"head": {"link": [], "vars": ["callret-0"]}, "results": {"distinct": False, "ordered": True, "bindings": [{"callret-0": {"type": "literal", "value": "Unknown message"}}]}}
         self.assertRaises(UnexpectedResultException, some_triples_deleted, result_dict, "a")
+
+
+class LiteralLangTestCase(unittest.TestCase):
+
+    def test_has_lang_literal_true(self):
+        self.assertEqual(has_lang("'i18n'@en"), True)
+
+    def test_has_lang_literal_false(self):
+        self.assertEqual(has_lang("not i18n"), False)

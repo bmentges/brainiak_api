@@ -1,8 +1,6 @@
 import json
 from mock import patch as patch_mock
-
 from tornado.web import Application, HTTPError
-
 from brainiak.handlers import BrainiakRequestHandler
 from tests import TornadoAsyncHTTPTestCase
 
@@ -56,16 +54,21 @@ class TestUnmatchedHandler(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 404)
 
     @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
-    def test_get(self, log):
-        response = self.fetch('/a/b/c/d/e', method='PUT')
+    def test_put(self, log):
+        response = self.fetch('/a/b/c/d/e', method='PUT', body='')
         self.assertEqual(response.code, 404)
 
     @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
-    def test_get(self, log):
-        response = self.fetch('/a/b/c/d/e', method='POST')
+    def test_post(self, log):
+        response = self.fetch('/a/b/c/d/e', method='POST', body='')
         self.assertEqual(response.code, 404)
 
     @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
-    def test_get(self, log):
+    def test_patch(self, log):
+        response = self.fetch('/a/b/c/d/e', method='PATCH', body='')
+        self.assertEqual(response.code, 404)
+
+    @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
+    def test_delete(self, log):
         response = self.fetch('/a/b/c/d/e', method='DELETE')
         self.assertEqual(response.code, 404)

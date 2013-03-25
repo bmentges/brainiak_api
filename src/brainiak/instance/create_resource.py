@@ -1,3 +1,4 @@
+from brainiak import triplestore
 from brainiak.prefixes import is_compressed_uri, is_uri, shorten_uri
 from brainiak.utils.sparql import create_instance_uri, has_lang
 
@@ -14,10 +15,10 @@ def create_instance(query_params, instance_data):
 
     prefixes = instance_data.get("@context", {})
     string_prefixes = join_prefixes(prefixes)
+    response = query_create_instances(string_triples, string_prefixes, query_params["graph_uri"])
+    return instance_uri
 
-    # add prefixes
-    # build insert query
-    return "ok"
+{u'head': {u'link': [], u'vars': [u'callret-0']}, u'results': {u'distinct': False, u'bindings': [{u'callret-0': {u'type': u'literal', u'value': u'Insert into <http://semantica.globo.com/place/>, 7 (or less) triples -- done'}}], u'ordered': True}}
 
 
 def create_implicit_triples(instance_uri, class_uri):
@@ -94,11 +95,16 @@ def join_prefixes(prefixes_dict):
     return "\n".join(prefix_list)
 
 
-# TODO: test
 QUERY_INSERT_TRIPLES = """
+DEFINE input:inference <http://semantica.globo.com/place/ruleset>
 %(prefix)s
 INSERT DATA INTO <%(graph_uri)s>
 {
 %(triples)s
 }
 """
+
+
+def query_create_instances(triples, prefix, graph_uri):
+    query = QUERY_INSERT_TRIPLES % {"triples": triples, "prefix": prefix, "graph_uri": graph_uri}
+    return triplestore.query_sparql(query)

@@ -125,5 +125,15 @@ def some_triples_deleted(result_dict, graph_uri):
         raise UnexpectedResultException("Unknown result format: " + str(result_dict))
 
 
+def is_result_true(result_dict):
+    """
+    Return result_dict['boolean'] if exists, otherwise returns False
+    >>> result_dict = {"head": {"link": []}, "boolean": True}
+    >>> is_result_true(result_dict)
+    >>> True
+    """
+    return result_dict.get("boolean", False)
+
+
 class UnexpectedResultException(Exception):
     pass

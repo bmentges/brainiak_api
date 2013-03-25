@@ -65,6 +65,18 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         return not self.checkInstanceExistance(class_uri, instance_uri)
 
     @patch("brainiak.handlers.log")
+    def test_create_instance_500_internal_error(self, log):
+        def raise_exception():
+            raise Exception()
+        schema_resource.get_schema = lambda params: raise_exception()
+        response = self.fetch('/person/Person',
+            method='POST',
+            body=json.dumps({}))
+        self.assertEqual(response.code, 500)
+        body = json.loads(response.body)
+        self.assertIn("HTTP error: 500\nException:\n", body["error"])
+
+    @patch("brainiak.handlers.log")
     def test_create_instance_404_inexistant_class(self, log):
         payload = {}
         response = self.fetch('/xubiru/X',

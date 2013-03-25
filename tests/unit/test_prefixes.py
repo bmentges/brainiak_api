@@ -2,7 +2,7 @@
 
 import unittest
 from brainiak import prefixes
-from brainiak.prefixes import expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError, extract_prefix
+from brainiak.prefixes import _MAP_SLUG_TO_PREFIX, expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri, prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix, uri_to_slug
 
 
 class PrefixesTestCase(unittest.TestCase):
@@ -55,6 +55,21 @@ class PrefixesTestCase(unittest.TestCase):
     def test_expand_uri_that_is_already_a_uri_with_https(self):
         self.assertEqual("https://secure", expand_uri("https://secure"))
 
+    def test_is_compressed_uri_given_a_literal(self):
+        self.assertEqual(is_compressed_uri("oi"), False)
+
+    def test_is_compressed_uri_given_a_compressed_uri(self):
+        self.assertEqual(is_compressed_uri("person:Person"), True)
+
+    def test_is_compressed_uri_given_a_compressed_uri_with_invalid_prefix_slug(self):
+        self.assertEqual(is_compressed_uri("unexistent:Xubi"), False)
+
+    def test_is_compressed_uri_given_a_uncompressed_uri(self):
+        self.assertEqual(is_compressed_uri("http://something.org/xubiru"), False)
+
+    def test_is_compressed_uri_given_a_compressed_and_prefixes(self):
+        self.assertEqual(is_compressed_uri("newslug:xubiru", {"newslug": "http://newslug.com"}), True)
+
 
 class ExtractPrefixTestCase(unittest.TestCase):
 
@@ -66,9 +81,8 @@ class ExtractPrefixTestCase(unittest.TestCase):
         prefixes._MAP_PREFIX_TO_SLUG = self.original_prefix_to_slug
 
     def test_prefix_is_substring_of_other_prefix(self):
-        # Mock
         prefixes._MAP_PREFIX_TO_SLUG["http://some"] = None
-        prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/"] ="place"
+        prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/"] = "place"
         prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/City"] = "place"
         self.assertEqual("http://someprefix/place/City", extract_prefix("http://someprefix/place/City"))
 

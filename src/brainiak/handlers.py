@@ -170,7 +170,8 @@ class InstanceHandler(BrainiakRequestHandler):
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
         }
 
-        query_params = self.override_defaults_with_arguments(query_params)
+        if self.request.arguments:
+            query_params = self.override_defaults_with_arguments(query_params)
 
         query_params["instance_uri"] = self.resolve_instance_uri(query_params)
 
@@ -190,6 +191,8 @@ class InstanceHandler(BrainiakRequestHandler):
         }
         if self.request.arguments:
             self.query_params = self.override_defaults_with_arguments(query_params)
+
+        query_params["instance_uri"] = self.resolve_instance_uri(query_params)
 
         response = edit_instance(self.query_params)
         self.finalize(response)

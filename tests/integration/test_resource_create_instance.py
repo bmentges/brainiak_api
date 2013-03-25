@@ -1,9 +1,7 @@
 import json
 from mock import patch
 
-from brainiak.instance import create_resource
-from tests import TornadoAsyncHTTPTestCase, MockRequest
-from tests.sparql import QueryTestCase
+from tests import TornadoAsyncHTTPTestCase
 
 
 JSON_CITY_GLOBOLAND = {
@@ -43,4 +41,4 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase):
             method='POST',
             body=json.dumps(payload))
         self.assertEqual(response.code, 201)
-        self.assertEqual(response.body, "ok")
+        self.assertEqual(response.body, "")

@@ -110,11 +110,11 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.graph_uri = "http://fofocapedia.org/"
         self.assertInstanceDoesNotExist('criatura', 'fulano')
         query = create_resource.QUERY_INSERT_TRIPLES % {"triples": '<fulano> a <criatura>; <gosta-de> <ciclano>', "prefix": "", "graph_uri": self.graph_uri}
-        expected_response = {
-            u'head': {u'link': [], u'vars': [u'callret-0']},
-            u'results': {u'bindings': [{u'callret-0': {u'type': u'literal',
-                                            u'value': u'Insert into <http://fofocapedia.org/>, 2 (or less) triples -- done'}}],
-            u'distinct': False,
-            u'ordered': True}}
+        # expected_response = {
+        #     u'head': {u'link': [], u'vars': [u'callret-0']},
+        #     u'results': {u'bindings': [{u'callret-0': {u'type': u'literal',
+        #                                     u'value': u'Insert into <http://fofocapedia.org/>, 2 (or less) triples -- done'}}],
+        #     u'distinct': False,
+        #     u'ordered': True}}
         self.query(query)
         self.assertInstanceExist('criatura', 'fulano')

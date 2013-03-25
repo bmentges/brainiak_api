@@ -2,7 +2,7 @@ import unittest
 import uuid
 
 from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri, get_one_value, filter_values, has_lang, is_result_empty, \
-    some_triples_deleted, UnexpectedResultException
+    some_triples_deleted, UnexpectedResultException, is_response_successful
 from brainiak.prefixes import MemorizeContext
 
 
@@ -135,6 +135,27 @@ class GetOneTestCase(unittest.TestCase):
         computed = get_one_value(self.response, "chave_inexistente")
         expected = False
         self.assertEqual(computed, expected)
+
+
+class IsResponseSuccessfulTestCase(unittest.TestCase):
+
+    def test_is_response_successful_true(self):
+        msg = "Insert into <http://semantica.globo.com/sample-place/>, 7 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertTrue(is_response_successful(fake_response))
+
+    def test_is_response_successful_false_with_0_tuples(self):
+        msg = "Insert into <http://semantica.globo.com/sample-place/>, 0 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertFalse(is_response_successful(fake_response))
+
+    def test_is_response_successful_false_with_different_message(self):
+        msg = "Failed"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertFalse(is_response_successful(fake_response))
+
+    def test_is_response_successful_false_with_no_response(self):
+        self.assertFalse(is_response_successful(None))
 
 
 class SomeTriplesDeletedTestCase(unittest.TestCase):

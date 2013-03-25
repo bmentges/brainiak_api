@@ -100,6 +100,19 @@ def is_uri(something):
     return False
 
 
+def is_compressed_uri(candidate, extra_prefixes={}):
+    if is_uri(candidate):
+        return False
+    try:
+        slug, item_ = candidate.split(":")
+    except ValueError:
+        return False
+    else:
+        if _MAP_SLUG_TO_PREFIX.get(slug) or extra_prefixes.get(slug):
+            return True
+    return False
+
+
 def expand_uri(short_uri):
     if is_uri(short_uri):
         return short_uri

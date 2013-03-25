@@ -9,6 +9,7 @@ Here we list the available services for managing them.
 .. toctree::
    :maxdepth: 3
 
-   get_instance.rst
+   create_instance.rst
    list_instance.rst
+   get_instance.rst
    delete_instance.rst

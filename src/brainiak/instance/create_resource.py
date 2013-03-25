@@ -1,12 +1,12 @@
 from brainiak import triplestore
 from brainiak.prefixes import is_compressed_uri, is_uri, shorten_uri
-from brainiak.utils.sparql import create_instance_uri, has_lang
+from brainiak.utils import sparql
 
 
 # TODO: test
 def create_instance(query_params, instance_data):
     class_uri = query_params["class_uri"]
-    instance_uri = create_instance_uri(class_uri)
+    instance_uri = sparql.create_instance_uri(class_uri)
 
     triples = create_explicit_triples(instance_uri, instance_data)
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
@@ -17,8 +17,6 @@ def create_instance(query_params, instance_data):
     string_prefixes = join_prefixes(prefixes)
     response = query_create_instances(string_triples, string_prefixes, query_params["graph_uri"])
     return instance_uri
-
-{u'head': {u'link': [], u'vars': [u'callret-0']}, u'results': {u'distinct': False, u'bindings': [{u'callret-0': {u'type': u'literal', u'value': u'Insert into <http://semantica.globo.com/place/>, 7 (or less) triples -- done'}}], u'ordered': True}}
 
 
 def create_implicit_triples(instance_uri, class_uri):
@@ -66,7 +64,7 @@ def create_explicit_triples(instance_uri, instance_data):
             else:
                 # TODO: add literal type
                 # TODO-2: if literal is string and not i18n, add lang
-                if has_lang(object_value):
+                if sparql.has_lang(object_value):
                     object_ = object_value
                 else:
                     object_ = '"%s"' % object_value

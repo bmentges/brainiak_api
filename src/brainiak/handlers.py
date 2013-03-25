@@ -9,7 +9,7 @@ from tornado.httpclient import HTTPResponse
 
 
 from brainiak import __version__, log, settings, triplestore
-from brainiak.schema.resource import get_schema
+from brainiak.schema import resource as schema_resource
 from brainiak.instance.get_resource import get_instance
 from brainiak.instance.list_resource import filter_instances
 from brainiak.instance.delete_resource import delete_instance
@@ -25,7 +25,7 @@ def get_routes():
         URLSpec(r'/status/virtuoso', VirtuosoStatusHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)', InstanceHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)', ClassHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)', CollectionHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
     ]
 
@@ -132,7 +132,7 @@ class SchemaHandler(BrainiakRequestHandler):
         }
         self.query_params = self.override_defaults_with_arguments(query_params)
 
-        response = get_schema(self.query_params)
+        response = schema_resource.get_schema(self.query_params)
 
         self.finalize(response)
 
@@ -207,13 +207,13 @@ class InstanceHandler(BrainiakRequestHandler):
             self.finish()
 
 
-class ClassHandler(BrainiakRequestHandler):
+class CollectionHandler(BrainiakRequestHandler):
 
     DEFAULT_PER_PAGE = "10"
     DEFAULT_PAGE = "0"
 
     def __init__(self, *args, **kwargs):
-        super(ClassHandler, self).__init__(*args, **kwargs)
+        super(CollectionHandler, self).__init__(*args, **kwargs)
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
@@ -259,16 +259,17 @@ class ClassHandler(BrainiakRequestHandler):
         if class_prefix:
             query_params["class_uri"] = "%s/%s" % (class_prefix, class_name)
 
-        schema = get_schema(query_params)
+        schema = schema_resource.get_schema(query_params)
         if schema is None:
             raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
 
         instance_data = json.loads(self.request.body)
-        response = create_instance(query_params, instance_data)
+        resource_id = create_instance(query_params, instance_data)
 
         self.set_status(201)
+        self.set_header("location", resource_id)
         self.query_params = query_params
-        self.finalize(response)
+        self.finalize("ok")
 
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')

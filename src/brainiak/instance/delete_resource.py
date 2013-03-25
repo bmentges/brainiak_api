@@ -13,8 +13,7 @@ def delete_instance(query_params):
         # TODO message with dependants URIs
         raise HTTPError(409, log_message="")
 
-    query_result_dict = query_delete(graph_uri,
-                                     instance_uri)
+    query_result_dict = query_delete(graph_uri, instance_uri)
 
     if some_triples_deleted(query_result_dict, graph_uri):
         return True

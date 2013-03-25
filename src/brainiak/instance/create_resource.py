@@ -1,3 +1,4 @@
+from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.utils.sparql import create_explicit_triples, create_instance_uri
 
@@ -15,6 +16,8 @@ def create_instance(query_params, instance_data):
     prefixes = instance_data.get("@context", {})
     string_prefixes = join_prefixes(prefixes)
     response = query_create_instances(string_triples, string_prefixes, query_params["graph_uri"])
+    if not is_response_successful(response):
+        raise HTTPError(500, log_message="Triplestore could not insert triples.")
     return instance_uri
 
 

@@ -11,6 +11,16 @@ def edit_instance(query_params):
     query_edit_instance(query_params)
 
 
+MODIFY_QUERY = u"""
+MODIFY GRAPH <%(graph_uri)s>
+DELETE
+{ <%(instance_uri)s> ?predicate ?old_value }
+%(insert_triples)s
+WHERE
+{ <%(instance_uri)s> ?predicate ?old_value }
+"""
+
+
 def query_edit_instance(query_params):
     pass
 

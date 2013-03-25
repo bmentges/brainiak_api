@@ -77,6 +77,15 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertIn("HTTP error: 500\nException:\n", body["error"])
 
     @patch("brainiak.handlers.log")
+    def test_create_instance_500_internal_error(self, log):
+        response = self.fetch('/place/City',
+            method='POST',
+            body="invalid input")
+        self.assertEqual(response.code, 400)
+        body = json.loads(response.body)
+        self.assertEquals(body["error"], 'HTTP error: 400\nNo JSON object could be decoded')
+
+    @patch("brainiak.handlers.log")
     def test_create_instance_404_inexistant_class(self, log):
         payload = {}
         response = self.fetch('/xubiru/X',

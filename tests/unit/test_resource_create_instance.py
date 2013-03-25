@@ -1,5 +1,7 @@
 import unittest
-from brainiak.instance.create_resource import create_explicit_triples, create_implicit_triples, join_prefixes, join_triples, unpack_tuples
+from tornado.web import HTTPError
+from brainiak.instance import create_resource
+from brainiak.instance.create_resource import create_explicit_triples, create_implicit_triples, join_prefixes, join_triples, unpack_tuples, is_response_successful, create_instance
 
 
 class CreateTriplesTestCase(unittest.TestCase):
@@ -130,3 +132,42 @@ class CreateTriplesTestCase(unittest.TestCase):
         computed = join_prefixes(prefixes)
         expected = 'PREFIX upper: <http://upper.com>\nPREFIX base: <http://base.com>'
         self.assertEqual(computed, expected)
+
+    def test_is_response_successful_true(self):
+        msg = "Insert into <http://semantica.globo.com/sample-place/>, 7 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertTrue(is_response_successful(fake_response))
+
+    def test_is_response_successful_false_with_0_tuples(self):
+        msg = "Insert into <http://semantica.globo.com/sample-place/>, 0 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertFalse(is_response_successful(fake_response))
+
+    def test_is_response_successful_false_with_different_message(self):
+        msg = "Failed"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertFalse(is_response_successful(fake_response))
+
+    def test_is_response_successful_false_with_no_response(self):
+        self.assertFalse(is_response_successful(None))
+
+
+class MockedTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.original_query_create_instances = create_resource.query_create_instances
+        self.original_create_explicit_triples = create_resource.create_explicit_triples
+        self.original_create_implicit_triples = create_resource.create_implicit_triples
+
+    def tearDown(self):
+        create_resource.query_create_instances = self.original_query_create_instances
+        create_resource.create_explicit_triples = self.original_create_explicit_triples
+        create_resource.create_implicit_triples = self.original_create_implicit_triples
+
+    def test_create_instance_raises_500(self):
+        query_params = {"class_uri": "anything", "graph_uri": "anything"}
+        create_resource.query_create_instances = lambda x,y,z: None
+        create_resource.create_explicit_triples = lambda x,y: []
+        create_resource.create_implicit_triples = lambda x,y: []
+        self.assertRaises(HTTPError, create_instance, query_params, {})
+

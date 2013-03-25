@@ -1,12 +1,14 @@
+import re
+from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.prefixes import is_compressed_uri, is_uri, shorten_uri
-from brainiak.utils import sparql
+from brainiak.utils.sparql import create_instance_uri, has_lang
 
 
 # TODO: test
 def create_instance(query_params, instance_data):
     class_uri = query_params["class_uri"]
-    instance_uri = sparql.create_instance_uri(class_uri)
+    instance_uri = create_instance_uri(class_uri)
 
     triples = create_explicit_triples(instance_uri, instance_data)
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
@@ -16,7 +18,23 @@ def create_instance(query_params, instance_data):
     prefixes = instance_data.get("@context", {})
     string_prefixes = join_prefixes(prefixes)
     response = query_create_instances(string_triples, string_prefixes, query_params["graph_uri"])
+    if not is_response_successful(response):
+        raise HTTPError(500, log_message="Triplestore could not insert triples.")
     return instance_uri
+
+
+INSERT_RESPONSE_PATTERN = re.compile(r'Insert into \<.+?\>, (\d+) \(or less\) triples -- done')
+
+
+def is_response_successful(response):
+    try:
+        inserted = response['results']['bindings'][0]['callret-0']['value']
+        match = INSERT_RESPONSE_PATTERN.match(inserted)
+        if match:
+            return int(match.group(1)) > 0
+    except:
+        pass
+    return False
 
 
 def create_implicit_triples(instance_uri, class_uri):
@@ -64,7 +82,7 @@ def create_explicit_triples(instance_uri, instance_data):
             else:
                 # TODO: add literal type
                 # TODO-2: if literal is string and not i18n, add lang
-                if sparql.has_lang(object_value):
+                if has_lang(object_value):
                     object_ = object_value
                 else:
                     object_ = '"%s"' % object_value

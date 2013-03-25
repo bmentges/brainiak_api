@@ -5,10 +5,6 @@ import sys
 import traceback
 
 from tornado.web import HTTPError, RequestHandler, URLSpec
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 
 from brainiak import __version__, log, settings, triplestore
 from brainiak.schema import resource as schema_resource

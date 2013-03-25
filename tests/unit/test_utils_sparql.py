@@ -5,7 +5,7 @@ from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri,
     get_one_value, filter_values, has_lang, is_result_empty, \
     some_triples_deleted, UnexpectedResultException, is_result_true, \
     create_explicit_triples, unpack_tuples, create_implicit_triples, join_prefixes, \
-    join_triples
+    join_triples, is_response_successful
 from brainiak.prefixes import MemorizeContext
 
 

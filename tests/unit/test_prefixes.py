@@ -68,7 +68,7 @@ class ExtractPrefixTestCase(unittest.TestCase):
     def test_prefix_is_substring_of_other_prefix(self):
         # Mock
         prefixes._MAP_PREFIX_TO_SLUG["http://some"] = None
-        prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/"] ="place"
+        prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/"] = "place"
         prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/City"] = "place"
         self.assertEqual("http://someprefix/place/City", extract_prefix("http://someprefix/place/City"))
 

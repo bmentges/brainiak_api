@@ -1,5 +1,5 @@
-import json
-from unittest import TestCase
+import pycurl
+from tornado.httpclient import HTTPRequest
 from tornado.testing import AsyncTestCase, AsyncHTTPTestCase
 from brainiak import server, greenlet_tornado
 
@@ -27,6 +27,14 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
     # Disabling timeout for debugging purposes
     def wait(self, condition=None, timeout=None):
         return super(TornadoAsyncHTTPTestCase, self).wait(condition, timeout)
+
+    def fetch(self, path, **kwargs):
+        request = HTTPRequest(url=self.get_url(path),
+                              method=kwargs.get('method','GET'),
+                              body=kwargs.get('body',''))
+        request.allow_nonstandard_methods = True
+        self.http_client.fetch(request, self.stop, **kwargs)
+        return self.wait()
 
 
 class MockRequest(object):

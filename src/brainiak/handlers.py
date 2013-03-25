@@ -5,7 +5,6 @@ import sys
 import traceback
 
 from tornado.web import HTTPError, RequestHandler, URLSpec
-from tornado.httpclient import HTTPResponse
 
 
 from brainiak import __version__, log, settings, triplestore

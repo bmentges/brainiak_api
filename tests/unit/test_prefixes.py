@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from brainiak.prefixes import _MAP_SLUG_TO_PREFIX, expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError, is_compressed_uri
+from brainiak import prefixes
+from brainiak.prefixes import expand_uri, prefix_to_slug, safe_slug_to_prefix, shorten_uri, slug_to_prefix, MemorizeContext, uri_to_slug, prefix_from_uri, PrefixError, extract_prefix
 
 
 class PrefixesTestCase(unittest.TestCase):
 
     def test_prefix_contains_obligatory_keys(self):
-        existing_keys = sorted(_MAP_SLUG_TO_PREFIX.keys())
+        existing_keys = sorted(prefixes._MAP_SLUG_TO_PREFIX.keys())
         expected_keys = ['base', 'dbpedia', 'dc', 'dct', 'ego', 'esportes',
-            'eureka', 'event', 'foaf', 'g1', 'geo', 'glb', 'organization',
-            'owl', 'person', 'place', 'rdf', 'rdfs', 'schema', 'time', 'tvg',
-            'upper', 'xsd']
+                         'eureka', 'event', 'foaf', 'g1', 'geo', 'glb', 'organization',
+                         'owl', 'person', 'place', 'rdf', 'rdfs', 'schema', 'time', 'tvg',
+                         'upper', 'xsd']
         self.assertEqual(len(existing_keys), 23)
         self.assertEqual(existing_keys, expected_keys)
 
@@ -57,17 +58,21 @@ class PrefixesTestCase(unittest.TestCase):
     def test_is_compressed_uri_given_a_literal(self):
         self.assertEqual(is_compressed_uri("oi"), False)
 
-    def test_is_compressed_uri_given_a_compressed_uri(self):
-        self.assertEqual(is_compressed_uri("person:Person"), True)
+class ExtractPrefixTestCase(unittest.TestCase):
 
-    def test_is_compressed_uri_given_a_compressed_uri_with_invalid_prefix_slug(self):
-        self.assertEqual(is_compressed_uri("unexistent:Xubi"), False)
+    def setUp(self):
+        self.original_prefix_to_slug = prefixes._MAP_PREFIX_TO_SLUG
+        prefixes._MAP_PREFIX_TO_SLUG = {}
 
-    def test_is_compressed_uri_given_a_uncompressed_uri(self):
-        self.assertEqual(is_compressed_uri("http://something.org/xubiru"), False)
+    def tearDown(self):
+        prefixes._MAP_PREFIX_TO_SLUG = self.original_prefix_to_slug
 
-    def test_is_compressed_uri_given_a_compressed_and_prefixes(self):
-        self.assertEqual(is_compressed_uri("newslug:xubiru", {"newslug": "http://newslug.com"}), True)
+    def test_prefix_is_substring_of_other_prefix(self):
+        # Mock
+        prefixes._MAP_PREFIX_TO_SLUG["http://some"] = None
+        prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/"] ="place"
+        prefixes._MAP_PREFIX_TO_SLUG["http://someprefix/place/City"] = "place"
+        self.assertEqual("http://someprefix/place/City", extract_prefix("http://someprefix/place/City"))
 
 
 class MemorizeContextTestCase(unittest.TestCase):

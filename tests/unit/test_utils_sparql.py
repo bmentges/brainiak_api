@@ -2,7 +2,7 @@ import unittest
 import uuid
 
 from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri, get_one_value, filter_values, has_lang, is_result_empty, \
-    some_triples_deleted, UnexpectedResultException
+    some_triples_deleted, UnexpectedResultException, is_result_true
 from brainiak.prefixes import MemorizeContext
 
 
@@ -163,3 +163,18 @@ class LiteralLangTestCase(unittest.TestCase):
 
     def test_has_lang_literal_false(self):
         self.assertEqual(has_lang("not i18n"), False)
+
+
+class IsResultTrueTestCase(unittest.TestCase):
+
+    def test_is_result_true(self):
+        result_dict = {"head": {"link": []}, "boolean": True}
+        self.assertTrue(is_result_true(result_dict))
+
+    def test_is_result_false(self):
+        result_dict = {"head": {"link": []}, "boolean": False}
+        self.assertFalse(is_result_true(result_dict))
+
+    def test_is_result_false_boolean_not_in_dict(self):
+        result_dict = {"head": {"link": [], "vars": ["callret-0"]}, "results": {"distinct": False, "ordered": True, "bindings": [{"callret-0": {"type": "literal", "value": "Unknown message"}}]}}
+        self.assertFalse(is_result_true(result_dict))

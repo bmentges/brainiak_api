@@ -95,6 +95,8 @@ item
 Refers to a URI containing a `URI template`_ (e.g. ``http://localhost:5100/person/Person/{resource_id}``) to retrieve a specific item
 of a list.
 
+.. _`URI template`: http://tools.ietf.org/html/rfc6570
+
 Method: GET
 
 first
@@ -120,7 +122,7 @@ previous
 Refers to the previous item in a list (e.g. the previous page)
 
 Ontology relations links
-----
+------------------------
 
 A flexible relation type is related to the structure of the underlying ontology.
 For example, when retrieving a schema for a class, we show specific relations

@@ -1,8 +1,7 @@
-import re
 from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.prefixes import is_compressed_uri, is_uri, shorten_uri
-from brainiak.utils.sparql import create_instance_uri, has_lang
+from brainiak.utils.sparql import create_instance_uri, has_lang, is_response_successful
 
 
 # TODO: test
@@ -21,20 +20,6 @@ def create_instance(query_params, instance_data):
     if not is_response_successful(response):
         raise HTTPError(500, log_message="Triplestore could not insert triples.")
     return instance_uri
-
-
-INSERT_RESPONSE_PATTERN = re.compile(r'Insert into \<.+?\>, (\d+) \(or less\) triples -- done')
-
-
-def is_response_successful(response):
-    try:
-        inserted = response['results']['bindings'][0]['callret-0']['value']
-        match = INSERT_RESPONSE_PATTERN.match(inserted)
-        if match:
-            return int(match.group(1)) > 0
-    except:
-        pass
-    return False
 
 
 def create_implicit_triples(instance_uri, class_uri):

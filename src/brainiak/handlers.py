@@ -182,7 +182,7 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def patch(self, context_name, class_name, instance_id):
-        query_params = {
+        self.query_params = {
             "context_name": context_name,
             "class_name": class_name,
             "instance_id": instance_id,
@@ -190,23 +190,23 @@ class InstanceHandler(BrainiakRequestHandler):
             "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
         }
         if self.request.arguments:
-            self.query_params = self.override_defaults_with_arguments(query_params)
+            self.query_params = self.override_defaults_with_arguments(self.query_params)
 
-        query_params["instance_uri"] = self.resolve_instance_uri(query_params)
+        self.query_params["instance_uri"] = self.resolve_instance_uri(self.query_params)
 
         response = edit_instance(self.query_params)
         self.finalize(response)
 
     @greenlet_asynchronous
     def delete(self, context_name, class_name, instance_id):
-        query_params = {
+        self.query_params = {
             "context_name": context_name,
             "class_name": class_name,
             "instance_id": instance_id,
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
             "instance_prefix": ""
         }
-        self.query_params = self.override_defaults_with_arguments(query_params)
+        self.query_params = self.override_defaults_with_arguments(self.query_params)
 
         self.query_params["instance_uri"] = self.resolve_instance_uri(self.query_params)
 

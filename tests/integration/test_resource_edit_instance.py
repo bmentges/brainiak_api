@@ -47,20 +47,20 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         response = self.fetch('/test/place/InexistentCity', method='PATCH')
         self.assertEqual(response.code, 404)
 
-    @patch("brainiak.handlers.log")
-    @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
-    def test_edit_instance_200_adding_predicate(self, log, settings):
-        actual_new_york = self.fetch('/test/place/new_york', method='GET')
-        self.assertEqual(actual_new_york.code, 200)
-        actual_new_york_dict = json.loads(actual_new_york.body)
-        self.assertIn("rdfs:label", actual_new_york_dict)
-        self.assertIn("rdfs:comment", actual_new_york_dict)
-
-        modified_new_york = self.fetch('/test/place/new_york', method='PATCH')
-        self.assertEqual(modified_new_york.code, 200)
-        modified_new_york_dict = json.loads(modified_new_york.body)
-        self.assertIn("rdfs:label", modified_new_york_dict)
-        self.assertIn("rdfs:comment", modified_new_york_dict)
-        self.assertIn("place:partOfContinent", modified_new_york_dict)
-        self.assertEqual(modified_new_york_dict["place:partOfContinent"],
-                         self.JSON_new_york_ADD_CONTINENT["place:partOfContinent"])
+#    @patch("brainiak.handlers.log")
+#    @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
+#    def test_edit_instance_200_adding_predicate(self, log, settings):
+#        actual_new_york = self.fetch('/test/place/new_york', method='GET')
+#        self.assertEqual(actual_new_york.code, 200)
+#        actual_new_york_dict = json.loads(actual_new_york.body)
+#        self.assertIn("rdfs:label", actual_new_york_dict)
+#        self.assertIn("rdfs:comment", actual_new_york_dict)
+#
+#        modified_new_york = self.fetch('/test/place/new_york', method='PATCH')
+#        self.assertEqual(modified_new_york.code, 200)
+#        modified_new_york_dict = json.loads(modified_new_york.body)
+#        self.assertIn("rdfs:label", modified_new_york_dict)
+#        self.assertIn("rdfs:comment", modified_new_york_dict)
+#        self.assertIn("place:partOfContinent", modified_new_york_dict)
+#        self.assertEqual(modified_new_york_dict["place:partOfContinent"],
+#                         self.JSON_new_york_ADD_CONTINENT["place:partOfContinent"])

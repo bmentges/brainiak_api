@@ -269,7 +269,7 @@ class CollectionHandler(BrainiakRequestHandler):
         self.set_status(201)
         self.set_header("location", resource_id)
         self.query_params = query_params
-        self.finalize("ok")
+        self.finalize("")
 
     def finalize(self, response):
         self.set_header('Access-Control-Allow-Origin', '*')

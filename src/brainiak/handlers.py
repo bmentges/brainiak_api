@@ -5,6 +5,10 @@ import sys
 import traceback
 
 from tornado.web import HTTPError, RequestHandler, URLSpec
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 
 from brainiak import __version__, log, settings, triplestore
 from brainiak.schema import resource as schema_resource
@@ -149,6 +153,14 @@ class InstanceHandler(BrainiakRequestHandler):
     def __init__(self, *args, **kwargs):
         super(InstanceHandler, self).__init__(*args, **kwargs)
 
+    def resolve_instance_uri(self, query_params):
+        if query_params.get("instance_prefix"):
+            prefix = safe_slug_to_prefix(query_params["instance_prefix"])
+            return "%s%s" % (prefix, query_params["instance_id"])
+        else:
+            return "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, query_params["context_name"],
+                                           query_params["class_name"], query_params["instance_id"])
+
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
         query_params = {
@@ -160,14 +172,11 @@ class InstanceHandler(BrainiakRequestHandler):
             "lang": settings.DEFAULT_LANG,
             "instance_prefix": "",
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
-            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
         }
 
         query_params = self.override_defaults_with_arguments(query_params)
 
-        if query_params.get("instance_prefix"):
-            prefix = safe_slug_to_prefix(query_params["instance_prefix"])
-            query_params["instance_uri"] = "%s%s" % (prefix, query_params["instance_id"])
+        query_params["instance_uri"] = self.resolve_instance_uri(query_params)
 
         response = get_instance(query_params)
 
@@ -196,9 +205,11 @@ class InstanceHandler(BrainiakRequestHandler):
             "class_name": class_name,
             "instance_id": instance_id,
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
-            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
+            "instance_prefix": ""
         }
         self.query_params = self.override_defaults_with_arguments(query_params)
+
+        self.query_params["instance_uri"] = self.resolve_instance_uri(self.query_params)
 
         deleted = delete_instance(self.query_params)
 

@@ -73,7 +73,7 @@ class SubpropertyEntailmentQueryTestCase(QueryTestCase):
 QUERY_LIST_GRAPHS = """
 SELECT DISTINCT ?graph
 WHERE {
-    GRAPH ?graph {?s ?p ?o}
+    GRAPH ?graph {?s a ?o}
 }
 """
 

@@ -19,8 +19,9 @@ the whole collection of instances of this specific class or we want the schema o
 
 Thus, the _schema suffix is used to distinguish these two use cases.
 
+
 Possible responses
--------------------
+------------------
 
 
 Status 200

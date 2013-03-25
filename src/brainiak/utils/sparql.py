@@ -97,6 +97,20 @@ def is_result_empty(result_dict):
     return not result_dict['results']['bindings']
 
 
+INSERT_RESPONSE_PATTERN = re.compile(r'Insert into \<.+?\>, (\d+) \(or less\) triples -- done')
+
+
+def is_response_successful(response):
+    try:
+        inserted = response['results']['bindings'][0]['callret-0']['value']
+        match = INSERT_RESPONSE_PATTERN.match(inserted)
+        if match:
+            return int(match.group(1)) > 0
+    except:
+        pass
+    return False
+
+
 def some_triples_deleted(result_dict, graph_uri):
     """
     Return True if result_dict['results']['bindings'][0]['callret-0']['value'] has a message like

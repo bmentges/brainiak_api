@@ -94,7 +94,6 @@ def join_prefixes(prefixes_dict):
 
 
 QUERY_INSERT_TRIPLES = """
-DEFINE input:inference <http://semantica.globo.com/place/ruleset>
 %(prefix)s
 INSERT DATA INTO <%(graph_uri)s>
 {

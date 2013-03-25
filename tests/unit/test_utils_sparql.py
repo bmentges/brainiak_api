@@ -140,6 +140,27 @@ class GetOneTestCase(unittest.TestCase):
         self.assertEqual(computed, expected)
 
 
+class IsResponseSuccessfulTestCase(unittest.TestCase):
+
+    def test_is_response_successful_true(self):
+        msg = "Insert into <http://semantica.globo.com/sample-place/>, 7 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertTrue(is_response_successful(fake_response))
+
+    def test_is_response_successful_false_with_0_tuples(self):
+        msg = "Insert into <http://semantica.globo.com/sample-place/>, 0 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertFalse(is_response_successful(fake_response))
+
+    def test_is_response_successful_false_with_different_message(self):
+        msg = "Failed"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertFalse(is_response_successful(fake_response))
+
+    def test_is_response_successful_false_with_no_response(self):
+        self.assertFalse(is_response_successful(None))
+
+
 class SomeTriplesDeletedTestCase(unittest.TestCase):
 
     def test_deleted_triples(self):

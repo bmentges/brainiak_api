@@ -1,13 +1,14 @@
-API concepts
+Concepts
 =============
+
 
 Here we explain the main concepts of the API, i.e. this is
 our `ubiquitous language <http://martinfowler.com/bliki/UbiquitousLanguage.html>`_.
 
 .. _concept_context:
 
-Context
--------
+
+**Context**
 
 Context is an isolated data space, defined by some unique ``context_id``.
 This ``context_id`` will also be used as a namespace.
@@ -16,8 +17,8 @@ A context can represent, for example, the product or the app being developed.
 
 .. _concept_schema:
 
-Schema
-------
+**Schema**
+
 
 Usually database models work with a clear distinction between instances (data) and schema (metadata).
 We also make this distinction on the API interface.
@@ -39,8 +40,8 @@ format, the most compact serialization for ontologies developed in the RDF/OWL m
 
 .. _concept_collection:
 
-Collection
-----------
+**Collection**
+
 
 A schema defines a group of instances of the same type.
 This group is hereby named a collection.
@@ -49,15 +50,15 @@ The collection name is the same as the schema (or class) name.
 
 .. _concept_instance:
 
-Instance
---------
+**Instance**
+
 
 Instances must be easily retrieved and "instance queries" must be really simple
 for developers to understand as they will do way more requests on instances than on schemas.
 As such, the interface for manipulating instances also accept JSON as content_type as most of the RESTful APIs do.
 
-Links in response
------------------
+**Links in response**
+
 
 In hypermedia APIs you should be able to navigate through API services from the ``/``.
 In each service there is a link to other related resources. For example, if you

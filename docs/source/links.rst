@@ -36,28 +36,24 @@ Therefore, in the response we have a ``links`` section like this:
 
 The possible link relations are (defined in the ``rel`` key):
 
-self
-----
+**self**
 
 The resource URI itself, i.e. an identifier to the link's context.
 
 Method: GET
 
-create
-------
+**create**
 
 Refers to a resource that can be used to create a resource of the same type
 as the link's context.
 
-edit
-----
+**edit**
 
 Refers to a resource that can be used to edit the link's context.
 
 Method: PATCH
 
-replace
--------
+**replace**
 
 Refers to a resource that can be used to edit the link's context entirely, i.e. the difference
 from edit to replace is that the resource will be removed and inserted again.
@@ -68,29 +64,25 @@ More about the `difference between HTTP PUT and PATCH`_.
 
 .. _`difference between HTTP PUT and PATCH`: http://tools.ietf.org/html/rfc5789
 
-delete
-------
+**delete**
 
 Delete the current resource.
 
 Method: DELETE
 
-describedBy
------------
+**describedBy**
 
 Refers to a resource providing information about the link's context.
 
 Method: GET
 
-list
-----
+**list**
 
 Refers to the list of resources of the sama type as the link's context.
 
 Method: GET
 
-item
-----
+**item**
 
 Refers to a URI containing a `URI template`_ (e.g. ``http://localhost:5100/person/Person/{resource_id}``) to retrieve a specific item
 of a list.
@@ -99,30 +91,25 @@ of a list.
 
 Method: GET
 
-first
------
+**first**
 
 Refers to the first item of a list.
 
 Method: GET
 
-last
-----
+**last**
 
 Refers to the last item of a list.
 
-next
-----
+**next**
 
 Refers to the next item in a list (e.g. the next page)
 
-previous
---------
+**previous**
 
 Refers to the previous item in a list (e.g. the previous page)
 
-Ontology relations links
-------------------------
+**Ontology relations links**
 
 A flexible relation type is related to the structure of the underlying ontology.
 For example, when retrieving a schema for a class, we show specific relations

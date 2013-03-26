@@ -5,8 +5,7 @@ A schema is where the definition of the data structure resides.
 
 In this service, we can get a specific schema of a class in some context.
 
-Usage
------
+**Basic usage**
 
 .. code-block:: http
 
@@ -24,23 +23,22 @@ Possible responses
 ------------------
 
 
-Status 200
-__________
+**Status 200**
+
 
 If the class exists, the response body is a JSON representing the class schema.
 
 .. include :: examples/get_schema_200.rst
 
-Status 400
-__________
+**Status 400**
+
 
 If there are unknown parameters in the request, the response is a 400
 with a JSON informing the wrong parameters and the accepted ones.
 
 .. include :: examples/get_schema_400.rst
 
-Status 404
-__________
+**Status 404**
 
 If the class does not exist, the response is a 404 with a JSON
 informing the error

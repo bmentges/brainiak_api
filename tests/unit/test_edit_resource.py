@@ -25,4 +25,3 @@ class TestCaseInstanceResource(unittest.TestCase):
     def test_edit_instance_without_class_uri(self):
         query_params = {'instance_uri': 'anything', 'graph_uri': 'anything'}
         self.assertRaises(HTTPError, edit_resource.edit_instance, query_params, None)
-

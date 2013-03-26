@@ -332,3 +332,9 @@ class CreateExplicitTriples(unittest.TestCase):
         computed = join_prefixes(prefixes)
         expected = 'PREFIX upper: <http://upper.com>\nPREFIX base: <http://base.com>'
         self.assertEqual(computed, expected)
+
+    def test_join_prefixes_with_non_valid_field(self):
+        prefixes = {"valid": "http://valid.com", "@language": "pt"}
+        computed = join_prefixes(prefixes)
+        expected = 'PREFIX valid: <http://valid.com>'
+        self.assertEqual(computed, expected)

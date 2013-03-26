@@ -1,4 +1,4 @@
-import pycurl
+
 from tornado.httpclient import HTTPRequest
 from tornado.testing import AsyncTestCase, AsyncHTTPTestCase
 from brainiak import server, greenlet_tornado

@@ -3,11 +3,9 @@ import json
 from mock import patch
 
 from brainiak.instance import create_resource
-from brainiak.instance.delete_resource import QUERY_DELETE_INSTANCE
 from brainiak.instance.get_resource import QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE
 from brainiak.schema import resource as schema_resource
-from brainiak.utils import sparql
-from tests import TornadoAsyncHTTPTestCase, MockRequest
+from tests import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 
@@ -36,7 +34,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     fixtures = []
 
     def setUp(self):
-        self.original_create_instance_uri = sparql.create_instance_uri
+        self.original_create_instance_uri = create_resource.create_instance_uri
         self.original_schema_resource_get_schema = schema_resource.get_schema
         super(CollectionResourceTestCase, self).setUp()
 
@@ -46,7 +44,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         #    "instance_uri": 'http://semantica.globo.com/sample-place/City/unique-id'
         #}
         #self.query(query_string)
-        sparql.create_instance_uri = self.original_create_instance_uri
+        create_resource.create_instance_uri = self.original_create_instance_uri
         schema_resource.get_schema = self.original_schema_resource_get_schema
         super(CollectionResourceTestCase, self).tearDown()
 
@@ -98,7 +96,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.log")
     def test_create_instance_201(self, log):
         schema_resource.get_schema = lambda params: True
-        sparql.create_instance_uri = lambda class_uri: "http://unique-id"
+        create_resource.create_instance_uri = lambda class_uri: "http://unique-id"
         payload = JSON_CITY_GLOBOLAND
         response = self.fetch('/sample-place/City',
             method='POST',
@@ -112,11 +110,11 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.graph_uri = "http://fofocapedia.org/"
         self.assertInstanceDoesNotExist('criatura', 'fulano')
         query = create_resource.QUERY_INSERT_TRIPLES % {"triples": '<fulano> a <criatura>; <gosta-de> <ciclano>', "prefix": "", "graph_uri": self.graph_uri}
-        expected_response = {
-            u'head': {u'link': [], u'vars': [u'callret-0']},
-            u'results': {u'bindings': [{u'callret-0': {u'type': u'literal',
-                                            u'value': u'Insert into <http://fofocapedia.org/>, 2 (or less) triples -- done'}}],
-            u'distinct': False,
-            u'ordered': True}}
+        # expected_response = {
+        #     u'head': {u'link': [], u'vars': [u'callret-0']},
+        #     u'results': {u'bindings': [{u'callret-0': {u'type': u'literal',
+        #                                     u'value': u'Insert into <http://fofocapedia.org/>, 2 (or less) triples -- done'}}],
+        #     u'distinct': False,
+        #     u'ordered': True}}
         self.query(query)
         self.assertInstanceExist('criatura', 'fulano')

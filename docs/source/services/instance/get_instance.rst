@@ -6,9 +6,12 @@ This service retrieves all information about a instance, given its context, clas
 Usage
 -----
 
-.. code-block:: http
+.. code-block:: bash
 
-  GET 'http://localhost:5100/place/Country/Brazil'
+  $ curl -s 'http://api.semantica.dev.globoi.com/v2/person/Gender/Female'
+
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/v2/person/Gender/Female' | python -mjson.tool
+  :shell:
 
 Optional parameters
 -------------------

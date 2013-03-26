@@ -3,8 +3,7 @@ Create a Instance
 
 This service allows the creation of a new instance, provided its context, class name and JSON.
 
-Usage
------
+**Basic usage**
 
 .. code-block:: http
 
@@ -37,8 +36,7 @@ Possible responses
 ------------------
 
 
-Status 201
-__________
+**Status 201**
 
 The instance was created successfully, the response body is empty.
 The URI of the new instance is identified by the "Location" header in
@@ -47,8 +45,7 @@ the HTTP response.
 Note that the URI of a instance is not the same as the URL to retrieve
 a instance from the API. For retrieving it, use the retrieve instance primitive <>.
 
-Status 400
-__________
+**Status 400**
 
 If there are unknown parameters in the request, the response status code
 is 400 and the body contains a JSON containing valid and invalid parameters.
@@ -59,8 +56,7 @@ The 400 status may also happen when the JSON provided is invalid:
 
 .. include :: examples/create_instance_400.rst
 
-Status 404
-__________
+**Status 404**
 
 If the class does not exist, the response status code is 404.
 
@@ -70,8 +66,7 @@ If the class does not exist, the response status code is 404.
 
 .. include :: examples/create_instance_404.rst
 
-Status 500
-__________
+**Status 500**
 
 Internal server error. Please, contact the team <semantica@corp.globo.com>
 and provide the URL, JSON and error messaage.

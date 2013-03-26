@@ -1,4 +1,4 @@
-API Services
+Services
 =============
 
 The API services interfaces should be easy to remember,
@@ -13,8 +13,7 @@ For the meaning and rationale of these concepts in our API,
 see :ref:`concept_context`, :ref:`concept_schema`, :ref:`concept_collection`,
 and :ref:`concept_instance`.
 
-List of API Services
---------------------
+**List of API Services**
 
 .. toctree::
    :maxdepth: 3

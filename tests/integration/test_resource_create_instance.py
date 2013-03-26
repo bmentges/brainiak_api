@@ -29,6 +29,8 @@ JSON_CITY_GLOBOLAND = {
 class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
+
+    # the variables below have special meaning for QueryTestCase
     allow_triplestore_connection = True
     graph_uri = 'http://semantica.globo.com/sample-place/'
     fixtures = []
@@ -75,7 +77,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertIn("HTTP error: 500\nException:\n", body["error"])
 
     @patch("brainiak.handlers.log")
-    def test_create_instance_500_internal_error(self, log):
+    def test_create_instance_400_invalid_json(self, log):
         response = self.fetch('/place/City',
             method='POST',
             body="invalid input")

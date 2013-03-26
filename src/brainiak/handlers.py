@@ -194,7 +194,12 @@ class InstanceHandler(BrainiakRequestHandler):
 
         self.query_params["instance_uri"] = self.resolve_instance_uri(self.query_params)
 
-        response = edit_instance(self.query_params)
+        try:
+            instance_data = json.loads(self.request.body)
+        except ValueError:
+            raise HTTPError(400, log_message="No JSON object could be decoded")
+
+        response = edit_instance(self.query_params, instance_data)
         self.finalize(response)
 
     @greenlet_asynchronous

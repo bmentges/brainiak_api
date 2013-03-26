@@ -3,8 +3,7 @@ Delete a Instance
 
 This service deletes a instance, given its context, class name and instance id.
 
-Usage
------
+**Basic usage**
 
 .. code-block:: http
 
@@ -19,21 +18,18 @@ Optional parameters
 Possible responses
 -------------------
 
-Status 204
-__________
+**Status 204**
 
 If the `instance exists`_ and there is no conflict_, the response body is a 204 with no response body.
 
-Status 400
-__________
+**Status 400**
 
 If there are unknown parameters in the request, the response is a 400
 with a JSON informing the wrong parameters and the accepted ones.
 
 .. include :: examples/delete_instance_400.rst
 
-Status 404
-__________
+**Status 404**
 
 .. _`instance exists`:
 
@@ -42,8 +38,7 @@ informing the error
 
 .. include :: examples/delete_instance_404.rst
 
-Status 409
-__________
+**Status 409**
 
 .. _conflict:
 

@@ -17,6 +17,14 @@ Optional parameters
 -------------------
 
 - lang: Specify language of labels. Options: pt, en, undefined (do not filter labels)
+- instance_prefix: by default, the instance URI is defined by the API's convention (context_uri/class_name/instance_name). If the convention doesn't apply, provide instance_prefix so the URI will be: class_instance/instance_name.  Example:
+
+.. code-block:: http
+
+  GET 'http://localhost:5100/place/City/Campinas_SP?instance_prefix=http%3A//dbpedia.org/'
+
+If no **instance_prefix** had been provided, the instance URI above would be resolved as: http://semantica.globo.com/place/City/Campinas_SP. As **instance_prefix** was defined, the instance URI will be: http://dbpedia.org/Campinas_SP.
+
 
 Possible responses
 -------------------

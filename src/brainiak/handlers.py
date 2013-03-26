@@ -181,7 +181,7 @@ class InstanceHandler(BrainiakRequestHandler):
         self.finalize(response)
 
     @greenlet_asynchronous
-    def patch(self, context_name, class_name, instance_id):
+    def put(self, context_name, class_name, instance_id):
         self.query_params = {
             "context_name": context_name,
             "class_name": class_name,

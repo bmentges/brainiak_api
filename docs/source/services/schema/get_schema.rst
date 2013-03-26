@@ -7,9 +7,13 @@ In this service, we can get a specific schema of a class in some context.
 
 **Basic usage**
 
-.. code-block:: http
 
-  GET 'http://localhost:5100/place/City/_schema'
+.. code-block:: bash
+
+  $ curl -s 'http://api.semantica.dev.globoi.com/v2/place/City/_schema'
+
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/v2/place/City/_schema' | python -mjson.tool
+  :shell:
 
 Why _schema? In our data model we have a clear distinction between class schemas
 (structure of instances) and data (instances), and by using a request like

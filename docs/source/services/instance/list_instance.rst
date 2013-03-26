@@ -6,11 +6,14 @@ according a propert/value filter. The results are paginated.
 
 **Basic usage**
 
-.. code-block:: http
+.. code-block:: bash
 
-  GET 'http://localhost:5100/place/Country'
+  $ curl -s 'http://api.semantica.dev.globoi.com/v2/person/Gender'
 
-This will retrieve all instances of ``Country`` in the place ``graph``
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/v2/person/Gender' | python -mjson.tool
+  :shell:
+
+This will retrieve all instances of ``Gender`` in the place ``person``
 
 Optional parameters
 -------------------

@@ -100,13 +100,31 @@ def is_result_empty(result_dict):
 INSERT_RESPONSE_PATTERN = re.compile(r'Insert into \<.+?\>, (\d+) \(or less\) triples -- done')
 
 
-def is_response_successful(response):
+def is_insert_response_successful(response):
     try:
         inserted = response['results']['bindings'][0]['callret-0']['value']
         match = INSERT_RESPONSE_PATTERN.match(inserted)
         if match:
             return int(match.group(1)) > 0
-    except:
+    except (KeyError, TypeError):
+        pass
+    return False
+
+
+MODIFY_RESPONSE_PATTERN = re.compile(r'Modify \<.+?\>, delete (\d+) \(or less\) and insert (\d+) \(or less\) triples -- done')
+
+
+def is_modify_response_successful(response, n_deleted=None, n_inserted=None):
+    try:
+        inserted = response['results']['bindings'][0]['callret-0']['value']
+        match = MODIFY_RESPONSE_PATTERN.match(inserted)
+        if match:
+            if n_deleted is not None and int(match.group(1)) != n_deleted:
+                return False
+            if n_inserted is not None and int(match.group(2)) != n_inserted:
+                return False
+            return True
+    except (KeyError, TypeError):
         pass
     return False
 

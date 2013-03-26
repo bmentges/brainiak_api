@@ -5,7 +5,7 @@ from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri,
     get_one_value, filter_values, has_lang, is_result_empty, \
     some_triples_deleted, UnexpectedResultException, is_result_true, \
     create_explicit_triples, unpack_tuples, create_implicit_triples, join_prefixes, \
-    join_triples, is_response_successful
+    join_triples, is_insert_response_successful, is_modify_response_successful
 from brainiak.prefixes import MemorizeContext
 
 
@@ -140,25 +140,53 @@ class GetOneTestCase(unittest.TestCase):
         self.assertEqual(computed, expected)
 
 
-class IsResponseSuccessfulTestCase(unittest.TestCase):
+class IsInsertResponseSuccessfulTestCase(unittest.TestCase):
 
     def test_is_response_successful_true(self):
-        msg = "Insert into <http://semantica.globo.com/sample-place/>, 7 (or less) triples -- done"
+        msg = "Insert into <http://some_graph/sample-place/>, 1 (or less) triples -- done"
         fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
-        self.assertTrue(is_response_successful(fake_response))
+        self.assertTrue(is_insert_response_successful(fake_response))
 
     def test_is_response_successful_false_with_0_tuples(self):
-        msg = "Insert into <http://semantica.globo.com/sample-place/>, 0 (or less) triples -- done"
+        msg = "Insert into <http://some_graph/sample-place/>, 0 (or less) triples -- done"
         fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
-        self.assertFalse(is_response_successful(fake_response))
+        self.assertFalse(is_insert_response_successful(fake_response))
 
     def test_is_response_successful_false_with_different_message(self):
         msg = "Failed"
         fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
-        self.assertFalse(is_response_successful(fake_response))
+        self.assertFalse(is_insert_response_successful(fake_response))
 
     def test_is_response_successful_false_with_no_response(self):
-        self.assertFalse(is_response_successful(None))
+        self.assertFalse(is_insert_response_successful(None))
+
+
+class IsModifyResponseSuccessfulTestCase(unittest.TestCase):
+
+    def test_is_response_successful_true(self):
+        msg = "Modify <http://somegraph/bla>, delete 2 (or less) and insert 1 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertTrue(is_modify_response_successful(fake_response))
+
+    def test_is_response_successful_true_verify_delete_ok(self):
+        msg = "Modify <http://somegraph/bla>, delete 2 (or less) and insert 1 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertTrue(is_modify_response_successful(fake_response, n_deleted=2))
+
+    def test_is_response_successful_true_verify_delete_not_ok(self):
+        msg = "Modify <http://somegraph/bla>, delete 2 (or less) and insert 1 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertFalse(is_modify_response_successful(fake_response, n_deleted=3))
+
+    def test_is_response_successful_true_verify_insert_ok(self):
+        msg = "Modify <http://somegraph/bla>, delete 2 (or less) and insert 1 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertTrue(is_modify_response_successful(fake_response, n_inserted=1))
+
+    def test_is_response_successful_true_verify_insert_not_ok(self):
+        msg = "Modify <http://somegraph/bla>, delete 2 (or less) and insert 1 (or less) triples -- done"
+        fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
+        self.assertFalse(is_modify_response_successful(fake_response, n_inserted=0))
 
 
 class SomeTriplesDeletedTestCase(unittest.TestCase):

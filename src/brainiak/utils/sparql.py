@@ -219,8 +219,9 @@ PREFIX = """PREFIX %s: <%s>"""
 def join_prefixes(prefixes_dict):
     prefix_list = []
     for (slug, graph_uri) in prefixes_dict.items():
-        prefix = PREFIX % (slug, graph_uri)
-        prefix_list.append(prefix)
+        if not slug.startswith("@"):
+            prefix = PREFIX % (slug, graph_uri)
+            prefix_list.append(prefix)
     return "\n".join(prefix_list)
 
 

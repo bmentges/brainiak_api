@@ -5,11 +5,14 @@ This service allows the creation of a new instance, provided its context, class 
 
 **Basic usage**
 
-.. code-block:: http
+.. code-block:: bash
 
-  POST 'http://localhost:5100/place/City' new_city.json
+  $ curl -i -X POST -T "new_city.json" http://api.semantica.dev.globoi.com/v2/place/City
 
-Sample JSON for the class City_:
+.. program-output:: curl -i -s -H "Expect:" -X POST -T "services/instance/examples/new_city.json" http://api.semantica.dev.globoi.com/v2/place/City
+  :shell:
+
+Sample JSON "new_city.json" for the class City_:
 
 .. _City: http://api.semantica.dev.globoi.com/v2/place/City/_schema
 

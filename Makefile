@@ -10,7 +10,6 @@ install:
 	@echo "Installing dependencies..."
 	@pip install -r $(HOME_BRAINIAK)/requirements.txt
 	@pip install -r $(HOME_BRAINIAK)/requirements_test.txt
-	@pip install -r $(HOME_BRAINIAK)/docs/requirements.txt
 	@echo "Installing git hook"
 	@cp ./tools/git-hooks/pre-commit ./.git/hooks/pre-commit
 	@chmod ug+x ./.git/hooks/pre-commit

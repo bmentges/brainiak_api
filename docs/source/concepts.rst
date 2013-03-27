@@ -1,5 +1,5 @@
 Concepts
-=============
+========
 
 
 Here we explain the main concepts of the API, i.e. this is
@@ -41,6 +41,7 @@ format, the most compact serialization for ontologies developed in the RDF/OWL m
 
 
 .. _concept_collection:
+
 Collection
 ----------
 
@@ -51,6 +52,7 @@ The collection name is the same as the schema (or class) name.
 
 
 .. _concept_instance:
+
 Instance
 --------
 

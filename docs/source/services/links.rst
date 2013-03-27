@@ -1,8 +1,8 @@
 Links Specification
-===================
+-------------------
 
 In our API, successful responses have a ``links`` section that state
-possible actions for the resource being retrieved. For more about this concept, see :doc:`concepts`.
+possible actions for the resource being retrieved. For more about this concept, see :doc:`../concepts`.
 
 Therefore, in the response we have a ``links`` section like this:
 

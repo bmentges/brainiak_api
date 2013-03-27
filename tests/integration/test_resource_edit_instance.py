@@ -1,4 +1,4 @@
-from mock import patch
+from mock import patch, Mock
 import json
 from brainiak import server
 from brainiak.instance import create_resource, edit_resource
@@ -34,6 +34,26 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     def tearDown(self):
         pass
+
+    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
+    def test_edit_instance_500(self, log, settings):
+        actual_new_york = self.fetch(
+            '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+            method='GET')
+        self.assertEqual(actual_new_york.code, 200)
+        actual_new_york_dict = json.loads(actual_new_york.body)
+
+        config = {"side_effect": NotImplementedError}
+        patcher = patch("brainiak.handlers.edit_instance", ** config)
+        patcher.start()
+
+        response = self.fetch(
+            '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+            method='PUT',
+            body=json.dumps(actual_new_york_dict))
+        self.assertEqual(response.code, 500)
+        patcher.stop()
 
     @patch("brainiak.handlers.log")
     @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")

@@ -1,0 +1,21 @@
+@prefix gender: <http://test.com/person/Gender/> .
+@prefix person: <http://test.com/person/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+person:Gender a owl:Class .
+
+gender:Male rdf:type person:Gender ;
+            rdfs:label "Male"@en ;
+            rdfs:label "Masculino"@pt .
+
+gender:Female rdf:type person:Gender ;
+              rdfs:label "Female"@en ;
+              rdfs:label "Feminino"@pt .
+
+gender:Transgender rdf:type person:Gender ;
+                   rdfs:label "Transgender"@en ;
+                   rdfs:label "Transgênero"@pt .
+
+<http://test.com/other_prefix/Test> a person:Gender ;
+                                    rdfs:label "Teste"@en .

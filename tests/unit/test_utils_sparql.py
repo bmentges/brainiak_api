@@ -5,7 +5,7 @@ from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri,
     get_one_value, filter_values, has_lang, is_result_empty, \
     some_triples_deleted, UnexpectedResultException, is_result_true, \
     create_explicit_triples, unpack_tuples, create_implicit_triples, join_prefixes, \
-    join_triples, is_response_successful
+    join_triples, is_response_successful, add_language_support
 from brainiak.prefixes import MemorizeContext
 
 
@@ -338,3 +338,19 @@ class CreateExplicitTriples(unittest.TestCase):
         computed = join_prefixes(prefixes)
         expected = 'PREFIX valid: <http://valid.com>'
         self.assertEqual(computed, expected)
+
+
+class LanguageSupportTestCase(unittest.TestCase):
+
+    def test_language_tag_empty(self):
+        query_params = {"a": 1}
+        (response_params, language_tag) = add_language_support(query_params, "label")
+        self.assertEqual(response_params, query_params)
+
+    def test_language_supported_added(self):
+        expected_filter = 'FILTER(langMatches(lang(?label), "en") OR langMatches(lang(?label), ""))'
+
+        query_params = {"lang": "en"}
+        (response_params, language_tag) = add_language_support(query_params, "label")
+        self.assertIn(expected_filter, response_params["lang_filter"])
+        self.assertEquals("@en", language_tag)

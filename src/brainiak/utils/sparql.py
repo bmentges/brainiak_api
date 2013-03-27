@@ -15,6 +15,13 @@ def create_instance_uri(class_uri):
     return "%s/%s" % (class_uri, uuid.uuid4())
 
 
+def extract_instance_id(instance_uri):
+    """
+    Extract instance id from an instance URI.
+    """
+    return instance_uri.split("/")[-1]
+
+
 def get_one_value(result_dict, key):
     """
     Return first value mapped by 'key' inside the 'bindings' list of a Virtuoso response dict.

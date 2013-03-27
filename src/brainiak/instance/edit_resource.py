@@ -1,7 +1,7 @@
 from tornado.web import HTTPError
 
 from brainiak import triplestore
-from brainiak.utils.sparql import is_result_true, create_explicit_triples, create_implicit_triples, join_triples, is_modify_response_successful
+from brainiak.utils.sparql import is_result_true, create_explicit_triples, create_implicit_triples, create_instance_uri, extract_instance_id, join_triples, is_modify_response_successful
 
 
 def edit_instance(query_params, instance_data):

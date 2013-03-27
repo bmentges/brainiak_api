@@ -10,8 +10,8 @@ We follow the principles of `REST <http://en.wikipedia.org/wiki/Representational
 and `HATEOAS <http://en.wikipedia.org/wiki/HATEOAS>`_.
 
 For the meaning and rationale of these concepts in our API,
-see :ref:``_concept_context`, :ref:``_concept_schema``, :ref:``_concept_collection``,
-and :ref:``_concept_instance``.
+see :ref:`concept-context`, :ref:`concept-schema`, :ref:`concept-collection`,
+and :ref:`concept-instance`.
 
 **List of API Services**
 
@@ -20,6 +20,7 @@ and :ref:``_concept_instance``.
 
    services/schema/schema.rst
    services/instance/instance.rst
+   services/parameters.rst
    services/links.rst
    services/pagination.rst
    services/errors.rst
@@ -55,7 +56,7 @@ Interface examples
 
 Try it yourself: `Schema for Country`_
 
-.. _Schema for Country: ../place/Country/_schema
+.. _Schema for Country: http://api.semantica.dev.globoi.com/v2/place/Country/_schema
 
 **Get a instance of a collection**
 
@@ -65,4 +66,4 @@ Try it yourself: `Schema for Country`_
 
 Try it yourself: `Brazil (Country Instance)`_
 
-.. _Brazil (Country Instance): ../place/Country/Brazil
+.. _Brazil (Country Instance): http://api.semantica.dev.globoi.com/v2/place/Country/Brazil

@@ -1,7 +1,8 @@
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri
 from brainiak.utils.links import build_links
-from brainiak.utils.sparql import compress_keys_and_values, get_one_value
+from brainiak.utils.sparql import compress_keys_and_values, get_one_value, \
+    add_language_support
 
 
 QUERY_COUNT_FILTER_INSTANCE = """
@@ -29,18 +30,6 @@ OFFSET %(page)s
 """
 
 
-QUERY_FILTER_LABEL_BY_LANGUAGE = """
-    FILTER(langMatches(lang(?label), "%(lang)s") or langMatches(lang(?label), "")) .
-"""
-
-
-def lang_support(lang):
-    if lang:
-        return "@%s" % lang
-    else:
-        return ""
-
-
 def process_params(query_params):
     """
     Important note: when "lang" is defined in query_params,
@@ -49,7 +38,7 @@ def process_params(query_params):
         - labels will be filtered according to <lang>
     """
     potential_uris = ["o", "p"]
-    language_tag = lang_support(query_params.get("lang"))
+    (query_params, language_tag) = add_language_support(query_params, "label")
 
     for key in potential_uris:
         value = query_params.get(key, "")
@@ -58,11 +47,6 @@ def process_params(query_params):
                 query_params[key] = "<%s>" % expand_uri(value)
             else:
                 query_params[key] = '"%s"%s' % (value, language_tag)
-
-    if language_tag:
-        query_params["lang_filter"] = QUERY_FILTER_LABEL_BY_LANGUAGE % query_params
-    else:
-        query_params["lang_filter"] = ""
 
     return query_params
 

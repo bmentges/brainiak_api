@@ -18,13 +18,19 @@ This will retrieve all instances of ``Gender`` in the place ``person``
 Optional parameters
 -------------------
 
-- lang: Specify language of labels. Options: pt, en, undefined (do not filter labels)
-- graph_uri: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
-- class_uri: Set the class URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME``
-- page: The page you want to retrieve. The default value is ``0``, i.e. the first page
-- per_page: Defines how many items you want to retrieve per page. The default value is ``10``
-- p: Filters the instances that have the (**p**)redicate specified used in a triple.
-- o: Filters the instances that have the (**o**)bject specified used in a triple.
+**lang**: Specify language of labels. Options: pt, en, undefined (do not filter labels)
+
+**graph_uri**: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
+
+**class_uri**: Set the class URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME``
+
+**page**: The page you want to retrieve. The default value is ``0``, i.e. the first page
+
+**per_page**: Defines how many items you want to retrieve per page. The default value is ``10``
+
+**p**: Filters the instances that have the (**p**)redicate specified used in a triple.
+
+**o**: Filters the instances that have the (**o**)bject specified used in a triple.
 
 By combining ``p`` and ``o`` parameters you can specify a filter for instances that have
 this property and object values. For exeample:

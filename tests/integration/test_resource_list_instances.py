@@ -4,7 +4,7 @@ from mock import patch
 
 from brainiak import triplestore
 from brainiak.instance import list_resource
-from brainiak.instance.list_resource import filter_instances, process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
+from brainiak.instance.list_resource import process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
 from tests import TornadoAsyncHTTPTestCase, MockRequest
 from tests.sparql import QueryTestCase
 
@@ -85,7 +85,7 @@ def build_json(bindings):
 class FilterInstancesQueryTestCase(QueryTestCase):
     allow_triplestore_connection = True
     fixtures = ["tests/sample/instances.n3"]
-    graph_uri = "http://tatipedia.org/test/"
+    graph_uri = "http://tatipedia.org/"
 
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql
@@ -100,20 +100,20 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_process_params(self):
         params = {
-            "class_uri": 'http://tatipedia.org/test/Species',
-            "p": 'http://tatipedia.org/test/livesIn',
+            "class_uri": 'http://tatipedia.org/Species',
+            "p": 'http://tatipedia.org/livesIn',
             "o": 'dbpedia:Australia',
             "lang": "pt",
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0"
         }
-        expected = {'class_uri': 'http://tatipedia.org/test/Species',
-                    'graph_uri': 'http://tatipedia.org/test/',
+        expected = {'class_uri': 'http://tatipedia.org/Species',
+                    'graph_uri': 'http://tatipedia.org/',
                     'lang': 'pt',
                     'lang_filter_label': '\n    FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .\n',
                     'o': '<http://dbpedia.org/ontology/Australia>',
-                    'p': '<http://tatipedia.org/test/livesIn>',
+                    'p': '<http://tatipedia.org/livesIn>',
                     'page': '0',
                     'per_page': '10'}
         computed = process_params(params)
@@ -121,9 +121,9 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_count_query(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Species",
-            "p": "http://tatipedia.org/test/order",
-            "o": "http://tatipedia.org/test/Monotremata",
+            "class_uri": "http://tatipedia.org/Species",
+            "p": "http://tatipedia.org/order",
+            "o": "http://tatipedia.org/Monotremata",
             "lang_filter": "pt",
             "graph_uri": self.graph_uri,
             "per_page": "10",
@@ -137,9 +137,10 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_instance_filter_query_by_predicate_and_object(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Person",
-            "p": "<http://tatipedia.org/test/likes>",
-            "o": "<http://tatipedia.org/test/Capoeira>",
+            "class_uri": "http://tatipedia.org/Person",
+            "p": "<http://tatipedia.org/likes>",
+            "o": "<http://tatipedia.org/Capoeira>",
+            "lang_filter": "",
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
@@ -149,7 +150,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
 
-        bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Person/mary'},
+        bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'},
                     u'label': {u'type': u'literal', u'value': u'Mary Land'}}]
         expected = build_json(bindings)
 
@@ -157,9 +158,10 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_instance_filter_query_by_object(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Person",
+            "class_uri": "http://tatipedia.org/Person",
             "p": "?predicate",
-            "o": "<http://tatipedia.org/test/BungeeJump>",
+            "o": "<http://tatipedia.org/BungeeJump>",
+            "lang_filter": "",
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
@@ -168,7 +170,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
 
-        bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Person/mary'},
+        bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'},
                      u'label': {u'type': u'literal', u'value': u'Mary Land'}}]
         expected = build_json(bindings)
 
@@ -176,8 +178,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_instance_filter_query_by_predicate(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Person",
-            "p": "<http://tatipedia.org/test/dislikes>",
+            "class_uri": "http://tatipedia.org/Person",
+            "p": "<http://tatipedia.org/dislikes>",
             "o": "?object",
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
@@ -187,7 +189,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
 
-        bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Person/mary'},
+        bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'},
                      u'label': {u'type': u'literal', u'value': u'Mary Land'}}]
         expected = build_json(bindings)
 
@@ -195,8 +197,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_instance_filter_query_by_predicate_with_multiple_response(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Person",
-            "p": "<http://tatipedia.org/test/likes>",
+            "class_uri": "http://tatipedia.org/Person",
+            "p": "<http://tatipedia.org/likes>",
             "o": "?object",
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
@@ -208,11 +210,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
         expected_bindings = [
                                 {
-                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Person/john'},
+                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'},
                                     u'label': {u'type': u'literal', u'value': u'John Jones'}
                                 },
                                 {
-                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Person/mary'},
+                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'},
                                     u'label': {u'type': u'literal', u'value': u'Mary Land'}
                                 }
         ]
@@ -224,7 +226,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_instance_filter_query_by_object_represented_as_string(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Person",
+            "class_uri": "http://tatipedia.org/Person",
             "p": "?predicate",
             "o": "Aikido",
             "lang_filter_label": "",
@@ -237,7 +239,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         query = query_filter_instances(params)
         computed = self.query(query)
 
-        bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Person/john'},
+        bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'},
                      u'label': {u'type': u'literal', u'value': u'John Jones'}
                      }]
 
@@ -262,8 +264,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_query_filter_instances_with_language_restriction_to_pt(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Place",
-            "p": "http://tatipedia.org/test/speak",
+            "class_uri": "http://tatipedia.org/Place",
+            "p": "http://tatipedia.org/speak",
             "o": "Ingles",
             "lang": "pt",
             "graph_uri": self.graph_uri,
@@ -276,11 +278,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         computed_bindings = self.query(query)["results"]["bindings"]
         expected_bindings = [
                                 {
-                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Place/london'},
+                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'},
                                     u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Londres'}
                                 },
                                 {
-                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Place/new_york'},
+                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/new_york'},
                                     u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nova Iorque'}
                                 }
         ]
@@ -290,9 +292,9 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_query_filter_instances_with_language_restriction_to_pt_and_any(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Species",
-            "p": "http://tatipedia.org/test/order",
-            "o": "http://tatipedia.org/test/Monotremata",
+            "class_uri": "http://tatipedia.org/Species",
+            "p": "http://tatipedia.org/order",
+            "o": "http://tatipedia.org/Monotremata",
             "lang_filter": "pt",
             "graph_uri": self.graph_uri,
             "per_page": "10",
@@ -304,16 +306,16 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         computed_bindings = self.query(query)["results"]["bindings"]
         expected_bindings = [
                                 {
-                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Species/Platypus'},
+                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Platypus'},
                                     u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Ornitorrinco'}
                                 },
                                 {
-                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Species/Echidna'},
+                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Echidna'},
                                     u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Equidna'}
                                 },
                                 {
-                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Species/Teinolophos'},
-                                    u'label': {u'type': u'literal', u'value': "Teinolophos trusleri"}
+                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Teinolophos'},
+                                    u'label': {u'type': u'literal', u'value': u"Teinolophos trusleri"}
                                 }
         ]
 
@@ -322,8 +324,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_query_page_0(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Place",
-            "p": "http://tatipedia.org/test/speak",
+            "class_uri": "http://tatipedia.org/Place",
+            "p": "http://tatipedia.org/speak",
             "o": "Ingles",
             "lang": "pt",
             "graph_uri": self.graph_uri,
@@ -338,8 +340,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_query_page_1(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Place",
-            "p": "http://tatipedia.org/test/speak",
+            "class_uri": "http://tatipedia.org/Place",
+            "p": "http://tatipedia.org/speak",
             "o": "Ingles",
             "lang": "pt",
             "graph_uri": self.graph_uri,
@@ -354,8 +356,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def test_query_filter_instances_with_language_restriction_to_en(self):
         params = {
-            "class_uri": "http://tatipedia.org/test/Place",
-            "p": "http://tatipedia.org/test/speak",
+            "class_uri": "http://tatipedia.org/Place",
+            "p": "http://tatipedia.org/speak",
             "o": "?test_filter_with_object_as_string",
             "lang": "en",
             "graph_uri": self.graph_uri,
@@ -366,9 +368,9 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         query = query_filter_instances(params)
 
         computed_bindings = self.query(query)["results"]["bindings"]
-        expected_bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Place/london'},
+        expected_bindings = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'},
                               u'label': {u'xml:lang': u'en', u'type': u'literal', u'value': u'London'}},
-                             {u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/test/Place/new_york'},
+                             {u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/new_york'},
                               u'label': {u'xml:lang': u'en', u'type': u'literal', u'value': u'New York'}}]
 
         self.assertEqual(len(computed_bindings), 2)

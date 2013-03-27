@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from brainiak.prefixes import MemorizeContext, shorten_uri, prefix_from_uri
-from brainiak.utils.sparql import get_one_value, filter_values
+from brainiak.prefixes import MemorizeContext, shorten_uri
+from brainiak.utils.sparql import get_one_value, filter_values, add_language_support
 from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_type, items_from_range, OBJECT_PROPERTY
 
@@ -55,15 +55,15 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     return schema
 
 
-QUERY_FILTER_TITLE = 'FILTER(langMatches(lang(?title), "%s") or langMatches(lang(?title), "")) .'
-QUERY_FILTER_COMMENT = 'FILTER(langMatches(lang(?comment), "%s") or langMatches(lang(?comment), "")) .'
 QUERY_CLASS_SCHEMA = """
 SELECT DISTINCT ?title ?comment
 FROM <%(graph_uri)s>
 WHERE {
     <%(class_uri)s> a owl:Class ;
-                    rdfs:label ?title . %(filter_title)s
-    OPTIONAL {<%(class_uri)s> rdfs:comment ?comment . %(filter_comment)s} .
+                    rdfs:label ?title .
+    %(lang_filter_title)s
+    OPTIONAL {<%(class_uri)s> rdfs:comment ?comment .
+    %(lang_filter_comment)s} .
 }
 """
 
@@ -75,9 +75,8 @@ def build_class_schema_query(params):
     - rdfs:label
     - rdfs:comment (optional)
     """
-    lang = params["lang"]
-    params["filter_title"] = (QUERY_FILTER_TITLE % lang) if lang else ""
-    params["filter_comment"] = (QUERY_FILTER_COMMENT % lang) if lang else ""
+    (params, language_tag) = add_language_support(params, "title")
+    (params, language_tag) = add_language_support(params, "comment")
     return QUERY_CLASS_SCHEMA % params
 
 
@@ -87,6 +86,7 @@ def query_class_schema(query_params):
 
 
 def get_predicates_and_cardinalities(context, query_params):
+    (query_params, language_tag) = add_language_support(query_params, "enumerated_value_label")
     query_result = query_cardinalities(query_params)
     cardinalities = _extract_cardinalities(query_result['results']['bindings'])
 
@@ -136,7 +136,10 @@ def query_cardinalities(query_params):
                 OPTIONAL { ?range owl:oneOf ?enumeration } .
                 OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
                 OPTIONAL { ?list_node rdf:first ?enumerated_value } .
-                OPTIONAL { ?enumerated_value rdfs:label ?enumerated_value_label } .
+                OPTIONAL {
+                    ?enumerated_value rdfs:label ?enumerated_value_label .
+                    %(lang_filter_enumerated_value_label)s
+                } .
             }
         }""" % query_params
     return triplestore.query_sparql(query)

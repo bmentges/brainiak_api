@@ -15,6 +15,13 @@ def create_instance_uri(class_uri):
     return "%s/%s" % (class_uri, uuid.uuid4())
 
 
+def extract_instance_id(instance_uri):
+    """
+    Extract instance id from an instance URI.
+    """
+    return instance_uri.split("/")[-1]
+
+
 def get_one_value(result_dict, key):
     """
     Return first value mapped by 'key' inside the 'bindings' list of a Virtuoso response dict.
@@ -100,13 +107,31 @@ def is_result_empty(result_dict):
 INSERT_RESPONSE_PATTERN = re.compile(r'Insert into \<.+?\>, (\d+) \(or less\) triples -- done')
 
 
-def is_response_successful(response):
+def is_insert_response_successful(response):
     try:
         inserted = response['results']['bindings'][0]['callret-0']['value']
         match = INSERT_RESPONSE_PATTERN.match(inserted)
         if match:
             return int(match.group(1)) > 0
-    except:
+    except (KeyError, TypeError):
+        pass
+    return False
+
+
+MODIFY_RESPONSE_PATTERN = re.compile(r'Modify \<.+?\>, delete (\d+) \(or less\) and insert (\d+) \(or less\) triples -- done')
+
+
+def is_modify_response_successful(response, n_deleted=None, n_inserted=None):
+    try:
+        inserted = response['results']['bindings'][0]['callret-0']['value']
+        match = MODIFY_RESPONSE_PATTERN.match(inserted)
+        if match:
+            if n_deleted is not None and int(match.group(1)) != n_deleted:
+                return False
+            if n_inserted is not None and int(match.group(2)) != n_inserted:
+                return False
+            return True
+    except (KeyError, TypeError):
         pass
     return False
 
@@ -162,6 +187,18 @@ def unpack_tuples(instance_data):
     return predicate_object_tuples
 
 
+def is_reserved_attribute(predicate):
+    reserved_words = ["@context", "links"]
+    if predicate in reserved_words:
+        return True
+
+    reserved_prefix = ["@", "$"]
+    if predicate[0] in reserved_prefix:
+        return True
+
+    return False
+
+
 def create_explicit_triples(instance_uri, instance_data):
     # TODO-2:
     # lang = query_params["lang"]
@@ -175,7 +212,7 @@ def create_explicit_triples(instance_uri, instance_data):
     triples = []
 
     for (predicate_uri, object_value) in predicate_object_tuples:
-        if predicate_uri != "@context":
+        if not is_reserved_attribute(predicate_uri):
 
             # predicate: has to be uri (compressed or not)
             predicate = shorten_uri(predicate_uri)
@@ -223,6 +260,25 @@ def join_prefixes(prefixes_dict):
             prefix = PREFIX % (slug, graph_uri)
             prefix_list.append(prefix)
     return "\n".join(prefix_list)
+
+
+QUERY_FILTER_LABEL_BY_LANGUAGE = """
+    FILTER(langMatches(lang(?%(variable)s), "%(lang)s") OR langMatches(lang(?%(variable)s), "")) .
+"""
+
+
+def add_language_support(query_params, language_dependent_variable):
+    lang = query_params.get("lang")
+    language_tag = "@%s" % lang if lang else ""
+    key_name = "lang_filter_%s" % language_dependent_variable
+    if language_tag:
+        query_params[key_name] = QUERY_FILTER_LABEL_BY_LANGUAGE % {
+            "lang": language_tag[1:],  # excludes @
+            "variable": language_dependent_variable
+        }
+    else:
+        query_params[key_name] = ""
+    return (query_params, language_tag)
 
 
 class UnexpectedResultException(Exception):

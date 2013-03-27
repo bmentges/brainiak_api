@@ -262,5 +262,24 @@ def join_prefixes(prefixes_dict):
     return "\n".join(prefix_list)
 
 
+QUERY_FILTER_LABEL_BY_LANGUAGE = """
+    FILTER(langMatches(lang(?%(variable)s), "%(lang)s") OR langMatches(lang(?%(variable)s), "")) .
+"""
+
+
+def add_language_support(query_params, language_dependent_variable):
+    lang = query_params.get("lang")
+    language_tag = "@%s" % lang if lang else ""
+    key_name = "lang_filter_%s" % language_dependent_variable
+    if language_tag:
+        query_params[key_name] = QUERY_FILTER_LABEL_BY_LANGUAGE % {
+            "lang": language_tag[1:],  # excludes @
+            "variable": language_dependent_variable
+        }
+    else:
+        query_params[key_name] = ""
+    return (query_params, language_tag)
+
+
 class UnexpectedResultException(Exception):
     pass

@@ -1,13 +1,11 @@
 import unittest
 import uuid
 
-from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri, \
+from brainiak.prefixes import MemorizeContext
+from brainiak.utils.sparql import add_language_support, compress_keys_and_values, create_instance_uri, \
     extract_instance_id, get_one_value, filter_values, has_lang, is_reserved_attribute, is_result_empty, \
     some_triples_deleted, UnexpectedResultException, is_result_true, \
-    create_explicit_triples, unpack_tuples, create_implicit_triples, join_prefixes, \
-    join_triples, is_insert_response_successful, is_modify_response_successful
-
-from brainiak.prefixes import MemorizeContext
+    create_explicit_triples, unpack_tuples, create_implicit_triples, join_prefixes
 
 
 class ResultHandlerTestCase(unittest.TestCase):
@@ -383,3 +381,19 @@ class CreateExplicitTriples(unittest.TestCase):
         instance_uri = "http://my.domain/instance_id"
         instance_id = extract_instance_id(instance_uri)
         self.assertEqual(instance_id, "instance_id")
+
+
+class LanguageSupportTestCase(unittest.TestCase):
+
+    def test_language_tag_empty(self):
+        query_params = {"a": 1}
+        (response_params, language_tag) = add_language_support(query_params, "label")
+        self.assertEqual(response_params, query_params)
+
+    def test_language_supported_added(self):
+        expected_filter = 'FILTER(langMatches(lang(?label), "en") OR langMatches(lang(?label), ""))'
+
+        query_params = {"lang": "en"}
+        (response_params, language_tag) = add_language_support(query_params, "label")
+        self.assertIn(expected_filter, response_params["lang_filter_label"])
+        self.assertEquals("@en", language_tag)

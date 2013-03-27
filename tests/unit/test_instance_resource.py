@@ -3,6 +3,7 @@ import unittest
 from mock import Mock
 
 from brainiak.instance import get_resource
+from brainiak.prefixes import MemorizeContext
 from tests import MockRequest
 
 
@@ -58,9 +59,16 @@ class TestCaseInstanceResource(unittest.TestCase):
 
 class AssembleTestCase(unittest.TestCase):
 
+    def setUp(self):
+        self.original_build_items = get_resource.build_items_dict
+
+    def tearDown(self):
+        get_resource.build_items_dict = self.original_build_items
+
     def test_assemble_instance_json_links(self):
         query_params = {'request': MockRequest(instance="instance"), 'context_name': 'ctx', 'class_name': 'klass'}
         query_result_dict = {'results': {'bindings': []}}
+
         get_resource.build_items_dict = lambda context, bindings: {}
         computed = get_resource.assemble_instance_json(query_params, query_result_dict)
         expected_links = [
@@ -106,3 +114,16 @@ class AssembleTestCase(unittest.TestCase):
         self.assertIsInstance(computed["@context"], InnerContextMock)
         self.assertEqual(computed["$schema"], 'http://localhost:5100/ctx/klass/_schema')
         self.assertEqual(sorted(computed["links"]), sorted(expected_links))
+
+
+class BuildItemsDictTestCase(unittest.TestCase):
+
+    def test_build_items_dict(self):
+        bindings = [
+            {"p": {"value": "key1"}, "o": {"value": "value1"}},
+            {"p": {"value": "key1"}, "o": {"value": "value2"}},
+            {"p": {"value": "key2"}, "o": {"value": "value2"}},
+        ]
+        expected = {"key1": ["value1", "value2"], "key2": "value2"}
+        response = get_resource.build_items_dict(MemorizeContext(), bindings)
+        self.assertEqual(expected, response)

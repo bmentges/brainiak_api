@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from brainiak.prefixes import MemorizeContext, shorten_uri, prefix_from_uri
+from brainiak.prefixes import MemorizeContext, shorten_uri
 from brainiak.utils.sparql import get_one_value, filter_values
 from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_type, items_from_range, OBJECT_PROPERTY

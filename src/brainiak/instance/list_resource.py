@@ -12,7 +12,7 @@ WHERE {
     ?subject a <%(class_uri)s> ;
              rdfs:label ?label ;
              %(p)s %(o)s.
-    %(lang_filter)s
+    %(lang_filter_label)s
 }
 """
 
@@ -23,7 +23,7 @@ WHERE {
     ?subject a <%(class_uri)s> ;
              rdfs:label ?label ;
              %(p)s %(o)s.
-    %(lang_filter)s
+    %(lang_filter_label)s
 }
 LIMIT %(per_page)s
 OFFSET %(page)s

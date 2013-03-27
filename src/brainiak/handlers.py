@@ -12,7 +12,7 @@ from brainiak.instance.get_resource import get_instance
 from brainiak.instance.list_resource import filter_instances
 from brainiak.instance.delete_resource import delete_instance
 from brainiak.instance.create_resource import create_instance
-from brainiak.instance.edit_resource import edit_instance
+from brainiak.instance.edit_resource import edit_instance, instance_exists
 from brainiak.prefixes import safe_slug_to_prefix
 from greenlet_tornado import greenlet_asynchronous
 
@@ -69,6 +69,12 @@ class BrainiakRequestHandler(RequestHandler):
 
         error_json = {"error": error_message}
         self.finish(error_json)
+
+    def build_resource_url(self, resource_id):
+        url = "{0}://{1}{2}/{3}".format(self.request.protocol, self.request.host, self.request.uri, resource_id)
+        if self.request.query:
+            url = "{0}?{1}".format(url, self.request.query)
+        return url
 
     def override_defaults_with_arguments(self, immutable_params):
         overriden_params = {}
@@ -149,21 +155,16 @@ class InstanceHandler(BrainiakRequestHandler):
     def __init__(self, *args, **kwargs):
         super(InstanceHandler, self).__init__(*args, **kwargs)
 
-    def resolve_instance_uri(self, query_params):
-        if query_params.get("instance_prefix"):
-            prefix = safe_slug_to_prefix(query_params["instance_prefix"])
-            return "%s%s" % (prefix, query_params["instance_id"])
-        else:
-            return "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, query_params["context_name"],
-                                           query_params["class_name"], query_params["instance_id"])
-
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
         query_params = {
             "context_name": context_name,
             "class_name": class_name,
+            "class_prefix": "",
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "instance_id": instance_id,
+            "instance_prefix": "",
+            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
             "request": self.request,
             "lang": settings.DEFAULT_LANG,
             "instance_prefix": "",
@@ -173,7 +174,15 @@ class InstanceHandler(BrainiakRequestHandler):
         if self.request.arguments:
             query_params = self.override_defaults_with_arguments(query_params)
 
-        query_params["instance_uri"] = self.resolve_instance_uri(query_params)
+        # TODO: test
+        class_prefix = safe_slug_to_prefix(query_params["class_prefix"])
+        if class_prefix:
+            query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
+
+        # TODO: test
+        instance_prefix = safe_slug_to_prefix(query_params["instance_prefix"])
+        if instance_prefix:
+            query_params["instance_uri"] = "%s%s" % (instance_prefix, instance_id)
 
         response = get_instance(query_params)
 
@@ -185,37 +194,74 @@ class InstanceHandler(BrainiakRequestHandler):
         self.query_params = {
             "context_name": context_name,
             "class_name": class_name,
+            "class_prefix": "",
+            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "instance_id": instance_id,
+            "instance_prefix": "",
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
-            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
+            "instance_uri": "{0}{1}{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
+            "request": self.request,
+            "lang": settings.DEFAULT_LANG,
         }
         if self.request.arguments:
             self.query_params = self.override_defaults_with_arguments(self.query_params)
 
-        self.query_params["instance_uri"] = self.resolve_instance_uri(self.query_params)
+        # TODO: test
+        class_prefix = safe_slug_to_prefix(self.query_params["class_prefix"])
+        if class_prefix:
+            self.query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
 
-        response = edit_instance(self.query_params)
+        # TODO: test
+        instance_prefix = safe_slug_to_prefix(self.query_params["instance_prefix"])
+        if instance_prefix:
+            self.query_params["instance_uri"] = "%s%s" % (instance_prefix, instance_id)
+
+        try:
+            instance_data = json.loads(self.request.body)
+        except ValueError:
+            raise HTTPError(400, log_message="No JSON object could be decoded")
+
+        if not instance_exists(self.query_params):
+            schema = schema_resource.get_schema(self.query_params)
+            if schema is None:
+                raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
+            create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
+            resource_url = self.request.full_url()
+            self.set_status(201)
+            self.set_header("location", resource_url)
+        else:
+            edit_instance(self.query_params, instance_data)
+
+        response = get_instance(self.query_params)
+
         self.finalize(response)
 
     @greenlet_asynchronous
     def delete(self, context_name, class_name, instance_id):
         self.query_params = {
+            "class_prefix": "",
             "context_name": context_name,
             "class_name": class_name,
             "instance_id": instance_id,
+            "instance_prefix": "",
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
-            "instance_prefix": ""
+            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id)
         }
         self.query_params = self.override_defaults_with_arguments(self.query_params)
 
-        self.query_params["instance_uri"] = self.resolve_instance_uri(self.query_params)
+        # TODO: test
+        class_prefix = safe_slug_to_prefix(self.query_params["class_prefix"])
+        if class_prefix:
+            self.query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
+
+        # TODO: test
+        instance_prefix = safe_slug_to_prefix(self.query_params["instance_prefix"])
+        if instance_prefix:
+            self.query_params["instance_uri"] = "%s%s" % (instance_prefix, instance_id)
 
         deleted = delete_instance(self.query_params)
 
-        if deleted:
-            response = 204
-        else:
-            response = None
+        response = 204 if deleted else None
 
         self.finalize(response)
 
@@ -281,7 +327,7 @@ class CollectionHandler(BrainiakRequestHandler):
         # TODO: test
         class_prefix = query_params["class_prefix"]
         if class_prefix:
-            query_params["class_uri"] = "%s/%s" % (class_prefix, class_name)
+            query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
 
         schema = schema_resource.get_schema(query_params)
         if schema is None:
@@ -292,10 +338,10 @@ class CollectionHandler(BrainiakRequestHandler):
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
 
-        resource_id = create_instance(query_params, instance_data)
-
+        instance_id = create_instance(query_params, instance_data)
+        instance_url = self.build_resource_url(instance_id)
         self.set_status(201)
-        self.set_header("location", resource_id)
+        self.set_header("location", instance_url)
         self.query_params = query_params
         self.finalize("")
 

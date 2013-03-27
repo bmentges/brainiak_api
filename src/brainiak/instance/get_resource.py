@@ -23,7 +23,15 @@ def build_items_dict(context, bindings):
     for item in bindings:
         key = context.shorten_uri(item["p"]["value"])
         value = context.shorten_uri(item["o"]["value"])
-        items_dict[key] = value
+        if key in items_dict:
+            if not isinstance(items_dict[key], list):
+                value_list = [items_dict[key]]
+            else:
+                value_list = items_dict[key]
+            value_list.append(value)
+            items_dict[key] = value_list
+        else:
+            items_dict[key] = value
     return items_dict
 
 
@@ -35,7 +43,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     items = build_items_dict(context, query_result_dict['results']['bindings'])
     links = [{"rel": property_name,
              "href": "/{0}/{1}".format(*(uri.split(':')))}
-              for property_name, uri in context.object_properties.items()]
+             for property_name, uri in context.object_properties.items()]
 
     self_url = request.full_url()
     schema_url = "http://{0}/{1}/{2}/_schema".format(base_url, query_params['context_name'], query_params['class_name'])

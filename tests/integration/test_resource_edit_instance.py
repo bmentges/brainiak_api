@@ -36,35 +36,33 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         pass
 
     @patch("brainiak.handlers.log")
-    @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
-    def test_edit_instance_400_no_body(self, log, settings):
-        response = self.fetch('/anything/Place/new_york?wrong_param=wrong_value', method='PUT')
+    def test_edit_instance_400_no_body(self, log):
+        response = self.fetch('/anything/Place/new_york', method='PUT')
         self.assertEqual(response.code, 400)
 
     @patch("brainiak.handlers.log")
-    @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
-    def test_edit_instance_400_wrong_params(self, log, settings):
+    def test_edit_instance_400_wrong_params(self, log):
         response = self.fetch('/anything/Place/new_york?wrong_param=wrong_value', method='PUT', body=json.dumps({}))
         self.assertEqual(response.code, 400)
 
     @patch("brainiak.handlers.log")
-    @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
-    def test_edit_instance_that_doesnt_exist_201(self, log, settings):
-        response = self.fetch('/anything/Place/InexistentCity', method='PUT', body=json.dumps({}))
+    def test_edit_instance_that_doesnt_exist_201(self, logsf):
+        response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='PUT', body=json.dumps({}))
         self.assertEqual(response.code, 201)
+        location = response.headers['Location']
+        self.assertTrue(location.startswith("http://localhost:"))
+        self.assertTrue(location.endswith("/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/"))
 
     @patch("brainiak.handlers.log")
-    @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
-    def test_edit_instance_200_adding_predicate(self, log, settings):
+    def test_edit_instance_200_adding_predicate(self, log):
         actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
-                                     method='GET')
+            method='GET')
         self.assertEqual(actual_new_york.code, 200)
         actual_new_york_dict = json.loads(actual_new_york.body)
         self.assertIn("rdfs:label", actual_new_york_dict)
         self.assertNotIn("rdfs:comment", actual_new_york_dict)
         # Add an attribute
         actual_new_york_dict["rdfs:comment"] = "Some random comment"
-
         modified_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                                        method='PUT',
                                        body=json.dumps(actual_new_york_dict))

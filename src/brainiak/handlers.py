@@ -70,6 +70,12 @@ class BrainiakRequestHandler(RequestHandler):
         error_json = {"error": error_message}
         self.finish(error_json)
 
+    def build_resource_url(self, resource_id):
+        url = "{0}://{1}{2}/{3}".format(self.request.protocol, self.request.host, self.request.uri, resource_id)
+        if self.request.query:
+            url = "{0}?{1}".format(url, self.request.query)
+        return url
+
     def override_defaults_with_arguments(self, immutable_params):
         overriden_params = {}
         for (query_param, default_value) in immutable_params.items():
@@ -193,8 +199,9 @@ class InstanceHandler(BrainiakRequestHandler):
             "instance_id": instance_id,
             "instance_prefix": "",
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
-            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
-            "request": self.request
+            "instance_uri": "{0}{1}{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
+            "request": self.request,
+            "lang": settings.DEFAULT_LANG,
         }
         if self.request.arguments:
             self.query_params = self.override_defaults_with_arguments(self.query_params)
@@ -202,7 +209,7 @@ class InstanceHandler(BrainiakRequestHandler):
         # TODO: test
         class_prefix = safe_slug_to_prefix(self.query_params["class_prefix"])
         if class_prefix:
-            self.query_params["class_uri"] = "%s/%s" % (class_prefix, class_name)
+            self.query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
 
         # TODO: test
         instance_prefix = safe_slug_to_prefix(self.query_params["instance_prefix"])
@@ -215,9 +222,13 @@ class InstanceHandler(BrainiakRequestHandler):
             raise HTTPError(400, log_message="No JSON object could be decoded")
 
         if not instance_exists(self.query_params):
+            schema = schema_resource.get_schema(self.query_params)
+            if schema is None:
+                raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
+            create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
+            resource_url = self.request.full_url()
             self.set_status(201)
-            resource_id = create_instance(self.query_params, instance_data)
-            self.query_params["instance_uri"] = resource_id
+            self.set_header("location", resource_url)
         else:
             edit_instance(self.query_params, instance_data)
 
@@ -316,7 +327,7 @@ class CollectionHandler(BrainiakRequestHandler):
         # TODO: test
         class_prefix = query_params["class_prefix"]
         if class_prefix:
-            query_params["class_uri"] = "%s/%s" % (class_prefix, class_name)
+            query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
 
         schema = schema_resource.get_schema(query_params)
         if schema is None:
@@ -327,10 +338,10 @@ class CollectionHandler(BrainiakRequestHandler):
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
 
-        resource_id = create_instance(query_params, instance_data)
-
+        instance_id = create_instance(query_params, instance_data)
+        instance_url = self.build_resource_url(instance_id)
         self.set_status(201)
-        self.set_header("location", resource_id)
+        self.set_header("location", instance_url)
         self.query_params = query_params
         self.finalize("")
 

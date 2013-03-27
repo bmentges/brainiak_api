@@ -1,53 +1,53 @@
-@prefix tpedia: <http://tatipedia.org/test/> .
-@prefix place: <http://tatipedia.org/test/Place/> .
-@prefix person: <http://tatipedia.org/test/Person/> .
-@prefix species: <http://tatipedia.org/test/Species/> .
+# don't change these prefixes, they are suppose to be different from Globo.com patterns
+# if you want other kind of prefixes and URIs, build another n3 fixture
+@prefix tpedia: <http://tatipedia.org/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-place:Place a owl:Class .
+tpedia:Place a owl:Class;
+             rdfs:label "Defines place at tatipedia.org" .
 
-person:Person a owl:Class .
+tpedia:Person a owl:Class .
 
-species:Species a owl:Class .
+tpedia:Species a owl:Class .
 
-person:john a tpedia:Person ;
+tpedia:john a tpedia:Person ;
             rdfs:label "John Jones" ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:likes "Aikido" .
 
-person:mary a tpedia:Person ;
+tpedia:mary a tpedia:Person ;
             rdfs:label "Mary Land" ;
             tpedia:likes tpedia:Capoeira ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:dislikes tpedia:BungeeJump .
 
-place:new_york a tpedia:Place ;
+tpedia:new_york a tpedia:Place ;
                 rdfs:label "Nova Iorque"@pt ;
                 rdfs:label "New York"@en ;
                 tpedia:speak "Ingles"@pt .
 
-place:london a tpedia:Place ;
+tpedia:london a tpedia:Place ;
               rdfs:label "Londres"@pt ;
               rdfs:label "London"@en ;
               tpedia:speak "Ingles"@pt .
 
-place:Australia a tpedia:Place ;
+tpedia:Australia a tpedia:Place ;
                  rdfs:label "Austrália"@pt ;
                  tpedia:speak "Inglês"@pt .
 
-species:Platypus a tpedia:Species ;
+tpedia:Platypus a tpedia:Species ;
                 rdfs:label "Ornitorrinco"@pt ;
                 tpedia:order tpedia:Monotremata ;
-                tpedia:livesIn place:Australia .
+                tpedia:livesIn tpedia:Australia .
 
-species:Echidna a tpedia:Species ;
+tpedia:Echidna a tpedia:Species ;
                rdfs:label "Equidna"@pt ;
                tpedia:order tpedia:Monotremata ;
                tpedia:livesIn tpedia:NewGuinea .
 
-species:Teinolophos a tpedia:Species ;
+tpedia:Teinolophos a tpedia:Species ;
                    rdfs:label "Teinolophos trusleri" ;
                    tpedia:order tpedia:Monotremata ;
-                   tpedia:livesIn place:Australia ;
+                   tpedia:livesIn tpedia:Australia ;
                    tpedia:status tpedia:Extinct .

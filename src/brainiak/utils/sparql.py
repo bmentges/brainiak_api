@@ -180,6 +180,18 @@ def unpack_tuples(instance_data):
     return predicate_object_tuples
 
 
+def is_reserved_attribute(predicate):
+    reserved_words = ["@context", "links"]
+    if predicate in reserved_words:
+        return True
+
+    reserved_prefix = ["@", "$"]
+    if predicate[0] in reserved_prefix:
+        return True
+
+    return False
+
+
 def create_explicit_triples(instance_uri, instance_data):
     # TODO-2:
     # lang = query_params["lang"]
@@ -193,7 +205,7 @@ def create_explicit_triples(instance_uri, instance_data):
     triples = []
 
     for (predicate_uri, object_value) in predicate_object_tuples:
-        if predicate_uri != "@context":
+        if not is_reserved_attribute(predicate_uri):
 
             # predicate: has to be uri (compressed or not)
             predicate = shorten_uri(predicate_uri)

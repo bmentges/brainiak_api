@@ -13,14 +13,14 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     maxDiff = None
     # The class variables below are handled by QueryTestCase
     allow_triplestore_connection = True
-    graph_uri = "http://tatipedia.org/test"
+    graph_uri = "http://somegraph.org/"
     fixtures = ["tests/sample/instances.n3"]
 
     JSON_NEW_YORK_ADD_CONTINENT = {
         "@context": {
             "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-            "place": "http://tatipedia.org/test/Place/",
-            "tpedia": "http://tatipedia.org/test/",
+            "place": "http://tatipedia.org/Place/",
+            "tpedia": "http://tatipedia.org/",
             "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
         },
         "tpedia:partOfContinent": "place:America"
@@ -38,39 +38,40 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.log")
     @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
     def test_edit_instance_400_no_body(self, log, settings):
-        response = self.fetch('/test/Place/new_york?wrong_param=wrong_value', method='PUT')
+        response = self.fetch('/anything/Place/new_york?wrong_param=wrong_value', method='PUT')
         self.assertEqual(response.code, 400)
 
     @patch("brainiak.handlers.log")
     @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
     def test_edit_instance_400_wrong_params(self, log, settings):
-        response = self.fetch('/test/Place/new_york?wrong_param=wrong_value', method='PUT', body=json.dumps({}))
+        response = self.fetch('/anything/Place/new_york?wrong_param=wrong_value', method='PUT', body=json.dumps({}))
         self.assertEqual(response.code, 400)
 
     @patch("brainiak.handlers.log")
     @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
-    def test_edit_instance_404(self, log, settings):
-        response = self.fetch('/test/Place/InexistentCity', method='PUT', body=json.dumps({}))
-        self.assertEqual(response.code, 404)
+    def test_edit_instance_that_doesnt_exist_201(self, log, settings):
+        response = self.fetch('/anything/Place/InexistentCity', method='PUT', body=json.dumps({}))
+        self.assertEqual(response.code, 201)
 
-    # @patch("brainiak.handlers.log")
-    # @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
-    # def test_edit_instance_200_adding_predicate(self, log, settings):
-    #     actual_new_york = self.fetch('/test/Place/new_york', method='GET')
-    #     self.assertEqual(actual_new_york.code, 200)
-    #     actual_new_york_dict = json.loads(actual_new_york.body)
-    #     self.assertIn("rdfs:label", actual_new_york_dict)
-    #     self.assertNotIn("rdfs:comment", actual_new_york_dict)
-    #     # Add an attribute
-    #     actual_new_york_dict["rdfs:comment"] = "Some random comment"
-    #
-    #     modified_new_york = self.fetch('/test/place/new_york',
-    #                                    method='PUT',
-    #                                    body=json.dumps(actual_new_york_dict))
-    #     self.assertEqual(modified_new_york.code, 200)
-    #     modified_new_york_dict = json.loads(modified_new_york.body)
-    #     self.assertIn("rdfs:label", modified_new_york_dict)
-    #     self.assertIn("rdfs:comment", modified_new_york_dict)
+    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.settings", URI_PREFIX="http://tatipedia.org/")
+    def test_edit_instance_200_adding_predicate(self, log, settings):
+        actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+                                     method='GET')
+        self.assertEqual(actual_new_york.code, 200)
+        actual_new_york_dict = json.loads(actual_new_york.body)
+        self.assertIn("rdfs:label", actual_new_york_dict)
+        self.assertNotIn("rdfs:comment", actual_new_york_dict)
+        # Add an attribute
+        actual_new_york_dict["rdfs:comment"] = "Some random comment"
+
+        modified_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+                                       method='PUT',
+                                       body=json.dumps(actual_new_york_dict))
+        self.assertEqual(modified_new_york.code, 200)
+        modified_new_york_dict = json.loads(modified_new_york.body)
+        self.assertIn("rdfs:label", modified_new_york_dict)
+        self.assertIn("rdfs:comment", modified_new_york_dict)
 
 
 class EditInstanceResourceTestCase(QueryTestCase):

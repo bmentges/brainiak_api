@@ -1,13 +1,10 @@
 from tornado.web import HTTPError
 
 from brainiak import triplestore
-from brainiak.utils.sparql import is_result_true, create_explicit_triples, create_implicit_triples, join_triples, is_insert_response_successful
+from brainiak.utils.sparql import is_result_true, create_explicit_triples, create_implicit_triples, join_triples, is_modify_response_successful
 
 
 def edit_instance(query_params, instance_data):
-    if not instance_exists(query_params):
-        raise HTTPError(404, log_message="Instance <{0}> does not exist".format(query_params["instance_uri"]))
-
     try:
         instance_uri = query_params['instance_uri']
         graph_uri = query_params['graph_uri']
@@ -22,7 +19,7 @@ def edit_instance(query_params, instance_data):
     string_triples = join_triples(unique_triples)
 
     response = modify_instance(string_triples, instance_uri, graph_uri)
-    if not is_insert_response_successful(response):
+    if not is_modify_response_successful(response):
         raise HTTPError(500, log_message="Triplestore could not update triples.")
 
 

@@ -12,8 +12,9 @@ This service deletes a instance, given its context, class name and instance id.
 Optional parameters
 -------------------
 
-- graph_uri: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
-- instance_uri: Set the instance URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME/INSTANCE_ID``
+**graph_uri**: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
+
+**instance_uri**: Set the instance URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME/INSTANCE_ID``
 
 Possible responses
 -------------------

@@ -24,7 +24,7 @@ unit: clean
 
 integration: clean
 	@echo "Running integration tests..."
-	@nosetests -x -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/integration --with-xunit
+	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/integration --with-xunit
 
 pep8:
 	@echo "Checking source-code PEP8 compliance"

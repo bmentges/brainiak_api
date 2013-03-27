@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from brainiak import triplestore
-from brainiak.prefixes import expand_uri, MemorizeContext
+from brainiak.prefixes import MemorizeContext
 from brainiak.utils.sparql import is_result_empty
-from brainiak.settings import URI_PREFIX
 
 
 def get_instance(query_params):

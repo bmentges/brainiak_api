@@ -2,7 +2,7 @@ import unittest
 import uuid
 
 from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri, \
-    get_one_value, filter_values, has_lang, is_result_empty, \
+    get_one_value, filter_values, has_lang, is_reserved_attribute, is_result_empty, \
     some_triples_deleted, UnexpectedResultException, is_result_true, \
     create_explicit_triples, unpack_tuples, create_implicit_triples, join_prefixes, \
     join_triples, is_insert_response_successful, is_modify_response_successful
@@ -360,3 +360,14 @@ class CreateExplicitTriples(unittest.TestCase):
         computed = join_prefixes(prefixes)
         expected = 'PREFIX upper: <http://upper.com>\nPREFIX base: <http://base.com>'
         self.assertEqual(computed, expected)
+
+    def test_predicate_is_reserved_word(self):
+        self.assertTrue(is_reserved_attribute("@context"))
+        self.assertTrue(is_reserved_attribute("links"))
+
+    def test_predicate_begins_with_reserved_prefix(self):
+        self.assertTrue(is_reserved_attribute("@xubiru"))
+        self.assertTrue(is_reserved_attribute("$nissim"))
+
+    def test_predicate_is_not_reserved_attribute(self):
+        self.assertFalse(is_reserved_attribute("bla"))

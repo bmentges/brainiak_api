@@ -13,7 +13,7 @@ Sending the unknown parameters in the request, the response is a 400 with a JSON
 
  HTTP/1.1 400 Bad Request
 
-.. include :: services/instance/examples/get_instance_400.rst
+.. include :: instance/examples/get_instance_400.rst
 
 
 If the instance does not exist, the response is a 404 with a JSON informing the error
@@ -23,7 +23,7 @@ If the instance does not exist, the response is a 404 with a JSON informing the 
   HTTP/1.1 404 Not Found
   Content-Length → 73
 
-.. include :: services/instance/examples/list_instance_404.rst
+.. include :: instance/examples/list_instance_404.rst
 
 
 When there is a conflict, i.e. the instance is refered by another, there is a dependency between them and therefore, the instance cannot be deleted, for consistency. To delete an instance you should first delete instances that depend on it.
@@ -33,7 +33,7 @@ When there is a conflict, i.e. the instance is refered by another, there is a de
   HTTP/1.1 409 Not  Conflict
   Content-Length → 30
 
-.. include :: services/instance/examples/delete_instance_409.rst
+.. include :: instance/examples/delete_instance_409.rst
 
 All error objects have resource and field properties so that your client can tell what the problem is. There’s also an error code to let you know what is wrong with the field. These are the possible validation error codes:
 

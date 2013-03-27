@@ -2,10 +2,11 @@ import unittest
 import uuid
 
 from brainiak.utils.sparql import compress_keys_and_values, create_instance_uri, \
-    get_one_value, filter_values, has_lang, is_reserved_attribute, is_result_empty, \
+    extract_instance_id, get_one_value, filter_values, has_lang, is_reserved_attribute, is_result_empty, \
     some_triples_deleted, UnexpectedResultException, is_result_true, \
     create_explicit_triples, unpack_tuples, create_implicit_triples, join_prefixes, \
     join_triples, is_insert_response_successful, is_modify_response_successful
+
 from brainiak.prefixes import MemorizeContext
 
 
@@ -371,3 +372,8 @@ class CreateExplicitTriples(unittest.TestCase):
 
     def test_predicate_is_not_reserved_attribute(self):
         self.assertFalse(is_reserved_attribute("bla"))
+
+    def test_extract_instance_id(self):
+        instance_uri = "http://my.domain/instance_id"
+        instance_id = extract_instance_id(instance_uri)
+        self.assertEqual(instance_id, "instance_id")

@@ -104,7 +104,9 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             method='POST',
             body=json.dumps(payload))
         self.assertEqual(response.code, 201)
-        self.assertEqual(response.headers['Location'], "http://unique-id")
+        location = response.headers['Location']
+        self.assertTrue(location.startswith("http://localhost:"))
+        self.assertTrue(location.endswith("/sample-place/City/unique-id"))
         self.assertEqual(response.body, "")
         self.assertInstanceExist('http://semantica.globo.com/sample-place/City', "http://unique-id")
 

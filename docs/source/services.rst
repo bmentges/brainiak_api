@@ -10,8 +10,8 @@ We follow the principles of `REST <http://en.wikipedia.org/wiki/Representational
 and `HATEOAS <http://en.wikipedia.org/wiki/HATEOAS>`_.
 
 For the meaning and rationale of these concepts in our API,
-see :ref:`concept_context`, :ref:`concept_schema`, :ref:`concept_collection`,
-and :ref:`concept_instance`.
+see :ref:``_concept_context`, :ref:``_concept_schema``, :ref:``_concept_collection``,
+and :ref:``_concept_instance``.
 
 **List of API Services**
 

@@ -16,11 +16,15 @@ This ``context_id`` will be used as a namespace.
 Each context can hold classes and instance definitions.
 Inside the triplestore, the context is materialized as `a graph`_.
 This graph is represented internally by an `URI`_.
+This URI is composed by adding a configurable (server-wide) URI_PREFIX to the ``context_id``
+For example, inside Globo.com, the Brainiak server is configured with URI_PREFIX="http://semantica.globo.com/".
+Thus, the graph URI implicitly associated with context "app1" would be: "http://semantica.globo.com/app1".
+
 
 .. _a graph: http://www.w3.org/TR/rdf-sparql-query/#GraphPattern
 .. _URI: http://www.ietf.org/rfc/rfc3986.txt
 
-A context can represent, for example, some product or some app being developed.
+A context can be used to represent, for example, some product or some app being developed.
 
 
 .. _concept-schema:

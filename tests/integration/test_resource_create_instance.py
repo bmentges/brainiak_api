@@ -29,6 +29,8 @@ JSON_CITY_GLOBOLAND = {
 class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
+
+    # the variables below have special meaning for QueryTestCase
     allow_triplestore_connection = True
     graph_uri = 'http://semantica.globo.com/sample-place/'
     fixtures = []
@@ -75,7 +77,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertIn("HTTP error: 500\nException:\n", body["error"])
 
     @patch("brainiak.handlers.log")
-    def test_create_instance_500_internal_error(self, log):
+    def test_create_instance_400_invalid_json(self, log):
         response = self.fetch('/place/City',
             method='POST',
             body="invalid input")
@@ -102,7 +104,9 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             method='POST',
             body=json.dumps(payload))
         self.assertEqual(response.code, 201)
-        self.assertEqual(response.headers['Location'], "http://unique-id")
+        location = response.headers['Location']
+        self.assertTrue(location.startswith("http://localhost:"))
+        self.assertTrue(location.endswith("/sample-place/City/unique-id"))
         self.assertEqual(response.body, "")
         self.assertInstanceExist('http://semantica.globo.com/sample-place/City', "http://unique-id")
 
@@ -110,11 +114,5 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.graph_uri = "http://fofocapedia.org/"
         self.assertInstanceDoesNotExist('criatura', 'fulano')
         query = create_resource.QUERY_INSERT_TRIPLES % {"triples": '<fulano> a <criatura>; <gosta-de> <ciclano>', "prefix": "", "graph_uri": self.graph_uri}
-        # expected_response = {
-        #     u'head': {u'link': [], u'vars': [u'callret-0']},
-        #     u'results': {u'bindings': [{u'callret-0': {u'type': u'literal',
-        #                                     u'value': u'Insert into <http://fofocapedia.org/>, 2 (or less) triples -- done'}}],
-        #     u'distinct': False,
-        #     u'ordered': True}}
         self.query(query)
         self.assertInstanceExist('criatura', 'fulano')

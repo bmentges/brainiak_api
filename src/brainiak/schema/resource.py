@@ -86,6 +86,7 @@ def query_class_schema(query_params):
 
 
 def get_predicates_and_cardinalities(context, query_params):
+    (query_params, language_tag) = add_language_support(query_params, "enumerated_value_label")
     query_result = query_cardinalities(query_params)
     cardinalities = _extract_cardinalities(query_result['results']['bindings'])
 
@@ -135,7 +136,10 @@ def query_cardinalities(query_params):
                 OPTIONAL { ?range owl:oneOf ?enumeration } .
                 OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
                 OPTIONAL { ?list_node rdf:first ?enumerated_value } .
-                OPTIONAL { ?enumerated_value rdfs:label ?enumerated_value_label } .
+                OPTIONAL {
+                    ?enumerated_value rdfs:label ?enumerated_value_label .
+                    %(lang_filter_enumerated_value_label)s
+                } .
             }
         }""" % query_params
     return triplestore.query_sparql(query)

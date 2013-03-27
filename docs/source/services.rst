@@ -20,6 +20,9 @@ and :ref:``_concept_instance``.
 
    services/schema/schema.rst
    services/instance/instance.rst
+   services/links.rst
+   services/pagination.rst
+   services/errors.rst
 
 
 Interface examples

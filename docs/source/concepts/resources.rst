@@ -1,22 +1,29 @@
-Concepts
-========
-
+Ubiquitous Language
+===================
 
 Here we explain the main concepts of the API, i.e. this is
 our `ubiquitous language <http://martinfowler.com/bliki/UbiquitousLanguage.html>`_.
 
-.. _concept_context:
+.. _concept-context:
+
 
 Context
 -------
 
-Context is an isolated data space, defined by some unique ``context_id``.
-This ``context_id`` will also be used as a namespace.
+``Context`` is an isolated data space, defined by some unique ``context_id``.
+This ``context_id`` will be used as a namespace.
 
-A context can represent, for example, the product or the app being developed.
+Each context can hold classes and instance definitions.
+Inside the triplestore, the context is materialized as `a graph`_.
+This graph is represented internally by an `URI`_.
+
+.. _a graph: http://www.w3.org/TR/rdf-sparql-query/#GraphPattern
+.. _URI: http://www.ietf.org/rfc/rfc3986.txt
+
+A context can represent, for example, some product or some app being developed.
 
 
-.. _concept_schema:
+.. _concept-schema:
 
 Schema
 ------
@@ -40,7 +47,7 @@ format, the most compact serialization for ontologies developed in the RDF/OWL m
           rdfs:subClassOf :Place .
 
 
-.. _concept_collection:
+.. _concept-collection:
 
 Collection
 ----------
@@ -51,7 +58,7 @@ This group is hereby named a collection.
 The collection name is the same as the schema (or class) name.
 
 
-.. _concept_instance:
+.. _concept-instance:
 
 Instance
 --------

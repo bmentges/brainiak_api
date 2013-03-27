@@ -111,7 +111,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         expected = {'class_uri': 'http://tatipedia.org/test/Species',
                     'graph_uri': 'http://tatipedia.org/test/',
                     'lang': 'pt',
-                    'lang_filter': '\n    FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .\n',
+                    'lang_filter_label': '\n    FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .\n',
                     'o': '<http://dbpedia.org/ontology/Australia>',
                     'p': '<http://tatipedia.org/test/livesIn>',
                     'page': '0',
@@ -140,7 +140,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/test/Person",
             "p": "<http://tatipedia.org/test/likes>",
             "o": "<http://tatipedia.org/test/Capoeira>",
-            "lang_filter": "",
+            "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0"
@@ -160,7 +160,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/test/Person",
             "p": "?predicate",
             "o": "<http://tatipedia.org/test/BungeeJump>",
-            "lang_filter": "",
+            "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0"
@@ -179,7 +179,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/test/Person",
             "p": "<http://tatipedia.org/test/dislikes>",
             "o": "?object",
-            "lang_filter": "",
+            "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0"
@@ -198,7 +198,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/test/Person",
             "p": "<http://tatipedia.org/test/likes>",
             "o": "?object",
-            "lang_filter": "",
+            "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0"
@@ -227,7 +227,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/test/Person",
             "p": "?predicate",
             "o": "Aikido",
-            "lang_filter": "",
+            "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0"

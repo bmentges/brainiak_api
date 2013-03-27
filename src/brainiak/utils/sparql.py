@@ -233,13 +233,14 @@ QUERY_FILTER_LABEL_BY_LANGUAGE = """
 def add_language_support(query_params, language_dependent_variable):
     lang = query_params.get("lang")
     language_tag = "@%s" % lang if lang else ""
+    key_name = "lang_filter_%s" % language_dependent_variable
     if language_tag:
-        query_params["lang_filter"] = QUERY_FILTER_LABEL_BY_LANGUAGE % {
+        query_params[key_name] = QUERY_FILTER_LABEL_BY_LANGUAGE % {
             "lang": language_tag[1:],  # excludes @
             "variable": language_dependent_variable
         }
     else:
-        query_params["lang_filter"] = ""
+        query_params[key_name] = ""
     return (query_params, language_tag)
 
 

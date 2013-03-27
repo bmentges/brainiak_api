@@ -3,9 +3,10 @@ Handling Errors
 
 The Brainiak API returns two levels of error information:
 
-- HTTP error codes and messages in the header
+ - HTTP error codes and messages in the header
 
-- A JSON object in the response body with additional details that can help you determine how to handle the error.
+ - A JSON object in the response body with additional details that can help you determine how to handle the error.
+
 The rest of this page provides a reference of Brainiak errors, with some guidance on how to handle them in your app.
 
 

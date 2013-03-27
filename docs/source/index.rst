@@ -22,8 +22,4 @@ The Brainiak API provides a configurable way to access RDF data using simple RES
 
    concepts.rst
    services.rst
-   rest_verbs.rst
-   errors.rst
-   hypermedia.rst
-   pagination.rst
 

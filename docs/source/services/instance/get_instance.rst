@@ -15,6 +15,7 @@ This service retrieves all information about a instance, given its context, clas
 Optional parameters
 -------------------
 
+
 TODO: improve
 
 **lang**: Specify language of labels. Options: pt, en, undefined (do not filter labels)
@@ -43,7 +44,6 @@ example: Instance URI is http://semantica.globo.com/base/Pessoa_ImportacaoEleico
 .. code-block:: http
 
   GET 'http://localhost:5100/base/Pessoa/Pessoa_ImportacaoEleicoes2012TSE_10000001494?instance_prefix=base&graph_uri=glb'
-
 
 
 Possible responses

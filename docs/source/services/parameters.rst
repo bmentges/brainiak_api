@@ -1,3 +1,5 @@
+.. _parametrization:
+
 Service Parameters
 ==================
 

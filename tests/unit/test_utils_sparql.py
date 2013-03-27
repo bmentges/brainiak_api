@@ -2,10 +2,7 @@ import unittest
 import uuid
 
 from brainiak.prefixes import MemorizeContext
-from brainiak.utils.sparql import add_language_support, compress_keys_and_values, create_instance_uri, \
-    extract_instance_id, get_one_value, filter_values, has_lang, is_reserved_attribute, is_result_empty, \
-    some_triples_deleted, UnexpectedResultException, is_result_true, \
-    create_explicit_triples, unpack_tuples, create_implicit_triples, join_prefixes
+from brainiak.utils.sparql import *
 
 
 class ResultHandlerTestCase(unittest.TestCase):

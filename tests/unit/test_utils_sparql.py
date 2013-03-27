@@ -352,5 +352,5 @@ class LanguageSupportTestCase(unittest.TestCase):
 
         query_params = {"lang": "en"}
         (response_params, language_tag) = add_language_support(query_params, "label")
-        self.assertIn(expected_filter, response_params["lang_filter"])
+        self.assertIn(expected_filter, response_params["lang_filter_label"])
         self.assertEquals("@en", language_tag)

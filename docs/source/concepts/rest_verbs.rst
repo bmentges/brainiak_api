@@ -1,11 +1,12 @@
 Using HTTP methods in a RESTful way
 ===================================
 
-The HTTP verbs comprise a major portion of our “uniform interface” constraint and provide us the action counterpart to
-the noun-based resource. The primary or most-commonly-used HTTP verbs (or methods, as they are properly called) are ``POST``,
-``GET``, ``PUT``, and ``DELETE``. These correspond to create, read, update, and delete (or CRUD) operations, respectively. There are
-a number of other verbs, too, but are utilized less frequently. Of those less-frequent methods, ``OPTIONS`` and ``HEAD`` are used
-more often than others.
+The HTTP verbs comprise a major portion of our “uniform interface” goal.
+They represent the actions applied over the resources provided by the interface.
+
+The primary or most commonly used HTTP verbs (or methods) are ``POST``, ``GET``, ``PUT``, and ``DELETE``.
+These correspond to create, read, update, and delete (or CRUD) operations, respectively.
+There are a number of other verbs, too, but are utilized less frequently such as ``OPTIONS`` and ``HEAD``.
 
 Below is a table summarizing recommended return values of the primary HTTP methods in combination with the resource URIs:
 

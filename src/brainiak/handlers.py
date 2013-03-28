@@ -211,7 +211,6 @@ class InstanceHandler(BrainiakRequestHandler):
         if class_prefix:
             self.query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
 
-        import pdb; pdb.set_trace()
         # TODO: test
         instance_prefix = safe_slug_to_prefix(self.query_params["instance_prefix"])
         if instance_prefix:

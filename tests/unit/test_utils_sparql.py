@@ -184,6 +184,14 @@ class IsModifyResponseSuccessfulTestCase(unittest.TestCase):
         fake_response = {'results': {'bindings': [{'callret-0': {'value': msg}}]}}
         self.assertFalse(is_modify_response_successful(fake_response, n_inserted=0))
 
+    def test_is_response_successful_true_return_false_due_to_key_error(self):
+        fake_response = {}
+        self.assertFalse(is_modify_response_successful(fake_response, n_inserted=0))
+
+    def test_is_response_successful_true_return_false_due_to_type_error(self):
+        fake_response = None
+        self.assertFalse(is_modify_response_successful(fake_response, n_inserted=0))
+
 
 class SomeTriplesDeletedTestCase(unittest.TestCase):
 

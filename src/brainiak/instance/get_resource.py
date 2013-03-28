@@ -58,7 +58,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     links.extend(action_links)
 
     instance = {
-        "@id": self_url,
+        "@id": query_params['instance_uri'],
         "@type": "{0}:{1}".format(query_params['context_name'], query_params['class_name']),
         "@context": context.context,
         "$schema": schema_url,

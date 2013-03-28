@@ -199,7 +199,7 @@ class InstanceHandler(BrainiakRequestHandler):
             "instance_id": instance_id,
             "instance_prefix": "",
             "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
-            "instance_uri": "{0}{1}{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
+            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
             "request": self.request,
             "lang": settings.DEFAULT_LANG,
         }
@@ -211,6 +211,7 @@ class InstanceHandler(BrainiakRequestHandler):
         if class_prefix:
             self.query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
 
+        import pdb; pdb.set_trace()
         # TODO: test
         instance_prefix = safe_slug_to_prefix(self.query_params["instance_prefix"])
         if instance_prefix:

@@ -168,7 +168,7 @@ class InstanceHandler(BrainiakRequestHandler):
             "request": self.request,
             "lang": settings.DEFAULT_LANG,
             "instance_prefix": "",
-            "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
+            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
         }
 
         if self.request.arguments:
@@ -198,7 +198,7 @@ class InstanceHandler(BrainiakRequestHandler):
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "instance_id": instance_id,
             "instance_prefix": "",
-            "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
+            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
             "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
             "request": self.request,
             "lang": settings.DEFAULT_LANG,
@@ -244,7 +244,7 @@ class InstanceHandler(BrainiakRequestHandler):
             "class_name": class_name,
             "instance_id": instance_id,
             "instance_prefix": "",
-            "graph_uri": "{0}{1}".format(settings.URI_PREFIX, context_name),
+            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
             "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id)
         }
         self.query_params = self.override_defaults_with_arguments(self.query_params)

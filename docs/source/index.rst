@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Brainiak API documentation!
-======================================
+Brainiak API documentation!
+============================
 
 
 Linked data offers a set of best practices for publishing, sharing and linking data and information on the web.

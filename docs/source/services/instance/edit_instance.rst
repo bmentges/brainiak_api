@@ -7,14 +7,12 @@ This service allows the edition of an instance, provided its context, class name
 
 .. code-block:: bash
 
-  $ curl -i -X PUT -T "new_city.json" http://api.semantica.dev.globoi.com/v2/person/Gender/Male
+  $ curl -i -X PUT -T "edit_female.json" http://api.semantica.dev.globoi.com/v2/person/Gender/Female
 
-.. program-output:: curl -i -s -H "Expect:" -X POST -T "services/instance/examples/edit_male.json" http://api.semantica.dev.globoi.com/v2/place/City
+.. program-output:: curl -i -s -H "Expect:" -X PUT -T "services/instance/examples/edit_female.json" http://api.semantica.dev.globoi.com/v2/person/Gender/Female
   :shell:
 
-Sample JSON "edit_male.json":
-
-.. _City: http://api.semantica.dev.globoi.com/v2/place/City/_schema
+Sample JSON "edit_female.json":
 
 .. include :: examples/edit_instance_payload.rst
 

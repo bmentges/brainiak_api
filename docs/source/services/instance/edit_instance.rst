@@ -7,14 +7,21 @@ This service allows the edition of an instance, provided its context, class name
 
 .. code-block:: bash
 
-  $ curl -i -X PUT -T "new_city.json" http://api.semantica.dev.globoi.com/v2/person/Gender/Male
+  $ curl -i -X PUT -T "edit_female.json" http://api.semantica.dev.globoi.com/v2/person/Gender/Female
 
-.. program-output:: curl -i -s -H "Expect:" -X POST -T "services/instance/examples/edit_male.json" http://api.semantica.dev.globoi.com/v2/place/City
-  :shell:
+.. code-block:: http
 
-Sample JSON "edit_male.json":
+    HTTP/1.1 200 OK
+    Server: nginx
+    Date: Thu, 28 Mar 2013 15:51:59 GMT
+    Content-Type: application/json; charset=UTF-8
+    Content-Length: 976
+    Connection: keep-alive
+    Access-Control-Allow-Origin: *
 
-.. _City: http://api.semantica.dev.globoi.com/v2/place/City/_schema
+    {"rdfs:label": ["Feminino", "Feminino", "Feminino 2", "Feminino 2"], "rdf:type": ["person:Gender", "person:Gender", "person:Gender", "person:Gender"], "links": [{"href": "http://api.semantica.dev.globoi.com/person/Gender/Female", "rel": "self"}, {"href": "http://api.semantica.dev.globoi.com/person/Gender/_schema", "rel": "describedBy"}, {"href": "http://api.semantica.dev.globoi.com/person/Gender/Female", "method": "PATCH", "rel": "edit"}, {"href": "http://api.semantica.dev.globoi.com/person/Gender/Female", "method": "DELETE", "rel": "delete"}, {"href": "http://api.semantica.dev.globoi.com/person/Gender/Female", "method": "PUT", "rel": "replace"}], "@context": {"person": "http://semantica.globo.com/person/", "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdfs": "http://www.w3.org/2000/01/rdf-schema#"}, "$schema": "http://api.semantica.dev.globoi.com/person/Gender/_schema", "@id": "http://semantica.globo.com/person/Gender/Female", "@type": "person:Gender"}
+
+Sample JSON "edit_female.json":
 
 .. include :: examples/edit_instance_payload.rst
 

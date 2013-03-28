@@ -110,7 +110,8 @@ class EditInstanceResourceTestCase(QueryTestCase):
         self.assertEqual(existing_triple["results"]["bindings"][0]["o"]["value"], "ciclano")
         params = {"instance_uri": "fulano",
                   "graph_uri": self.graph_uri,
-                  "triples": "<fulano> <gosta-de> <beltrano>"}
+                  "triples": "<fulano> <gosta-de> <beltrano>",
+                  "prefix": ""}
         modify_response = self.query(edit_resource.MODIFY_QUERY % params)
 
         self.assertTrue(is_modify_response_successful(modify_response, n_deleted=2, n_inserted=1))

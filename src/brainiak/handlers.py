@@ -14,7 +14,13 @@ from brainiak.instance.delete_resource import delete_instance
 from brainiak.instance.create_resource import create_instance
 from brainiak.instance.edit_resource import edit_instance, instance_exists
 from brainiak.prefixes import safe_slug_to_prefix
-from greenlet_tornado import greenlet_asynchronous
+from brainiak.greenlet_tornado import greenlet_asynchronous
+
+from brainiak.tornado_cors import custom_decorator
+custom_decorator.wrapper = greenlet_asynchronous
+from brainiak.tornado_cors import CorsMixin
+
+from tornado.web import asynchronous as wrapper
 
 
 def get_routes():
@@ -29,7 +35,10 @@ def get_routes():
     ]
 
 
-class BrainiakRequestHandler(RequestHandler):
+class BrainiakRequestHandler(CorsMixin, RequestHandler):
+
+    CORS_ORIGIN = '*'
+    CORS_HEADERS = 'Content-Type'
 
     def __init__(self, *args, **kwargs):
         super(BrainiakRequestHandler, self).__init__(*args, **kwargs)

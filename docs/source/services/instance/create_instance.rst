@@ -1,13 +1,13 @@
 Create a Instance
 =================
 
-This service allows the creation of a new instance, provided its context, class name and JSON.
+This service allows the creation of a new instance, provided its context, class name, instance identifier and JSON.
 
 **Basic usage**
 
 .. code-block:: bash
 
-  $ curl -i -X POST -T "new_city.json" http://api.semantica.dev.globoi.com/v2/place/City
+  $ curl -i -X POST -T "new_york_city.json" http://api.semantica.dev.globoi.com/v2/place/City
 
 .. program-output:: curl -i -s -H "Expect:" -X POST -T "services/instance/examples/new_city.json" http://api.semantica.dev.globoi.com/v2/place/City
   :shell:
@@ -18,7 +18,7 @@ Sample JSON "new_city.json" for the class City_:
 
 .. include :: examples/create_instance_payload.rst
 
-Note that prefixes are defined in the "@context" section. 
+Note that prefixes are defined in the "@context" section.
 `Default prefixes  <http://api.semantica.dev.globoi.com/v2/_config/Prefixes>`_ are implicit and don't need to be declared.
 
 

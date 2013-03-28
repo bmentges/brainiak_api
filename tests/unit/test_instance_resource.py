@@ -3,8 +3,24 @@ import unittest
 from mock import Mock
 
 from brainiak.instance import get_resource
+from brainiak.instance.list_resource import decorate_with_resource_id
 from brainiak.prefixes import MemorizeContext
 from tests import MockRequest
+
+
+class TestCaseListInstanceResource(unittest.TestCase):
+
+    def test_decorate_with_resource_id_successfully(self):
+        expected_result = [{u"@id": u"http://a/b", u"resource_id": u"b"}]
+        target = [{u"@id": u"http://a/b"}]
+        decorate_with_resource_id(target)
+        self.assertEqual(expected_result, target)
+
+    def test_decorate_with_missing_resource_id(self):
+        expected_result = [{u"id": u"http://a/b"}]
+        target = [{u"id": u"http://a/b"}]
+        decorate_with_resource_id(target)
+        self.assertEqual(expected_result, target)
 
 
 class TestCaseInstanceResource(unittest.TestCase):
@@ -66,7 +82,10 @@ class AssembleTestCase(unittest.TestCase):
         get_resource.build_items_dict = self.original_build_items
 
     def test_assemble_instance_json_links(self):
-        query_params = {'request': MockRequest(instance="instance"), 'context_name': 'ctx', 'class_name': 'klass'}
+        query_params = {'request': MockRequest(instance="instance"),
+                        'context_name': 'ctx',
+                        'class_name': 'klass',
+                        'instance_uri': 'http://localhost:5100/ctx/klass/instance'}
         query_result_dict = {'results': {'bindings': []}}
 
         get_resource.build_items_dict = lambda context, bindings: {}
@@ -95,7 +114,10 @@ class AssembleTestCase(unittest.TestCase):
             object_properties = {"person": "person:Person"}
 
         context = ContextMock()
-        query_params = {'request': MockRequest(instance="instance"), 'context_name': 'ctx', 'class_name': 'klass'}
+        query_params = {'request': MockRequest(instance="instance"),
+                        'context_name': 'ctx',
+                        'class_name': 'klass',
+                        'instance_uri': 'http://localhost:5100/ctx/klass/instance'}
         query_result_dict = {'results': {'bindings': []}}
         get_resource.build_items_dict = lambda context, bindings: {}
 

@@ -1,0 +1,4 @@
+Internationalization
+====================
+
+ TODO: explain about the lang parameter and the json layout for multi-language text.

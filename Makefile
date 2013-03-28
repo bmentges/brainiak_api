@@ -5,6 +5,7 @@ NEW_PYTHONPATH=$(BRAINIAK_CODE):$(PYTHONPATH)
 
 clean:
 	@find . -name "*.pyc" -delete
+	@find . -name "__pycache__" -delete
 
 install:
 	@echo "Installing dependencies..."

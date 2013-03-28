@@ -63,10 +63,9 @@ The schema's URI can be overriden if necessary using the parameter ``class_uri``
 Collection
 ----------
 
-A schema defines a group of instances of the same type.
-This group is hereby named a collection.
-
-The collection name is the same as the schema (or class) name.
+We need to distinguish the structure of an instance (schema) from a group of instances with the same structure (collection).
+Therefore, for each schema corresponds a unique collection.
+The collection name and the schema name are the same.
 
 
 .. _concept-instance:
@@ -74,44 +73,13 @@ The collection name is the same as the schema (or class) name.
 Instance
 --------
 
-Instances must be easily retrieved and "instance queries" must be really simple
-for developers to understand as they will do way more requests on instances than on schemas.
-As such, the interface for manipulating instances also accept JSON as content_type as most of the RESTful APIs do.
+An instance is a set of data that is treated as a unit, whose structure is described by a schema.
+The group of instances that share the same schema form a collection.
+A collection subset or the whole collection is stored in a context.
 
-**Links in response**
+Instances must be easily retrieved.
+Morevoer, "instance queries" must be really simple for developers to understand as they will do way more requests on instances than on schemas.
+As such, the interface for manipulating instances accepts JSON content_type as most of the RESTful APIs do.
 
 
-In hypermedia APIs you should be able to navigate through API services from the ``/``.
-In each service there is a link to other related resources. For example, if you
-query for a specific resource (a entry in a database), in the response you should
-get links to actions related to that resource, like editing it, removing it, etc.
 
-Therefore, in the response we have a ``links`` section like this:
-
-.. highlight:: json
-
-::
-
-  {
-    "links": [
-      {
-        "href": "http://localhost:5100/person/Gender/Male",
-        "rel": "self"
-      },
-      {
-
-        "href": "http://localhost:5100/person/Gender/_schema",
-        "rel": "describedBy"
-      },
-      {
-        "href": "http://localhost:5100/person/Gender/Male",
-        "method": "PATCH",
-        "rel": "edit"
-      },
-      {
-        "href": "http://localhost:5100/person/Gender/Male",
-        "method": "DELETE",
-        "rel": "delete"
-      }
-    ]
-  }

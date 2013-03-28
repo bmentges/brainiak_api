@@ -1,7 +1,11 @@
 Pagination
 ==========
 
-Requests that return multiple items will be paginated to 20 items by default. You can specify further pages with the ``?page`` parameter. For some resources, you can also set a custom page size up to 100 with the ``?per_page`` parameter. Note that for technical reasons not all endpoints respect the ``?per_page`` parameter, see events for example.
+Requests that return multiple items will be paginated to 20 items by default.
+You can specify further pages with the ``?page`` parameter.
+For some resources, you can also set a custom page size up to 100 with the ``?per_page`` parameter.
+Note that for technical reasons not all endpoints respect the ``?per_page`` parameter, see events for example.
+
 
 .. code-block:: bash
 

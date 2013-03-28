@@ -63,6 +63,15 @@ def query_count_filter_instances(query_params):
     return query_response
 
 
+def decorate_with_resource_id(list_of_dicts):
+    for dict_item in list_of_dicts:
+        try:
+            id_key = dict_item["@id"]
+            dict_item['resource_id'] = id_key.rsplit("/")[-1]
+        except KeyError:
+            pass
+
+
 def filter_instances(query_params):
 
     query_params = process_params(query_params)
@@ -75,6 +84,7 @@ def filter_instances(query_params):
 
     result_dict = query_filter_instances(query_params)
     items_list = compress_keys_and_values(result_dict, keymap={"label": "title", "subject": "@id"}, ignore_keys=["total"])
+    decorate_with_resource_id(items_list)
     return build_json(items_list, total_items, query_params)
 
 

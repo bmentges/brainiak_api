@@ -57,11 +57,12 @@ def filter_values(result_dict, key):
 
 def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=None):
     """
-    Return a list of compacted items of the 'bindings' list of a Virtuoso response dict.
+    Return a list of compressed items of the 'bindings' list of a Virtuoso response dict.
 
     Usage:
 
-    >>> result_dict = {'results': {'bindings': [{'key': {'type': 'some type', 'value': 'some value'}}, {'key': {'type': 'some type', 'value': 'another value'}}]}}
+    >>> result_dict = {'results': {'bindings': [{'key': {'type': 'some type', 'value': 'some value'}},
+                                                {'key': {'type': 'some type', 'value': 'another value'}}]}}
     >>> compress_keys_and_values(result_dict)
     [{'key': 'some value'}, {'key': 'another value'}]
 

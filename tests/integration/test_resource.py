@@ -22,6 +22,12 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         json_received = json.loads(response.body)
         self.assertTrue(json_received['$schema'].endswith('_schema'))
 
+    def test_instance_has_options(self):
+        response = self.fetch('/person/Gender/Female', method='OPTIONS')
+        self.assertEqual(response.code, 204)
+        self.assertEqual(response.headers['Access-Control-Allow-Origin'], '*')
+        self.assertEqual(response.headers['Access-Control-Allow-Headers'], 'Content-Type')
+
 
 class TestSchemaResource(TornadoAsyncHTTPTestCase):
 
@@ -36,6 +42,21 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         u'type': u'object'
     }
     maxDiff = None
+
+    def test_collection_has_options(self):
+        response = self.fetch('/person/Gender/_schema', method='OPTIONS')
+        self.assertEqual(response.code, 204)
+        self.assertEqual(response.headers['Access-Control-Allow-Methods'], 'GET, OPTIONS')
+        self.assertEqual(response.headers['Access-Control-Allow-Origin'], '*')
+        self.assertEqual(response.headers['Access-Control-Allow-Headers'], 'Content-Type')
+
+    def test_schema_has_options(self):
+        response = self.fetch('/person/Gender/_schema', method='OPTIONS')
+        self.assertEqual(response.code, 204)
+
+    def test_schema_has_cors(self):
+        response = self.fetch('/person/Gender/_schema', method='OPTIONS')
+        response.headers['Access-Control-Allow-Methods']
 
     def test_schema_handler_with_lang(self):
         response = self.fetch('/person/Gender/_schema?lang=pt')
@@ -101,6 +122,16 @@ class TestVersionResource(TornadoAsyncHTTPTestCase):
         response = self.fetch('/version', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, __version__)
+
+
+class OptionsTestCase(TornadoAsyncHTTPTestCase):
+
+    def test_collection_has_options(self):
+        response = self.fetch('/person/Gender', method='OPTIONS')
+        self.assertEqual(response.code, 204)
+        self.assertEqual(response.headers['Access-Control-Allow-Methods'], 'GET, POST, OPTIONS')
+        self.assertEqual(response.headers['Access-Control-Allow-Origin'], '*')
+        self.assertEqual(response.headers['Access-Control-Allow-Headers'], 'Content-Type')
 
 
 class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):

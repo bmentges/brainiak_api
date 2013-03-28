@@ -82,7 +82,10 @@ class AssembleTestCase(unittest.TestCase):
         get_resource.build_items_dict = self.original_build_items
 
     def test_assemble_instance_json_links(self):
-        query_params = {'request': MockRequest(instance="instance"), 'context_name': 'ctx', 'class_name': 'klass'}
+        query_params = {'request': MockRequest(instance="instance"),
+                        'context_name': 'ctx',
+                        'class_name': 'klass',
+                        'instance_uri': 'http://localhost:5100/ctx/klass/instance'}
         query_result_dict = {'results': {'bindings': []}}
 
         get_resource.build_items_dict = lambda context, bindings: {}
@@ -111,7 +114,10 @@ class AssembleTestCase(unittest.TestCase):
             object_properties = {"person": "person:Person"}
 
         context = ContextMock()
-        query_params = {'request': MockRequest(instance="instance"), 'context_name': 'ctx', 'class_name': 'klass'}
+        query_params = {'request': MockRequest(instance="instance"),
+                        'context_name': 'ctx',
+                        'class_name': 'klass',
+                        'instance_uri': 'http://localhost:5100/ctx/klass/instance'}
         query_result_dict = {'results': {'bindings': []}}
         get_resource.build_items_dict = lambda context, bindings: {}
 

@@ -84,12 +84,6 @@ class LinksTestCase(unittest.TestCase):
             },
             {
                 'href': "http://class.uri/{resource_id}",
-                'method': "PATCH",
-                'rel': "edit"
-
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
                 'method': "PUT",
                 'rel': "replace"
 
@@ -137,12 +131,6 @@ class LinksTestCase(unittest.TestCase):
                 'href': "http://class.uri/{resource_id}",
                 'method': "DELETE",
                 'rel': "delete"
-
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'method': "PATCH",
-                'rel': "edit"
 
             },
             {
@@ -203,12 +191,6 @@ class LinksTestCase(unittest.TestCase):
             },
             {
                 'href': "http://class.uri/{resource_id}",
-                'method': "PATCH",
-                'rel': "edit"
-
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
                 'method': "PUT",
                 'rel': "replace"
 
@@ -261,12 +243,6 @@ class LinksTestCase(unittest.TestCase):
                 'href': "http://class.uri/{resource_id}",
                 'method': "DELETE",
                 'rel': "delete"
-
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'method': "PATCH",
-                'rel': "edit"
 
             },
             {

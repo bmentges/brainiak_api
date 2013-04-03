@@ -366,11 +366,25 @@ class CollectionHandler(BrainiakRequestHandler):
 
 
 class DomainHandler(BrainiakRequestHandler):
+    DEFAULT_PER_PAGE = "10"
+    DEFAULT_PAGE = "0"
 
     @greenlet_asynchronous
     def get(self):
-        domains_json = list_domains()
-        self.write(domains_json)
+        query_params = {
+            "request": self.request,
+            "page": self.DEFAULT_PAGE,
+            "per_page": self.DEFAULT_PER_PAGE
+        }
+        self.query_params = self.override_defaults_with_arguments(query_params)
+        # In order to keep up with Repos, pages numbering start at 1.
+        # As for Virtuoso pages start at 0, we convert page, if provided
+        if "page" in self.request.arguments:
+            self.query_params["page"] = str(int(self.query_params["page"]) - 1)
+
+        response = list_domains(self.query_params)
+
+        self.finalize(response)
 
 
 class UnmatchedHandler(BrainiakRequestHandler):

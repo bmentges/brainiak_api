@@ -36,8 +36,8 @@ Therefore, in the response we have a ``links`` section like this:
       },
       {
         "href": "http://localhost:5100/person/Gender/Male",
-        "method": "PATCH",
-        "rel": "edit"
+        "method": "PUT",
+        "rel": "replace"
       },
       {
         "href": "http://localhost:5100/person/Gender/Male",

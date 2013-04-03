@@ -22,6 +22,13 @@ class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
         sparql.filter_values = self.original_filter_values
         super(ListDomainsTestCase, self).tearDown()
 
+    def test_400(self):
+        sparql.filter_values = lambda a, b: []
+        response = self.fetch("/?best_martial_arts=aikido", method='GET')
+        self.assertEqual(response.code, 400)
+        body = json.loads(response.body)
+        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_martial_arts is not supported')
+
     def test_404(self):
         sparql.filter_values = lambda a, b: []
         response = self.fetch("/", method='GET')
@@ -47,11 +54,13 @@ class QueryTestCase(QueryTestCase):
     fixtures = ["tests/sample/demo.n3"]
 
     def test_query_pre_defined_graphs(self):
-        response = self.query(QUERY_LIST_DOMAIN)
+        query = QUERY_LIST_DOMAIN
+        response = self.query(query)
         registered_graphs = sparql.filter_values(response, "graph")
         self.assertIn('http://www.w3.org/2002/07/owl#', registered_graphs)
 
     def test_query_new_graph(self):
-        response = self.query(QUERY_LIST_DOMAIN)
+        query = QUERY_LIST_DOMAIN
+        response = self.query(query)
         registered_graphs = sparql.filter_values(response, "graph")
         self.assertIn('http://whatever.com', registered_graphs)

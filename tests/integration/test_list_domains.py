@@ -22,6 +22,13 @@ class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
         sparql.filter_values = self.original_filter_values
         super(ListDomainsTestCase, self).tearDown()
 
+    def test_400(self):
+        sparql.filter_values = lambda a, b: []
+        response = self.fetch("/?best_martial_arts=aikido", method='GET')
+        self.assertEqual(response.code, 400)
+        body = json.loads(response.body)
+        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_martial_arts is not supported')
+
     def test_404(self):
         sparql.filter_values = lambda a, b: []
         response = self.fetch("/", method='GET')

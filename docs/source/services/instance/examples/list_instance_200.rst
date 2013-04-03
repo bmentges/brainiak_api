@@ -71,11 +71,6 @@
             },
             {
                 "href": "http://localhost:5100/place/Country/{resource_id}",
-                "method": "PATCH",
-                "rel": "edit"
-            },
-            {
-                "href": "http://localhost:5100/place/Country/{resource_id}",
                 "method": "PUT",
                 "rel": "replace"
             },

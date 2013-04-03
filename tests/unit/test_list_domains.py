@@ -23,12 +23,15 @@ class GetDomainTestCase(unittest.TestCase):
             ]}
         }
         triplestore.query_sparql = lambda query: response
-        computed = list_domains()
+        params = {"per_page": 30, "page": 1}
+        computed = list_domains(params)
         expected_items = [
             {'@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-            'title': 'rdf'},
+            'title': 'rdf',
+            'resource_id': 'rdf'},
             {'@id': 'http://www.w3.org/2002/07/owl#',
-            'title': 'owl'}
+            'title': 'owl',
+            'resource_id': 'owl'}
         ]
         self.assertEqual(computed["items"], expected_items)
         self.assertEqual(computed["item_count"], 2)
@@ -42,9 +45,11 @@ class GetDomainTestCase(unittest.TestCase):
         computed = build_domains(domains_uris)
         expected = [
             {'@id': 'http://www.w3.org/2006/time#',
-            'title': 'time'},
+            'title': 'time',
+            'resource_id': 'time'},
             {'@id': 'http://xmlns.com/foaf/0.1/',
-            'title': 'foaf'}
+            'title': 'foaf',
+            'resource_id': 'foaf'}
         ]
         self.assertEqual(computed, expected)
 
@@ -57,9 +62,11 @@ class GetDomainTestCase(unittest.TestCase):
         computed = build_domains(domains_uris)
         expected = [
             {'@id': 'http://purl.org/dc/elements/1.1/',
-            'title': 'dc'},
+            'title': 'dc',
+            'resource_id': 'dc'},
             {'@id': 'http://dbpedia.org/ontology/',
-            'title': 'dbpedia'}
+            'title': 'dbpedia',
+            'resource_id': 'dbpedia'}
         ]
         self.assertEqual(computed, expected)
 

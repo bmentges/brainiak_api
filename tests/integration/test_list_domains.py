@@ -47,11 +47,13 @@ class QueryTestCase(QueryTestCase):
     fixtures = ["tests/sample/demo.n3"]
 
     def test_query_pre_defined_graphs(self):
-        response = self.query(QUERY_LIST_DOMAIN)
+        query = QUERY_LIST_DOMAIN % {"per_page": 30, "page": 1}
+        response = self.query(query)
         registered_graphs = sparql.filter_values(response, "graph")
         self.assertIn('http://www.w3.org/2002/07/owl#', registered_graphs)
 
     def test_query_new_graph(self):
-        response = self.query(QUERY_LIST_DOMAIN)
+        query = QUERY_LIST_DOMAIN % {"per_page": 30, "page": 1}
+        response = self.query(query)
         registered_graphs = sparql.filter_values(response, "graph")
         self.assertIn('http://whatever.com', registered_graphs)

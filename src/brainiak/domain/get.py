@@ -8,11 +8,14 @@ from brainiak.utils import sparql
 QUERY_LIST_DOMAIN = """
 SELECT DISTINCT ?graph
 WHERE {GRAPH ?graph { ?s ?p ?o }}
+LIMIT %(per_page)s
+OFFSET %(page)s
 """
 
 
-def list_domains():
-    sparql_response = triplestore.query_sparql(QUERY_LIST_DOMAIN)
+def list_domains(params):
+    query = QUERY_LIST_DOMAIN % params
+    sparql_response = triplestore.query_sparql(query)
     domains_uris = sparql.filter_values(sparql_response, "graph")
     if not domains_uris:
         raise HTTPError(404, log_message="No domains were found.")
@@ -29,7 +32,7 @@ def build_domains(domains_uris):
             domain_info = {
                 "title": slug,
                 "@id": uri,
-                #"resource_id": slug
+                "resource_id": slug
             }
             domains.append(domain_info)
     return domains

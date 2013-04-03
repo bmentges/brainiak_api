@@ -422,12 +422,6 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             },
             {
                 'href': "http://localhost:5100/ctx/klass/{resource_id}",
-                'method': "PATCH",
-                'rel': "edit"
-
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass/{resource_id}",
                 'method': "PUT",
                 'rel': "replace"
 

@@ -49,12 +49,12 @@ class brainiak::be inherits api_semantica::be {
   }
 
   case $::zone {
-    /(dev|qa1)/ {
+    /(dev|qa1)/: {
       $gunicorn_debug = 'True'
-    },
-    default {
+    }
+    default: {
       $gunicorn_debug = 'False'
-    },
+    }
   }
   ## Instala o gunicorn para usa o tornado utilizado pelo brainiak.
   ## O nginx desse projeto eh instalado pela api_semantica::be (inherits)

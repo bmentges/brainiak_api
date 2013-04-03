@@ -17,9 +17,9 @@ from brainiak.domain.get import list_domains
 from brainiak.prefixes import safe_slug_to_prefix
 from brainiak.greenlet_tornado import greenlet_asynchronous
 
-from brainiak.tornado_cors import custom_decorator
+from tornado_cors import custom_decorator
 custom_decorator.wrapper = greenlet_asynchronous
-from brainiak.tornado_cors import CorsMixin
+from tornado_cors import CorsMixin
 
 from tornado.web import asynchronous as wrapper
 

@@ -170,7 +170,6 @@ class InstanceHandler(BrainiakRequestHandler):
             "class_prefix": "",
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "instance_id": instance_id,
-            "instance_prefix": "",
             "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
             "request": self.request,
             "lang": settings.DEFAULT_LANG,

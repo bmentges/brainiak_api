@@ -101,7 +101,6 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         return overriden_params
 
     def finalize(self, response):
-        self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
             raise HTTPError(404, log_message="")
         else:

@@ -51,9 +51,8 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     action_links = [
         {'rel': 'self', 'href': self_url},
         {'rel': 'describedBy', 'href': schema_url},
-        {'rel': 'edit', 'method': 'PATCH', 'href': self_url},
-        {'rel': 'delete', 'method': 'DELETE', 'href': self_url},
-        {'rel': 'replace', 'method': 'PUT', 'href': self_url}
+        {'rel': 'replace', 'method': 'PUT', 'href': self_url},
+        {'rel': 'delete', 'method': 'DELETE', 'href': self_url}
     ]
     links.extend(action_links)
 

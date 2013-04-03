@@ -93,7 +93,6 @@ class AssembleTestCase(unittest.TestCase):
         expected_links = [
             {'rel': 'self', 'href': 'http://localhost:5100/ctx/klass/instance'},
             {'rel': 'describedBy', 'href': 'http://localhost:5100/ctx/klass/_schema'},
-            {'rel': 'edit', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'PATCH'},
             {'rel': 'delete', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'DELETE'},
             {'rel': 'replace', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'PUT'}
         ]
@@ -102,7 +101,7 @@ class AssembleTestCase(unittest.TestCase):
         self.assertEqual(computed["@type"], "ctx:klass")
         self.assertEqual(computed["@context"], {})
         self.assertEqual(computed["$schema"], 'http://localhost:5100/ctx/klass/_schema')
-        self.assertEqual(computed["links"], expected_links)
+        self.assertItemsEqual(computed["links"], expected_links)
 
     def test_assemble_instance_json_links_with_context(self):
 
@@ -125,7 +124,6 @@ class AssembleTestCase(unittest.TestCase):
         expected_links = [
             {'rel': 'self', 'href': 'http://localhost:5100/ctx/klass/instance'},
             {'rel': 'describedBy', 'href': 'http://localhost:5100/ctx/klass/_schema'},
-            {'rel': 'edit', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'PATCH'},
             {'rel': 'delete', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'DELETE'},
             {'rel': 'replace', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'PUT'},
             {'rel': 'person', 'href': '/person/Person'}

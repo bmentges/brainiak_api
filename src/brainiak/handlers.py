@@ -13,12 +13,13 @@ from brainiak.instance.list_resource import filter_instances
 from brainiak.instance.delete_resource import delete_instance
 from brainiak.instance.create_resource import create_instance
 from brainiak.instance.edit_resource import edit_instance, instance_exists
+from brainiak.domain.get import list_domains
 from brainiak.prefixes import safe_slug_to_prefix
 from brainiak.greenlet_tornado import greenlet_asynchronous
 
-from brainiak.tornado_cors import custom_decorator
+from tornado_cors import custom_decorator
 custom_decorator.wrapper = greenlet_asynchronous
-from brainiak.tornado_cors import CorsMixin
+from tornado_cors import CorsMixin
 
 
 def get_routes():
@@ -29,6 +30,7 @@ def get_routes():
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)', InstanceHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)', CollectionHandler),
+        URLSpec(r'/$', DomainHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
     ]
 
@@ -366,6 +368,14 @@ class CollectionHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
+
+
+class DomainHandler(BrainiakRequestHandler):
+
+    @greenlet_asynchronous
+    def get(self):
+        domains_json = list_domains()
+        self.write(domains_json)
 
 
 class UnmatchedHandler(BrainiakRequestHandler):

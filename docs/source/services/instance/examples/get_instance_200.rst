@@ -17,8 +17,8 @@
             },
             {
                 "href": "http://localhost:5100/place/Country/Brazil",
-                "method": "PATCH",
-                "rel": "edit"
+                "method": "PUT",
+                "rel": "replace"
             },
             {
                 "href": "http://localhost:5100/place/Country/Brazil",

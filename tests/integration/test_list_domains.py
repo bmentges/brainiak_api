@@ -2,9 +2,10 @@ import json
 
 from tornado.web import HTTPError
 
-from brainiak.domain.get import build_domains, build_json, list_domains
+from brainiak.domain.get import build_domains, build_json, list_domains, QUERY_LIST_DOMAIN
 from brainiak.utils import sparql
 from tests import TornadoAsyncHTTPTestCase
+from tests.sparql import QueryTestCase
 
 
 def raise_exception():
@@ -38,3 +39,19 @@ class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
     def test_200(self):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
+
+
+class QueryTestCase(QueryTestCase):
+    allow_triplestore_connection = True
+    graph_uri = "http://whatever.com"
+    fixtures = ["tests/sample/demo.n3"]
+
+    def test_query_pre_defined_graphs(self):
+        response = self.query(QUERY_LIST_DOMAIN)
+        registered_graphs = sparql.filter_values(response, "graph")
+        self.assertIn('http://www.w3.org/2002/07/owl#', registered_graphs)
+
+    def test_query_new_graph(self):
+        response = self.query(QUERY_LIST_DOMAIN)
+        registered_graphs = sparql.filter_values(response, "graph")
+        self.assertIn('http://whatever.com', registered_graphs)

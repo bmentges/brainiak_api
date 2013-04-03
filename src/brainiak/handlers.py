@@ -150,7 +150,6 @@ class SchemaHandler(BrainiakRequestHandler):
         self.finalize(response)
 
     def finalize(self, response):
-        self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
             msg = "Class ({class_name}) in graph ({context_name}) was not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
@@ -274,7 +273,6 @@ class InstanceHandler(BrainiakRequestHandler):
         self.finalize(response)
 
     def finalize(self, response):
-        self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
             msg = "Instance ({instance_id}) of class ({class_name}) in graph ({context_name}) was not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
@@ -354,7 +352,6 @@ class CollectionHandler(BrainiakRequestHandler):
         self.finalize("")
 
     def finalize(self, response):
-        self.set_header('Access-Control-Allow-Origin', '*')
         if response is None:
             # TODO separate filter message logic (e.g. if response is None and ("p" in self.query_params or "o" in self.query_params))
             filter_message = []

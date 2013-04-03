@@ -1,7 +1,7 @@
 import unittest
 
 from brainiak import triplestore
-from brainiak.domain.get import build_domains, build_json, list_domains
+from brainiak.domain.get import filter_and_build_domains, build_json, list_domains
 from brainiak.utils import sparql
 
 
@@ -42,7 +42,7 @@ class GetDomainTestCase(unittest.TestCase):
             "http://www.w3.org/2006/time#",
             'http://xmlns.com/foaf/0.1/'
         ]
-        computed = build_domains(domains_uris)
+        computed = filter_and_build_domains(domains_uris)
         expected = [
             {'@id': 'http://www.w3.org/2006/time#',
             'title': 'time',
@@ -59,7 +59,7 @@ class GetDomainTestCase(unittest.TestCase):
             'http://dbpedia.org/ontology/',
             'http://unregistered.prefix'
         ]
-        computed = build_domains(domains_uris)
+        computed = filter_and_build_domains(domains_uris)
         expected = [
             {'@id': 'http://purl.org/dc/elements/1.1/',
             'title': 'dc',

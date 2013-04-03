@@ -2,7 +2,7 @@ import json
 
 from tornado.web import HTTPError
 
-from brainiak.domain.get import build_domains, build_json, list_domains, QUERY_LIST_DOMAIN
+from brainiak.domain.get import build_json, list_domains, QUERY_LIST_DOMAIN
 from brainiak.utils import sparql
 from tests import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
@@ -46,6 +46,7 @@ class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
     def test_200(self):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
 
 
 class QueryTestCase(QueryTestCase):

@@ -22,22 +22,20 @@ def split_into_chunks(items, per_page):
 def list_domains(params):
     sparql_response = triplestore.query_sparql(QUERY_LIST_DOMAIN)
     all_domains_uris = sparql.filter_values(sparql_response, "graph")
-    domains_uris_chunks = split_into_chunks(all_domains_uris, int(params["per_page"]))
 
-    if domains_uris_chunks:
-        domains_uris = domains_uris_chunks[int(params["page"])]
-    else:
-        domains_uris = []
+    filtered_domains = filter_and_build_domains(all_domains_uris)
 
-    if not domains_uris:
+    if not filtered_domains:
         raise HTTPError(404, log_message="No domains were found.")
 
-    domains = build_domains(domains_uris)
+    domains_pages = split_into_chunks(filtered_domains, int(params["per_page"]))
+    domains = domains_pages[int(params["page"])]
+
     domains_json = build_json(domains)
     return domains_json
 
 
-def build_domains(domains_uris):
+def filter_and_build_domains(domains_uris):
     domains = []
     for uri in domains_uris:
         slug = prefix_to_slug(uri)

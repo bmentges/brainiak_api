@@ -20,8 +20,6 @@ from brainiak.tornado_cors import custom_decorator
 custom_decorator.wrapper = greenlet_asynchronous
 from brainiak.tornado_cors import CorsMixin
 
-from tornado.web import asynchronous as wrapper
-
 
 def get_routes():
     return [

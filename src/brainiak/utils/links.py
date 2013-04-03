@@ -41,7 +41,6 @@ def build_links(class_uri, page, per_page, request_uri, total_items, query_strin
         {'rel': "item", 'href': resource_uri},
         {'rel': "create", 'href': class_uri, 'method': "POST"},
         {'rel': "delete", 'href': resource_uri, 'method': "DELETE"},
-        {'rel': "edit", 'href': resource_uri, 'method': "PATCH"},
         {'rel': "replace", 'href': resource_uri, 'method': "PUT"}
     ]
     links.extend(action_links)

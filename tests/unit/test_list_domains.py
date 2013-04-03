@@ -23,7 +23,7 @@ class GetDomainTestCase(unittest.TestCase):
             ]}
         }
         triplestore.query_sparql = lambda query: response
-        params = {"per_page": 30, "page": 1}
+        params = {"per_page": "30", "page": "0"}
         computed = list_domains(params)
         expected_items = [
             {'@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',

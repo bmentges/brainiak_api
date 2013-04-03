@@ -24,7 +24,7 @@ Optional parameters
 
 **class_uri**: Set the class URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME``
 
-**page**: The page you want to retrieve. The default value is ``0``, i.e. the first page
+**page**: The page you want to retrieve. The default value is ``1``, i.e. the first page
 
 **per_page**: Defines how many items you want to retrieve per page. The default value is ``10``
 
@@ -45,20 +45,25 @@ Possible responses
 
 **Status 200**
 
-If instances with the specified filter exist, the response body is a JSON with all instances information and links to related actions.
+If there are instances that match the query, the response body is a JSON containing instances' titles, resources_id and @ids (URIs).
+By default, the first page containing 10 items is returned (``?page=1&per_page=10``).
 
 .. include :: examples/get_instance_200.rst
 
 **Status 400**
 
-If there are unknown parameters in the request, the response is a 400
-with a JSON informing the wrong parameters and the accepted ones.
+If there are unknown parameters in the request query string, the response status code is 400.
+A JSON containing both the wrong parameters and the accepted ones is returned.
 
 .. include :: examples/get_instance_400.rst
 
 **Status 404**
 
-If there is no instances matching the filter, the response is a 404 with a JSON
-informing the error
+If there are no instances, the response status code is a 404.
 
 .. include :: examples/get_instance_404.rst
+
+**Status 500**
+
+If there was some internal problem, the response status code is a 500.
+Please, contact semantica@corp.globo.com informing the URL and the JSON returned.

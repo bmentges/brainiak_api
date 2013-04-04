@@ -28,18 +28,18 @@ def get_next_page(page, last_page):
         return False
 
 
-def build_links(class_uri, page, per_page, request_uri, total_items, query_string):
+def build_links(class_url, page, per_page, request_uri, total_items, query_string):
     last_page = get_last_page(total_items, per_page)
-    resource_uri = "%s/{resource_id}" % class_uri
+    resource_uri = "%s/{resource_id}" % class_url
 
     links = [
         {'rel': "self", 'href': request_uri}
     ]
 
     action_links = [
-        {'rel': "list", 'href': class_uri},
+        {'rel': "list", 'href': class_url},
         {'rel': "item", 'href': resource_uri},
-        {'rel': "create", 'href': class_uri, 'method': "POST"},
+        {'rel': "create", 'href': class_url, 'method': "POST"},
         {'rel': "delete", 'href': resource_uri, 'method': "DELETE"},
         {'rel': "replace", 'href': resource_uri, 'method': "PUT"}
     ]
@@ -48,20 +48,20 @@ def build_links(class_uri, page, per_page, request_uri, total_items, query_strin
     first_page_querystring = set_query_string_parameter(query_string, "page", "1")
     last_page_querystring = set_query_string_parameter(query_string, "page", last_page)
     navigation_links = [
-        {'rel': "first", 'href': "%s?%s" % (class_uri, first_page_querystring), 'method': "GET"},
-        {'rel': "last", 'href': "%s?%s" % (class_uri, last_page_querystring), 'method': "GET"}
+        {'rel': "first", 'href': "%s?%s" % (class_url, first_page_querystring), 'method': "GET"},
+        {'rel': "last", 'href': "%s?%s" % (class_url, last_page_querystring), 'method': "GET"}
     ]
 
     previous_page = get_previous_page(page)
     if previous_page:
         previous_page_querystring = set_query_string_parameter(query_string, "page", previous_page)
-        item = {'rel': "previous", 'href': "%s?%s" % (class_uri, previous_page_querystring), 'method': "GET"}
+        item = {'rel': "previous", 'href': "%s?%s" % (class_url, previous_page_querystring), 'method': "GET"}
         navigation_links.append(item)
 
     next_page = get_next_page(page, last_page)
     if next_page:
         next_page_querystring = set_query_string_parameter(query_string, "page", next_page)
-        item = {'rel': "next", 'href': "%s?%s" % (class_uri, next_page_querystring), 'method': "GET"}
+        item = {'rel': "next", 'href': "%s?%s" % (class_url, next_page_querystring), 'method': "GET"}
         navigation_links.append(item)
 
     links.extend(navigation_links)

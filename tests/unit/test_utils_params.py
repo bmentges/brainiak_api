@@ -8,8 +8,8 @@ class MockHandler():
     def __init__(self, **kw):
         self.kw = kw
 
-    def get_argument(self, key, default_value):
-        return self.kw.get(key, default_value)
+    def get_argument(self, key):
+        return self.kw.get(key)
 
     @property
     def request(self):

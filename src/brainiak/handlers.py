@@ -165,7 +165,7 @@ class SchemaHandler(BrainiakRequestHandler):
 
     def finalize(self, response):
         if response is None:
-            msg = "Class ({class_name}) in graph ({context_name}) was not found."
+            msg = "Class ({class_uri}) in graph ({graph_uri}) was not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
@@ -178,35 +178,11 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
-        query_params = {
-            "context_name": context_name,
-            "class_name": class_name,
-            "class_prefix": "",
-            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
-            "instance_id": instance_id,
-            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
-            "request": self.request,
-            "lang": settings.DEFAULT_LANG,
-            "instance_prefix": "",
-            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
-        }
+        with safe_params():
+            self.query_params = ParamDict(self, context_name=context_name, class_name=class_name, instance_id=instance_id)
 
-        if self.request.arguments:
-            query_params = self.override_defaults_with_arguments(query_params)
+        response = get_instance(self.query_params)
 
-        # TODO: test
-        class_prefix = safe_slug_to_prefix(query_params["class_prefix"])
-        if class_prefix:
-            query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
-
-        # TODO: test
-        instance_prefix = safe_slug_to_prefix(query_params["instance_prefix"])
-        if instance_prefix:
-            query_params["instance_uri"] = "%s%s" % (instance_prefix, instance_id)
-
-        response = get_instance(query_params)
-
-        self.query_params = query_params
         self.finalize(response)
 
     @greenlet_asynchronous
@@ -287,7 +263,7 @@ class InstanceHandler(BrainiakRequestHandler):
 
     def finalize(self, response):
         if response is None:
-            msg = "Instance ({instance_id}) of class ({class_name}) in graph ({context_name}) was not found."
+            msg = "Instance ({instance_uri}) of class ({class_uri}) in graph ({graph_uri}) was not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         elif isinstance(response, dict):
             self.write(response)

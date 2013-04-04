@@ -31,6 +31,8 @@
 #
 class brainiak::be inherits api_semantica::be {
 
+  include aliases::all
+
   $app_name = 'brainiak'
   $basedir  = "/opt/${projeto}/${app_name}"
 

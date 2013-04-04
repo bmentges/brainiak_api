@@ -61,7 +61,7 @@ class ParamDict(dict):
 
         self["graph_prefix"] = settings.URI_PREFIX
         self["class_prefix"] = self.get("graph_uri")
-        self["instance_prefix"] = self.get("class_uri")
+        self["instance_prefix"] = self.get("class_uri") + "/"
 
     def _override_with(self, handler):
         "Override this dictionary with values whose keys are present in the request"

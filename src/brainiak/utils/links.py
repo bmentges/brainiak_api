@@ -50,6 +50,12 @@ def navigation_links(base_url, query_string, page, last_page):
     return nav_links
 
 
+# listing
+# domain/ : lists contexts
+# domain/context/ : lists classes
+# domain/context/class/ : lists instances
+
+
 def build_links(base_url, page, per_page, request_uri, total_items, query_string):
     """
     Build links for listing primitives (list contexts, list classes, list instances).

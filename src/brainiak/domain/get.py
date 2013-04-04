@@ -56,7 +56,7 @@ def build_json(domains, total_items, params, request):
         base_url,
         page=int(params["page"]) + 1,  # API's pagination begin with 1, Virtuoso's with 0
         per_page=int(params["per_page"]),
-        request_uri=request.uri,
+        request_url=request.uri,
         total_items=total_items,
         query_string=request.query)
 
@@ -65,5 +65,4 @@ def build_json(domains, total_items, params, request):
         'item_count': total_items,
         'links': links
     }
-    # TODO: add pagination
     return json

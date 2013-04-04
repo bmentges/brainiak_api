@@ -50,13 +50,7 @@ def navigation_links(base_url, query_string, page, last_page):
     return nav_links
 
 
-# listing
-# domain/ : lists contexts
-# domain/context/ : lists classes
-# domain/context/class/ : lists instances
-
-
-def build_links(base_url, page, per_page, request_uri, total_items, query_string):
+def build_links(base_url, page, per_page, request_url, total_items, query_string):
     """
     Build links for listing primitives (list contexts, list classes, list instances).
      - base_url: last character shouldn't be "/"
@@ -69,7 +63,7 @@ def build_links(base_url, page, per_page, request_uri, total_items, query_string
         resource_url = "%s/{resource_id}" % base_url
 
     links = [
-        {'rel': "self", 'href': request_uri}
+        {'rel': "self", 'href': request_url}
     ]
 
     action_links = [

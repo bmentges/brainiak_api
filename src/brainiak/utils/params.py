@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from brainiak import settings
+from brainiak.prefixes import safe_slug_to_prefix
 
 
 class InvalidParam(Exception):
@@ -34,34 +35,44 @@ class ParamDict(dict):
         self._override_with(handler)
         self._post_override()
 
+    def __setitem__(self, key, value):
+        "Process collateral effects in params that are related."
+        if key == "graph_prefix":
+            dict.__setitem__(self, key, safe_slug_to_prefix(value))
+            dict.__setitem__(self, "graph_uri", "{0}{1}/".format(self["graph_prefix"], self["context_name"]))
+
+        elif key == "class_prefix":
+            dict.__setitem__(self, key, safe_slug_to_prefix(value))
+            dict.__setitem__(self, "class_uri", "{0}{1}".format(self["class_prefix"], self["class_name"]))
+
+        elif key == "instance_prefix":
+            dict.__setitem__(self, key, safe_slug_to_prefix(value))
+            dict.__setitem__(self, "instance_uri", "{0}{1}".format(self["instance_prefix"], self["instance_id"]))
+
+        else:
+            dict.__setitem__(self, key, value)
+
     def _set_defaults(self):
         "Define a set of predefined keys that "
-        defaults = {}
-        defaults["lang"] = self.get("lang", settings.DEFAULT_LANG)
-        defaults["context_name"] = self.get("context_name", "invalid_context")
-        defaults["class_name"] = self.get("class_name", "invalid_class")
-        defaults["instance_id"] = self.get("instance_id", "invalid_instance")
+        self["lang"] = self.get("lang", settings.DEFAULT_LANG)
+        self["context_name"] = self.get("context_name", "invalid_context")
+        self["class_name"] = self.get("class_name", "invalid_class")
+        self["instance_id"] = self.get("instance_id", "invalid_instance")
 
-        defaults["graph_prefix"] = settings.URI_PREFIX
-        defaults["graph_uri"] = "{0}{1}/".format(defaults["graph_prefix"], defaults["context_name"])
-
-        defaults["class_prefix"] = defaults.get("graph_uri")
-        defaults["class_uri"] = "{0}{1}".format(defaults["class_prefix"], defaults["class_name"])
-
-        defaults["instance_prefix"] = defaults.get("class_uri")
-        defaults["instance_uri"] = "{0}{1}".format(defaults["instance_prefix"], defaults["instance_id"])
-
-        self.update(defaults)
+        self["graph_prefix"] = settings.URI_PREFIX
+        self["class_prefix"] = self.get("graph_uri")
+        self["instance_prefix"] = self.get("class_uri")
 
     def _override_with(self, handler):
         "Override this dictionary with values whose keys are present in the request"
-        for (query_param, default_value) in self.items():
-            self[query_param] = handler.get_argument(query_param, default_value)
-
         query_params_supported = set(self.keys())
         for arg in self['request'].arguments:
             if arg not in query_params_supported:
                 raise InvalidParam(arg)
+
+        # sorted is critical below because *_uri should be set before *_prefix
+        for query_param_to_override in reversed(sorted(self['request'].arguments)):
+            self[query_param_to_override] = handler.get_argument(query_param_to_override)
 
     def _post_override(self):
         "This method is called after override_with() is called to do any post processing"

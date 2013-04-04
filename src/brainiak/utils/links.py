@@ -28,42 +28,54 @@ def get_next_page(page, last_page):
         return False
 
 
-def build_links(class_uri, page, per_page, request_uri, total_items, query_string):
+def navigation_links(base_url, query_string, page, last_page):
+    first_page_querystring = set_query_string_parameter(query_string, "page", "1")
+    last_page_querystring = set_query_string_parameter(query_string, "page", last_page)
+    nav_links = [
+        {'rel': "first", 'href': "%s?%s" % (base_url, first_page_querystring), 'method': "GET"},
+        {'rel': "last", 'href': "%s?%s" % (base_url, last_page_querystring), 'method': "GET"}
+    ]
+
+    previous_page = get_previous_page(page)
+    if previous_page:
+        previous_page_querystring = set_query_string_parameter(query_string, "page", previous_page)
+        item = {'rel': "previous", 'href': "%s?%s" % (base_url, previous_page_querystring), 'method': "GET"}
+        nav_links.append(item)
+
+    next_page = get_next_page(page, last_page)
+    if next_page:
+        next_page_querystring = set_query_string_parameter(query_string, "page", next_page)
+        item = {'rel': "next", 'href': "%s?%s" % (base_url, next_page_querystring), 'method': "GET"}
+        nav_links.append(item)
+    return nav_links
+
+
+def build_links(base_url, page, per_page, request_uri, total_items, query_string):
+    """
+    Build links for listing primitives (list contexts, list classes, list instances).
+     - base_url: last character shouldn't be "/"
+    """
     last_page = get_last_page(total_items, per_page)
-    resource_uri = "%s/{resource_id}" % class_uri
+
+    if base_url.endswith("/"):
+        resource_url = "%s{resource_id}" % base_url
+    else:
+        resource_url = "%s/{resource_id}" % base_url
 
     links = [
         {'rel': "self", 'href': request_uri}
     ]
 
     action_links = [
-        {'rel': "list", 'href': class_uri},
-        {'rel': "item", 'href': resource_uri},
-        {'rel': "create", 'href': class_uri, 'method': "POST"},
-        {'rel': "delete", 'href': resource_uri, 'method': "DELETE"},
-        {'rel': "replace", 'href': resource_uri, 'method': "PUT"}
+        {'rel': "list", 'href': base_url},
+        {'rel': "item", 'href': resource_url},
+        {'rel': "create", 'href': base_url, 'method': "POST"},
+        {'rel': "delete", 'href': resource_url, 'method': "DELETE"},
+        {'rel': "replace", 'href': resource_url, 'method': "PUT"}
     ]
     links.extend(action_links)
 
-    first_page_querystring = set_query_string_parameter(query_string, "page", "1")
-    last_page_querystring = set_query_string_parameter(query_string, "page", last_page)
-    navigation_links = [
-        {'rel': "first", 'href': "%s?%s" % (class_uri, first_page_querystring), 'method': "GET"},
-        {'rel': "last", 'href': "%s?%s" % (class_uri, last_page_querystring), 'method': "GET"}
-    ]
-
-    previous_page = get_previous_page(page)
-    if previous_page:
-        previous_page_querystring = set_query_string_parameter(query_string, "page", previous_page)
-        item = {'rel': "previous", 'href': "%s?%s" % (class_uri, previous_page_querystring), 'method': "GET"}
-        navigation_links.append(item)
-
-    next_page = get_next_page(page, last_page)
-    if next_page:
-        next_page_querystring = set_query_string_parameter(query_string, "page", next_page)
-        item = {'rel': "next", 'href': "%s?%s" % (class_uri, next_page_querystring), 'method': "GET"}
-        navigation_links.append(item)
-
-    links.extend(navigation_links)
+    nav_links = navigation_links(base_url, query_string, page, last_page)
+    links.extend(nav_links)
 
     return links

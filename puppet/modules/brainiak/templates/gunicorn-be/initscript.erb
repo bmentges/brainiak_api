@@ -1,189 +1,110 @@
-#!/bin/sh
+#!/bin/bash
+#
+# Gunicorn 'Green Unicorn' is a Python WSGI HTTP Server for UNIX.
 #
 # chkconfig:    2345 85 15
 # description:  <%=servico%>
+# pidfile:      <%=pid_file%>
+#
+##############################################################################
+# ARQUIVO GERENCIADO PELO PUPPET                                             #
+# AS ALTERACOES MANUAIS SERAO DESCARTADAS NA PROXIMA ATUALIZACAO DO PUPPET   #
+<%
+=begin -%>
 
-#################################################################################
-# ARQUIVO GERENCIADO PELO PUPPET                                                #
-# AS ALTERACOES MANUAIS SERAO DESCARTADAS NA PROXIMA ATUALIZACAO DO PUPPET      #
+Este código abaixo gera erro quando rodado localmente:
+
+warning: Dynamic lookup of $git_projeto at /opt/mamulengo/setup/modules/gunicorn/templates/gunicorn-init.erb:17 is deprecated.  Support will be removed in Puppet 2.8.  Use a fully-qualified variable name (e.g., $classname::variable) or parameterized classes.
+
 <% if has_variable?("git_projeto") then %># Git do Projeto que usou esse template: <%=git_projeto%><% end %>
-# Template em <%=app_name%>/modules/<%=app_name%>/templates/gunicorn-be/initscript.erb #
-#################################################################################
 
-# Source function library.
-. <%=el5_file%>
+<%
+=end -%>
+##############################################################################
 
-<% if has_variable?('api_dbpasswd_conf_file') then %>
-# Importo o arquivo q contem a senha do filer
-. /opt/etc/scripts/initfunctions.sh
-LoadProtectedEnviron --uid=10000 <%=api_dbpasswd_conf_file%>
-<% end %>
+source /opt/etc/scripts/initfunctions.sh
 
-# Source networking configuration.
-. /etc/sysconfig/network
-
-# Check that networking is up.
-[ "$NETWORKING" = "no" ] && exit 0
-
-# Defines.
 user="<%=instancia_usuario%>"
-command="<%=python_prefix%>/bin/<%=gunicorn_bin%>"
-prog="$(basename $command)"
+command="<%=python_prefix%>/bin/gunicorn"
+check="<%=python_prefix%>/bin/python"
 config="<%=config_file%>"
-logconfig="<%=logconfig_file%>"
 app_dir="<%=app_dir%>"
 settings="<%=settings_file%>"
 title="<%=servico%>"
 pidfile="<%=pid_file%>"
 logfile="<%=log_file%>"
 
-command_parameters="-c $config -k tornado brainiak.server:application"
-
-# Commands.
-start_command="cd $app_dir && $command $command_parameters >> $logfile 2>&1"
-
-# Signals.
-# http://gunicorn.org/faq.html#how-do-i-reload-my-application-in-gunicorn
-stop_signal="TERM"
-graceful_signal="HUP"
-reload_signal="HUP"
-
-# Return code.
-RETVAL=0
+startcmd="$command -c $config <%= gunicorn_cmd_parameters %>"
 
 PreFlight()
 {
+<% if has_variable?('api_dbpasswd_conf_file') then -%>
+    LoadProtectedEnviron --uid=10000 <%= api_dbpasswd_conf_file %>
+
+<% end -%>
     if [[ ! -d "${app_dir}" ]] ; then
         echo -n "Não consigo achar diretório '${app_dir}'"
         failure
         exit 1
     fi
 
+    cd "${app_dir}"
+
+    if false ; then  # Desabilitado, até checar a compatibilidade com outros projetos
+      if [[ ! -f "${app_dir}/${settings//.//}.py" ]] ; then
+        echo -n "Não consigo achar arquivo '${app_dir}/${settings//.//}.py'"
+        failure
+        exit 1
+      fi
+    fi
+
     export DJANGO_SETTINGS_MODULE="${settings}"
     export PYTHONPATH="${app_dir}${PYTHONPATH:+:${PYTHONPATH}}"
+    export INSTANCIA="<%=instancia%>"
 }
 
-
-function checkProcessIsRunning()
+start ()
 {
-   local pid="$1"
-   if [ -z "$pid" -o "$pid" == " " ]; then return 1; fi
-   if [ ! -e /proc/$pid ]; then return 1; fi
-   return 0;
-}
-
-start() {
-    echo -n "Starting $title:"
     PreFlight
-    <%if daemon_as_root-%>
-    daemon --pidfile $pidfile $start_command
-    <%else-%>
-    daemon --pidfile $pidfile --user $user $start_command
-    <%end-%>
-    RETVAL=$?
-    sleep 2
-    if [ ! -f $pidfile ]; then pid="0000000000"; else pid="$(<$pidfile)";fi
-    if checkProcessIsRunning $pid; then :; else
-        failure
-        echo
-        RETVAL=1
-        if [ -f $pidfile ]; then rm $pidfile;fi
-        return 1
-    fi
-    echo
-    return $RETVAL
+    InfraStartDaemon --title="$title" --user=$user --wait --pidfile="$pidfile" --check="$check" "$startcmd"
 }
 
-stop() {
-    echo -n "Stopping $title:"
-    killproc -p $pidfile -d 5 $prog -${1:-$stop_signal}
-    RETVAL=$?
-    echo
-    return $RETVAL
+stop()
+{
+    InfraKillDaemon --title="$title" --pidfile="$pidfile" --check="$check" --killsig=QUIT --pgid
 }
 
-force_stop() {
-    stop "KILL"
+reload()
+{
+    InfraReloadDaemon --title="$title" --pidfile="$pidfile" --check="$check"
 }
 
-restart() {
-    echo "Restarting $title:"
-    stop
-    sleep <%=sleeprestart%>
-    start
-}
-
-force_restart() {
-    echo "Restarting (force) $title:"
-    sleep <%=sleeprestart%>
-    stop "KILL"
-    sleep 5
-    start
-}
-
-graceful() {
-    echo -n "Gracefuling $title:"
-    sleep <%=sleeprestart%>
-    killproc -p $pidfile $prog -$graceful_signal
-    RETVAL=$?
-    echo
-    return $RETVAL
-}
-
-reload() {
-    echo -n "Reloading $title:"
-    sleep <%=sleeprestart%>
-    killproc -p $pidfile $prog -$reload_signal
-    RETVAL=$?
-    echo
-    return $RETVAL
-}
-
-rh_status() {
-    status -p $pidfile $prog
-    RETVAL=$?
-    [ $RETVAL -eq 0 ] && success || failure
-    echo
-    return $RETVAL
-}
-
-rh_status_q() {
-    rh_status >/dev/null 2>&1
-    RETVAL=$?
-    return $RETVAL
+status()
+{
+    InfraStatusDaemon --title="$title" --pidfile="$pidfile" --check="$check"
 }
 
 case "$1" in
     start)
-        rh_status_q && exit 0
         start
         ;;
-    stop)
-        rh_status_q || exit 0
+    force_stop|stop)
         stop
         ;;
-    force-stop)
-        force_stop
+    status)
+        status
         ;;
     restart)
-        restart
+        stop && start
         ;;
-    force-restart)
-        force_restart
-        ;;
-    graceful)
-        rh_status_q && graceful || restart
-        ;;
-    reload)
-        rh_status_q || exit 1
+    graceful|reload)
         reload
         ;;
-    status)
-        rh_status
-        ;;
     *)
-        echo "Usage: $0 {start|stop|force-stop|restart|force-restart|graceful|reload|status}"
+        echo "Uso: ${0#./} {start|stop|status|reload|restart}"
         exit 1
+        ;;
 esac
 
-exit $RETVAL
+# vim:syntax=sh:ts=4
+# EOF

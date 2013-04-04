@@ -13,7 +13,7 @@ according a propert/value filter. The results are paginated.
 .. program-output:: curl -s 'http://api.semantica.dev.globoi.com/v2/person/Gender/' | python -mjson.tool
   :shell:
 
-This will retrieve all instances of ``Gender`` in the place ``person``
+This will retrieve all instances of ``Gender`` in the graph ``person``
 
 Optional parameters
 -------------------

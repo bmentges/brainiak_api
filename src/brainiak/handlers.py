@@ -383,7 +383,7 @@ class DomainHandler(BrainiakRequestHandler):
         if "page" in self.request.arguments:
             self.query_params["page"] = str(int(self.query_params["page"]) - 1)
 
-        response = list_domains(self.query_params)
+        response = list_domains(self.query_params, self.request)
 
         self.finalize(response)
 

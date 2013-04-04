@@ -19,10 +19,20 @@ from brainiak.context.list_resource import list_classes
 from brainiak.domain.get import list_domains
 from brainiak.prefixes import safe_slug_to_prefix
 from brainiak.greenlet_tornado import greenlet_asynchronous
-from brainiak.utils.params import ParamDict, InvalidParam
+from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
 
 custom_decorator.wrapper = greenlet_asynchronous
 from tornado_cors import CorsMixin
+
+
+class ListServiceParams(ParamDict):
+    "Customize parameters for services with pagination"
+    extra_params = LIST_PARAMS
+
+
+class ListAndFilterServiceParams(ParamDict):
+    "Customize parameters for services with pagination and filtering by ?p and ?o"
+    extra_params = LIST_PARAMS + FILTER_PARAMS
 
 
 @contextmanager
@@ -288,31 +298,13 @@ class InstanceHandler(BrainiakRequestHandler):
 
 class CollectionHandler(BrainiakRequestHandler):
 
-    DEFAULT_PER_PAGE = "10"
-    DEFAULT_PAGE = "0"
-
     def __init__(self, *args, **kwargs):
         super(CollectionHandler, self).__init__(*args, **kwargs)
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-        query_params = {
-            "context_name": context_name,
-            "class_name": class_name,
-            "request": self.request,
-            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
-            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
-            "lang": self.get_argument("lang", settings.DEFAULT_LANG),
-            "page": self.DEFAULT_PAGE,
-            "per_page": self.DEFAULT_PER_PAGE,
-            "p": "?predicate",
-            "o": "?object"
-        }
-        self.query_params = self.override_defaults_with_arguments(query_params)
-        # In order to keep up with Repos, pages numbering start at 1.
-        # As for Virtuoso pages start at 0, we convert page, if provided
-        if "page" in self.request.arguments:
-            self.query_params["page"] = str(int(self.query_params["page"]) - 1)
+        with safe_params():
+            self.query_params = ListServiceParams(self, context_name=context_name, class_name=class_name)
 
         response = filter_instances(self.query_params)
 
@@ -370,6 +362,7 @@ class CollectionHandler(BrainiakRequestHandler):
 
 
 class DomainHandler(BrainiakRequestHandler):
+
     DEFAULT_PER_PAGE = "10"
     DEFAULT_PAGE = "0"
 

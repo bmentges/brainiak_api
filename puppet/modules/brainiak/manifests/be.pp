@@ -70,6 +70,7 @@ class brainiak::be inherits api_semantica::be {
     gunicorn_processes  => $gunicorn_processes,
     gunicorn_loglevel   => $gunicorn_loglevel,
     gunicorn_debug      => $gunicorn_debug,
+    gunicorn_cmd_parameters => '-k tornado brainiak.server:application',
     settings_file       => 'settings',
     dbpasswd            => false, ## Coloquei false pq o api_semantica::be ja faz esse trabalho
     require             => Virtualenv[$python_virtualenv_dir]

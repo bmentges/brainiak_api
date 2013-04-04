@@ -62,7 +62,7 @@ class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
         # disclaimer: this test assumes there are > 2 non-empty registered graphs in Virtuoso
         response = self.fetch("/?page=1&per_page=2", method='GET')
         self.assertEqual(response.code, 200)
-        body = json.loads(resposnse.body)
+        body = json.loads(response.body)
         self.assertIn("links", body.keys())
         self.assertIn("items", body.keys())
         self.assertIn("item_count", body.keys())

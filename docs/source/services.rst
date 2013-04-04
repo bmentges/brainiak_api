@@ -15,9 +15,9 @@ see :ref:`concept-context`, :ref:`concept-schema`, :ref:`concept-collection`, an
    :maxdepth: 3
 
    services/domain/domain.rst
+   services/context/context.rst
    services/schema/schema.rst
    services/instance/instance.rst
-   services/context/context.rst
    services/parameters.rst
    services/links.rst
    services/pagination.rst

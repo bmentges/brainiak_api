@@ -1,5 +1,6 @@
 from unittest import TestCase
-from brainiak.utils.params import ParamDict, InvalidParam
+from brainiak.handlers import ListServiceParams
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict
 
 
 class MockHandler():
@@ -19,6 +20,15 @@ class MockHandler():
 
         d = Dummy()
         return d
+
+
+class DefaultParamsTest(TestCase):
+    def test_add_dicts(self):
+        a = DefaultParamsDict(a=1)
+        b = DefaultParamsDict(b=2)
+        a_b = a + b
+        b_a = dict(a=1, b=2)
+        self.assertEqual(a_b, b_a)
 
 
 class ParamsTestCase(TestCase):
@@ -52,6 +62,12 @@ class ParamsTestCase(TestCase):
         handler = MockHandler(lang="pt")
         params = ParamDict(handler)
         self.assertEquals(params["lang"], "pt")
+
+    def test_post_override_with_page(self):
+        handler = MockHandler(page="3")
+        params = ListServiceParams(handler)
+        # The Class will be responsible to decrement the page index to be compatible with virtuoso's indexing convention
+        self.assertEquals(params["page"], "2")
 
     def test_override_with_invalid_argument(self):
         handler = MockHandler(inexistent_argument="whatever")

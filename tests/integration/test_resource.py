@@ -14,7 +14,7 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
     def test_get_instance_with_nonexistent_uri(self, log):
         response = self.fetch('/person/Gender/Alien')
         self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nInstance (Alien) of class (Gender) in graph (person) was not found."}')
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nInstance (http://semantica.globo.com/person/Gender/Alien) of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) was not found."}')
 
     def test_get_instance(self):
         response = self.fetch('/person/Gender/Male')
@@ -106,7 +106,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_class_undefined(self, log):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nClass (Ornithorhynchus) in graph (animals) was not found."}')
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nClass (http://semantica.globo.com/animals/Ornithorhynchus) in graph (http://semantica.globo.com/animals/) was not found."}')
 
 
 class TestHealthcheckResource(TornadoAsyncHTTPTestCase):

@@ -3,17 +3,18 @@
 #
 
 class brainiak::barramento {
-  include supso::users
-  Supso::Users::Create <| user == 'portal' |>
-  Supso::Users::Create <| user == 'portal_' |>
-  Supso::Users::Create <| user == 'suporte' |>
-  Supso::Users::Create <| user == 'watcher' |>
 
   include infra::scripts::aliases_all
   include supso::vars
 
   $owner_file                 = 'portal'
   $owner_app                  = 'portal_'
+
+  include supso::users
+  Supso::Users::Create <| user == 'suporte' |>
+  Supso::Users::Create <| user == 'watcher' |>
+  Supso::Users::Create <| user == $owner_file |>
+  Supso::Users::Create <| user == $owner_app  |>
 
   $project                    = 'brainiak'
   $java_console_port          = 8204

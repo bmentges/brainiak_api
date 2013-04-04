@@ -127,7 +127,7 @@ class TestVersionResource(TornadoAsyncHTTPTestCase):
 class OptionsTestCase(TornadoAsyncHTTPTestCase):
 
     def test_collection_has_options(self):
-        response = self.fetch('/person/Gender', method='OPTIONS')
+        response = self.fetch('/person/Gender/', method='OPTIONS')
         self.assertEqual(response.code, 204)
         self.assertEqual(response.headers['Access-Control-Allow-Methods'], 'GET, POST, OPTIONS')
         self.assertEqual(response.headers['Access-Control-Allow-Origin'], '*')

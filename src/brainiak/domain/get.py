@@ -3,7 +3,7 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug
 from brainiak.utils import sparql
-from brainiak.utils.links import build_links
+from brainiak.utils.links import build_links, split_into_chunks
 
 # Note that pagination was done outside the query
 # because we are filtering query results based on prefixes
@@ -12,11 +12,6 @@ QUERY_LIST_DOMAIN = """
 SELECT DISTINCT ?graph
 WHERE {GRAPH ?graph { ?s ?p ?o }}
 """
-
-
-def split_into_chunks(items, per_page):
-    chunks = [items[index: index + per_page] for index in xrange(0, len(items), per_page)]
-    return chunks
 
 
 def list_domains(params, request):

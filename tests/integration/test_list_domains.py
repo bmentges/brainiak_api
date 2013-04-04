@@ -42,7 +42,7 @@ class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
         self.assertIn("raise Exception\n\nException\n", body["error"])
 
     def test_200(self):
-        # disclaimer: this test assumes OWL graph exists in Virtuoso and contains triples
+        # disclaimer: this test assumes UPPER graph exists in Virtuoso and contains triples
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
@@ -57,14 +57,14 @@ class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
         self.assertTrue(isinstance(body['item_count'], int))
 
     def test_200_with_pagination(self):
-        # disclaimer: this test assumes there are 2 or more non-empty registered graphs in Virtuoso
+        # disclaimer: this test assumes there are > 2 non-empty registered graphs in Virtuoso
         response = self.fetch("/?page=1&per_page=2", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         self.assertIn("links", body.keys())
         self.assertIn("items", body.keys())
         self.assertIn("item_count", body.keys())
-        self.assertEqual(body['item_count'], 2)
+        self.assertTrue(body['item_count'] > 2)
 
 
 class QueryTestCase(QueryTestCase):

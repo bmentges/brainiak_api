@@ -1,6 +1,6 @@
 import unittest
 
-from brainiak.utils.links import build_links, get_last_page, get_next_page, get_previous_page, set_query_string_parameter
+from brainiak.utils.links import build_links, get_last_page, get_next_page, get_previous_page, set_query_string_parameter, split_into_chunks
 
 
 class LinksTestCase(unittest.TestCase):
@@ -273,3 +273,21 @@ class LinksTestCase(unittest.TestCase):
             }
         ]
         self.assertEqual(computed, expected)
+
+    def test_split_into_chunks_empty(self):
+        items = []
+        computed_chunks = split_into_chunks(items, 1)
+        expected_chunks = []
+        self.assertEqual(computed_chunks, expected_chunks)
+
+    def test_split_into_chunks_exact(self):
+        items = ['a', 'b', 'c', 'd', 'e', 'f']
+        computed_chunks = split_into_chunks(items, 2)
+        expected_chunks = [['a', 'b'], ['c', 'd'], ['e', 'f']]
+        self.assertEqual(computed_chunks, expected_chunks)
+
+    def test_split_into_chunks_non_exact(self):
+        items = ['a', 'b', 'c', 'd', 'e']
+        computed_chunks = split_into_chunks(items, 3)
+        expected_chunks = [['a', 'b', 'c'], ['d', 'e']]
+        self.assertEqual(computed_chunks, expected_chunks)

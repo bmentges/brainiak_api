@@ -65,6 +65,8 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         query_params = {
             "graph_uri": self.graph_uri,
             "lang": "pt",
+            "page": 0,
+            "per_page": 10,
             'lang_filter_label': '\n    FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .\n'
         }
         response = list_resource.query_classes_list(query_params)

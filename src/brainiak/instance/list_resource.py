@@ -95,7 +95,8 @@ def build_json(items_list, total_items, query_params):
                                             query_params["class_name"])
 
     links = build_links(
-        class_url,
+        request.path,
+        #class_url,
         page=int(query_params["page"]) + 1,  # API's pagination begin with 1, Virtuoso's with 0
         per_page=int(query_params["per_page"]),
         request_url=request.uri,

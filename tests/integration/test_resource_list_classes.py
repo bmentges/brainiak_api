@@ -1,3 +1,5 @@
+import json
+
 from mock import patch
 
 from brainiak.context import list_resource
@@ -39,7 +41,19 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 404)
         self.graph_uri = original_graph_uri
 
-    # TODO TEST 2000
+    @patch("brainiak.handlers.log")
+    def test_list_classes_200(self, log):
+        expected_items = [
+            {"@id": "http://example.onto/Place", "title": "Lugar"},
+            {"@id": "http://example.onto/PlaceWithoutLanguage", "title": "Place"},
+            {"@id": "http://example.onto/Lugar", "title": "Lugar"},
+            {"@id": "http://example.onto/City", "title": "Cidade"}
+        ]
+
+        response = self.fetch('/test/?graph_uri=' + self.graph_uri)
+        self.assertEqual(response.code, 200)
+        response_json_dict = json.loads(response.body)
+        self.assertItemsEqual(expected_items, response_json_dict["items"])
 
     @greenlet_tornado.greenlet_test
     def test_query(self):
@@ -50,7 +64,8 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             {u'class': u'http://example.onto/City', u'label': u'Cidade'}]
         query_params = {
             "graph_uri": self.graph_uri,
-            "lang": "pt"
+            "lang": "pt",
+            'lang_filter_label': '\n    FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .\n'
         }
         response = list_resource.query_classes_list(query_params)
         compressed_response = compress_keys_and_values(response)

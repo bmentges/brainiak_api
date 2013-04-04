@@ -1,8 +1,6 @@
 import json
 
-from tornado.web import HTTPError
-
-from brainiak.domain.get import build_json, list_domains, QUERY_LIST_DOMAIN
+from brainiak.domain.get import QUERY_LIST_DOMAIN
 from brainiak.utils import sparql
 from tests import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase

@@ -41,7 +41,7 @@ def get_routes():
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)', InstanceHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/', CollectionHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)', ContextHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/', ContextHandler),
         URLSpec(r'/$', DomainHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
     ]
@@ -399,6 +399,8 @@ class ContextHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name):
         query_params = {
+            "request": self.request,
+            "context_name": context_name,
             "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
             "page": self.DEFAULT_PAGE,
             "per_page": self.DEFAULT_PER_PAGE,

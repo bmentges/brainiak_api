@@ -49,6 +49,5 @@ class MockRequest(object):
         if query_string:
             self.uri = "%s?%s" % (self.uri, query_string)
 
-
     def full_url(self):
         return self.uri

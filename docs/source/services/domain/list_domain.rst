@@ -1,8 +1,8 @@
-List of domains
-=================
+List of contexts
+================
 
-This primitive retrieves domains which define classes and/or instances.
-Domains that contain no data are not listed.
+This primitive retrieves contexts which define classes and/or instances.
+Contexts that contain no data are not listed.
 
 **Basic usage**
 
@@ -33,7 +33,7 @@ Possible responses
 
 **Status 200**
 
-If there are domains, the response body is a JSON containing domains' titles, resources_id and @ids (URIs).
+If there are contexts, the response body is a JSON containing contexts' titles, resources_id and @ids (URIs).
 
 .. include :: examples/get_domain_200.rst
 
@@ -46,7 +46,7 @@ A JSON containing both the wrong parameters and the accepted ones is returned.
 
 **Status 404**
 
-If there are no domains, the response status code is a 404.
+If there are no contexts, the response status code is a 404.
 
 .. include :: examples/get_domain_404.rst
 

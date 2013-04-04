@@ -1,7 +1,7 @@
-Managing domains
-================
+Managing contexts
+=================
 
-Services available for managing domains:
+Services available for managing contexts:
 
 .. toctree::
    :maxdepth: 3

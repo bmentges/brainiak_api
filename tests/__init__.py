@@ -42,11 +42,13 @@ class MockRequest(object):
 
     def __init__(self, query_string="", instance=""):
         self.query = query_string
-        self.uri = "http://%s/ctx/klass" % self.headers['Host']
+        self.uri = "http://%s/ctx/klass/" % self.headers['Host']
         if instance:
-            self.uri = "%s/%s" % (self.uri, instance)
+            self.uri = "%s%s" % (self.uri, instance)
+        self.path = self.uri
         if query_string:
             self.uri = "%s?%s" % (self.uri, query_string)
+
 
     def full_url(self):
         return self.uri

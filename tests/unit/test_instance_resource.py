@@ -74,6 +74,8 @@ class TestCaseInstanceResource(unittest.TestCase):
 
 
 class AssembleTestCase(unittest.TestCase):
+    
+    maxDiff = None
 
     def setUp(self):
         self.original_build_items = get_resource.build_items_dict

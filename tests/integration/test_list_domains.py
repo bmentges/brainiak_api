@@ -1,8 +1,6 @@
 import json
 
-from tornado.web import HTTPError
-
-from brainiak.domain.get import build_json, list_domains, QUERY_LIST_DOMAIN
+from brainiak.domain.get import QUERY_LIST_DOMAIN
 from brainiak.utils import sparql
 from tests import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
@@ -48,12 +46,12 @@ class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        owl = {u'resource_id': u'owl', u'@id': u'http://www.w3.org/2002/07/owl#', u'title': u'owl'}
+        default_graph = {u'resource_id': u'upper', u'@id': u'http://semantica.globo.com/upper/', u'title': u'upper'}
 
         self.assertIn("links", body.keys())
 
         self.assertIn("items", body.keys())
-        self.assertIn(owl, body['items'])
+        self.assertIn(default_graph, body['items'])
 
         self.assertIn("item_count", body.keys())
         self.assertTrue(isinstance(body['item_count'], int))
@@ -78,7 +76,7 @@ class QueryTestCase(QueryTestCase):
         query = QUERY_LIST_DOMAIN
         response = self.query(query)
         registered_graphs = sparql.filter_values(response, "graph")
-        self.assertIn('http://www.w3.org/2002/07/owl#', registered_graphs)
+        self.assertIn('http://semantica.globo.com/upper/', registered_graphs)
 
     def test_query_new_graph(self):
         query = QUERY_LIST_DOMAIN

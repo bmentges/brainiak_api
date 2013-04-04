@@ -3,8 +3,14 @@ from urllib import urlencode
 from urlparse import parse_qs
 
 
-def split_into_chunks(items, per_page):
-    chunks = [items[index: index + per_page] for index in xrange(0, len(items), per_page)]
+def split_into_chunks(items, chunk_size):
+    """
+    Provided a list (items) and an integer representing the chunk size,
+    creates a list of sub-lists (chunks) with size up to chunk_size.
+
+    Useful for pagination.
+    """
+    chunks = [items[index: index + chunk_size] for index in xrange(0, len(items), chunk_size)]
     return chunks
 
 

@@ -6,14 +6,33 @@ class InvalidParam(Exception):
     pass
 
 
+class DefaultParamsDict(dict):
+    def __add__(self, other):
+        self.update(other)
+        return self
+
+LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
+                                per_page=settings.DEFAULT_PER_PAGE)
+
+FILTER_PARAMS = DefaultParamsDict(p="?predicate", o="?object")
+
+
 class ParamDict(dict):
     "Utility class to generate default params on demand and memoize results"
+    extra_params = {}
+
     def __init__(self, handler, *args, **kw):
         dict.__init__(self, *args, **kw)
         # preserve the order below, defaults come first to be overriden
+        self["request"] = handler.request
         self._set_defaults()
+        # Add to the mix the default params customized at class level
+        self.update(self.extra_params)
+        # Add to the mix the arguments given to the initializer
         self.update(kw)
+        # Override params with arguments passed in the handler's request object
         self._override_with(handler)
+        self._post_override()
 
     def _set_defaults(self):
         "Define a set of predefined keys that "
@@ -40,13 +59,16 @@ class ParamDict(dict):
             self[query_param] = handler.get_argument(query_param, default_value)
 
         query_params_supported = set(self.keys())
-        for arg in handler.request.arguments:
+        for arg in self['request'].arguments:
             if arg not in query_params_supported:
                 raise InvalidParam(arg)
-
-        self._post_override()
 
     def _post_override(self):
         "This method is called after override_with() is called to do any post processing"
         if self["lang"] == "undefined":
             self["lang"] = ""  # empty string is False -> lang not set
+
+        # In order to keep up with Repos, pages numbering start at 1.
+        # As for Virtuoso pages start at 0, we convert page, if provided
+        if "page" in self['request'].arguments:
+            self["page"] = str(int(self["page"]) - 1)

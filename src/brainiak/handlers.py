@@ -13,6 +13,7 @@ from brainiak.instance.list_resource import filter_instances
 from brainiak.instance.delete_resource import delete_instance
 from brainiak.instance.create_resource import create_instance
 from brainiak.instance.edit_resource import edit_instance, instance_exists
+from brainiak.context.list_resource import list_classes
 from brainiak.domain.get import list_domains
 from brainiak.prefixes import safe_slug_to_prefix
 from brainiak.greenlet_tornado import greenlet_asynchronous
@@ -30,6 +31,7 @@ def get_routes():
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)', InstanceHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)', CollectionHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)', ContextHandler),
         URLSpec(r'/$', DomainHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
     ]
@@ -170,7 +172,6 @@ class InstanceHandler(BrainiakRequestHandler):
             "class_prefix": "",
             "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
             "instance_id": instance_id,
-            "instance_prefix": "",
             "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
             "request": self.request,
             "lang": settings.DEFAULT_LANG,
@@ -384,6 +385,31 @@ class DomainHandler(BrainiakRequestHandler):
             self.query_params["page"] = str(int(self.query_params["page"]) - 1)
 
         response = list_domains(self.query_params)
+
+        self.finalize(response)
+
+
+class ContextHandler(BrainiakRequestHandler):
+
+    DEFAULT_PER_PAGE = "10"
+    DEFAULT_PAGE = "0"
+
+    @greenlet_asynchronous
+    def get(self, context_name):
+        query_params = {
+            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
+            "page": self.DEFAULT_PAGE,
+            "per_page": self.DEFAULT_PER_PAGE,
+            "lang": self.get_argument("lang", settings.DEFAULT_LANG)
+        }
+
+        self.query_params = self.override_defaults_with_arguments(query_params)
+        # In order to keep up with Repos, pages numbering start at 1.
+        # As for Virtuoso pages start at 0, we convert page, if provided
+        if "page" in self.request.arguments:
+            self.query_params["page"] = str(int(self.query_params["page"]) - 1)
+
+        response = list_classes(self.query_params)
 
         self.finalize(response)
 

@@ -10,10 +10,11 @@ The results are paginated.
 
   $ curl -s 'http://api.semantica.dev.globoi.com/v2/place/'
 
+This will retrieve all classes in the ``place`` graph.
+
 .. program-output:: curl -s 'http://api.semantica.dev.globoi.com/v2/place/' | python -mjson.tool
   :shell:
 
-This will retrieve all classes in the ``place`` graph.
 
 Optional parameters
 -------------------

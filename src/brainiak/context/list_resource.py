@@ -72,6 +72,8 @@ FROM <%(graph_uri)s>
            rdfs:label ?label .
     %(lang_filter_label)s
 }
+LIMIT %(per_page)s
+OFFSET %(page)s
 """
 
 

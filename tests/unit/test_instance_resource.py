@@ -74,7 +74,7 @@ class TestCaseInstanceResource(unittest.TestCase):
 
 
 class AssembleTestCase(unittest.TestCase):
-    
+
     maxDiff = None
 
     def setUp(self):

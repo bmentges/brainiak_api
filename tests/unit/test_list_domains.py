@@ -3,9 +3,12 @@ import unittest
 from brainiak import triplestore
 from brainiak.domain.get import filter_and_build_domains, build_json, list_domains
 from brainiak.utils import sparql
+from tests import MockRequest
 
 
 class GetDomainTestCase(unittest.TestCase):
+
+    maxDiff = None
 
     def setUp(self):
         self.original_filter_values = sparql.filter_values
@@ -24,7 +27,9 @@ class GetDomainTestCase(unittest.TestCase):
         }
         triplestore.query_sparql = lambda query: response
         params = {"per_page": "30", "page": "0"}
-        computed = list_domains(params)
+        request = MockRequest()
+        request.uri = "http://api.semantica.dev.globoi.com/v2/"
+        computed = list_domains(params, request)
         expected_items = [
             {'@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
             'title': 'rdf',
@@ -35,7 +40,17 @@ class GetDomainTestCase(unittest.TestCase):
         ]
         self.assertEqual(computed["items"], expected_items)
         self.assertEqual(computed["item_count"], 2)
-        self.assertEqual(computed["links"], {})
+        expected_links = [
+            {'rel': 'self', 'href': 'http://api.semantica.dev.globoi.com/v2/'},
+            {'rel': 'list', 'href': 'http://api.semantica.dev.globoi.com/v2/'},
+            {'rel': 'item', 'href': 'http://api.semantica.dev.globoi.com/v2/{resource_id}'},
+            {'rel': 'create', 'href': 'http://api.semantica.dev.globoi.com/v2/', 'method': 'POST'},
+            {'rel': 'delete', 'href': 'http://api.semantica.dev.globoi.com/v2/{resource_id}', 'method': 'DELETE'},
+            {'rel': 'replace', 'href': 'http://api.semantica.dev.globoi.com/v2/{resource_id}', 'method': 'PUT'},
+            {'rel': 'first', 'href': 'http://api.semantica.dev.globoi.com/v2/?page=1', 'method': 'GET'},
+            {'rel': 'last', 'href': 'http://api.semantica.dev.globoi.com/v2/?page=1', 'method': 'GET'},
+        ]
+        self.assertEqual(computed["links"], expected_links)
 
     def test_build_domains_that_exist_in_prefixes(self):
         domains_uris = [
@@ -72,7 +87,22 @@ class GetDomainTestCase(unittest.TestCase):
 
     def test_build_json(self):
         domains = ["a", "b", "c"]
-        computed = build_json(domains)
+        params = {"per_page": "3", "page": "0"}
+        total_items = 6
+        request = MockRequest()
+        request.uri = 'http://localhost:5100/'
+        computed = build_json(domains, total_items, params, request)
         self.assertEqual(computed['items'], ["a", "b", "c"])
-        self.assertEqual(computed['item_count'], 3)
-        self.assertEqual(computed['links'], {})
+        self.assertEqual(computed['item_count'], 6)
+        expected_links = [
+            {'rel': 'self', 'href': 'http://localhost:5100/'},
+            {'rel': 'list', 'href': 'http://localhost:5100/'},
+            {'rel': 'item', 'href': 'http://localhost:5100/{resource_id}'},
+            {'rel': 'create', 'href': 'http://localhost:5100/', 'method': 'POST'},
+            {'rel': 'delete', 'href': 'http://localhost:5100/{resource_id}', 'method': 'DELETE'},
+            {'rel': 'replace', 'href': 'http://localhost:5100/{resource_id}', 'method': 'PUT'},
+            {'rel': 'first', 'href': 'http://localhost:5100/?page=1', 'method': 'GET'},
+            {'rel': 'last', 'href': 'http://localhost:5100/?page=2', 'method': 'GET'},
+            {'rel': 'next', 'href': 'http://localhost:5100/?page=2', 'method': 'GET'}
+        ]
+        self.assertEqual(computed['links'], expected_links)

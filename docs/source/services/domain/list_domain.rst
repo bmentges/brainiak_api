@@ -1,7 +1,7 @@
 List of domains
 =================
 
-This primitive retrieves all domains which define classes and/or instances.
+This primitive retrieves domains which define classes and/or instances.
 Domains that contain no data are not listed.
 
 **Basic usage**
@@ -17,13 +17,15 @@ Domains that contain no data are not listed.
 Optional parameters
 -------------------
 
-**page**: The page you want to retrieve. The default value is ``1``, i.e. the first page
+**page**: The page to be retrieved. The default value is ``1``, i.e. the first page.
 
-**per_page**: Defines how many items you want to retrieve per page. The default value is ``10``
+**per_page**: Defines how many items are retrieved per page. The default value is ``10``
+
+By default, the first page containing 10 items is returned, and it could also be retrieved by:
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/v2/?page=2&per_page=2'
+  GET 'http://api.semantica.dev.globoi.com/v2/?page=1&per_page=10'
 
 Possible responses
 -------------------
@@ -32,7 +34,6 @@ Possible responses
 **Status 200**
 
 If there are domains, the response body is a JSON containing domains' titles, resources_id and @ids (URIs).
-By default, the first page containing 10 items is returned (``?page=1&per_page=10``).
 
 .. include :: examples/get_domain_200.rst
 

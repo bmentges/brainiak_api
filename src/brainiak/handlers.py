@@ -40,7 +40,7 @@ def get_routes():
         URLSpec(r'/status/virtuoso', VirtuosoStatusHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)', InstanceHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)', CollectionHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/', CollectionHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)', ContextHandler),
         URLSpec(r'/$', DomainHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
@@ -92,7 +92,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         self.finish(error_json)
 
     def build_resource_url(self, resource_id):
-        url = "{0}://{1}{2}/{3}".format(self.request.protocol, self.request.host, self.request.uri, resource_id)
+        url = "{0}://{1}{2}{3}".format(self.request.protocol, self.request.host, self.request.uri, resource_id)
         if self.request.query:
             url = "{0}?{1}".format(url, self.request.query)
         return url
@@ -386,7 +386,7 @@ class DomainHandler(BrainiakRequestHandler):
         if "page" in self.request.arguments:
             self.query_params["page"] = str(int(self.query_params["page"]) - 1)
 
-        response = list_domains(self.query_params)
+        response = list_domains(self.query_params, self.request)
 
         self.finalize(response)
 

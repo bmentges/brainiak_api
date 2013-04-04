@@ -36,11 +36,14 @@ def assemble_list_json(query_params, query_result_dict, total_items):
         total_items=total_items,
         query_string=request.query)
 
+    context_section = context.context
+    context_section.update({"@language": query_params.get("lang")})
+
     json_dict = {
         'items': items_list,
         'item_count': total_items,
         'links': links_section,
-        "@language": query_params.get("lang")
+        '@context': context_section
     }
 
     return json_dict

@@ -234,26 +234,8 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def delete(self, context_name, class_name, instance_id):
-        self.query_params = {
-            "class_prefix": "",
-            "context_name": context_name,
-            "class_name": class_name,
-            "instance_id": instance_id,
-            "instance_prefix": "",
-            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
-            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id)
-        }
-        self.query_params = self.override_defaults_with_arguments(self.query_params)
-
-        # TODO: test
-        class_prefix = safe_slug_to_prefix(self.query_params["class_prefix"])
-        if class_prefix:
-            self.query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
-
-        # TODO: test
-        instance_prefix = safe_slug_to_prefix(self.query_params["instance_prefix"])
-        if instance_prefix:
-            self.query_params["instance_uri"] = "%s%s" % (instance_prefix, instance_id)
+        with safe_params():
+            self.query_params = ParamDict(self, context_name=context_name, class_name=class_name, instance_id=instance_id)
 
         deleted = delete_instance(self.query_params)
 

@@ -17,14 +17,6 @@
 #   - Criar usuarios, diretorios, links, initscripts e Alias
 #   - Monta filer
 #
-# == Requires:
-#
-#   - Class["user::busca"]
-#   - Class["user::suporte"]
-#   - Class["user::watcher"]
-#   - Package["python27-virtualenv_generic_globo"],
-#   - Virtualenv["python27_generic_globo"]
-#
 # == Sample Usage:
 #
 #   include brainiak::be
@@ -78,6 +70,7 @@ class brainiak::be inherits api_semantica::be {
     gunicorn_processes  => $gunicorn_processes,
     gunicorn_loglevel   => $gunicorn_loglevel,
     gunicorn_debug      => $gunicorn_debug,
+    gunicorn_cmd_parameters => '-k tornado brainiak.server:application',
     settings_file       => 'settings',
     dbpasswd            => false, ## Coloquei false pq o api_semantica::be ja faz esse trabalho
     require             => Virtualenv[$python_virtualenv_dir]
@@ -93,7 +86,10 @@ class brainiak::be inherits api_semantica::be {
       ensure  => directory,
       owner   => $usuario,
       group   => $grupo,
-      require => [Mount_filer_projeto["${projeto}-be"],Class['user::busca']];
+      require => [
+        Mount_filer_projeto["${projeto}-be"],
+        Supso::Users::Create[$usuario],
+      ];
 
     ## Diretorio da app. Onde serah jogado os deploys
     $brainiak_filer_app_dir:

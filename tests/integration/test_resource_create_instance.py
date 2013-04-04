@@ -69,7 +69,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         def raise_exception():
             raise Exception()
         schema_resource.get_schema = lambda params: raise_exception()
-        response = self.fetch('/person/Person',
+        response = self.fetch('/person/Person/',
             method='POST',
             body=json.dumps({}))
         self.assertEqual(response.code, 500)
@@ -78,7 +78,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     @patch("brainiak.handlers.log")
     def test_create_instance_400_invalid_json(self, log):
-        response = self.fetch('/place/City',
+        response = self.fetch('/place/City/',
             method='POST',
             body="invalid input")
         self.assertEqual(response.code, 400)
@@ -88,7 +88,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.log")
     def test_create_instance_404_inexistant_class(self, log):
         payload = {}
-        response = self.fetch('/xubiru/X',
+        response = self.fetch('/xubiru/X/',
             method='POST',
             body=json.dumps(payload))
         self.assertEqual(response.code, 404)
@@ -100,7 +100,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         schema_resource.get_schema = lambda params: True
         create_resource.create_instance_uri = lambda class_uri: "http://unique-id"
         payload = JSON_CITY_GLOBOLAND
-        response = self.fetch('/sample-place/City',
+        response = self.fetch('/sample-place/City/',
             method='POST',
             body=json.dumps(payload))
         self.assertEqual(response.code, 201)

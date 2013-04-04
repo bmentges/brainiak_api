@@ -3,6 +3,11 @@ from urllib import urlencode
 from urlparse import parse_qs
 
 
+def split_into_chunks(items, per_page):
+    chunks = [items[index: index + per_page] for index in xrange(0, len(items), per_page)]
+    return chunks
+
+
 def set_query_string_parameter(query_string, param_name, param_value):
     query_params = parse_qs(query_string)
     query_params[param_name] = [param_value]

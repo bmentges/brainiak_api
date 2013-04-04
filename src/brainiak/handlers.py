@@ -3,8 +3,10 @@ import httplib
 import json
 import sys
 import traceback
+from contextlib import contextmanager
 
 from tornado.web import HTTPError, RequestHandler, URLSpec
+from tornado_cors import custom_decorator
 
 from brainiak import __version__, log, settings, triplestore
 from brainiak.schema import resource as schema_resource
@@ -17,10 +19,18 @@ from brainiak.context.list_resource import list_classes
 from brainiak.domain.get import list_domains
 from brainiak.prefixes import safe_slug_to_prefix
 from brainiak.greenlet_tornado import greenlet_asynchronous
+from brainiak.utils.params import ParamDict, InvalidParam
 
-from tornado_cors import custom_decorator
 custom_decorator.wrapper = greenlet_asynchronous
 from tornado_cors import CorsMixin
+
+
+@contextmanager
+def safe_params():
+    try:
+        yield
+    except InvalidParam as ex:
+        raise HTTPError(400, log_message="Argument {0:s} is not supported".format(ex))
 
 
 def get_routes():
@@ -30,8 +40,8 @@ def get_routes():
         URLSpec(r'/status/virtuoso', VirtuosoStatusHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)', InstanceHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)', CollectionHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/', ContextHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/', CollectionHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)', ContextHandler),
         URLSpec(r'/$', DomainHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
     ]
@@ -82,7 +92,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         self.finish(error_json)
 
     def build_resource_url(self, resource_id):
-        url = "{0}://{1}{2}/{3}".format(self.request.protocol, self.request.host, self.request.uri, resource_id)
+        url = "{0}://{1}{2}{3}".format(self.request.protocol, self.request.host, self.request.uri, resource_id)
         if self.request.query:
             url = "{0}?{1}".format(url, self.request.query)
         return url
@@ -138,17 +148,9 @@ class SchemaHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-        query_params = {
-            "context_name": context_name,
-            "class_name": class_name,
-            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
-            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
-            "lang": self.get_argument("lang", settings.DEFAULT_LANG)
-        }
-        self.query_params = self.override_defaults_with_arguments(query_params)
-
+        with safe_params():
+            self.query_params = ParamDict(self, context_name=context_name, class_name=class_name)
         response = schema_resource.get_schema(self.query_params)
-
         self.finalize(response)
 
     def finalize(self, response):
@@ -384,7 +386,7 @@ class DomainHandler(BrainiakRequestHandler):
         if "page" in self.request.arguments:
             self.query_params["page"] = str(int(self.query_params["page"]) - 1)
 
-        response = list_domains(self.query_params)
+        response = list_domains(self.query_params, self.request)
 
         self.finalize(response)
 

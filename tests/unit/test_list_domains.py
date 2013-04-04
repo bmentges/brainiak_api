@@ -106,8 +106,3 @@ class GetDomainTestCase(unittest.TestCase):
             {'rel': 'next', 'href': 'http://localhost:5100/?page=2', 'method': 'GET'}
         ]
         self.assertEqual(computed['links'], expected_links)
-
-# listagem
-#dominio/
-#dominio/ctx/
-#dominio/ctx/class/

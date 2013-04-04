@@ -31,7 +31,7 @@ def get_routes():
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)', InstanceHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)', CollectionHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)', ContextHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/', ContextHandler),
         URLSpec(r'/$', DomainHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
     ]
@@ -412,6 +412,13 @@ class ContextHandler(BrainiakRequestHandler):
         response = list_classes(self.query_params)
 
         self.finalize(response)
+
+    def finalize(self, response):
+        if response is None:
+            msg = "No classes found in graph ({graph_uri})."
+            raise HTTPError(404, log_message=msg.format(**self.query_params))
+        else:
+            self.write(response)
 
 
 class UnmatchedHandler(BrainiakRequestHandler):

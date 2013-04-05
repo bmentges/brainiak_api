@@ -1,5 +1,5 @@
-List Classes of a Context
-=========================
+List of Collections
+===================
 
 This service retrieves all classes of a specific context (i.e. graph).
 The results are paginated.

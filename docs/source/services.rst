@@ -14,8 +14,8 @@ see :ref:`concept-context`, :ref:`concept-schema`, :ref:`concept-collection`, an
 .. toctree::
    :maxdepth: 3
 
-   services/domain/domain.rst
    services/context/context.rst
+   services/collection/collection.rst
    services/schema/schema.rst
    services/instance/instance.rst
    services/parameters.rst

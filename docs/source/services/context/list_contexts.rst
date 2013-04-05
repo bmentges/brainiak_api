@@ -1,4 +1,4 @@
-List of contexts
+List of Contexts
 ================
 
 This primitive retrieves contexts which define classes and/or instances.

@@ -1,7 +1,7 @@
-Managing Contexts
-=================
+Managing Collections
+====================
 
-Graphs (or contexts) can be retrieved, added, edited, removed, and so on.
+Classes (or collections) can be retrieved, added, edited, removed, and so on.
 
 Here we list the available services for managing them.
 

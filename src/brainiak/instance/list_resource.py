@@ -85,9 +85,6 @@ def filter_instances(query_params):
 
 def build_json(items_list, total_items, query_params):
     request = query_params["request"]
-    class_url = 'http://{0}/{1}/{2}'.format(request.headers.get("Host"),
-                                            query_params["context_name"],
-                                            query_params["class_name"])
 
     links = build_links(
         request.path,

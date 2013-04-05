@@ -115,7 +115,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
                     'o': '<http://dbpedia.org/ontology/Australia>',
                     'p': '<http://tatipedia.org/livesIn>',
                     'page': '0',
-                    'per_page': '10'}
+                    'per_page': '10',
+                    'po': '; <http://tatipedia.org/livesIn> <http://dbpedia.org/ontology/Australia> .'}
         computed = process_params(params)
         self.assertEqual(expected, computed)
 
@@ -144,7 +145,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
-            "page": "0"
+            "page": "0",
+            "po": "; <http://tatipedia.org/likes> <http://tatipedia.org/Capoeira> ."
         }
 
         query = QUERY_FILTER_INSTANCE % params
@@ -160,13 +162,14 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         params = {
             "class_uri": "http://tatipedia.org/Person",
             "p": "?predicate",
-            "o": "<http://tatipedia.org/BungeeJump>",
+            "o": "http://tatipedia.org/BungeeJump",
             "lang_filter": "",
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0"
         }
+        params = process_params(params)
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
 
@@ -179,12 +182,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_predicate(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "p": "<http://tatipedia.org/dislikes>",
-            "o": "?object",
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
-            "page": "0"
+            "page": "0",
+            "po": "; <http://tatipedia.org/dislikes> ?object ."
         }
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
@@ -198,12 +200,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_predicate_with_multiple_response(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "p": "<http://tatipedia.org/likes>",
-            "o": "?object",
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
-            "page": "0"
+            "page": "0",
+            "po": "; <http://tatipedia.org/likes> ?object ."
         }
         query = QUERY_FILTER_INSTANCE % params
         computed_bindings = self.query(query)['results']['bindings']
@@ -232,7 +233,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
-            "page": "0"
+            "page": "0",
         }
         params = process_params(params)
 

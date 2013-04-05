@@ -36,7 +36,9 @@ class ParamDict(dict):
         self._post_override()
 
     def __setitem__(self, key, value):
-        "Process collateral effects in params that are related."
+        """Process collateral effects in params that are related.
+        Changes in *_prefix should reflect in *_uri.
+        """
         if key == "graph_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
             dict.__setitem__(self, "graph_uri", "{0}{1}/".format(self["graph_prefix"], self["context_name"]))

@@ -18,7 +18,6 @@ from brainiak.instance.create_resource import create_instance
 from brainiak.instance.edit_resource import edit_instance, instance_exists
 from brainiak.context.list_resource import list_classes
 from brainiak.domain.get import list_domains
-from brainiak.prefixes import safe_slug_to_prefix
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
 from brainiak.greenlet_tornado import greenlet_asynchronous
 
@@ -106,21 +105,6 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         if self.request.query:
             url = "{0}?{1}".format(url, self.request.query)
         return url
-
-    def override_defaults_with_arguments(self, immutable_params):
-        overriden_params = {}
-        for (query_param, default_value) in immutable_params.items():
-            overriden_params[query_param] = self.get_argument(query_param, default_value)
-
-        if overriden_params.get("lang", None) == "undefined":
-            overriden_params["lang"] = False
-
-        query_params_supported = set(overriden_params.keys())
-        for arg in self.request.arguments:
-            if arg not in query_params_supported:
-                raise HTTPError(400, log_message="Argument {0} is not supported".format(arg))
-
-        return overriden_params
 
     def finalize(self, response):
         if response is None:

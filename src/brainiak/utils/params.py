@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from brainiak import settings
-from brainiak.prefixes import safe_slug_to_prefix
+from brainiak.prefixes import safe_slug_to_prefix, ROOT_CONTEXT
 
 
 class InvalidParam(Exception):
@@ -41,7 +41,10 @@ class ParamDict(dict):
         """
         if key == "graph_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
-            dict.__setitem__(self, "graph_uri", "{0}{1}/".format(self["graph_prefix"], self["context_name"]))
+            if self["context_name"] != ROOT_CONTEXT:
+                dict.__setitem__(self, "graph_uri", "{0}{1}/".format(self["graph_prefix"], self["context_name"]))
+            else:
+                dict.__setitem__(self, "graph_uri", settings.URI_PREFIX)
 
         elif key == "class_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))

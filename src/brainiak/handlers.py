@@ -44,13 +44,13 @@ def safe_params():
 
 def get_routes():
     return [
-        URLSpec(r'/healthcheck', HealthcheckHandler),
-        URLSpec(r'/version', VersionHandler),
-        URLSpec(r'/status/virtuoso', VirtuosoStatusHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema', SchemaHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)', InstanceHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/', CollectionHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/', ContextHandler),
+        URLSpec(r'/healthcheck/?', HealthcheckHandler),
+        URLSpec(r'/version/?', VersionHandler),
+        URLSpec(r'/status/virtuoso/?', VirtuosoStatusHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', SchemaHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)/?', InstanceHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/?', ContextHandler),
         URLSpec(r'/$', DomainHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
     ]

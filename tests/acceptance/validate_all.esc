@@ -1,0 +1,5 @@
+Accept: Retrieve schema of Person {
+    If: status_code is 200
+    If: content is file: person_Person_schema.json
+}
+

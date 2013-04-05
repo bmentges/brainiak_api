@@ -44,10 +44,10 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.log")
     def test_list_classes_200(self, log):
         expected_items = [
-            {"@id": "http://example.onto/Place", "title": "Lugar"},
-            {"@id": "http://example.onto/PlaceWithoutLanguage", "title": "Place"},
-            {"@id": "http://example.onto/Lugar", "title": "Lugar"},
-            {"@id": "http://example.onto/City", "title": "Cidade"}
+            {"@id": "http://example.onto/Place", "title": "Lugar", "resource_id": "Place"},
+            {"@id": "http://example.onto/PlaceWithoutLanguage", "title": "Place", "resource_id": "PlaceWithoutLanguage"},
+            {"@id": "http://example.onto/Lugar", "title": "Lugar", "resource_id": "Lugar"},
+            {"@id": "http://example.onto/City", "title": "Cidade", "resource_id": "City"}
         ]
 
         response = self.fetch('/test/?graph_uri=' + self.graph_uri)

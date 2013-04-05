@@ -1,6 +1,7 @@
 from brainiak import triplestore
 from brainiak.prefixes import expand_uri
 from brainiak.utils.links import build_links
+from brainiak.utils.resources import decorate_with_resource_id
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value, \
     add_language_support
 
@@ -61,15 +62,6 @@ def query_count_filter_instances(query_params):
     query = QUERY_COUNT_FILTER_INSTANCE % query_params
     query_response = triplestore.query_sparql(query)
     return query_response
-
-
-def decorate_with_resource_id(list_of_dicts):
-    for dict_item in list_of_dicts:
-        try:
-            id_key = dict_item["@id"]
-            dict_item['resource_id'] = id_key.rsplit("/")[-1]
-        except KeyError:
-            pass
 
 
 def filter_instances(query_params):

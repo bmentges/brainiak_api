@@ -1,4 +1,4 @@
-List of contexts
+List of Contexts
 ================
 
 This primitive retrieves contexts which define classes and/or instances.
@@ -35,20 +35,20 @@ Possible responses
 
 If there are contexts, the response body is a JSON containing contexts' titles, resources_id and @ids (URIs).
 
-.. include :: examples/get_domain_200.rst
+.. include :: examples/list_context_200.rst
 
 **Status 400**
 
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. include :: examples/get_domain_400.rst
+.. include :: examples/list_context_400.rst
 
 **Status 404**
 
 If there are no contexts, the response status code is a 404.
 
-.. include :: examples/get_domain_404.rst
+.. include :: examples/list_context_404.rst
 
 **Status 500**
 

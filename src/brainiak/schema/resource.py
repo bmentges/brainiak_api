@@ -277,6 +277,19 @@ def build_predicate_dict(name, predicate, cardinalities, context):
     return predicate_dict
 
 
+def join_predicates(previous_predicates, new_predicate):
+    if (new_predicate['type'] == previous_predicates['type']) and \
+      (new_predicate['format'] == previous_predicates['format']):
+        old_range = previous_predicates['range']
+        new_range = new_predicate['range']
+        if isinstance(old_range, list):
+            old_range.append(new_range)
+        else:
+            old_range = [old_range, new_range]
+        previous_predicates['range'] = old_range
+    return previous_predicates
+
+
 def convert_bindings_dict(context, bindings, cardinalities):
     range_dict = {p['predicate']['value']: p['range']['value'] for p in bindings}
 
@@ -284,6 +297,7 @@ def convert_bindings_dict(context, bindings, cardinalities):
     remove_super_predicates = []
     for predicate in bindings:
         predicate_name = predicate['predicate']['value']
+        shorten_predicate_name = context.shorten_uri(predicate_name)
         try:
             super_property = predicate['super_property']['value']
         except KeyError:
@@ -291,7 +305,12 @@ def convert_bindings_dict(context, bindings, cardinalities):
         if (super_property in range_dict) and (range_dict[super_property] == predicate['range']['value']):
             remove_super_predicates.append(super_property)
         predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, context)
-        predicates_dict[context.shorten_uri(predicate_name)] = predicate_dict
+        # TODO: multiple ranges
+        if shorten_predicate_name in predicates_dict:
+            previous_predicates = predicates_dict[shorten_predicate_name]
+            predicates_dict[shorten_predicate_name] = join_predicates(previous_predicates, predicate_dict)
+        else:
+            predicates_dict[shorten_predicate_name] = predicate_dict
 
     # Avoid enumerating redundant predicates when a more specific predicate prevails over
     # an inherited predicate with the same range

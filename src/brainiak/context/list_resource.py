@@ -2,6 +2,7 @@ from brainiak.utils.resources import decorate_with_resource_id
 from brainiak.utils.sparql import add_language_support
 from brainiak import triplestore
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value
+from brainiak.utils.resources import compress_duplicated_ids
 from brainiak.utils.links import build_links
 from brainiak.prefixes import MemorizeContext
 
@@ -25,6 +26,7 @@ def assemble_list_json(query_params, query_result_dict, total_items):
         query_result_dict,
         keymap={"class": "@id", "label": "title"},
         context=context)
+    items_list = compress_duplicated_ids(items_list)
 
     decorate_with_resource_id(items_list)
 

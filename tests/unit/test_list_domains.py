@@ -33,10 +33,10 @@ class GetDomainTestCase(unittest.TestCase):
         expected_items = [
             {'@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
             'title': 'rdf',
-            'resource_id': 'rdf'},
+            'resource_id': '22-rdf-syntax-ns#'},
             {'@id': 'http://www.w3.org/2002/07/owl#',
             'title': 'owl',
-            'resource_id': 'owl'}
+            'resource_id': 'owl#'}
         ]
         self.assertEqual(computed["items"], expected_items)
         self.assertEqual(computed["item_count"], 2)
@@ -61,10 +61,10 @@ class GetDomainTestCase(unittest.TestCase):
         expected = [
             {'@id': 'http://www.w3.org/2006/time#',
             'title': 'time',
-            'resource_id': 'time'},
+            'resource_id': 'time#'},
             {'@id': 'http://xmlns.com/foaf/0.1/',
             'title': 'foaf',
-            'resource_id': 'foaf'}
+            'resource_id': '0.1'}
         ]
         self.assertEqual(computed, expected)
 
@@ -78,10 +78,10 @@ class GetDomainTestCase(unittest.TestCase):
         expected = [
             {'@id': 'http://purl.org/dc/elements/1.1/',
             'title': 'dc',
-            'resource_id': 'dc'},
+            'resource_id': '1.1'},
             {'@id': 'http://dbpedia.org/ontology/',
             'title': 'dbpedia',
-            'resource_id': 'dbpedia'}
+            'resource_id': 'ontology'}
         ]
         self.assertEqual(computed, expected)
 

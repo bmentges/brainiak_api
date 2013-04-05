@@ -8,6 +8,8 @@ from brainiak.utils.links import build_links, split_into_chunks
 # Note that pagination was done outside the query
 # because we are filtering query results based on prefixes
 # (accessible from the application and not through SPARQL)
+from brainiak.utils.resources import decorate_with_resource_id
+
 QUERY_LIST_DOMAIN = """
 SELECT DISTINCT ?graph
 WHERE {GRAPH ?graph { ?s ?p ?o }}
@@ -38,10 +40,10 @@ def filter_and_build_domains(domains_uris):
         if slug != uri:
             domain_info = {
                 "title": slug,
-                "@id": uri,
-                "resource_id": slug
+                "@id": uri
             }
             domains.append(domain_info)
+    decorate_with_resource_id(domains)
     return domains
 
 

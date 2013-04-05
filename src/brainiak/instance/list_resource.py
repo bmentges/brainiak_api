@@ -11,8 +11,7 @@ DEFINE input:inference <http://semantica.globo.com/ruleset>
 SELECT DISTINCT count (distinct ?subject) as ?total
 WHERE {
     ?subject a <%(class_uri)s> ;
-             rdfs:label ?label ;
-             %(p)s %(o)s.
+             rdfs:label ?label %(po)s
     %(lang_filter_label)s
 }
 """
@@ -22,8 +21,7 @@ DEFINE input:inference <http://semantica.globo.com/ruleset>
 SELECT DISTINCT ?subject ?label
 WHERE {
     ?subject a <%(class_uri)s> ;
-             rdfs:label ?label ;
-             %(p)s %(o)s.
+             rdfs:label ?label %(po)s
     %(lang_filter_label)s
 }
 LIMIT %(per_page)s
@@ -48,6 +46,11 @@ def process_params(query_params):
                 query_params[key] = "<%s>" % expand_uri(value)
             else:
                 query_params[key] = '"%s"%s' % (value, language_tag)
+
+    if (query_params["p"] == "?predicate") and (query_params["o"] == "?object"):
+        query_params["po"] = "."
+    else:
+        query_params["po"] = "; %(p)s %(o)s ." % query_params
 
     return query_params
 

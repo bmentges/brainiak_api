@@ -7,6 +7,7 @@ from contextlib import contextmanager
 
 from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import custom_decorator
+from tornado_cors import CorsMixin
 
 from brainiak import __version__, log, settings, triplestore
 from brainiak.schema import resource as schema_resource
@@ -17,12 +18,10 @@ from brainiak.instance.create_resource import create_instance
 from brainiak.instance.edit_resource import edit_instance, instance_exists
 from brainiak.context.list_resource import list_classes
 from brainiak.domain.get import list_domains
-from brainiak.prefixes import safe_slug_to_prefix
-from brainiak.greenlet_tornado import greenlet_asynchronous
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
+from brainiak.greenlet_tornado import greenlet_asynchronous
 
 custom_decorator.wrapper = greenlet_asynchronous
-from tornado_cors import CorsMixin
 
 
 class ListServiceParams(ParamDict):
@@ -107,21 +106,6 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             url = "{0}?{1}".format(url, self.request.query)
         return url
 
-    def override_defaults_with_arguments(self, immutable_params):
-        overriden_params = {}
-        for (query_param, default_value) in immutable_params.items():
-            overriden_params[query_param] = self.get_argument(query_param, default_value)
-
-        if overriden_params.get("lang", None) == "undefined":
-            overriden_params["lang"] = False
-
-        query_params_supported = set(overriden_params.keys())
-        for arg in self.request.arguments:
-            if arg not in query_params_supported:
-                raise HTTPError(400, log_message="Argument {0} is not supported".format(arg))
-
-        return overriden_params
-
     def finalize(self, response):
         if response is None:
             raise HTTPError(404, log_message="")
@@ -187,30 +171,8 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def put(self, context_name, class_name, instance_id):
-        self.query_params = {
-            "context_name": context_name,
-            "class_name": class_name,
-            "class_prefix": "",
-            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
-            "instance_id": instance_id,
-            "instance_prefix": "",
-            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
-            "instance_uri": "{0}{1}/{2}/{3}".format(settings.URI_PREFIX, context_name, class_name, instance_id),
-            "request": self.request,
-            "lang": settings.DEFAULT_LANG,
-        }
-        if self.request.arguments:
-            self.query_params = self.override_defaults_with_arguments(self.query_params)
-
-        # TODO: test
-        class_prefix = safe_slug_to_prefix(self.query_params["class_prefix"])
-        if class_prefix:
-            self.query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
-
-        # TODO: test
-        instance_prefix = safe_slug_to_prefix(self.query_params["instance_prefix"])
-        if instance_prefix:
-            self.query_params["instance_uri"] = "%s%s" % (instance_prefix, instance_id)
+        with safe_params():
+            self.query_params = ParamDict(self, context_name=context_name, class_name=class_name, instance_id=instance_id)
 
         try:
             instance_data = json.loads(self.request.body)
@@ -270,25 +232,10 @@ class CollectionHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def post(self, context_name, class_name):
-        query_params = {
-            "context_name": context_name,
-            "class_name": class_name,
-            "class_prefix": "",
-            "class_uri": "{0}{1}/{2}".format(settings.URI_PREFIX, context_name, class_name),
-            "request": self.request,
-            "lang": settings.DEFAULT_LANG,
-            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name)
-        }
+        with safe_params():
+            self.query_params = ParamDict(self, context_name=context_name, class_name=class_name)
 
-        if self.request.arguments:
-            query_params = self.override_defaults_with_arguments(query_params)
-
-        # TODO: test
-        class_prefix = query_params["class_prefix"]
-        if class_prefix:
-            query_params["class_uri"] = "%s%s" % (class_prefix, class_name)
-
-        schema = schema_resource.get_schema(query_params)
+        schema = schema_resource.get_schema(self.query_params)
         if schema is None:
             raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
 
@@ -297,11 +244,10 @@ class CollectionHandler(BrainiakRequestHandler):
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
 
-        instance_id = create_instance(query_params, instance_data)
+        instance_id = create_instance(self.query_params, instance_data)
         instance_url = self.build_resource_url(instance_id)
         self.set_status(201)
         self.set_header("location", instance_url)
-        self.query_params = query_params
         self.finalize("")
 
     def finalize(self, response):
@@ -321,21 +267,10 @@ class CollectionHandler(BrainiakRequestHandler):
 
 class DomainHandler(BrainiakRequestHandler):
 
-    DEFAULT_PER_PAGE = "10"
-    DEFAULT_PAGE = "0"
-
     @greenlet_asynchronous
     def get(self):
-        query_params = {
-            "request": self.request,
-            "page": self.DEFAULT_PAGE,
-            "per_page": self.DEFAULT_PER_PAGE
-        }
-        self.query_params = self.override_defaults_with_arguments(query_params)
-        # In order to keep up with Repos, pages numbering start at 1.
-        # As for Virtuoso pages start at 0, we convert page, if provided
-        if "page" in self.request.arguments:
-            self.query_params["page"] = str(int(self.query_params["page"]) - 1)
+        with safe_params():
+            self.query_params = ListAndFilterServiceParams(self)
 
         response = list_domains(self.query_params, self.request)
 
@@ -344,25 +279,10 @@ class DomainHandler(BrainiakRequestHandler):
 
 class ContextHandler(BrainiakRequestHandler):
 
-    DEFAULT_PER_PAGE = "10"
-    DEFAULT_PAGE = "0"
-
     @greenlet_asynchronous
     def get(self, context_name):
-        query_params = {
-            "request": self.request,
-            "context_name": context_name,
-            "graph_uri": "{0}{1}/".format(settings.URI_PREFIX, context_name),
-            "page": self.DEFAULT_PAGE,
-            "per_page": self.DEFAULT_PER_PAGE,
-            "lang": self.get_argument("lang", settings.DEFAULT_LANG)
-        }
-
-        self.query_params = self.override_defaults_with_arguments(query_params)
-        # In order to keep up with Repos, pages numbering start at 1.
-        # As for Virtuoso pages start at 0, we convert page, if provided
-        if "page" in self.request.arguments:
-            self.query_params["page"] = str(int(self.query_params["page"]) - 1)
+        with safe_params():
+            self.query_params = ListAndFilterServiceParams(self, context_name=context_name)
 
         response = list_classes(self.query_params)
 

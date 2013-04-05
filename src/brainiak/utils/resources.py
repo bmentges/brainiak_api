@@ -8,7 +8,11 @@ def decorate_with_resource_id(list_of_dicts):
     for dict_item in list_of_dicts:
         try:
             id_key = expand_uri(dict_item["@id"])
-            dict_item['resource_id'] = id_key.rsplit("/")[-1]
+            if id_key.endswith("/"):
+                resource_id = id_key.rsplit("/")[-2]
+            else:
+                resource_id = id_key.rsplit("/")[-1]
+            dict_item['resource_id'] = resource_id
         except KeyError:
             pass
 

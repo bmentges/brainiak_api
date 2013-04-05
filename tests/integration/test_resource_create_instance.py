@@ -1,5 +1,4 @@
 import json
-
 from mock import patch
 
 from brainiak.instance import create_resource

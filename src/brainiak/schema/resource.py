@@ -278,7 +278,6 @@ def build_predicate_dict(name, predicate, cardinalities, context):
 
 
 def convert_bindings_dict(context, bindings, cardinalities):
-    #import pdb; pdb.set_trace()
     range_dict = {p['predicate']['value']: p['range']['value'] for p in bindings}
 
     predicates_dict = {}

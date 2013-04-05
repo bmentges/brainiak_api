@@ -1,5 +1,5 @@
-List Classes of a Context
-=========================
+List of Collections
+===================
 
 This service retrieves all classes of a specific context (i.e. graph).
 The results are paginated.
@@ -35,20 +35,20 @@ Possible responses
 If there are classes in this graph, the response body is a JSON containing classes' titles and @ids (URIs).
 By default, the first page containing 10 items is returned (``?page=1&per_page=10``).
 
-.. include :: examples/list_classes_200.rst
+.. include :: examples/list_collections_200.rst
 
 **Status 400**
 
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. include :: examples/list_classes_400.rst
+.. include :: examples/list_collections_400.rst
 
 **Status 404**
 
 If there are no instances, the response status code is a 404.
 
-.. include :: examples/list_classes_404.rst
+.. include :: examples/list_collections_404.rst
 
 **Status 500**
 

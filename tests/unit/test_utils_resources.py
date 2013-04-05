@@ -1,5 +1,5 @@
 from unittest import TestCase
-from brainiak.utils.resources import decorate_with_resource_id
+from brainiak.utils.resources import decorate_with_resource_id, compress_duplicated_ids
 
 
 class ResourceUtilsTestCase(TestCase):
@@ -20,3 +20,16 @@ class ResourceUtilsTestCase(TestCase):
         list_of_dicts = [{"@id": "person:Person"}]
         decorate_with_resource_id(list_of_dicts)
         self.assertEquals(list_of_dicts[0].get('resource_id'), "Person")
+
+    def test_compress_duplicated_ids(self):
+        input_dict = [
+            {"@id": "person:Person", "title": "Pessoa"},
+            {"@id": "person:Person", "title": "Person"},
+            {"@id": "person:Gender", "title": "Gender"}
+        ]
+        expected_dict = [
+            {"@id": "person:Person", "title": ["Pessoa", "Person"]},
+            {"@id": "person:Gender", "title": "Gender"}
+        ]
+        result = compress_duplicated_ids(input_dict)
+        self.assertItemsEqual(expected_dict, result)

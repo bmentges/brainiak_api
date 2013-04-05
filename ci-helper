@@ -10,10 +10,8 @@ unit() {
     set -e
     pushd $PROJECT_PATH
     echo "Executando testes de unidade..."
-    cp src/brainiak/settings_ci.py src/brainiak/settings.py
     make install
     make unit
-    git checkout -- src/brainiak/settings.py
     popd
 }
 
@@ -21,10 +19,8 @@ integration() {
     set -e
     pushd $PROJECT_PATH
     echo "Executando testes funcionais..."
-    cp src/brainiak/settings_ci.py src/brainiak/settings.py
     make install
     make integration
-    git checkout -- src/brainiak/settings.py
     popd
 }
 

@@ -1,3 +1,4 @@
+from brainiak.utils.resources import decorate_with_resource_id
 from brainiak.utils.sparql import add_language_support
 from brainiak import triplestore
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value
@@ -20,9 +21,12 @@ def list_classes(query_params):
 
 def assemble_list_json(query_params, query_result_dict, total_items):
     context = MemorizeContext()
-    items_list = compress_keys_and_values(query_result_dict,
-                                         keymap={"class": "@id", "label": "title"},
-                                         context=context)
+    items_list = compress_keys_and_values(
+        query_result_dict,
+        keymap={"class": "@id", "label": "title"},
+        context=context)
+
+    decorate_with_resource_id(items_list)
 
     request = query_params["request"]
     base_url = 'http://{0}/{1}/'.format(request.headers.get("Host"),

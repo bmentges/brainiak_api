@@ -1,145 +1,10 @@
-# -*- coding: utf-8 -*-
-
 import json
 import unittest
 
 import brainiak.schema.resource as schema
-from brainiak.schema.resource import build_predicate_dict
 from brainiak import prefixes
-from brainiak.schema.resource import _extract_cardinalities
-
+from brainiak.schema.resource import _extract_cardinalities, build_predicate_dict, convert_bindings_dict
 from tests import TornadoAsyncTestCase
-
-
-class GetSchemaTestCase(TornadoAsyncTestCase):
-    def setUp(self):
-        super(TornadoAsyncTestCase, self).setUp()
-        self.original_query_class_schema = schema.query_class_schema
-        self.original_get_predicates_and_cardinalities = schema.get_predicates_and_cardinalities
-        self.original_query_superclasses = schema.query_superclasses
-
-    def tearDown(self):
-        schema.query_class_schema = self.original_query_class_schema
-        schema.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
-        schema.query_superclasses = self.original_query_superclasses
-        super(TornadoAsyncTestCase, self).tearDown()
-
-    def test_query_get_schema(self):
-        class_schema = {"results": {"bindings": [{"dummy_key": "dummy_value"}]}}
-
-        schema.query_class_schema = lambda query: class_schema
-        schema.query_superclasses = lambda query: ["classeA", "classeB"]
-
-        def mock_get_predicates_and_cardinalities(context, params):
-            return "property_dict"
-
-        schema.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
-
-        params = {
-            "context_name": "ctx",
-            "class_name": "klass",
-            "class_uri": "test_class",
-            "graph_uri": "test_graph",
-            "lang": "en"
-        }
-
-        response = schema.get_schema(params)
-        schema_response = response
-
-        self.assertIn("title", schema_response)
-        self.assertIn("type", schema_response)
-        self.assertIn("@id", schema_response)
-        self.assertIn("properties", schema_response)
-
-        self.assertEqual(schema_response["properties"], "property_dict")
-        # FIXME: enhance the structure of the response
-        self.stop()
-
-
-class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
-    maxDiff = None
-
-    def setUp(self):
-        super(TornadoAsyncTestCase, self).setUp()
-        self.original_query_cardinalities = schema.query_cardinalities
-        self.original_query_predicates = schema.query_predicates
-        self.original_extract_cardinalities = schema._extract_cardinalities
-
-    def tearDown(self):
-        schema.query_cardinalities = self.original_query_cardinalities
-        schema.query_predicates = self.original_query_predicates
-        schema._extract_cardinalities = self.original_extract_cardinalities
-        super(TornadoAsyncTestCase, self).tearDown()
-
-    def test_get_predicates_and_cardinalities(self):
-
-        # Mocks
-        fake_response_predicates = {"results": {"bindings": [
-            {"predicate": {"type": "uri", "value": "http://test/person/root_gender"},
-             "predicate_graph": {"type": "uri", "value": "http://test/person/"},
-             "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
-             "range": {"type": "uri", "value": "http://test/person/Gender"},
-             "title": {"type": "literal", "xml:lang": "pt", "value": "Root (to be removed from answer)"},
-             "grafo_do_range": {"type": "uri", "value": "http://test/person/"}},
-            {"predicate": {"type": "uri", "value": "http://test/person/gender"},
-                "super_property": {"type": "uri", "value": "http://test/person/root_gender"},
-                "predicate_graph": {"type": "uri", "value": "http://test/person/"},
-                "predicate_comment": {"type": "literal", "xml:lang": "pt", "value": u"G\u00EAnero."},
-                "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
-                "range": {"type": "uri", "value": "http://test/person/Gender"},
-                "title": {"type": "literal", "xml:lang": "pt", "value": "Sexo"},
-                "grafo_do_range": {"type": "uri", "value": "http://test/person/"},
-                "label_do_range": {"type": "literal", "xml:lang": "pt", "value": u"G\u00EAnero da Pessoa"}}]}}
-
-        fake_response_cardinalities = {"results": {
-            "bindings": [
-                {"max": {"datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "typed-literal", "value": "1"},
-                 "predicate": {"type": "uri", "value": "http://test/person/gender"},
-                 "range": {"type": "uri", "value": "http://test/person/Gender"}
-                 },
-                {"min": {"datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "typed-literal", "value": "1"},
-                 "predicate": {"type": "uri", "value": "http://test/person/gender"},
-                 "range": {"type": "uri", "value": "http://test/person/Gender"}
-                 },
-                {"enumerated_value": {"type": "uri", "value": "http://test/person/Gender/Male"},
-                 "enumerated_value_label": {"type": "literal", "value": "Masculino", "xml:lang": "pt"},
-                 "predicate": {"type": "uri", "value": "http://test/person/gender"},
-                 "range": {"type": "bnode", "value": "nodeID://b72146"}
-                 },
-                {"enumerated_value": {"type": "uri", "value": "http://test/person/Gender/Female"},
-                 "enumerated_value_label": {"type": "literal", "value": "Feminino", "xml:lang": "pt"},
-                 "predicate": {"type": "uri", "value": "http://test/person/gender"},
-                 "range": {"type": "bnode", "value": "nodeID://b72146"}
-                 }
-            ]}
-        }
-
-        schema.query_cardinalities = lambda query: fake_response_cardinalities
-        schema.query_predicates = lambda query: fake_response_predicates
-
-        context = prefixes.MemorizeContext()
-        params = {"class_uri": "http://test/person/gender",
-                  "class_schema": None}
-
-        response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(context, params)
-        expected_predicates_and_cardinalities = {
-            u'http://test/person/gender': {
-                'comment': u'G\xeanero.',
-                'title': u'Sexo',
-                'enum': [u'http://test/person/Gender/Male', u'http://test/person/Gender/Female'],
-                'graph': u'http://test/person/',
-                'format': 'uri',
-                'maxItems': u'1',
-                'minItems': u'1',
-                'type': 'string',
-                'range': {'graph': u'http://test/person/',
-                          '@id': u'http://test/person/Gender',
-                          'title': u'G\xeanero da Pessoa'
-                          }
-            }
-        }
-        self.assertEqual(response_predicates_and_cardinalities, expected_predicates_and_cardinalities)
-        self.stop()
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):
@@ -259,6 +124,8 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
 
 class AuxiliaryFunctionsTestCase2(unittest.TestCase):
 
+    maxDiff = None
+
     def setUp(self):
         self.original_query_predicate_with_lang = schema._query_predicate_with_lang
         self.original_query_predicate_without_lang = schema._query_predicate_without_lang
@@ -289,3 +156,119 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         }
         response = schema.query_predicates(params)
         self.assertEqual(response, response_without_lang_text)
+
+    def test_convert_bindings_dict_single_predicate_single_range(self):
+
+        class ContextMock(prefixes.MemorizeContext):
+            object_properties = {}
+            context = {'g1': 'http://semantica.globo.com/G1/'}
+
+        context = ContextMock()
+        cardinalities = {}
+        bindings = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_entidade'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
+                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Criatura'},
+                u'title': {u'type': u'literal', u'value': u'Entidades'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            }
+        ]
+
+        computed = convert_bindings_dict(context, bindings, cardinalities)
+        expected = {
+            'g1:cita_a_entidade': {
+                'graph': 'g1',
+                'range': {'graph': '', '@id': 'base:Criatura', 'title': ''},
+                'title': u'Entidades',
+                'type': 'string',
+                'format': 'uri'
+            }
+        }
+
+        self.assertEqual(computed, expected)
+
+    def test_convert_bindings_dict_two_predicates_single_range(self):
+
+        class ContextMock(prefixes.MemorizeContext):
+            object_properties = {}
+            context = {'g1': 'http://semantica.globo.com/G1/'}
+
+        context = ContextMock()
+        cardinalities = {}
+        bindings = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_entidade'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
+                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Criatura'},
+                u'title': {u'type': u'literal', u'value': u'Entidades'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/trata_do_assunto'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
+                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/AssuntoCarro'},
+                u'title': {u'type': u'literal', u'value': u'Assuntos'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}},
+        ]
+
+        computed = convert_bindings_dict(context, bindings, cardinalities)
+        expected = {
+            'g1:cita_a_entidade': {
+                'graph': 'g1',
+                'range': {'graph': '', '@id': 'base:Criatura', 'title': ''},
+                'title': u'Entidades',
+                'type': 'string',
+                'format': 'uri'
+            },
+            'g1:trata_do_assunto': {
+                'graph': 'g1',
+                'range': {'graph': '', '@id': 'g1:AssuntoCarro', 'title': ''},
+                'title': u'Assuntos',
+                'type': 'string',
+                'format': 'uri'
+            }
+        }
+
+        self.assertEqual(computed, expected)
+
+    # def test_convert_bindings_dict_single_predicate_multiple_range(self):
+
+    #     class ContextMock(prefixes.MemorizeContext):
+    #         object_properties = {}
+    #         context = {'g1': 'http://semantica.globo.com/G1/'}
+
+    #     context = ContextMock()
+    #     cardinalities = {}
+    #     bindings = [
+    #         {
+    #             u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_entidade'},
+    #             u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
+    #             u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Criatura'},
+    #             u'title': {u'type': u'literal', u'value': u'Entidades'},
+    #             u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+    #         },
+    #         {
+    #             u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_entidade'},
+    #             u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
+    #             u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Lugar'},
+    #             u'title': {u'type': u'literal', u'value': u'Entidades'},
+    #             u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}}
+    #     ]
+
+    #     computed = convert_bindings_dict(context, bindings, cardinalities)
+    #     expected = [
+    #         {
+    #             'g1:cita_a_entidade': {
+    #                 'graph': 'g1',
+    #                 'range': [
+    #                     {'graph': '', '@id': 'base:Lugar', 'title': ''},
+    #                     #{'graph': '', '@id': 'base:Criatura', 'title': ''}
+    #                 ],
+    #                 'title': u'Entidades',
+    #                 'type': 'string',
+    #                 'format': 'uri'
+    #             }
+    #         }
+    #     ]
+    #     self.assertEqual(computed, expected)

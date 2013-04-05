@@ -88,6 +88,7 @@ def query_class_schema(query_params):
 def get_predicates_and_cardinalities(context, query_params):
     (query_params, language_tag) = add_language_support(query_params, "enumerated_value_label")
     query_result = query_cardinalities(query_params)
+
     cardinalities = _extract_cardinalities(query_result['results']['bindings'])
 
     predicates = query_predicates(query_params)
@@ -277,6 +278,7 @@ def build_predicate_dict(name, predicate, cardinalities, context):
 
 
 def convert_bindings_dict(context, bindings, cardinalities):
+    #import pdb; pdb.set_trace()
     range_dict = {p['predicate']['value']: p['range']['value'] for p in bindings}
 
     predicates_dict = {}

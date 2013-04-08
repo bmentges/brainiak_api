@@ -157,6 +157,36 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         response = schema.query_predicates(params)
         self.assertEqual(response, response_without_lang_text)
 
+    def test_convert_bindings_dict_single_datatypeproperty(self):
+
+        class ContextMock(prefixes.MemorizeContext):
+            object_properties = {}
+            context = {'g1': 'http://semantica.globo.com/G1/'}
+
+        context = ContextMock()
+        cardinalities = {}
+        bindings = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/data_de_criacao_do_conteudo'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#dateTime'},
+                u'title': {u'type': u'literal', u'value': u'Data de cria\xe7\xe3o do conte\xfado'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
+            }
+        ]
+
+        computed = convert_bindings_dict(context, bindings, cardinalities)
+        expected = {
+            'base:data_de_criacao_do_conteudo': {
+                'graph': 'glb',
+                'title': u'Data de cria\xe7\xe3o do conte\xfado',
+                'type': 'string',
+                'format': 'date'
+            }
+        }
+
+        self.assertEqual(computed, expected)
+
     def test_convert_bindings_dict_single_predicate_single_range(self):
 
         class ContextMock(prefixes.MemorizeContext):
@@ -256,7 +286,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             }
         ]
-
+        #import pdb; pdb.set_trace()
         computed = convert_bindings_dict(context, bindings, cardinalities)
         expected = {
             'g1:cita_a_entidade': {
@@ -268,6 +298,46 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                 'title': u'Entidades',
                 'type': 'string',
                 'format': 'uri'
+            }
+        }
+        self.assertEqual(computed, expected)
+
+    def test_convert_bindings_dict_objectproperty_and_datatypeproperty(self):
+
+        class ContextMock(prefixes.MemorizeContext):
+            object_properties = {}
+            context = {'g1': 'http://semantica.globo.com/G1/'}
+
+        context = ContextMock()
+        cardinalities = {}
+        bindings = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/tem_editoria'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
+                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Editoria'},
+                u'title': {u'type': u'literal', u'value': u'Editoria'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/tem_editoria'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
+                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#integer'},
+                u'title': {u'type': u'literal', u'value': u'ID Editoria'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
+            }
+        ]
+        #import pdb; pdb.set_trace()
+        computed = convert_bindings_dict(context, bindings, cardinalities)
+        expected = {
+            'g1:tem_editoria': {
+                'graph': '',
+                'range': [
+                    {'graph': 'g1', '@id': 'base:Editoria', 'title': u'Editoria', 'type': 'string', 'format': 'uri'},
+                    {'graph': 'g1', '@id': 'base:Editoria', 'title': u'ID Editoria', 'type': 'integer', 'format': ''}
+                ],
+                'title': '',
+                'type': '',
+                'format': ''
             }
         }
         self.assertEqual(computed, expected)
@@ -286,7 +356,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
     #             u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
     #             u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#integer'},
     #             u'title': {u'type': u'literal', u'value': u'Integer range of flex-predicate'},
-    #             u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}},
+    #             u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
     #         },
     #         {
     #             u'predicate': {u'type': u'uri', u'value': u'flex-predicate'},
@@ -303,19 +373,33 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
     #             u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
     #         }
     #     ]
-
+    #     import pdb; pdb.set_trace()
     #     computed = convert_bindings_dict(context, bindings, cardinalities)
-    #     raise Exception("build the expected dict bellow")
     #     expected = {
     #         'flex-predicate': {
     #             'graph': 'g1',
     #             'range': [
-    #                 {'graph': '', '@id': 'base:Lugar', 'title': '', 'type': 'string', 'format': 'uri'},
-    #                 {'graph': '', '@id': 'base:Criatura', 'title': '', 'type': 'string', 'format': 'uri'}
+    #                 {
+    #                     'graph': '',
+    #                     '@id': 'anypedia:place',
+    #                     'title': u'Place range of flex-predicate',
+    #                     'type': 'string',
+    #                     'format': 'uri'
+    #                 },
+    #                 {
+    #                     'graph': '',
+    #                     'title': 'Integer range of flex-predicate',
+    #                     'type': 'integer',
+    #                 },
+    #                 {
+    #                     'graph': '',
+    #                     'title': 'Boolean range of flex-predicate',
+    #                     'type': 'boolean',
+    #                 }
     #             ],
     #             'title': u'Entidades',
-    #             'type': 'string',
-    #             'format': 'uri'
+    #             'type': '',
+    #             'format': ''
     #         }
     #     }
     #     self.assertEqual(computed, expected)

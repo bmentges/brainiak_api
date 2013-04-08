@@ -13,8 +13,8 @@ def decorate_with_resource_id(list_of_dicts):
             else:
                 resource_id = id_key.rsplit("/")[-1]
             dict_item['resource_id'] = resource_id
-        except KeyError:
-            pass
+        except KeyError as ex:
+            raise TypeError("dict missing key {0:s} while processing decorate_with_resource_id()".format(ex))
 
 
 def compress_duplicated_ids(list_of_dicts):
@@ -37,5 +37,5 @@ def compress_duplicated_ids(list_of_dicts):
             compressed_dict = dict((key, value[0] if len(value) == 1 else value) for key, value in compressed_dict.items())
             compressed_list.append(compressed_dict)
         return compressed_list
-    except KeyError:
-        pass
+    except KeyError as ex:
+        raise TypeError("dict missing key {0:s} while processing compress_duplicated_ids()".format(ex))

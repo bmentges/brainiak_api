@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import httplib
-import json
+import ujson as json
 import sys
 import traceback
 from contextlib import contextmanager

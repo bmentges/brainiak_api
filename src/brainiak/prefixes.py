@@ -9,8 +9,15 @@ This module uses the following nomenclature:
  short_uri = x:D
 """
 
+from brainiak import settings
+
+# This ROOT CONTEXT is a special context whose URI is equal to the settings.URL_PREFIX
+ROOT_CONTEXT = 'glb'
+
 # Maps prefix_slug (key) -> prefix (value)
-_MAP_SLUG_TO_PREFIX = {
+_MAP_SLUG_TO_PREFIX = {}
+
+STANDARD_PRFIXES = {
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
     'owl': 'http://www.w3.org/2002/07/owl#',
@@ -19,18 +26,21 @@ _MAP_SLUG_TO_PREFIX = {
     'foaf': 'http://xmlns.com/foaf/0.1/',
     'xsd': 'http://www.w3.org/2001/XMLSchema#',
     'geo': 'http://www.w3.org/2003/01/geo/wgs84_pos#',
-    'upper': 'http://semantica.globo.com/upper/',
+}
+
+LOCAL_PREFIXES = {
     'schema': 'http://schema.org/',
     'dbpedia': 'http://dbpedia.org/ontology/',
     'time': 'http://www.w3.org/2006/time#',
     'event': 'http://purl.org/NET/c4dm/event.owl#',
+    'upper': 'http://semantica.globo.com/upper/',
     'place': 'http://semantica.globo.com/place/',
     'person': 'http://semantica.globo.com/person/',
     'organization': 'http://semantica.globo.com/organization/'
 }
 
-OLD_PREFIXES = {
-    "glb": "http://semantica.globo.com/",
+LEGACY_PREFIXES = {
+    ROOT_CONTEXT: settings.URI_PREFIX,
     "base": "http://semantica.globo.com/base/",
     "ego": "http://semantica.globo.com/ego/",
     "esportes": "http://semantica.globo.com/esportes/",
@@ -39,7 +49,9 @@ OLD_PREFIXES = {
     "eureka": "http://semantica.globo.com/eureka/"
 }
 
-_MAP_SLUG_TO_PREFIX.update(OLD_PREFIXES)
+_MAP_SLUG_TO_PREFIX.update(STANDARD_PRFIXES)
+_MAP_SLUG_TO_PREFIX.update(LOCAL_PREFIXES)
+_MAP_SLUG_TO_PREFIX.update(LEGACY_PREFIXES)
 _MAP_PREFIX_TO_SLUG = {v: k for k, v in _MAP_SLUG_TO_PREFIX.items()}
 
 

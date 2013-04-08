@@ -17,7 +17,7 @@ ROOT_CONTEXT = 'glb'
 # Maps prefix_slug (key) -> prefix (value)
 _MAP_SLUG_TO_PREFIX = {}
 
-STANDARD_PRFIXES = {
+STANDARD_PREFIXES = {
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
     'owl': 'http://www.w3.org/2002/07/owl#',
@@ -49,7 +49,7 @@ LEGACY_PREFIXES = {
     "eureka": "http://semantica.globo.com/eureka/"
 }
 
-_MAP_SLUG_TO_PREFIX.update(STANDARD_PRFIXES)
+_MAP_SLUG_TO_PREFIX.update(STANDARD_PREFIXES)
 _MAP_SLUG_TO_PREFIX.update(LOCAL_PREFIXES)
 _MAP_SLUG_TO_PREFIX.update(LEGACY_PREFIXES)
 _MAP_PREFIX_TO_SLUG = {v: k for k, v in _MAP_SLUG_TO_PREFIX.items()}

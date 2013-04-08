@@ -1,6 +1,6 @@
 import md5
 import urllib
-import json
+import ujson as json
 
 import SPARQLWrapper
 from tornado.httpclient import HTTPRequest

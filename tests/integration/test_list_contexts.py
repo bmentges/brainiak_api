@@ -1,6 +1,6 @@
 import json
 
-from brainiak.root.get import QUERY_LIST_DOMAIN
+from brainiak.root.get import QUERY_LIST_CONTEXT
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.utils import sparql
 from tests import TornadoAsyncHTTPTestCase
@@ -11,15 +11,15 @@ def raise_exception():
     raise Exception
 
 
-class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
+class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
 
     def setUp(self):
         self.original_filter_values = sparql.filter_values
-        super(ListDomainsTestCase, self).setUp()
+        super(ListAllContextsTestCase, self).setUp()
 
     def tearDown(self):
         sparql.filter_values = self.original_filter_values
-        super(ListDomainsTestCase, self).tearDown()
+        super(ListAllContextsTestCase, self).tearDown()
 
     def test_400(self):
         sparql.filter_values = lambda a, b: []
@@ -33,7 +33,7 @@ class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
-        self.assertEquals(body["error"], u'HTTP error: 404\nNo domains were found.')
+        self.assertEquals(body["error"], u'HTTP error: 404\nNo contexts were found.')
 
     def test_500(self):
         sparql.filter_values = lambda a, b: raise_exception()
@@ -82,13 +82,13 @@ class QueryTestCase(QueryTestCase):
     fixtures = ["tests/sample/demo.n3"]
 
     def test_query_pre_defined_graphs(self):
-        query = QUERY_LIST_DOMAIN
+        query = QUERY_LIST_CONTEXT
         response = self.query(query)
         registered_graphs = sparql.filter_values(response, "graph")
         self.assertIn('http://semantica.globo.com/upper/', registered_graphs)
 
     def test_query_new_graph(self):
-        query = QUERY_LIST_DOMAIN
+        query = QUERY_LIST_CONTEXT
         response = self.query(query)
         registered_graphs = sparql.filter_values(response, "graph")
         self.assertIn('http://whatever.com', registered_graphs)

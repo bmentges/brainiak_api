@@ -27,6 +27,10 @@ integration: clean
 	@echo "Running integration tests..."
 	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/integration --with-xunit
 
+acceptance: clean
+	@echo "Running acceptance tests..."
+	@nosetests -s  --tests=$(HOME_BRAINIAK)/tests/acceptance --with-xunit
+
 pep8:
 	@echo "Checking source-code PEP8 compliance"
 	@-pep8 $(HOME_BRAINIAK)/src/brainiak --ignore=E501,E126,E127,E128

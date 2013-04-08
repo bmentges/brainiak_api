@@ -18,7 +18,7 @@ from brainiak.instance.create_resource import create_instance
 from brainiak.instance.edit_resource import edit_instance, instance_exists
 from brainiak.context.list_resource import list_classes
 from brainiak.prefix.list_resource import list_prefixes
-from brainiak.domain.get import list_domains
+from brainiak.root.get import list_domains
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
 from brainiak.greenlet_tornado import greenlet_asynchronous
 

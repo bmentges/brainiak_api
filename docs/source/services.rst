@@ -15,6 +15,7 @@ see :ref:`concept-context`, :ref:`concept-schema`, :ref:`concept-collection`, an
    :maxdepth: 3
 
    services/context/context.rst
+   services/prefix/prefix.rst
    services/collection/collection.rst
    services/schema/schema.rst
    services/instance/instance.rst

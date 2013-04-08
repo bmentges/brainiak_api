@@ -246,7 +246,9 @@ def _query_superclasses(query_params):
 def build_predicate_dict(name, predicate, cardinalities, context):
     predicate_dict = {}
     predicate_type = predicate['type']['value']
+
     range_class_uri = predicate['range']['value']
+
     range_key = context.shorten_uri(range_class_uri)
 
     if predicate_type == OBJECT_PROPERTY:
@@ -277,44 +279,68 @@ def build_predicate_dict(name, predicate, cardinalities, context):
     return predicate_dict
 
 
-def join_predicates(previous_predicates, new_predicate):
-    if (new_predicate['type'] == previous_predicates['type']) and \
-      (new_predicate['format'] == previous_predicates['format']):
-        old_range = previous_predicates['range']
-        new_range = new_predicate['range']
-        if isinstance(old_range, list):
+def join_predicates(old_predicates, new_predicate):
+
+    new_format = new_predicate.get('format', '')
+    new_range = new_predicate.get('range', {})
+    new_type = new_predicate['type']
+
+    old_format = old_predicates.get('format', '')
+    old_range = old_predicates.get('range', {})
+    old_type = old_predicates['type']
+
+    old_range_is_list = isinstance(old_range, list)
+
+    if (new_type == old_type) and (new_format == old_format):
+        if old_range_is_list:
             old_range.append(new_range)
         else:
             old_range = [old_range, new_range]
-        previous_predicates['range'] = old_range
-    return previous_predicates
+    else:
+        if not old_range_is_list:
+            old_range = [old_range]
+
+        for each_range in old_range:
+            each_range['type'] = old_type
+            each_range['format'] = old_format
+
+        new_range['type'] = new_type
+        new_range['range'] = new_range
+        old_range.append(new_range)
+        new_predicate['type'] = ''
+        new_predicate['format'] = ''
+
+    new_predicate['range'] = old_range
+    return new_predicate
 
 
 def convert_bindings_dict(context, bindings, cardinalities):
-    range_dict = {p['predicate']['value']: p['range']['value'] for p in bindings}
+
+    # range_dict = {}
+    # for item in bindings:
+    #     item_predicate = item['predicate']['value']
+    #     item_range = item.get('range', {}).get('value', {})
+    #     existing_range = range_dict.get(item_predicate, [])
+    #     if item_range not in existing_range:
+    #         existing_range.append(item_range)
+    #         range_dict[item_predicate] = existing_range
+
+    super_predicates = [item['super_property']['value'] for item in bindings if 'super_property' in item]
 
     predicates_dict = {}
-    remove_super_predicates = []
+
     for predicate in bindings:
         predicate_name = predicate['predicate']['value']
-        shorten_predicate_name = context.shorten_uri(predicate_name)
-        try:
-            super_property = predicate['super_property']['value']
-        except KeyError:
-            super_property = None
-        if (super_property in range_dict) and (range_dict[super_property] == predicate['range']['value']):
-            remove_super_predicates.append(super_property)
-        predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, context)
-        # TODO: multiple ranges
-        if shorten_predicate_name in predicates_dict:
-            previous_predicates = predicates_dict[shorten_predicate_name]
-            predicates_dict[shorten_predicate_name] = join_predicates(previous_predicates, predicate_dict)
-        else:
-            predicates_dict[shorten_predicate_name] = predicate_dict
+        if not predicate_name in super_predicates:
 
-    # Avoid enumerating redundant predicates when a more specific predicate prevails over
-    # an inherited predicate with the same range
-    for p in remove_super_predicates:
-        del predicates_dict[shorten_uri(p)]
+            shorten_predicate_name = context.shorten_uri(predicate_name)
+            predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, context)
+
+            if shorten_predicate_name in predicates_dict:
+                previous_predicates = predicates_dict[shorten_predicate_name]
+                if previous_predicates != predicate_dict:
+                    predicates_dict[shorten_predicate_name] = join_predicates(previous_predicates, predicate_dict)
+            else:
+                predicates_dict[shorten_predicate_name] = predicate_dict
 
     return predicates_dict

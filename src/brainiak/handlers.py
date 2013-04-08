@@ -18,7 +18,7 @@ from brainiak.instance.create_resource import create_instance
 from brainiak.instance.edit_resource import edit_instance, instance_exists
 from brainiak.context.list_resource import list_classes
 from brainiak.prefix.list_resource import list_prefixes
-from brainiak.root.get import list_domains
+from brainiak.root.get import list_all_contexts
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
 from brainiak.greenlet_tornado import greenlet_asynchronous
 
@@ -53,7 +53,7 @@ def get_routes():
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)/?', InstanceHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/?', ContextHandler),
-        URLSpec(r'/$', DomainHandler),
+        URLSpec(r'/$', RootHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
     ]
 
@@ -267,14 +267,14 @@ class CollectionHandler(BrainiakRequestHandler):
             self.write(response)
 
 
-class DomainHandler(BrainiakRequestHandler):
+class RootHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self):
         with safe_params():
             self.query_params = ListAndFilterServiceParams(self)
 
-        response = list_domains(self.query_params, self.request)
+        response = list_all_contexts(self.query_params, self.request)
 
         self.finalize(response)
 

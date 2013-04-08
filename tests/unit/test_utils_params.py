@@ -1,5 +1,7 @@
 from unittest import TestCase
 from brainiak.handlers import ListServiceParams
+from brainiak.prefixes import ROOT_CONTEXT
+from brainiak.settings import URI_PREFIX
 from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict
 
 
@@ -40,6 +42,11 @@ class ParamsTestCase(TestCase):
         self.assertIn("class_name", params)
         self.assertEquals("context_name", params.get("context_name"))
         self.assertEquals("class_name", params.get("class_name"))
+
+    def test_root_context(self):
+        handler = MockHandler()
+        params = ParamDict(handler, context_name=ROOT_CONTEXT)
+        self.assertEquals(URI_PREFIX, params.get("graph_uri"))
 
     def test_defaults_without_basic_params(self):
         handler = MockHandler()

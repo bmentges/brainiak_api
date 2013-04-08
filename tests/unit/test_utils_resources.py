@@ -2,6 +2,19 @@ from unittest import TestCase
 from brainiak.utils.resources import decorate_with_resource_id, compress_duplicated_ids
 
 
+class TestCaseListInstanceResource(TestCase):
+
+    def test_decorate_with_resource_id_successfully(self):
+        expected_result = [{u"@id": u"http://a/b", u"resource_id": u"b"}]
+        target = [{u"@id": u"http://a/b"}]
+        decorate_with_resource_id(target)
+        self.assertEqual(expected_result, target)
+
+    def test_decorate_with_missing_resource_id(self):
+        target = [{u"id": u"http://a/b"}]
+        self.assertRaises(TypeError, decorate_with_resource_id, target)
+
+
 class ResourceUtilsTestCase(TestCase):
 
     def test_decorate_with_resource_id_with_single_dict(self):
@@ -33,3 +46,11 @@ class ResourceUtilsTestCase(TestCase):
         ]
         result = compress_duplicated_ids(input_dict)
         self.assertItemsEqual(expected_dict, result)
+
+    def test_compress_duplicated_ids_with_missing_key(self):
+        input_dict = [
+            {"@id": "person:Person", "title": "Pessoa"},
+            {"@id": "person:Person", "title": "Person"},
+            {"title": "This is missing @id, should raise TypeError"}
+        ]
+        self.assertRaises(TypeError, compress_duplicated_ids, input_dict)

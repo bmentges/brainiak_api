@@ -44,13 +44,14 @@ class MockFetchPage(object):
         self.count = 0
         self.status_code = status_code
         self.max_pages = max_pages
+
     def __call__(self, *args, **kw):
         self.count += 1
         if self.count >= self.max_pages:
             links = []
         else:
             links = [{'href': "/?page=1", 'method': "GET", 'rel': "next"}]
-        return self.status_code, {"items": [self.count], "links":links}
+        return self.status_code, {"items": [self.count], "links": links}
 
 
 class AllPagesTestCase(TestCase):

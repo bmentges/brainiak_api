@@ -286,7 +286,6 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             }
         ]
-        #import pdb; pdb.set_trace()
         computed = convert_bindings_dict(context, bindings, cardinalities)
         expected = {
             'g1:cita_a_entidade': {
@@ -326,7 +325,6 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             }
         ]
-        #import pdb; pdb.set_trace()
         computed = convert_bindings_dict(context, bindings, cardinalities)
         expected = {
             'g1:tem_editoria': {
@@ -373,7 +371,6 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
     #             u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
     #         }
     #     ]
-    #     import pdb; pdb.set_trace()
     #     computed = convert_bindings_dict(context, bindings, cardinalities)
     #     expected = {
     #         'flex-predicate': {

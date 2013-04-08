@@ -1,6 +1,7 @@
 import json
 
-from brainiak.domain.get import QUERY_LIST_DOMAIN
+from brainiak.root.get import QUERY_LIST_DOMAIN
+from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.utils import sparql
 from tests import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
@@ -55,6 +56,14 @@ class ListDomainsTestCase(TornadoAsyncHTTPTestCase):
 
         self.assertIn("item_count", body.keys())
         self.assertTrue(isinstance(body['item_count'], int))
+
+    def test_root_context(self):
+        response = self.fetch("/", method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        default_graph = {u'resource_id': u'', u'@id': u'http://semantica.globo.com/', u'title': ROOT_CONTEXT}
+        self.assertIn("items", body.keys())
+        self.assertIn(default_graph, body['items'])
 
     def test_200_with_pagination(self):
         # disclaimer: this test assumes there are > 2 non-empty registered graphs in Virtuoso

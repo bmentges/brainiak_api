@@ -156,7 +156,7 @@ def some_triples_deleted(result_dict, graph_uri):
     except:
         raise UnexpectedResultException("Unknown result format: " + str(result_dict))
     delete_successful_message = "Delete from <%s>, ([0-9]*) \(or less\) triples -- done" % graph_uri
-    not_found_message = "Delete from <%s>, 0 triples -- nothing to do" % graph_uri
+    not_found_message = "0 triples -- nothing to do"
 
     if re.search(delete_successful_message, query_result_message):
         return True

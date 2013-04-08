@@ -10,44 +10,44 @@ from brainiak.utils.links import build_links, split_into_chunks
 # (accessible from the application and not through SPARQL)
 from brainiak.utils.resources import decorate_with_resource_id
 
-QUERY_LIST_DOMAIN = """
+QUERY_LIST_CONTEXT = """
 SELECT DISTINCT ?graph
 WHERE {GRAPH ?graph { ?s ?p ?o }}
 """
 
 
-def list_domains(params, request):
-    sparql_response = triplestore.query_sparql(QUERY_LIST_DOMAIN)
-    all_domains_uris = sparql.filter_values(sparql_response, "graph")
+def list_all_contexts(params, request):
+    sparql_response = triplestore.query_sparql(QUERY_LIST_CONTEXT)
+    all_contexts_uris = sparql.filter_values(sparql_response, "graph")
 
-    filtered_domains = filter_and_build_domains(all_domains_uris)
-    total_domains = len(filtered_domains)
+    filtered_contexts = filter_and_build_contexts(all_contexts_uris)
+    total_contexts = len(filtered_contexts)
 
-    if not filtered_domains:
-        raise HTTPError(404, log_message="No domains were found.")
+    if not filtered_contexts:
+        raise HTTPError(404, log_message="No contexts were found.")
 
-    domains_pages = split_into_chunks(filtered_domains, int(params["per_page"]))
-    domains = domains_pages[int(params["page"])]
+    contexts_pages = split_into_chunks(filtered_contexts, int(params["per_page"]))
+    contexts = contexts_pages[int(params["page"])]
 
-    domains_json = build_json(domains, total_domains, params, request)
-    return domains_json
+    contexts_json = build_json(contexts, total_contexts, params, request)
+    return contexts_json
 
 
-def filter_and_build_domains(domains_uris):
-    domains = []
-    for uri in domains_uris:
+def filter_and_build_contexts(contexts_uris):
+    contexts = []
+    for uri in contexts_uris:
         slug = prefix_to_slug(uri)
         if slug != uri:
-            domain_info = {
+            context_info = {
                 "title": slug,
                 "@id": uri
             }
-            domains.append(domain_info)
-    decorate_with_resource_id(domains)
-    return domains
+            contexts.append(context_info)
+    decorate_with_resource_id(contexts)
+    return contexts
 
 
-def build_json(domains, total_items, params, request):
+def build_json(contexts, total_items, params, request):
     base_url = request.uri
     links = build_links(
         base_url,
@@ -58,7 +58,7 @@ def build_json(domains, total_items, params, request):
         query_string=request.query)
 
     json = {
-        'items': domains,
+        'items': contexts,
         'item_count': total_items,
         'links': links
     }

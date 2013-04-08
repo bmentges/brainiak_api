@@ -17,6 +17,7 @@ from brainiak.instance.delete_resource import delete_instance
 from brainiak.instance.create_resource import create_instance
 from brainiak.instance.edit_resource import edit_instance, instance_exists
 from brainiak.context.list_resource import list_classes
+from brainiak.prefix.list_resource import list_prefixes
 from brainiak.domain.get import list_domains
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
 from brainiak.greenlet_tornado import greenlet_asynchronous
@@ -46,6 +47,7 @@ def get_routes():
     return [
         URLSpec(r'/healthcheck/?', HealthcheckHandler),
         URLSpec(r'/version/?', VersionHandler),
+        URLSpec(r'/prefixes/?', PrefixHandler),
         URLSpec(r'/status/virtuoso/?', VirtuosoStatusHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)/?', InstanceHandler),
@@ -294,6 +296,18 @@ class ContextHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
+
+
+class PrefixHandler(BrainiakRequestHandler):
+
+    @greenlet_asynchronous
+    def get(self):
+        with safe_params():
+            self.query_params = ListAndFilterServiceParams(self)
+
+        response = list_prefixes()
+
+        self.finalize(response)
 
 
 class UnmatchedHandler(BrainiakRequestHandler):

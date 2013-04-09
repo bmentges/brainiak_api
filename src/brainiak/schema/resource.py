@@ -302,9 +302,12 @@ def merge_ranges(one_range, another_range):
     elif isinstance(one_range, list):
         one_range.append(another_range)
     elif isinstance(another_range, list):
-        [one_range].extend(another_range)
+        another_range.append(one_range)
+        one_range = another_range
     else:
         one_range = [one_range, another_range]
+
+    one_range = [dict(item) for item in set([tuple(dict_.items()) for dict_ in one_range])]
     return one_range
 
 
@@ -319,7 +322,6 @@ def normalize_predicate_range(predicate):
 
 
 def join_predicates(old, new):
-
     old = normalize_predicate_range(old)
     new = normalize_predicate_range(new)
 

@@ -1,4 +1,5 @@
 from unittest import TestCase
+from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.utils.resources import decorate_with_resource_id, compress_duplicated_ids
 
 
@@ -13,6 +14,11 @@ class TestCaseListInstanceResource(TestCase):
     def test_decorate_with_missing_resource_id(self):
         target = [{u"id": u"http://a/b"}]
         self.assertRaises(TypeError, decorate_with_resource_id, target)
+
+    def test_decorate_with_root_context(self):
+        target = [{u"@id": u"http://a/b", u"title": ROOT_CONTEXT}]
+        decorate_with_resource_id(target)
+        self.assertEqual(target[0]['resource_id'], u'')
 
 
 class ResourceUtilsTestCase(TestCase):

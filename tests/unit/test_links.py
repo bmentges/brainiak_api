@@ -54,13 +54,12 @@ class LinksTestCase(unittest.TestCase):
         class_uri = "http://class.uri"
         page = 1
         per_page = 1
-        request_uri = "http://request.uri"
         total_items = 1
         query_string = ""
-        computed = build_links(class_uri, page, per_page, request_uri, total_items, query_string)
+        computed = build_links(class_uri, page, per_page, total_items, query_string)
         expected = [
             {
-                'href': "http://request.uri",
+                'href': "http://class.uri",
                 'rel': "self"
             },
             {
@@ -105,13 +104,12 @@ class LinksTestCase(unittest.TestCase):
         class_uri = "http://class.uri"
         page = 1
         per_page = 1
-        request_uri = "http://request.uri"
         total_items = 2
         query_string = ""
-        computed = build_links(class_uri, page, per_page, request_uri, total_items, query_string)
+        computed = build_links(class_uri, page, per_page, total_items, query_string)
         expected = [
             {
-                'href': "http://request.uri",
+                'href': "http://class.uri",
                 'rel': "self"
             },
             {
@@ -161,13 +159,12 @@ class LinksTestCase(unittest.TestCase):
         class_uri = "http://class.uri"
         page = 2
         per_page = 1
-        request_uri = "http://request.uri"
         total_items = 2
         query_string = ""
-        computed = build_links(class_uri, page, per_page, request_uri, total_items, query_string)
+        computed = build_links(class_uri, page, per_page, total_items, query_string)
         expected = [
             {
-                'href': "http://request.uri",
+                'href': "http://class.uri",
                 'rel': "self"
             },
             {
@@ -217,13 +214,12 @@ class LinksTestCase(unittest.TestCase):
         class_uri = "http://class.uri"
         page = 2
         per_page = 1
-        request_uri = "http://request.uri"
         total_items = 3
         query_string = ""
-        computed = build_links(class_uri, page, per_page, request_uri, total_items, query_string)
+        computed = build_links(class_uri, page, per_page, total_items, query_string)
         expected = [
             {
-                'href': "http://request.uri",
+                'href': "http://class.uri",
                 'rel': "self"
             },
             {

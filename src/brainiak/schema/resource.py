@@ -159,7 +159,7 @@ def _query_predicate_with_lang(query_params):
     query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
 
     query = """
-    SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
+    SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property
     WHERE {
         {
           GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
@@ -186,7 +186,7 @@ def _query_predicate_with_lang(query_params):
         FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
         FILTER(langMatches(lang(?title), "%(lang)s") or langMatches(lang(?title), "")) .
         FILTER(langMatches(lang(?predicate_comment), "%(lang)s") or langMatches(lang(?predicate_comment), "")) .
-        OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . FILTER(langMatches(lang(?label_do_range), "%(lang)s")) . } } .
+        OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . FILTER(langMatches(lang(?range_label), "%(lang)s")) . } } .
         OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
     }""" % query_params
     return triplestore.query_sparql(query)
@@ -195,7 +195,7 @@ def _query_predicate_with_lang(query_params):
 def _query_predicate_without_lang(query_params):
     query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
     query = """
-    SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?grafo_do_range ?label_do_range ?super_property
+    SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property
     WHERE {
         {
           GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
@@ -220,7 +220,7 @@ def _query_predicate_without_lang(query_params):
         ?predicate rdf:type ?type .
         OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
         FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
-        OPTIONAL { GRAPH ?grafo_do_range {  ?range rdfs:label ?label_do_range . } } .
+        OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . } } .
         OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
     }""" % query_params
     return triplestore.query_sparql(query)
@@ -243,104 +243,116 @@ def _query_superclasses(query_params):
     return triplestore.query_sparql(query)
 
 
-def build_predicate_dict(name, predicate, cardinalities, context):
-    predicate_dict = {}
-    predicate_type = predicate['type']['value']
+def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
-    range_class_uri = predicate['range']['value']
+    predicate_graph = binding_row["predicate_graph"]['value']
+    predicate_type = binding_row['type']['value']
 
-    range_key = context.shorten_uri(range_class_uri)
+    range_uri = binding_row['range']['value']
+    range_graph = binding_row.get('range_graph', {}).get('value', "")
+    range_label = binding_row.get('range_label', {}).get('value', "")
+
+    # compression-related
+    compressed_range_uri = context.shorten_uri(range_uri)
+    compressed_range_graph = context.prefix_to_slug(range_graph)
+    compressed_graph = context.prefix_to_slug(predicate_graph)
+    context.add_object_property(predicate_uri, compressed_range_uri)
+
+    # build up predicate dictionary
+    predicate = {}
+    predicate["title"] = binding_row["title"]['value']
+    predicate["graph"] = compressed_graph
+
+    if "predicate_comment" in binding_row:
+        predicate["comment"] = binding_row["predicate_comment"]['value']
 
     if predicate_type == OBJECT_PROPERTY:
-        predicate_dict["range"] = {'@id': range_key,
-                                   'graph': context.prefix_to_slug(predicate.get('grafo_do_range', {}).get('value', "")),
-                                   'title': predicate.get('label_do_range', {}).get('value', "")}
-        context.add_object_property(predicate['predicate']['value'], range_key)
+        predicate["range"] = {'@id': compressed_range_uri,
+                              'graph': compressed_range_graph,
+                              'title': range_label,
+                              'type': 'string',
+                              'format': 'uri'}
+        predicate["type"] = "string"
+        predicate["format"] = "uri"
 
     elif predicate_type == DATATYPE_PROPERTY:
-        # Have a datatype property
-        predicate_dict.update(items_from_range(range_class_uri))
+        # add predicate['type'] and (optional) predicate['format']
+        predicate.update(items_from_range(range_uri))
 
-    if (name in cardinalities) and (range_class_uri in cardinalities[name]):
-        predicate_restriction = cardinalities[name]
-        predicate_dict.update(predicate_restriction[range_class_uri])
+    if (predicate_uri in cardinalities) and (range_uri in cardinalities[predicate_uri]):
+        predicate_restriction = cardinalities[predicate_uri]
+        predicate.update(predicate_restriction[range_uri])
         if "enum" in predicate_restriction:
-            # FIXME: simplify value returned from cardinalities to avoid ugly code below
-            predicate_dict["enum"] = predicate_restriction["enum"]
+            predicate["enum"] = predicate_restriction["enum"]
 
-    simplified_predicate = {attribute: predicate[attribute]['value'] for attribute in predicate}
-    add_items = items_from_type(simplified_predicate["type"])
-    if add_items:
-        predicate_dict.update(add_items)
-    predicate_dict["title"] = simplified_predicate["title"]
-    predicate_dict["graph"] = context.prefix_to_slug(simplified_predicate["predicate_graph"])
-    if "predicate_comment" in simplified_predicate:  # Para Video que não tem isso
-        predicate_dict["comment"] = simplified_predicate["predicate_comment"]
-    return predicate_dict
+    return predicate
 
 
-def join_predicates(old_predicates, new_predicate):
-
-    new_format = new_predicate.get('format', '')
-    new_range = new_predicate.get('range', {})
-    new_type = new_predicate['type']
-
-    old_format = old_predicates.get('format', '')
-    old_range = old_predicates.get('range', {})
-    old_type = old_predicates['type']
-
-    old_range_is_list = isinstance(old_range, list)
-
-    if (new_type == old_type) and (new_format == old_format):
-        if old_range_is_list:
-            old_range.append(new_range)
-        else:
-            old_range = [old_range, new_range]
+def get_common_key(items, key):
+    first_key = items[0].get(key, '')
+    if all(each_item.get(key) == first_key for each_item in items):
+        return first_key
     else:
-        if not old_range_is_list:
-            old_range = [old_range]
+        return ''
 
-        for each_range in old_range:
-            each_range['type'] = old_type
-            each_range['format'] = old_format
 
-        new_range['type'] = new_type
-        new_range['range'] = new_range
-        old_range.append(new_range)
-        new_predicate['type'] = ''
-        new_predicate['format'] = ''
+def merge_ranges(one_range, another_range):
+    if isinstance(one_range, list) and isinstance(another_range, list):
+        one_range.extend(another_range)
+    elif isinstance(one_range, list):
+        one_range.append(another_range)
+    elif isinstance(another_range, list):
+        [one_range].extend(another_range)
+    else:
+        one_range = [one_range, another_range]
+    return one_range
 
-    new_predicate['range'] = old_range
-    return new_predicate
+
+def normalize_predicate_range(predicate):
+    if not 'range' in predicate:
+        predicate_range = {}
+        predicate_range['type'] = predicate['type']
+        if 'format' in predicate:
+            predicate_range['format'] = predicate['format']
+        predicate['range'] = predicate_range
+    return predicate
+
+
+def join_predicates(old, new):
+
+    old = normalize_predicate_range(old)
+    new = normalize_predicate_range(new)
+
+    merged_ranges = merge_ranges(old['range'], new['range'])
+
+    merged_predicate = old
+    merged_predicate['range'] = merged_ranges
+    merged_predicate['type'] = get_common_key(merged_ranges, 'type')
+    merged_predicate['format'] = get_common_key(merged_ranges, 'format')
+
+    return merged_predicate
+
+
+def get_super_properties(bindings):
+    return [item['super_property']['value'] for item in bindings if 'super_property' in item]
 
 
 def convert_bindings_dict(context, bindings, cardinalities):
 
-    # range_dict = {}
-    # for item in bindings:
-    #     item_predicate = item['predicate']['value']
-    #     item_range = item.get('range', {}).get('value', {})
-    #     existing_range = range_dict.get(item_predicate, [])
-    #     if item_range not in existing_range:
-    #         existing_range.append(item_range)
-    #         range_dict[item_predicate] = existing_range
+    super_predicates = get_super_properties(bindings)
+    assembled_predicates = {}
 
-    super_predicates = [item['super_property']['value'] for item in bindings if 'super_property' in item]
+    for binding_row in bindings:
+        predicate_uri = binding_row['predicate']['value']
+        predicate_key = context.shorten_uri(predicate_uri)
 
-    predicates_dict = {}
-
-    for predicate in bindings:
-        predicate_name = predicate['predicate']['value']
-        if not predicate_name in super_predicates:
-
-            shorten_predicate_name = context.shorten_uri(predicate_name)
-            predicate_dict = build_predicate_dict(predicate_name, predicate, cardinalities, context)
-
-            if shorten_predicate_name in predicates_dict:
-                previous_predicates = predicates_dict[shorten_predicate_name]
-                if previous_predicates != predicate_dict:
-                    predicates_dict[shorten_predicate_name] = join_predicates(previous_predicates, predicate_dict)
+        if not predicate_uri in super_predicates:
+            predicate = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
+            existing_predicate = assembled_predicates.get(predicate_key, False)
+            if existing_predicate:
+                if existing_predicate != predicate:
+                    assembled_predicates[predicate_key] = join_predicates(existing_predicate, predicate)
             else:
-                predicates_dict[shorten_predicate_name] = predicate_dict
+                assembled_predicates[predicate_key] = predicate
 
-    return predicates_dict
+    return assembled_predicates

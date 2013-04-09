@@ -394,7 +394,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         list_resource.query_count_filter_instances = lambda params: count_json
         params = {"context_name": "ctx",
           "class_name": "klass",
-          "request": MockRequest(query_string),
+          "request": MockRequest(query_string=query_string),
           "per_page": "3",
           "page": "1"}
         response = list_resource.filter_instances(params)  # page based on virtuoso (begins with 0)

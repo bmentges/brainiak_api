@@ -90,3 +90,8 @@ def build_links(base_url, page, per_page, total_items, query_string):
     links.extend(nav_links)
 
     return links
+
+
+def add_link(link_list, rel, href, **kw):
+    "Add an entry to the list given by ``link_list'' with key==rel and href as a string template that is formated by kw"
+    link_list.append({'rel': rel, 'href': href.format(**kw)})

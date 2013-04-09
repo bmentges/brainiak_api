@@ -3,7 +3,7 @@ from brainiak.utils.sparql import add_language_support
 from brainiak import triplestore
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids
-from brainiak.utils.links import build_links
+from brainiak.utils.links import build_links, add_link
 from brainiak.prefixes import MemorizeContext
 
 
@@ -39,6 +39,9 @@ def assemble_list_json(query_params, query_result_dict, total_items):
         per_page=int(query_params["per_page"]),
         total_items=total_items,
         query_string=request.query)
+
+    # Per-service links
+    add_link(links_section, 'type', "{base_url}/{{resource_id}}/_schema", base_url=base_url)
 
     context_section = context.context
     context_section.update({"@language": query_params.get("lang")})

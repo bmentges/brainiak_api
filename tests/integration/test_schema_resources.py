@@ -161,7 +161,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
              "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
              "range": {"type": "uri", "value": "http://test/person/Gender"},
              "title": {"type": "literal", "xml:lang": "pt", "value": "Root (to be removed from answer)"},
-             "grafo_do_range": {"type": "uri", "value": "http://test/person/"}},
+             "range_graph": {"type": "uri", "value": "http://test/person/"}},
             {"predicate": {"type": "uri", "value": "http://test/person/gender"},
                 "super_property": {"type": "uri", "value": "http://test/person/root_gender"},
                 "predicate_graph": {"type": "uri", "value": "http://test/person/"},
@@ -169,8 +169,8 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                 "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
                 "range": {"type": "uri", "value": "http://test/person/Gender"},
                 "title": {"type": "literal", "xml:lang": "pt", "value": "Sexo"},
-                "grafo_do_range": {"type": "uri", "value": "http://test/person/"},
-                "label_do_range": {"type": "literal", "xml:lang": "pt", "value": u"G\u00EAnero da Pessoa"}}]}}
+                "range_graph": {"type": "uri", "value": "http://test/person/"},
+                "range_label": {"type": "literal", "xml:lang": "pt", "value": u"G\u00EAnero da Pessoa"}}]}}
 
         fake_response_cardinalities = {"results": {
             "bindings": [
@@ -204,18 +204,20 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
 
         response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(context, params)
         expected_predicates_and_cardinalities = {
-            u'http://test/person/gender': {
+            'http://test/person/gender': {
                 'comment': u'G\xeanero.',
-                'title': u'Sexo',
-                'enum': [u'http://test/person/Gender/Male', u'http://test/person/Gender/Female'],
-                'graph': u'http://test/person/',
+                'title': 'Sexo',
+                'enum': ['http://test/person/Gender/Male', 'http://test/person/Gender/Female'],
+                'graph': 'http://test/person/',
                 'format': 'uri',
-                'maxItems': u'1',
-                'minItems': u'1',
+                'maxItems': '1',
+                'minItems': '1',
                 'type': 'string',
-                'range': {'graph': u'http://test/person/',
-                          '@id': u'http://test/person/Gender',
-                          'title': u'G\xeanero da Pessoa'
+                'range': {'graph': 'http://test/person/',
+                          '@id': 'http://test/person/Gender',
+                          'title': u'G\xeanero da Pessoa',
+                          'format': 'uri',
+                          'type': 'string'
                           }
             }
         }

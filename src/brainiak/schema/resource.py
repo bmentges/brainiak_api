@@ -86,7 +86,6 @@ def query_class_schema(query_params):
 
 
 def get_predicates_and_cardinalities(context, query_params):
-    (query_params, language_tag) = add_language_support(query_params, "enumerated_value_label")
     query_result = query_cardinalities(query_params)
 
     cardinalities = _extract_cardinalities(query_result['results']['bindings'])
@@ -114,17 +113,13 @@ def _extract_cardinalities(bindings):
             current_property[range_].update({"minItems": binding["min"]["value"]})
         elif "max" in binding:
             current_property[range_].update({"maxItems": binding["max"]["value"]})
-        elif "enumerated_value" in binding:
-            new_options = current_property.get("enum", [])
-            new_options.append(binding["enumerated_value"]["value"])
-            current_property["enum"] = new_options
 
     return cardinalities
 
 
 def query_cardinalities(query_params):
     query = """
-        SELECT DISTINCT ?predicate ?min ?max ?range ?enumerated_value ?enumerated_value_label
+        SELECT DISTINCT ?predicate ?min ?max ?range
         WHERE {
             <%(class_uri)s> rdfs:subClassOf ?s OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
             ?s owl:onProperty ?predicate .
@@ -134,13 +129,6 @@ def query_cardinalities(query_params):
                 { ?s owl:onClass ?range }
                 UNION { ?s owl:onDataRange ?range }
                 UNION { ?s owl:allValuesFrom ?range }
-                OPTIONAL { ?range owl:oneOf ?enumeration } .
-                OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
-                OPTIONAL { ?list_node rdf:first ?enumerated_value } .
-                OPTIONAL {
-                    ?enumerated_value rdfs:label ?enumerated_value_label .
-                    %(lang_filter_enumerated_value_label)s
-                } .
             }
         }""" % query_params
     return triplestore.query_sparql(query)
@@ -166,8 +154,6 @@ def _query_predicate_with_lang(query_params):
         } UNION {
           graph ?predicate_graph {?predicate rdfs:domain ?blank} .
           ?blank a owl:Class .
-          ?blank owl:unionOf ?enumeration .
-          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
           OPTIONAL { ?list_node rdf:first ?domain_class } .
         }
         %(filter_classes_clause)s
@@ -175,8 +161,6 @@ def _query_predicate_with_lang(query_params):
         UNION {
           ?predicate rdfs:range ?blank .
           ?blank a owl:Class .
-          ?blank owl:unionOf ?enumeration .
-          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
           OPTIONAL { ?list_node rdf:first ?range } .
         }
         FILTER (!isBlank(?range))
@@ -202,8 +186,6 @@ def _query_predicate_without_lang(query_params):
         } UNION {
           graph ?predicate_graph {?predicate rdfs:domain ?blank} .
           ?blank a owl:Class .
-          ?blank owl:unionOf ?enumeration .
-          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
           OPTIONAL { ?list_node rdf:first ?domain_class } .
         }
         %(filter_classes_clause)s
@@ -211,8 +193,6 @@ def _query_predicate_without_lang(query_params):
         UNION {
           ?predicate rdfs:range ?blank .
           ?blank a owl:Class .
-          ?blank owl:unionOf ?enumeration .
-          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
           OPTIONAL { ?list_node rdf:first ?range } .
         }
         FILTER (!isBlank(?range))
@@ -282,8 +262,6 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     if (predicate_uri in cardinalities) and (range_uri in cardinalities[predicate_uri]):
         predicate_restriction = cardinalities[predicate_uri]
         predicate.update(predicate_restriction[range_uri])
-        if "enum" in predicate_restriction:
-            predicate["enum"] = predicate_restriction["enum"]
 
     return predicate
 

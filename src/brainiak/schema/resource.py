@@ -285,6 +285,7 @@ def merge_ranges(one_range, another_range):
     else:
         one_range = [one_range, another_range]
 
+    # no reason for nightmares - the code bellow simply removes duplicates
     one_range = [dict(item) for item in set([tuple(dict_.items()) for dict_ in one_range])]
     return one_range
 

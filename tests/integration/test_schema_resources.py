@@ -161,7 +161,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
              "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
              "range": {"type": "uri", "value": "http://test/person/Gender"},
              "title": {"type": "literal", "xml:lang": "pt", "value": "Root (to be removed from answer)"},
-             "grafo_do_range": {"type": "uri", "value": "http://test/person/"}},
+             "range_graph": {"type": "uri", "value": "http://test/person/"}},
             {"predicate": {"type": "uri", "value": "http://test/person/gender"},
                 "super_property": {"type": "uri", "value": "http://test/person/root_gender"},
                 "predicate_graph": {"type": "uri", "value": "http://test/person/"},
@@ -169,8 +169,8 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                 "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
                 "range": {"type": "uri", "value": "http://test/person/Gender"},
                 "title": {"type": "literal", "xml:lang": "pt", "value": "Sexo"},
-                "grafo_do_range": {"type": "uri", "value": "http://test/person/"},
-                "label_do_range": {"type": "literal", "xml:lang": "pt", "value": u"G\u00EAnero da Pessoa"}}]}}
+                "range_graph": {"type": "uri", "value": "http://test/person/"},
+                "range_label": {"type": "literal", "xml:lang": "pt", "value": u"G\u00EAnero da Pessoa"}}]}}
 
         fake_response_cardinalities = {"results": {
             "bindings": [

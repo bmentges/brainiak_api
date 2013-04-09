@@ -215,7 +215,9 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                 'type': 'string',
                 'range': {'graph': 'http://test/person/',
                           '@id': 'http://test/person/Gender',
-                          'title': u'G\xeanero da Pessoa'
+                          'title': u'G\xeanero da Pessoa',
+                          'format': 'uri',
+                          'type': 'string'
                           }
             }
         }

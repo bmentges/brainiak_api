@@ -44,28 +44,6 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'maxItems': u'1'}}}
         self.assertEqual(extracted, expected)
 
-    def test_extract_options(self):
-        binding = [
-            {u'predicate': {u'type': u'uri',
-                            u'value': u'http://test/person/gender'},
-             u'enumerated_value': {u'type': u'uri',
-                                   u'value': u'http://test/person/Gender/Male'},
-             u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'},
-             u'enumerated_value_label': {u'xml:lang': u'pt', u'type': u'literal',
-                                         u'value': u'Masculino'}},
-            {u'predicate': {u'type': u'uri',
-                            u'value': u'http://test/person/gender'},
-             u'enumerated_value': {u'type': u'uri',
-                                   u'value': u'http://test/person/Gender/Female'},
-             u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'},
-             u'enumerated_value_label': {u'xml:lang': u'pt', u'type': u'literal',
-                                         u'value': u'Feminino'}}
-        ]
-        extracted = _extract_cardinalities(binding)
-        expected = {u'http://test/person/gender': {
-                    'enum': [u'http://test/person/Gender/Male', u'http://test/person/Gender/Female']}}
-        self.assertEqual(extracted, expected)
-
     def test_assemble_predicate_with_object_property(self):
         expected_predicate_dict = {'comment': u'G\xeanero.',
                                    'range': {'graph': 'test',
@@ -78,8 +56,6 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                    'format': 'uri',
                                    'minItems': u'1',
                                    'title': u'Sexo',
-                                   'enum': [u'http://test/person/Gender/Male',
-                                            u'http://test/person/Gender/Female'],
                                    'type': 'string'}
         # params
         name = u'http://test/person/gender'
@@ -91,9 +67,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'predicate_graph': {u'type': u'uri', u'value': u'http://test/person/'},
                      u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero.'},
                      u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}}
-        cardinalities = {u'http://test/person/gender': {'enum': [u'http://test/person/Gender/Male',
-                                                                 u'http://test/person/Gender/Female'],
-                                                        u'http://test/person/Gender': {'minItems': u'1', 'maxItems': u'1'}}}
+        cardinalities = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': u'1', 'maxItems': u'1'}}}
         context = prefixes.MemorizeContext()
         context.prefix_to_slug('http://test/person')
         # test call

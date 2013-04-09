@@ -184,10 +184,39 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         computed = merge_ranges(r1, r2)
         self.assertEqual(sorted(computed), sorted(expected))
 
+    def test_get_common_key_exists(self):
+        items = [{'a': 1}, {'a': 1}]
+        expected = 1
+        computed = get_common_key(items, 'a')
+        self.assertEqual(computed, expected)
 
-# 
-# TODO:
-# join_predicates, get_common_key
+    def test_get_common_key_doesnt_exist(self):
+        items = [{'a': 1}, {'a': 2}]
+        expected = ''
+        computed = get_common_key(items, 'a')
+        self.assertEqual(computed, expected)
+
+    def test_join_predicates(self):
+        a_predicate = {
+            'type': 'not your business',
+            'format': 'as you like'
+        }
+        same_predicate = {
+            'type': 'who knows',
+            'format': 'who cares'
+        }
+        expected = {
+            'type': '',
+            'format': '',
+            'range': [
+                {'type': 'not your business', 'format': 'as you like'},
+                {'type': 'who knows', 'format': 'who cares'}
+            ]
+        }
+        computed = join_predicates(a_predicate, same_predicate)
+        self.assertEqual(computed['type'], expected['type'])
+        self.assertEqual(computed['format'], expected['format'])
+        self.assertEqual(sorted(computed['range']), sorted(expected['range']))
 
 
 class AuxiliaryFunctionsTestCase2(unittest.TestCase):

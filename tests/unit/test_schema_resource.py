@@ -417,17 +417,17 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                 'graph': 'g1',
                 'range': [
                     {
-                        'type': 'integer',
-                    },
-                    {
-                        'type': 'boolean',
-                    },
-                    {
                         'graph': '',
                         '@id': u'anypedia:place',
                         'title': '',
                         'type': 'string',
                         'format': 'uri'
+                    },
+                    {
+                        'type': 'boolean',
+                    },
+                    {
+                        'type': 'integer',
                     }
                 ],
                 'title': u'Flex-predicate',

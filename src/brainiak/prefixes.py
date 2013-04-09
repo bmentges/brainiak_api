@@ -133,6 +133,10 @@ def expand_uri(short_uri):
     return "{0}{1}".format(prefix, item)
 
 
+def get_prefixes_dict():
+    return _MAP_SLUG_TO_PREFIX
+
+
 class MemorizeContext(object):
     "Wrap operations replace_prefix() and uri_to_prefix() remembering all substitutions in the context attribute"
     def __init__(self):

@@ -50,8 +50,8 @@ class GetContextTestCase(unittest.TestCase):
         }
         triplestore.query_sparql = lambda query: response
         params = {"per_page": "30", "page": "0"}
-        request = MockRequest()
-        request.uri = "http://api.semantica.dev.globoi.com/v2/"
+        base_url = "http://api.semantica.dev.globoi.com"
+        request = MockRequest(uri=base_url)
         computed = list_all_contexts(params, request)
         expected_items = [
             {'@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
@@ -64,14 +64,14 @@ class GetContextTestCase(unittest.TestCase):
         self.assertEqual(computed["items"], expected_items)
         self.assertEqual(computed["item_count"], 2)
         expected_links = [
-            {'rel': 'self', 'href': 'http://api.semantica.dev.globoi.com/v2/'},
-            {'rel': 'list', 'href': 'http://api.semantica.dev.globoi.com/v2/'},
-            {'rel': 'item', 'href': 'http://api.semantica.dev.globoi.com/v2/{resource_id}'},
-            {'rel': 'create', 'href': 'http://api.semantica.dev.globoi.com/v2/', 'method': 'POST'},
-            {'rel': 'delete', 'href': 'http://api.semantica.dev.globoi.com/v2/{resource_id}', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': 'http://api.semantica.dev.globoi.com/v2/{resource_id}', 'method': 'PUT'},
-            {'rel': 'first', 'href': 'http://api.semantica.dev.globoi.com/v2/?page=1', 'method': 'GET'},
-            {'rel': 'last', 'href': 'http://api.semantica.dev.globoi.com/v2/?page=1', 'method': 'GET'},
+            {'rel': 'self', 'href': base_url},
+            {'rel': 'list', 'href': base_url},
+            {'rel': 'item', 'href': base_url + '/{resource_id}'},
+            {'rel': 'create', 'href': base_url, 'method': 'POST'},
+            {'rel': 'delete', 'href': base_url + '/{resource_id}', 'method': 'DELETE'},
+            {'rel': 'replace', 'href': base_url + '/{resource_id}', 'method': 'PUT'},
+            {'rel': 'first', 'href': base_url + '?page=1', 'method': 'GET'},
+            {'rel': 'last', 'href': base_url + '?page=1', 'method': 'GET'},
         ]
         self.assertEqual(computed["links"], expected_links)
 
@@ -112,8 +112,7 @@ class GetContextTestCase(unittest.TestCase):
         contexts = ["a", "b", "c"]
         params = {"per_page": "3", "page": "0"}
         total_items = 6
-        request = MockRequest()
-        request.uri = 'http://localhost:5100/'
+        request = MockRequest(uri='http://localhost:5100/')
         computed = build_json(contexts, total_items, params, request)
         self.assertEqual(computed['items'], ["a", "b", "c"])
         self.assertEqual(computed['item_count'], 6)

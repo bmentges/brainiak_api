@@ -1,4 +1,4 @@
-
+from urlparse import urlparse
 from tornado.httpclient import HTTPRequest
 from tornado.testing import AsyncTestCase, AsyncHTTPTestCase
 from brainiak import server, greenlet_tornado
@@ -38,14 +38,20 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
 
 
 class MockRequest(object):
-    headers = {'Host': 'localhost:5100'}
 
-    def __init__(self, query_string="", instance=""):
+    def __init__(self,
+                 uri="http://localhost:5100/ctx/klass/",
+                 query_string="",
+                 instance=""):
         self.query = query_string
-        self.uri = "http://%s/ctx/klass/" % self.headers['Host']
+        self.uri = uri
         if instance:
             self.uri = "%s%s" % (self.uri, instance)
-        self.path = self.uri
+        parsed_url = urlparse(self.uri)
+        self.path = parsed_url.path
+        self.protocol = parsed_url.scheme
+        self.host = parsed_url.netloc
+        self.headers = {'Host': self.host}
         if query_string:
             self.uri = "%s?%s" % (self.uri, query_string)
 

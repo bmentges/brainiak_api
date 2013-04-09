@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from brainiak.prefixes import expand_uri
+from brainiak.prefixes import expand_uri, ROOT_CONTEXT
 
 
 def decorate_with_resource_id(list_of_dicts):
@@ -8,7 +8,10 @@ def decorate_with_resource_id(list_of_dicts):
     for dict_item in list_of_dicts:
         try:
             id_key = expand_uri(dict_item["@id"])
-            if id_key.endswith("/"):
+            title = dict_item.get("title")
+            if title == ROOT_CONTEXT:
+                resource_id = u''
+            elif id_key.endswith("/"):
                 resource_id = id_key.rsplit("/")[-2]
             else:
                 resource_id = id_key.rsplit("/")[-1]

@@ -85,13 +85,12 @@ def filter_instances(query_params):
 
 def build_json(items_list, total_items, query_params):
     request = query_params["request"]
+    base_url = "{0}://{1}{2}".format(request.protocol, request.host, request.path)
 
     links = build_links(
-        request.path,
-        #class_url,
+        base_url,
         page=int(query_params["page"]) + 1,  # API's pagination begin with 1, Virtuoso's with 0
         per_page=int(query_params["per_page"]),
-        request_url=request.uri,
         total_items=total_items,
         query_string=request.query)
 

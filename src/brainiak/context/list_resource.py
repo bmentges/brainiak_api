@@ -31,14 +31,12 @@ def assemble_list_json(query_params, query_result_dict, total_items):
     decorate_with_resource_id(items_list)
 
     request = query_params["request"]
-    base_url = 'http://{0}/{1}/'.format(request.headers.get("Host"),
-                                        query_params["context_name"])
+    base_url = "{0}://{1}{2}".format(request.protocol, request.host, request.path)
 
     links_section = build_links(
         base_url,
         page=int(query_params["page"]) + 1,  # API's pagination begin with 1, Virtuoso's with 0
         per_page=int(query_params["per_page"]),
-        request_url=request.uri,
         total_items=total_items,
         query_string=request.query)
 

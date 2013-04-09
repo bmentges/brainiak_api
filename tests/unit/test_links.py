@@ -1,9 +1,15 @@
 import unittest
 
-from brainiak.utils.links import build_links, get_last_page, get_next_page, get_previous_page, set_query_string_parameter, split_into_chunks
+from brainiak.utils.links import build_links, get_last_page, get_next_page, get_previous_page, set_query_string_parameter, split_into_chunks, add_link
 
 
 class LinksTestCase(unittest.TestCase):
+
+    def test_add_link(self):
+        link_list = []
+        expected_link_list = [{'rel': 'rel_key', 'href': 'http://A/B'}]
+        add_link(link_list, "rel_key", "http://{a}/{b}", a="A", b="B")
+        self.assertEqual(link_list, expected_link_list)
 
     def test_get_previous_page(self):
         self.assertEqual(get_previous_page(1), False)

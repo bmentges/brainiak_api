@@ -1,6 +1,6 @@
 import unittest
 
-from brainiak.utils.links import build_links, get_last_page, get_next_page, get_previous_page, set_query_string_parameter, split_into_chunks, add_link
+from brainiak.utils.links import crud_links, get_last_page, get_next_page, get_previous_page, set_query_string_parameter, split_into_chunks, add_link, nav_links
 
 
 class LinksTestCase(unittest.TestCase):
@@ -9,6 +9,12 @@ class LinksTestCase(unittest.TestCase):
         link_list = []
         expected_link_list = [{'rel': 'rel_key', 'href': 'http://A/B'}]
         add_link(link_list, "rel_key", "http://{a}/{b}", a="A", b="B")
+        self.assertEqual(link_list, expected_link_list)
+
+    def test_add_link_with_exact_href(self):
+        link_list = []
+        expected_link_list = [{'rel': 'rel_key', 'href': 'http://A/B'}]
+        add_link(link_list, "rel_key", "http://A/B")
         self.assertEqual(link_list, expected_link_list)
 
     def test_get_previous_page(self):
@@ -62,37 +68,8 @@ class LinksTestCase(unittest.TestCase):
         per_page = 1
         total_items = 1
         query_string = ""
-        computed = build_links(class_uri, page, per_page, total_items, query_string)
+        computed = nav_links(class_uri, query_string, page, per_page, total_items)
         expected = [
-            {
-                'href': "http://class.uri",
-                'rel': "self"
-            },
-            {
-                'href': "http://class.uri",
-                'rel': "list"
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'rel': "item"
-            },
-            {
-                'href': "http://class.uri",
-                'method': "POST",
-                'rel': "create"
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'method': "DELETE",
-                'rel': "delete"
-
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'method': "PUT",
-                'rel': "replace"
-
-            },
             {
                 'href': "http://class.uri?page=1",
                 'method': "GET",
@@ -112,37 +89,8 @@ class LinksTestCase(unittest.TestCase):
         per_page = 1
         total_items = 2
         query_string = ""
-        computed = build_links(class_uri, page, per_page, total_items, query_string)
+        computed = nav_links(class_uri, query_string, page, per_page, total_items)
         expected = [
-            {
-                'href': "http://class.uri",
-                'rel': "self"
-            },
-            {
-                'href': "http://class.uri",
-                'rel': "list"
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'rel': "item"
-            },
-            {
-                'href': "http://class.uri",
-                'method': "POST",
-                'rel': "create"
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'method': "DELETE",
-                'rel': "delete"
-
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'method': "PUT",
-                'rel': "replace"
-
-            },
             {
                 'href': "http://class.uri?page=1",
                 'method': "GET",
@@ -167,37 +115,8 @@ class LinksTestCase(unittest.TestCase):
         per_page = 1
         total_items = 2
         query_string = ""
-        computed = build_links(class_uri, page, per_page, total_items, query_string)
+        computed = nav_links(class_uri, query_string, page, per_page, total_items)
         expected = [
-            {
-                'href': "http://class.uri",
-                'rel': "self"
-            },
-            {
-                'href': "http://class.uri",
-                'rel': "list"
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'rel': "item"
-            },
-            {
-                'href': "http://class.uri",
-                'method': "POST",
-                'rel': "create"
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'method': "DELETE",
-                'rel': "delete"
-
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'method': "PUT",
-                'rel': "replace"
-
-            },
             {
                 'href': "http://class.uri?page=1",
                 'method': "GET",
@@ -222,37 +141,8 @@ class LinksTestCase(unittest.TestCase):
         per_page = 1
         total_items = 3
         query_string = ""
-        computed = build_links(class_uri, page, per_page, total_items, query_string)
+        computed = nav_links(class_uri, query_string, page, per_page, total_items)
         expected = [
-            {
-                'href': "http://class.uri",
-                'rel': "self"
-            },
-            {
-                'href': "http://class.uri",
-                'rel': "list"
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'rel': "item"
-            },
-            {
-                'href': "http://class.uri",
-                'method': "POST",
-                'rel': "create"
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'method': "DELETE",
-                'rel': "delete"
-
-            },
-            {
-                'href': "http://class.uri/{resource_id}",
-                'method': "PUT",
-                'rel': "replace"
-
-            },
             {
                 'href': "http://class.uri?page=1",
                 'method': "GET",

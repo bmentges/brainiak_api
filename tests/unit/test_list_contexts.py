@@ -65,7 +65,7 @@ class GetContextTestCase(unittest.TestCase):
         self.assertEqual(computed["item_count"], 2)
         expected_links = [
             {'rel': 'self', 'href': base_url},
-            {'rel': 'list', 'href': base_url},
+            {'rel': 'instances', 'href': base_url},
             {'rel': 'item', 'href': base_url + '/{resource_id}'},
             {'rel': 'create', 'href': base_url, 'method': 'POST'},
             {'rel': 'delete', 'href': base_url + '/{resource_id}', 'method': 'DELETE'},
@@ -118,7 +118,7 @@ class GetContextTestCase(unittest.TestCase):
         self.assertEqual(computed['item_count'], 6)
         expected_links = [
             {'rel': 'self', 'href': 'http://localhost:5100/'},
-            {'rel': 'list', 'href': 'http://localhost:5100/'},
+            {'rel': 'instances', 'href': 'http://localhost:5100/'},
             {'rel': 'item', 'href': 'http://localhost:5100/{resource_id}'},
             {'rel': 'create', 'href': 'http://localhost:5100/', 'method': 'POST'},
             {'rel': 'delete', 'href': 'http://localhost:5100/{resource_id}', 'method': 'DELETE'},

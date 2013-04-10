@@ -103,7 +103,10 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         self.finish(error_json)
 
     def build_resource_url(self, resource_id):
-        url = "{0}://{1}{2}{3}".format(self.request.protocol, self.request.host, self.request.uri, resource_id)
+        request_uri = self.request.uri
+        if not request_uri.endswith("/"):
+            request_uri = "{0}/".format(request_uri)
+        url = "{0}://{1}{2}{3}".format(self.request.protocol, self.request.host, request_uri, resource_id)
         if self.request.query:
             url = "{0}?{1}".format(url, self.request.query)
         return url

@@ -182,14 +182,10 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                  "predicate": {"type": "uri", "value": "http://test/person/gender"},
                  "range": {"type": "uri", "value": "http://test/person/Gender"}
                  },
-                {"enumerated_value": {"type": "uri", "value": "http://test/person/Gender/Male"},
-                 "enumerated_value_label": {"type": "literal", "value": "Masculino", "xml:lang": "pt"},
-                 "predicate": {"type": "uri", "value": "http://test/person/gender"},
+                {"predicate": {"type": "uri", "value": "http://test/person/gender"},
                  "range": {"type": "bnode", "value": "nodeID://b72146"}
                  },
-                {"enumerated_value": {"type": "uri", "value": "http://test/person/Gender/Female"},
-                 "enumerated_value_label": {"type": "literal", "value": "Feminino", "xml:lang": "pt"},
-                 "predicate": {"type": "uri", "value": "http://test/person/gender"},
+                {"predicate": {"type": "uri", "value": "http://test/person/gender"},
                  "range": {"type": "bnode", "value": "nodeID://b72146"}
                  }
             ]}
@@ -207,7 +203,6 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
             'http://test/person/gender': {
                 'comment': u'G\xeanero.',
                 'title': 'Sexo',
-                'enum': ['http://test/person/Gender/Male', 'http://test/person/Gender/Female'],
                 'graph': 'http://test/person/',
                 'format': 'uri',
                 'maxItems': '1',

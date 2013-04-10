@@ -9,8 +9,11 @@ class InvalidParam(Exception):
 
 class DefaultParamsDict(dict):
     def __add__(self, other):
-        self.update(other)
-        return self
+        new_dict = {}
+        new_dict.update(self)
+        new_dict.update(other)
+        return new_dict
+
 
 LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
                                 per_page=settings.DEFAULT_PER_PAGE)

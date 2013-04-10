@@ -226,7 +226,7 @@ class CollectionHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name, class_name):
         with safe_params():
-            self.query_params = ListServiceParams(self, context_name=context_name, class_name=class_name)
+            self.query_params = ListAndFilterServiceParams(self, context_name=context_name, class_name=class_name)
 
         response = filter_instances(self.query_params)
 
@@ -272,7 +272,7 @@ class RootHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self):
         with safe_params():
-            self.query_params = ListAndFilterServiceParams(self)
+            self.query_params = ListServiceParams(self)
 
         response = list_all_contexts(self.query_params, self.request)
 
@@ -284,7 +284,7 @@ class ContextHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name):
         with safe_params():
-            self.query_params = ListAndFilterServiceParams(self, context_name=context_name)
+            self.query_params = ListServiceParams(self, context_name=context_name)
 
         response = list_classes(self.query_params)
 
@@ -303,7 +303,7 @@ class PrefixHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self):
         with safe_params():
-            self.query_params = ListAndFilterServiceParams(self)
+            self.query_params = ListServiceParams(self)
 
         response = list_prefixes()
 

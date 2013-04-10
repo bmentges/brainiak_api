@@ -24,10 +24,12 @@ WHERE {
              rdfs:label ?label %(po)s
     %(lang_filter_label)s
 }
+%(sort_by_statement)s
 LIMIT %(per_page)s
 OFFSET %(page)s
 """
 
+ORDER_BY = "ORDER BY %(sort_order)s(?sort_object)"
 
 def process_params(query_params):
     """
@@ -51,6 +53,16 @@ def process_params(query_params):
         query_params["po"] = "."
     else:
         query_params["po"] = "; %(p)s %(o)s ." % query_params
+
+    sort_property = query_params["sort_by"]
+    if sort_property and sort_property != "rdfs:label":
+        query_params["po"] = "; %(sort_by)s ?sort_object %(po)s" % query_params
+        sort_by_statement = ORDER_BY % query_params
+    elif sort_property == "rdfs:label":
+        sort_by_statement = "ORDER BY %(sort_order)s(?label)" % query_params
+    else:
+        sort_by_statement = ORDER_BY % query_params
+    query_params["sort_by_statement"] = sort_by_statement
 
     return query_params
 

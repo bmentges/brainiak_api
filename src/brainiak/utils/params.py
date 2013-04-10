@@ -14,11 +14,12 @@ class DefaultParamsDict(dict):
         new_dict.update(other)
         return new_dict
 
+FILTER_PARAMS = DefaultParamsDict(p="?predicate", o="?object")
 
 LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
-                                per_page=settings.DEFAULT_PER_PAGE)
-
-FILTER_PARAMS = DefaultParamsDict(p="?predicate", o="?object")
+                                per_page=settings.DEFAULT_PER_PAGE,
+                                sort_by="",
+                                sort_order="ASC")
 
 
 class ParamDict(dict):
@@ -91,3 +92,6 @@ class ParamDict(dict):
         # As for Virtuoso pages start at 0, we convert page, if provided
         if "page" in self['request'].arguments:
             self["page"] = str(int(self["page"]) - 1)
+
+        if "sort_order" in self['request'].arguments:
+            self["sort_order"] = self["sort_order"].upper()

@@ -61,10 +61,17 @@ def navigation_links(base_url, query_string, page, last_page):
     return nav_links
 
 
-def build_links(base_url, page, per_page, total_items, query_string):
-    """Build links for listing primitives (list contexts, list classes, list instances)."""
-
+def nav_links(base_url, query_string, page, per_page, total_items):
     last_page = get_last_page(total_items, per_page)
+    return navigation_links(base_url, query_string, page, last_page)
+
+
+def normalize(url):
+    return url if url.endswith("/") else url+"/"
+
+
+def crud_links(base_url, resource_url, query_string):
+    """Build crud links."""
 
     if base_url.endswith("/"):
         resource_url = "%s{resource_id}" % base_url
@@ -75,20 +82,13 @@ def build_links(base_url, page, per_page, total_items, query_string):
     if query_string:
         self_url = "{0}?{1}".format(base_url, query_string)
 
-    links = [{'rel': "self", 'href': self_url}]
-
-    action_links = [
-        {'rel': "list", 'href': base_url},
+    links = [
+        {'rel': "self", 'href': self_url},
         {'rel': "item", 'href': resource_url},
         {'rel': "create", 'href': base_url, 'method': "POST"},
         {'rel': "delete", 'href': resource_url, 'method': "DELETE"},
         {'rel': "replace", 'href': resource_url, 'method': "PUT"}
     ]
-    links.extend(action_links)
-
-    nav_links = navigation_links(base_url, query_string, page, last_page)
-    links.extend(nav_links)
-
     return links
 
 

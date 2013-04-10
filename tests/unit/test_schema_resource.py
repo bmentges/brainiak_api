@@ -3,7 +3,7 @@ import unittest
 
 import brainiak.schema.resource as schema
 from brainiak import prefixes
-from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict
+from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict, get_super_properties, normalize_predicate_range, merge_ranges, join_predicates, get_common_key
 from tests import TornadoAsyncTestCase
 
 
@@ -44,28 +44,6 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'maxItems': u'1'}}}
         self.assertEqual(extracted, expected)
 
-    def test_extract_options(self):
-        binding = [
-            {u'predicate': {u'type': u'uri',
-                            u'value': u'http://test/person/gender'},
-             u'enumerated_value': {u'type': u'uri',
-                                   u'value': u'http://test/person/Gender/Male'},
-             u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'},
-             u'enumerated_value_label': {u'xml:lang': u'pt', u'type': u'literal',
-                                         u'value': u'Masculino'}},
-            {u'predicate': {u'type': u'uri',
-                            u'value': u'http://test/person/gender'},
-             u'enumerated_value': {u'type': u'uri',
-                                   u'value': u'http://test/person/Gender/Female'},
-             u'range': {u'type': u'bnode', u'value': u'nodeID://b72146'},
-             u'enumerated_value_label': {u'xml:lang': u'pt', u'type': u'literal',
-                                         u'value': u'Feminino'}}
-        ]
-        extracted = _extract_cardinalities(binding)
-        expected = {u'http://test/person/gender': {
-                    'enum': [u'http://test/person/Gender/Male', u'http://test/person/Gender/Female']}}
-        self.assertEqual(extracted, expected)
-
     def test_assemble_predicate_with_object_property(self):
         expected_predicate_dict = {'comment': u'G\xeanero.',
                                    'range': {'graph': 'test',
@@ -78,8 +56,6 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                    'format': 'uri',
                                    'minItems': u'1',
                                    'title': u'Sexo',
-                                   'enum': [u'http://test/person/Gender/Male',
-                                            u'http://test/person/Gender/Female'],
                                    'type': 'string'}
         # params
         name = u'http://test/person/gender'
@@ -91,9 +67,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'predicate_graph': {u'type': u'uri', u'value': u'http://test/person/'},
                      u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero.'},
                      u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}}
-        cardinalities = {u'http://test/person/gender': {'enum': [u'http://test/person/Gender/Male',
-                                                                 u'http://test/person/Gender/Female'],
-                                                        u'http://test/person/Gender': {'minItems': u'1', 'maxItems': u'1'}}}
+        cardinalities = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': u'1', 'maxItems': u'1'}}}
         context = prefixes.MemorizeContext()
         context.prefix_to_slug('http://test/person')
         # test call
@@ -121,7 +95,128 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         # test call
         effective_predicate_dict = assemble_predicate(name, predicate, cardinalities, context)
         self.assertEqual(expected_predicate_dict, effective_predicate_dict)
-#        u'http://semantica.globo.com/person/fullName': {u'http://www.w3.org/2001/XMLSchema#string': {'maxItems': u'1'}},
+
+    def test_get_super_properties(self):
+        sample_bindings = [
+            {
+                'predicate': 'son',
+                'super_property': {'value': 'father'}
+            },
+            {
+                'predicate': 'father'
+            },
+            {
+                'predicate': 'grandfather'
+            }
+        ]
+        computed = get_super_properties(sample_bindings)
+        expected = ['father']
+        self.assertEqual(computed, expected)
+
+    def test_get_multiple_super_properties(self):
+        sample_bindings = [
+            {
+                'predicate': 'son',
+                'super_property': {'value': 'father'}
+            },
+            {
+                'predicate': 'father',
+                'super_property': {'value': 'grandfather'}
+            },
+            {
+                'predicate': 'grandfather'
+            }
+        ]
+        computed = get_super_properties(sample_bindings)
+        expected = ['father', 'grandfather']
+        self.assertEqual(computed, expected)
+
+    def test_normalize_predicate_range_in_predicate_without_range_without_format(self):
+        sample_predicate = {'type': 'some type'}
+        expected = {'type': 'some type', 'range': {'type': 'some type'}}
+        computed = normalize_predicate_range(sample_predicate)
+        self.assertEqual(computed, expected)
+
+    def test_normalize_predicate_range_in_predicate_without_range_with_format(self):
+        sample_predicate = {'type': 'some type', 'format': 'some format'}
+        expected = {'type': 'some type', 'format': 'some format', 'range': {'type': 'some type', 'format': 'some format'}}
+        computed = normalize_predicate_range(sample_predicate)
+        self.assertEqual(computed, expected)
+
+    def test_normalize_predicate_range_in_predicate_with_range(self):
+        sample_predicate = {'type': 'some type', 'format': 'some format', 'range': 'xubiru'}
+        expected = {'type': 'some type', 'format': 'some format', 'range': 'xubiru'}
+        computed = normalize_predicate_range(sample_predicate)
+        self.assertEqual(computed, expected)
+
+    def test_merge_ranges_both_arent_lists(self):
+        r1 = {'r1': 1}
+        r2 = {'r2': 2}
+        expected = [{'r1': 1}, {'r2': 2}]
+        computed = merge_ranges(r1, r2)
+        self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_merge_ranges_first_is_list(self):
+        r1 = [{'r0': 0}, {'r1', 1}]
+        r2 = {'r2': 2}
+        expected = [{'r0': 0}, {'r1': 1}, {'r2': 2}]
+        computed = merge_ranges(r1, r2)
+        self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_merge_ranges_first_is_list(self):
+        r1 = {'r1': 1}
+        r2 = [{'r2': 2}, {'r3': 3}]
+        expected = [{'r2': 2}, {'r3': 3}, {'r1': 1}]
+        computed = merge_ranges(r1, r2)
+        self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_merge_ranges_both_are_lists(self):
+        r1 = [{'r0': 0}, {'r1': 1}]
+        r2 = [{'r2': 2}, {'r3': 3}]
+        expected = [{'r0': 0}, {'r1': 1}, {'r2': 2}, {'r3': 3}]
+        computed = merge_ranges(r1, r2)
+        self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_merge_ranges_deals_with_duplicates(self):
+        r1 = {'r1': 1}
+        r2 = {'r1': 1}
+        expected = [{'r1': 1}]
+        computed = merge_ranges(r1, r2)
+        self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_get_common_key_exists(self):
+        items = [{'a': 1}, {'a': 1}]
+        expected = 1
+        computed = get_common_key(items, 'a')
+        self.assertEqual(computed, expected)
+
+    def test_get_common_key_doesnt_exist(self):
+        items = [{'a': 1}, {'a': 2}]
+        expected = ''
+        computed = get_common_key(items, 'a')
+        self.assertEqual(computed, expected)
+
+    def test_join_predicates(self):
+        a_predicate = {
+            'type': 'not your business',
+            'format': 'as you like'
+        }
+        same_predicate = {
+            'type': 'who knows',
+            'format': 'who cares'
+        }
+        expected = {
+            'type': '',
+            'format': '',
+            'range': [
+                {'type': 'not your business', 'format': 'as you like'},
+                {'type': 'who knows', 'format': 'who cares'}
+            ]
+        }
+        computed = join_predicates(a_predicate, same_predicate)
+        self.assertEqual(computed['type'], expected['type'])
+        self.assertEqual(computed['format'], expected['format'])
+        self.assertEqual(sorted(computed['range']), sorted(expected['range']))
 
 
 class AuxiliaryFunctionsTestCase2(unittest.TestCase):

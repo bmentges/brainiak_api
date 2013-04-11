@@ -22,6 +22,13 @@ the whole collection of instances of this specific class or we want the schema o
 
 Thus, the _schema suffix is used to distinguish these two use cases.
 
+Optional parameters
+-------------------
+
+**lang**: Specify language of labels. Options: pt, en, undefined (do not filter labels)
+
+**graph_uri**: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
+
 
 Possible responses
 ------------------

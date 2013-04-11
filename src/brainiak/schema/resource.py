@@ -119,7 +119,7 @@ def _extract_cardinalities(bindings):
 
 def query_cardinalities(query_params):
     query = """
-        SELECT DISTINCT ?predicate ?min ?max ?range
+        SELECT DISTINCT ?predicate ?min ?max ?range ?enumerated_value ?enumerated_value_label
         WHERE {
             <%(class_uri)s> rdfs:subClassOf ?s OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
             ?s owl:onProperty ?predicate .
@@ -129,6 +129,12 @@ def query_cardinalities(query_params):
                 { ?s owl:onClass ?range }
                 UNION { ?s owl:onDataRange ?range }
                 UNION { ?s owl:allValuesFrom ?range }
+                OPTIONAL { ?range owl:oneOf ?enumeration } .
+                OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
+                OPTIONAL { ?list_node rdf:first ?enumerated_value } .
+                OPTIONAL {
+                    ?enumerated_value rdfs:label ?enumerated_value_label .
+                } .
             }
         }""" % query_params
     return triplestore.query_sparql(query)
@@ -154,6 +160,8 @@ def _query_predicate_with_lang(query_params):
         } UNION {
           graph ?predicate_graph {?predicate rdfs:domain ?blank} .
           ?blank a owl:Class .
+          ?blank owl:unionOf ?enumeration .
+          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
           OPTIONAL { ?list_node rdf:first ?domain_class } .
         }
         %(filter_classes_clause)s
@@ -161,6 +169,8 @@ def _query_predicate_with_lang(query_params):
         UNION {
           ?predicate rdfs:range ?blank .
           ?blank a owl:Class .
+          ?blank owl:unionOf ?enumeration .
+          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
           OPTIONAL { ?list_node rdf:first ?range } .
         }
         FILTER (!isBlank(?range))
@@ -186,6 +196,8 @@ def _query_predicate_without_lang(query_params):
         } UNION {
           graph ?predicate_graph {?predicate rdfs:domain ?blank} .
           ?blank a owl:Class .
+          ?blank owl:unionOf ?enumeration .
+          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
           OPTIONAL { ?list_node rdf:first ?domain_class } .
         }
         %(filter_classes_clause)s
@@ -193,6 +205,8 @@ def _query_predicate_without_lang(query_params):
         UNION {
           ?predicate rdfs:range ?blank .
           ?blank a owl:Class .
+          ?blank owl:unionOf ?enumeration .
+          OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
           OPTIONAL { ?list_node rdf:first ?range } .
         }
         FILTER (!isBlank(?range))

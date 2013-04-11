@@ -25,12 +25,15 @@ class MockHandler():
 
 
 class DefaultParamsTest(TestCase):
+
     def test_add_dicts(self):
         a = DefaultParamsDict(a=1)
         b = DefaultParamsDict(b=2)
         a_b = a + b
         b_a = dict(a=1, b=2)
         self.assertEqual(a_b, b_a)
+        self.assertEqual(a, {"a": 1})
+        self.assertEqual(b, {"b": 2})
 
 
 class ParamsTestCase(TestCase):

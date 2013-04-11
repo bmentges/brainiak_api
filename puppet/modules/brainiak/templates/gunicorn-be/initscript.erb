@@ -38,8 +38,8 @@ startcmd="$command -c $config <%= gunicorn_cmd_parameters %>"
 
 PreFlight()
 {
-<% if has_variable?('api_dbpasswd_conf_file') then -%>
-    LoadProtectedEnviron --uid=10000 <%= api_dbpasswd_conf_file %>
+<% if has_variable?('dbpasswd_conf_file') then -%>
+    LoadProtectedEnviron --uid=10000 <%= dbpasswd_conf_file %>
 
 <% end -%>
     if [[ ! -d "${app_dir}" ]] ; then

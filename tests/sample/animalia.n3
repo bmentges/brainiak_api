@@ -2,28 +2,6 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-
-# http://example.onto/Place
-:Place a owl:Class ;
-       rdfs:label "Lugar"@pt ;
-       rdfs:label "Place"@en ;
-       rdfs:comment "Search in the dictionary."@en ;
-       rdfs:comment "Procure no dicionario."@pt .
-
-# http://example.onto/PlaceWithoutLanguage
-:PlaceWithoutLanguage a owl:Class ;
-       rdfs:label "Place" ;
-       rdfs:comment "Search in the dictionary." .
-
-# http://example.onto/Lugar
-:Lugar a owl:Class ;
-       rdfs:label "Lugar" .
-
-:City a owl:Class ;
-      rdfs:label "Cidade" ;
-      rdfs:subClassOf :Place .
-
-
 ### ObjectProperties
 
 # http://example.onto/gender
@@ -34,12 +12,19 @@
 # http://example.onto/furColour
 :furColour rdf:type owl:ObjectProperty ;
     rdfs:domain :Mammalia ;
-    rdfs:range xsd:string .
+    rdfs:range :FurColour .
 
 # http://example.onto/furLenght
 :furLenght rdf:type owl:ObjectProperty ;
     rdfs:domain :Canidae ;
-    rdfs:range xsd:string .
+    rdfs:range :FurLenght .
+
+# http://example.onto/furStyle
+:furStyle rdf:type owl:ObjectProperty ;
+    rdfs:domain :Canidae ;
+    rdfs:range xsd:string ,
+        :FurLenght ,
+        :FurColour .
 
 ### Classes
 
@@ -78,7 +63,16 @@
     :carbonAcquisition "Heterotroph" .
 
 
-
+# http://example.onto/SubAnimal
+:SubAnimal a owl:Class;
+    rdfs:subClassOf :Animal ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :furStyle ;
+          owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+          owl:allValuesFrom xsd:string ,
+              :FurLenght ,
+              :FurColour
+        ] .
 
 # http://example.onto/Mammalia
 :Mammalia a owl:Class;

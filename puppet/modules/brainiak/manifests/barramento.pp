@@ -25,8 +25,13 @@ class brainiak::barramento {
 
   $java_console = "-Dcom.sun.management.jmxremote.port=${java_console_port} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
   $domain = $supso::vars::dns_interno
+
+  # Controle de redundância - Multicast
   case $::zone {
-    dev,qa1: {
+    dev: {
+      $barramento_mcaddr  = '239.10.248.8'
+    }
+    qa1: {
       $barramento_mcaddr  = undef
     }
     qa2: {
@@ -46,14 +51,14 @@ class brainiak::barramento {
   }
   case $::zone {
     dev,qa1,staging: {
-      $java_options       = "-Xms128m -Xmx128m -XX:MaxPermSize=64m ${java_console}"
+      $java_options       = "-Xms64m -Xmx64m -XX:MaxPermSize=32m ${java_console}"
       $log_keep           = 2
       $memorylimit_mb     = 8
       $storelimit_mb      = 200
       $templimit_mb       = 100
     }
     prod,qa2: {
-      $java_options       = "-Xms6g -Xmx6g -XX:MaxPermSize=128m ${java_console}"
+      $java_options       = "-Xms1g -Xmx1g -XX:MaxPermSize=64m ${java_console}"
       $log_keep           = 10
       $memorylimit_mb     = 128
       $storelimit_mb      = 10240

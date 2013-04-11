@@ -117,20 +117,29 @@ def _extract_cardinalities(bindings):
     return cardinalities
 
 
+QUERY_CARDINALITIES = """
+SELECT DISTINCT ?predicate ?min ?max ?range ?enumerated_value ?enumerated_value_label
+WHERE {
+    <%(class_uri)s> rdfs:subClassOf ?s OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
+    ?s owl:onProperty ?predicate .
+    OPTIONAL { ?s owl:minQualifiedCardinality ?min } .
+    OPTIONAL { ?s owl:maxQualifiedCardinality ?max } .
+    OPTIONAL {
+        { ?s owl:onClass ?range }
+        UNION { ?s owl:onDataRange ?range }
+        UNION { ?s owl:allValuesFrom ?range }
+        OPTIONAL { ?range owl:oneOf ?enumeration } .
+        OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
+        OPTIONAL { ?list_node rdf:first ?enumerated_value } .
+        OPTIONAL {
+            ?enumerated_value rdfs:label ?enumerated_value_label .
+        } .
+    }
+}"""
+
+
 def query_cardinalities(query_params):
-    query = """
-        SELECT DISTINCT ?predicate ?min ?max ?range
-        WHERE {
-            <%(class_uri)s> rdfs:subClassOf ?s OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
-            ?s owl:onProperty ?predicate .
-            OPTIONAL { ?s owl:minQualifiedCardinality ?min } .
-            OPTIONAL { ?s owl:maxQualifiedCardinality ?max } .
-            OPTIONAL {
-                { ?s owl:onClass ?range }
-                UNION { ?s owl:onDataRange ?range }
-                UNION { ?s owl:allValuesFrom ?range }
-            }
-        }""" % query_params
+    query = QUERY_CARDINALITIES % query_params
     return triplestore.query_sparql(query)
 
 
@@ -143,66 +152,80 @@ def query_predicates(query_params):
         return response
 
 
+QUERY_PREDICATE_WITH_LANG = """
+SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property
+WHERE {
+    {
+      GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
+    } UNION {
+      graph ?predicate_graph {?predicate rdfs:domain ?blank} .
+      ?blank a owl:Class .
+      ?blank owl:unionOf ?enumeration .
+      OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
+      OPTIONAL { ?list_node rdf:first ?domain_class } .
+    }
+    %(filter_classes_clause)s
+    {?predicate rdfs:range ?range .}
+    UNION {
+      ?predicate rdfs:range ?blank .
+      ?blank a owl:Class .
+      ?blank owl:unionOf ?enumeration .
+      OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
+      OPTIONAL { ?list_node rdf:first ?range } .
+    }
+    FILTER (!isBlank(?range))
+    ?predicate rdfs:label ?title .
+    ?predicate rdf:type ?type .
+    OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
+    FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
+    FILTER(langMatches(lang(?title), "%(lang)s") or langMatches(lang(?title), "")) .
+    FILTER(langMatches(lang(?predicate_comment), "%(lang)s") or langMatches(lang(?predicate_comment), "")) .
+    OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . FILTER(langMatches(lang(?range_label), "%(lang)s")) . } } .
+    OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
+}"""
+
+
 def _query_predicate_with_lang(query_params):
     query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
 
-    query = """
-    SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property
-    WHERE {
-        {
-          GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
-        } UNION {
-          graph ?predicate_graph {?predicate rdfs:domain ?blank} .
-          ?blank a owl:Class .
-          OPTIONAL { ?list_node rdf:first ?domain_class } .
-        }
-        %(filter_classes_clause)s
-        {?predicate rdfs:range ?range .}
-        UNION {
-          ?predicate rdfs:range ?blank .
-          ?blank a owl:Class .
-          OPTIONAL { ?list_node rdf:first ?range } .
-        }
-        FILTER (!isBlank(?range))
-        ?predicate rdfs:label ?title .
-        ?predicate rdf:type ?type .
-        OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
-        FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
-        FILTER(langMatches(lang(?title), "%(lang)s") or langMatches(lang(?title), "")) .
-        FILTER(langMatches(lang(?predicate_comment), "%(lang)s") or langMatches(lang(?predicate_comment), "")) .
-        OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . FILTER(langMatches(lang(?range_label), "%(lang)s")) . } } .
-        OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
-    }""" % query_params
+    query = QUERY_PREDICATE_WITH_LANG % query_params
     return triplestore.query_sparql(query)
+
+
+QUERY_PREDICATE_WITHOUT_LANG = """
+SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property
+WHERE {
+    {
+      GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
+    } UNION {
+      graph ?predicate_graph {?predicate rdfs:domain ?blank} .
+      ?blank a owl:Class .
+      ?blank owl:unionOf ?enumeration .
+      OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
+      OPTIONAL { ?list_node rdf:first ?domain_class } .
+    }
+    %(filter_classes_clause)s
+    {?predicate rdfs:range ?range .}
+    UNION {
+      ?predicate rdfs:range ?blank .
+      ?blank a owl:Class .
+      ?blank owl:unionOf ?enumeration .
+      OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
+      OPTIONAL { ?list_node rdf:first ?range } .
+    }
+    FILTER (!isBlank(?range))
+    ?predicate rdfs:label ?title .
+    ?predicate rdf:type ?type .
+    OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
+    FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
+    OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . } } .
+    OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
+}"""
 
 
 def _query_predicate_without_lang(query_params):
     query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
-    query = """
-    SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property
-    WHERE {
-        {
-          GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
-        } UNION {
-          graph ?predicate_graph {?predicate rdfs:domain ?blank} .
-          ?blank a owl:Class .
-          OPTIONAL { ?list_node rdf:first ?domain_class } .
-        }
-        %(filter_classes_clause)s
-        {?predicate rdfs:range ?range .}
-        UNION {
-          ?predicate rdfs:range ?blank .
-          ?blank a owl:Class .
-          OPTIONAL { ?list_node rdf:first ?range } .
-        }
-        FILTER (!isBlank(?range))
-        ?predicate rdfs:label ?title .
-        ?predicate rdf:type ?type .
-        OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
-        FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
-        OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . } } .
-        OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
-    }""" % query_params
+    query = QUERY_PREDICATE_WITHOUT_LANG % query_params
     return triplestore.query_sparql(query)
 
 
@@ -212,14 +235,17 @@ def query_superclasses(query_params):
     return superclasses
 
 
+QUERY_SUPERCLASS = """
+SELECT DISTINCT ?class
+WHERE {
+    <%(class_uri)s> rdfs:subClassOf ?class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
+    ?class a owl:Class .
+}
+"""
+
+
 def _query_superclasses(query_params):
-    query = """
-    SELECT DISTINCT ?class
-    WHERE {
-        <%(class_uri)s> rdfs:subClassOf ?class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
-        ?class a owl:Class .
-    }
-    """ % query_params
+    query = QUERY_SUPERCLASS % query_params
     return triplestore.query_sparql(query)
 
 

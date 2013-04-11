@@ -236,10 +236,80 @@ class CardinalitiesQueryTestCase(QueryTestCase):
         for expected_item in expected:
           self.assertIn(expected_item, computed)
 
+    def test_query_cardinalities_multiple_ranges(self):
+        params = {"class_uri": "http://example.onto/SubAnimal"}
+        query = QUERY_CARDINALITIES % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {
+                u'max': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'}
+            },
+            {
+                u'min': {
+                  u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                  u'type': u'typed-literal',
+                  u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'}
+            },
+            {
+                u'max': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
+                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'}
+            },
+            {
+                u'max': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'},
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'}
+            },
+            {
+                u'max': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'}
+            },
+            # {
+            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Male'},
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # },
+            # {
+            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Female'},
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # },
+            # {
+            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Transgender'},
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # },
+            # {
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # }
+        ]
+        for expected_item in expected:
+          self.assertIn(expected_item, computed)
 
 
 # TODO: test
-# QUERY_CARDINALITIES
 # QUERY_PREDICATE_WITH_LANG
 # QUERY_PREDICATE_WITHOUT_LANG
 

@@ -15,9 +15,6 @@ This service retrieves all information about a instance, given its context, clas
 Optional parameters
 -------------------
 
-
-TODO: improve
-
 **lang**: Specify language of labels. Options: pt, en, undefined (do not filter labels)
 
 **instance_prefix**: by default, the instance URI is defined by the API's convention (context_uri/class_name/instance_name). If the convention doesn't apply, provide instance_prefix so the URI will be: class_instance/instance_name.  Example:

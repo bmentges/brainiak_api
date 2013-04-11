@@ -133,9 +133,9 @@ class CardinalitiesQueryTestCase(QueryTestCase):
             },
             {
                 u'min': {
-                  u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
-                  u'type': u'typed-literal',
-                  u'value': u'1'
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
                 },
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'}
@@ -161,7 +161,7 @@ class CardinalitiesQueryTestCase(QueryTestCase):
             # }
         ]
         for expected_item in expected:
-          self.assertIn(expected_item, computed)
+            self.assertIn(expected_item, computed)
 
     def test_query_cardinalities_from_super_classes(self):
         params = {"class_uri": "http://example.onto/Canidae"}
@@ -179,9 +179,9 @@ class CardinalitiesQueryTestCase(QueryTestCase):
             },
             {
                 u'min': {
-                  u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
-                  u'type': u'typed-literal',
-                  u'value': u'1'
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
                 },
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'}
@@ -234,7 +234,7 @@ class CardinalitiesQueryTestCase(QueryTestCase):
             # }
         ]
         for expected_item in expected:
-          self.assertIn(expected_item, computed)
+            self.assertIn(expected_item, computed)
 
     def test_query_cardinalities_multiple_ranges(self):
         params = {"class_uri": "http://example.onto/SubAnimal"}
@@ -252,9 +252,9 @@ class CardinalitiesQueryTestCase(QueryTestCase):
             },
             {
                 u'min': {
-                  u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
-                  u'type': u'typed-literal',
-                  u'value': u'1'
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
                 },
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'}
@@ -306,11 +306,68 @@ class CardinalitiesQueryTestCase(QueryTestCase):
             # }
         ]
         for expected_item in expected:
-          self.assertIn(expected_item, computed)
+            self.assertIn(expected_item, computed)
 
+
+class PredicatesQueryTestCase(QueryTestCase):
+
+    maxDiff = None
+    allow_triplestore_connection = True
+    fixtures = ["tests/sample/animalia.n3"]
+
+    def test_query_predicates(self):
+        filter_ = "FILTER (?domain_class IN (<http://example.onto/Mammalia>))"
+        params = {"filter_classes_clause": filter_}
+        query = QUERY_PREDICATE_WITHOUT_LANG % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furColour'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
+                u'title': {u'type': u'literal', u'value': u'Fur or hair colour'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            }
+        ]
+        for expected_item in expected:
+            self.assertIn(expected_item, computed)
+
+    def test_query_predicate_multiple_ranges(self):
+        filter_ = "FILTER (?domain_class IN (<http://example.onto/SubAnimal>))"
+        params = {"filter_classes_clause": filter_}
+        query = QUERY_PREDICATE_WITHOUT_LANG % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
+                u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
+                u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'},
+                u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            }
+        ]
+        for expected_item in expected:
+            self.assertIn(expected_item, computed)
 
 # TODO: test
 # QUERY_PREDICATE_WITH_LANG
+# subproperties
+# subclasses
+# multiple ranges
 # QUERY_PREDICATE_WITHOUT_LANG
 
 

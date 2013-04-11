@@ -103,7 +103,10 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         self.finish(error_json)
 
     def build_resource_url(self, resource_id):
-        url = "{0}://{1}{2}{3}".format(self.request.protocol, self.request.host, self.request.uri, resource_id)
+        request_uri = self.request.uri
+        if not request_uri.endswith("/"):
+            request_uri = "{0}/".format(request_uri)
+        url = "{0}://{1}{2}{3}".format(self.request.protocol, self.request.host, request_uri, resource_id)
         if self.request.query:
             url = "{0}?{1}".format(url, self.request.query)
         return url
@@ -226,7 +229,7 @@ class CollectionHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name, class_name):
         with safe_params():
-            self.query_params = ListServiceParams(self, context_name=context_name, class_name=class_name)
+            self.query_params = ListAndFilterServiceParams(self, context_name=context_name, class_name=class_name)
 
         response = filter_instances(self.query_params)
 
@@ -272,7 +275,7 @@ class RootHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self):
         with safe_params():
-            self.query_params = ListAndFilterServiceParams(self)
+            self.query_params = ListServiceParams(self)
 
         response = list_all_contexts(self.query_params, self.request)
 
@@ -284,7 +287,7 @@ class ContextHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name):
         with safe_params():
-            self.query_params = ListAndFilterServiceParams(self, context_name=context_name)
+            self.query_params = ListServiceParams(self, context_name=context_name)
 
         response = list_classes(self.query_params)
 
@@ -303,7 +306,7 @@ class PrefixHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self):
         with safe_params():
-            self.query_params = ListAndFilterServiceParams(self)
+            self.query_params = ListServiceParams(self)
 
         response = list_prefixes()
 

@@ -1,0 +1,126 @@
+@prefix : <http://example.onto/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+
+# http://example.onto/Place
+:Place a owl:Class ;
+       rdfs:label "Lugar"@pt ;
+       rdfs:label "Place"@en ;
+       rdfs:comment "Search in the dictionary."@en ;
+       rdfs:comment "Procure no dicionario."@pt .
+
+# http://example.onto/PlaceWithoutLanguage
+:PlaceWithoutLanguage a owl:Class ;
+       rdfs:label "Place" ;
+       rdfs:comment "Search in the dictionary." .
+
+# http://example.onto/Lugar
+:Lugar a owl:Class ;
+       rdfs:label "Lugar" .
+
+:City a owl:Class ;
+      rdfs:label "Cidade" ;
+      rdfs:subClassOf :Place .
+
+
+### ObjectProperties
+
+# http://example.onto/gender
+:gender rdf:type owl:ObjectProperty ;
+    rdfs:domain :Animal ;
+    rdfs:range :Gender .
+
+# http://example.onto/furColour
+:furColour rdf:type owl:ObjectProperty ;
+    rdfs:domain :Mammalia ;
+    rdfs:range xsd:string .
+
+# http://example.onto/furLenght
+:furLenght rdf:type owl:ObjectProperty ;
+    rdfs:domain :Canidae ;
+    rdfs:range xsd:string .
+
+### Classes
+
+# http://example.onto/Gender
+:Gender a owl:Class .
+
+# http://example.onto/Species
+:Species a owl:Class .
+
+# http://example.onto/FurColour
+:FurColour a owl:Class .
+
+# http://example.onto/FurLenght
+:FurLenght a owl:Class .
+
+# http://example.onto/Animal
+:Animal a owl:Class;
+    rdfs:subClassOf :Species ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :gender ;
+          owl:allValuesFrom [
+            owl:oneOf (:Male :Female :Transgender) 
+          ]
+        ] ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :gender ;
+          owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+          owl:allValuesFrom :Gender
+        ] ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :gender ;
+          owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+          owl:allValuesFrom :Gender
+        ] ;
+    :cellStructure "Eukaryotes" ;
+    :carbonAcquisition "Heterotroph" .
+
+
+
+
+# http://example.onto/Mammalia
+:Mammalia a owl:Class;
+    rdfs:subClassOf :Animal ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :furColour ;
+          owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+          owl:allValuesFrom :FurColour
+        ] ;
+    :vertebraType "Vertebrate" ;
+    :temperatureManagement "Endothermy" .
+
+# http://example.onto/Canidae
+:Canidae a owl:Class;
+     rdfs:subClassOf :Mammalia ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :furLenght ;
+          owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+          owl:allValuesFrom :FurLenght
+        ] ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :furLenght ;
+          owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+          owl:allValuesFrom :FurLenght
+        ] ;
+     :motionStyle :Quadruped .
+
+# http://example.onto/Yorkshire_Terrier
+:Yorkshire_Terrier a owl:Class;
+    rdfs:subClassOf :Canidae .
+
+
+### Instances
+
+:Male a :Gender .
+:Female a :Gender .
+:Transgender a :Gender .
+
+:Black a :FurColour .
+:White a :FurColour .
+:Brown a :FurColour .
+
+:Short a :FurLenght .
+:Medium a :FurLenght .
+:Long a :FurLenght .

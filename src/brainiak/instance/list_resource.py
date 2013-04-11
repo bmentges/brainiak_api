@@ -1,4 +1,4 @@
-from brainiak import triplestore
+from brainiak import settings, triplestore
 from brainiak.prefixes import expand_uri
 from brainiak.utils.links import build_links
 from brainiak.utils.resources import decorate_with_resource_id
@@ -24,9 +24,12 @@ WHERE {
              rdfs:label ?label %(po)s
     %(lang_filter_label)s
 }
+%(sort_by_statement)s
 LIMIT %(per_page)s
-OFFSET %(page)s
+OFFSET %(offset)s
 """
+
+ORDER_BY = "ORDER BY %(sort_order)s(?sort_object)"
 
 
 def process_params(query_params):
@@ -52,6 +55,20 @@ def process_params(query_params):
     else:
         query_params["po"] = "; %(p)s %(o)s ." % query_params
 
+    sort_property = query_params["sort_by"]
+    if sort_property and sort_property != "rdfs:label":
+        query_params["po"] = "; %(sort_by)s ?sort_object %(po)s" % query_params
+        sort_by_statement = ORDER_BY % query_params
+    elif sort_property == "rdfs:label":
+        sort_by_statement = "ORDER BY %(sort_order)s(?label)" % query_params
+    else:
+        sort_by_statement = ""
+    query_params["sort_by_statement"] = sort_by_statement
+
+    page = int(query_params.get("page", settings.DEFAULT_PAGE))
+    per_page = int(query_params.get("per_page", settings.DEFAULT_PER_PAGE))
+    query_params["offset"] = str(page * per_page)
+
     return query_params
 
 
@@ -68,7 +85,6 @@ def query_count_filter_instances(query_params):
 
 
 def filter_instances(query_params):
-
     query_params = process_params(query_params)
     result_dict = query_count_filter_instances(query_params)
 

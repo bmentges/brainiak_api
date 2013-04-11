@@ -2,7 +2,7 @@ from unittest import TestCase
 from brainiak.handlers import ListServiceParams
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS
 
 
 class MockHandler():
@@ -72,6 +72,24 @@ class ParamsTestCase(TestCase):
         handler = MockHandler(lang="pt")
         params = ParamDict(handler)
         self.assertEquals(params["lang"], "pt")
+
+    def test_post_override_with_sort_order(self):
+        handler = MockHandler(sort_order="asc")
+
+        class ListParamDict(ParamDict):
+            extra_params = LIST_PARAMS
+
+        params = ListParamDict(handler)
+        self.assertEquals(params["sort_order"], "ASC")
+
+    def test_post_override_without_sort_order(self):
+        handler = MockHandler(sort_order="")
+
+        class ListParamDict(ParamDict):
+            extra_params = LIST_PARAMS
+
+        params = ListParamDict(handler)
+        self.assertEquals(params["sort_order"], "")
 
     def test_post_override_with_page(self):
         handler = MockHandler(page="3")

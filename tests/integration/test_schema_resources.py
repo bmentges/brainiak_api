@@ -3,7 +3,9 @@ import brainiak.schema.resource as schema
 from brainiak import prefixes
 from brainiak import triplestore
 from brainiak.schema.resource import build_class_schema_query, \
-        _query_superclasses, query_superclasses
+        _query_superclasses, query_superclasses, QUERY_CARDINALITIES, \
+        QUERY_PREDICATE_WITH_LANG, QUERY_PREDICATE_WITHOUT_LANG, \
+        QUERY_SUPERCLASS
 
 from tests import TornadoAsyncTestCase
 from tests.sparql import QueryTestCase
@@ -89,6 +91,157 @@ class ClassSchemaQueryTestCase(QueryTestCase):
         expected_bindings = [{u'title': {u'type': u'literal', u'value': u'Lugar'}}]
 
         self.assertEqual(response_bindings, expected_bindings)
+
+
+class SuperClassQueryTestCase(QueryTestCase):
+
+    allow_triplestore_connection = True
+    fixtures = ["tests/sample/animalia.n3"]
+    graph_uri = "http://schema.test/"
+
+    def test_query_superclass(self):
+        params = {"class_uri": "http://example.onto/Yorkshire_Terrier"}
+        query = QUERY_SUPERCLASS % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {u'class': {u'type': u'uri', u'value': u'http://example.onto/Yorkshire_Terrier'}},
+            {u'class': {u'type': u'uri', u'value': u'http://example.onto/Canidae'}},
+            {u'class': {u'type': u'uri', u'value': u'http://example.onto/Mammalia'}},
+            {u'class': {u'type': u'uri', u'value': u'http://example.onto/Animal'}},
+            {u'class': {u'type': u'uri', u'value': u'http://example.onto/Species'}}]
+        self.assertEqual(computed, expected)
+
+
+class CardinalitiesQueryTestCase(QueryTestCase):
+
+    allow_triplestore_connection = True
+    fixtures = ["tests/sample/animalia.n3"]
+
+    def test_query_cardinalities(self):
+        params = {"class_uri": "http://example.onto/Animal"}
+        query = QUERY_CARDINALITIES % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {
+                u'max': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'}
+            },
+            {
+                u'min': {
+                  u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                  u'type': u'typed-literal',
+                  u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'}
+            },
+            # {
+            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Male'},
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # },
+            # {
+            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Female'},
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # },
+            # {
+            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Transgender'},
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # },
+            # {
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # }
+        ]
+        for expected_item in expected:
+          self.assertIn(expected_item, computed)
+
+    def test_query_cardinalities_from_super_classes(self):
+        params = {"class_uri": "http://example.onto/Canidae"}
+        query = QUERY_CARDINALITIES % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {
+                u'max': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'}
+            },
+            {
+                u'min': {
+                  u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                  u'type': u'typed-literal',
+                  u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'}
+            },
+            {
+                u'max': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furLenght'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'}
+            },
+            {
+                u'min': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furLenght'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'}
+            },
+            {
+                u'min': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'1'
+                },
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furColour'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'}
+            },
+            # {
+            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Male'},
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # },
+            # {
+            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Female'},
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # },
+            # {
+            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Transgender'},
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # },
+            # {
+            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
+            # }
+        ]
+        for expected_item in expected:
+          self.assertIn(expected_item, computed)
+
+
+
+# TODO: test
+# QUERY_CARDINALITIES
+# QUERY_PREDICATE_WITH_LANG
+# QUERY_PREDICATE_WITHOUT_LANG
 
 
 class GetSchemaTestCase(TornadoAsyncTestCase):

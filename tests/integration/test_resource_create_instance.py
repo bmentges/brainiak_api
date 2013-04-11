@@ -109,6 +109,21 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.body, "")
         self.assertInstanceExist('http://semantica.globo.com/sample-place/City', "http://unique-id")
 
+    @patch("brainiak.handlers.log")
+    def test_create_instance_201_without_final_slash(self, log):
+        schema_resource.get_schema = lambda params: True
+        create_resource.create_instance_uri = lambda class_uri: "http://unique-id"
+        payload = JSON_CITY_GLOBOLAND
+        response = self.fetch('/sample-place/City', # <--- this makes this test diff from above
+            method='POST',
+            body=json.dumps(payload))
+        self.assertEqual(response.code, 201)
+        location = response.headers['Location']
+        self.assertTrue(location.startswith("http://localhost:"))
+        self.assertTrue(location.endswith("/sample-place/City/unique-id"))
+        self.assertEqual(response.body, "")
+        self.assertInstanceExist('http://semantica.globo.com/sample-place/City', "http://unique-id")
+
     def test_query(self):
         self.graph_uri = "http://fofocapedia.org/"
         self.assertInstanceDoesNotExist('criatura', 'fulano')

@@ -4,7 +4,7 @@
 
 class brainiak::barramento {
 
-  include infra::scripts::aliases_all
+  include aliases::all
   include supso::vars
 
   $owner_file                 = 'portal'
@@ -15,6 +15,7 @@ class brainiak::barramento {
   Supso::Users::Create <| user == 'watcher' |>
   Supso::Users::Create <| user == $owner_file |>
   Supso::Users::Create <| user == $owner_app  |>
+
 
   $project                    = 'brainiak'
   $java_console_port          = 8204
@@ -62,6 +63,8 @@ class brainiak::barramento {
       fail( "Zona inválida: '${::zone}'" )
     }
   }
+
+  supso::ldap::homedirs{ $project: grupoldap => 'devPlataformas' }
 
   infra::activemq { $project:
     projeto             => $project,

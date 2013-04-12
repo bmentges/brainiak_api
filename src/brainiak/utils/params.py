@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from urllib import urlencode
 from brainiak import settings
 from brainiak.prefixes import safe_slug_to_prefix, ROOT_CONTEXT
 
@@ -22,14 +23,22 @@ LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
                                 sort_order="ASC")
 
 
+def normalize_last_slash(url):
+    return url if url.endswith("/") else url + "/"
+
+
 class ParamDict(dict):
     "Utility class to generate default params on demand and memoize results"
     extra_params = {}
+    essential_params = ('graph_prefix', 'class_prefix', 'instance_prefix', 'graph_uri', 'class_uri', 'instance_uri', 'lang')
 
     def __init__(self, handler, *args, **kw):
         dict.__init__(self, *args, **kw)
         # preserve the order below, defaults come first to be overriden
-        self["request"] = handler.request
+        request = self["request"] = handler.request
+        self.base_url = "{0}://{1}{2}".format(request.protocol, request.host, normalize_last_slash(request.path))
+        self.resource_url = self.base_url + "{resource_id}"
+
         self._set_defaults()
         # Add to the mix the default params customized at class level
         self.update(self.extra_params)
@@ -38,6 +47,14 @@ class ParamDict(dict):
         # Override params with arguments passed in the handler's request object
         self._override_with(handler)
         self._post_override()
+
+    def args(self, **kw):
+        effective_args = {}
+        effective_args.update(kw)
+        for key in ParamDict.essential_params:
+            if key in self["request"].args:
+                effective_args[key] = self[key]
+        return urlencode(effective_args, doseq=True)
 
     def __setitem__(self, key, value):
         """Process collateral effects in params that are related.

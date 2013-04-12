@@ -3,7 +3,7 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug
 from brainiak.utils import sparql
-from brainiak.utils.links import crud_links, split_into_chunks, nav_links
+from brainiak.utils.links import crud_links, split_into_chunks, collection_links, normalize
 
 # Note that pagination was done outside the query
 # because we are filtering query results based on prefixes
@@ -49,15 +49,9 @@ def filter_and_build_contexts(contexts_uris):
 
 def build_json(contexts, total_items, params, request):
     base_url = "{0}://{1}{2}".format(request.protocol, request.host, request.path)
-    links = crud_links(base_url, query_string=request.query)
-    navigation_links = nav_links(
-        base_url,
-        query_string=request.query,
-        page=int(query_params["page"]) + 1,  # API's pagination begin with 1, Virtuoso's with 0
-        per_page=int(query_params["per_page"]),
-        total_items=total_items)
-    links.extend(navigation_links)
-
+    resource_url = "%s/{resource_id}" % normalize(base_url)
+    links = crud_links(base_url, resource_url, params) + \
+            collection_links(base_url, params, total_items)
     json = {
         'items': contexts,
         'item_count': total_items,

@@ -396,16 +396,42 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/City'},
                 u'super_property': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'},
-                u'title': {u'type': u'literal', u'value': u'Birth city of first individual'},
+                u'title': {u'type': u'literal', u'value': u'Birth city of first known member of Species'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             }
         ]
         self.assertEqual(sorted(expected), sorted(computed))
 
-# TODO: test
-# QUERY_PREDICATE_WITH_LANG
-# subproperties
-# QUERY_PREDICATE_WITHOUT_LANG
+    def test_query_predicate_with_lang_and_comment(self):
+        filter_ = "FILTER (?domain_class IN (<http://example.onto/Bird>, <http://example.onto/Animal>))"
+        params = {"filter_classes_clause": filter_, "lang": "en"}
+        query = QUERY_PREDICATE_WITH_LANG % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/canFlight'},
+                u'predicate_comment': {u'type': u'literal', u'value': u'Defines if the bird species can flight or not.', u'xml:lang': u'en'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
+                u'title': {u'type': u'literal', u'value': u'Can flight', u'xml:lang': u'en'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/Place'},
+                u'title': {u'type': u'literal', u'value': u'Birth place of first known member of Species'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'},
+                u'title': {u'type': u'literal', u'value': u'Gender'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            }
+        ]
+        self.assertEqual(sorted(expected), sorted(computed))
 
 
 class GetSchemaTestCase(TornadoAsyncTestCase):

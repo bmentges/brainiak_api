@@ -34,14 +34,21 @@
 
 # http://semantica.globo.com/person/birthPlace
 :birthPlace a owl:ObjectProperty ;
-             rdfs:label "Birth place of first individual";
+             rdfs:label "Birth place of first known member of Species";
              rdfs:domain :Animal ;
              rdfs:range :Place .
+
+# http://semantica.globo.com/person/canFlight
+:canFlight a owl:ObjectProperty ;
+             rdfs:label "Can flight"@en;
+             rdfs:comment "Defines if the bird species can flight or not."@en ;
+             rdfs:domain :Bird ;
+             rdfs:range xsd:string .
 
 # http://semantica.globo.com/person/cityOfBirth
 :birthCity a owl:ObjectProperty ;
              owl:subPropertyOf :birthPlace ;
-             rdfs:label "Birth city of first individual" ;
+             rdfs:label "Birth city of first known member of Species" ;
              rdfs:domain :Yorkshire_Terrier ;
              rdfs:range :City .
 
@@ -100,6 +107,10 @@
               :FurLenght ,
               :FurColour
         ] .
+
+# http://example.onto/Birds
+:Birds a owl:Class;
+    rdfs:subClassOf :Animal .
 
 # http://example.onto/Mammalia
 :Mammalia a owl:Class;

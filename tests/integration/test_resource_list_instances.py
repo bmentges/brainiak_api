@@ -36,6 +36,58 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(len(received_response['items']), 2)
 
+    def test_list_by_page_sort_first_page(self):
+        response = self.fetch('/person/Gender/?page=1&per_page=2&sort_by=rdfs:label', method='GET')
+        received_response = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+        expected_items = [
+            {
+                u'@id': u'http://semantica.globo.com/person/Gender/Female',
+                u'resource_id': u'Female',
+                u'title': u'Feminino'
+            },
+            {
+                u'@id': u'http://semantica.globo.com/person/Gender/Male',
+                u'resource_id': u'Male',
+                u'title': u'Masculino'
+            }
+        ]
+        self.assertEqual(received_response['item_count'], 3)
+        self.assertEqual(received_response['items'], expected_items)
+
+    def test_list_by_page_sort_second_page(self):
+        response = self.fetch('/person/Gender/?page=2&per_page=2&sort_by=rdfs:label', method='GET')
+        received_response = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+        expected_items = [
+            {
+                u'@id': u'http://semantica.globo.com/person/Gender/Transgender',
+                u'resource_id': u'Transgender',
+                u'title': u'Transg\xeanero'
+            }
+        ]
+        self.assertEqual(received_response['item_count'], 3)
+        self.assertEqual(received_response['items'], expected_items)
+
+    def test_list_by_page_sort_first_page_desc(self):
+        response = self.fetch('/person/Gender/?page=1&per_page=2&sort_by=rdfs:label&sort_order=desc', method='GET')
+        received_response = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+        expected_items = [
+            {
+                u'@id': u'http://semantica.globo.com/person/Gender/Transgender',
+                u'resource_id': u'Transgender',
+                u'title': u'Transg\xeanero'
+            },
+            {
+                u'@id': u'http://semantica.globo.com/person/Gender/Male',
+                u'resource_id': u'Male',
+                u'title': u'Masculino'
+            }
+        ]
+        self.assertEqual(received_response['item_count'], 3)
+        self.assertEqual(received_response['items'], expected_items)
+
     def test_filter_with_object_as_string(self):
         response = self.fetch('/person/Gender/?o=Masculino&lang=pt', method='GET')
         expected_items = [{u'title': u'Masculino', u'@id': u'http://semantica.globo.com/person/Gender/Male', u'resource_id': u'Male'}]
@@ -106,17 +158,49 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang": "pt",
             "graph_uri": self.graph_uri,
             "per_page": "10",
-            "page": "0"
+            "page": "0",
+            "sort_by": ""
         }
         expected = {'class_uri': 'http://tatipedia.org/Species',
                     'graph_uri': 'http://tatipedia.org/',
                     'lang': 'pt',
                     'lang_filter_label': '\n    FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .\n',
                     'o': '<http://dbpedia.org/ontology/Australia>',
+                    'offset': '0',
                     'p': '<http://tatipedia.org/livesIn>',
                     'page': '0',
                     'per_page': '10',
-                    'po': '; <http://tatipedia.org/livesIn> <http://dbpedia.org/ontology/Australia> .'}
+                    'po': '; <http://tatipedia.org/livesIn> <http://dbpedia.org/ontology/Australia> .',
+                    'sort_by': '',
+                    'sort_by_statement': ''}
+        computed = process_params(params)
+        self.assertEqual(expected, computed)
+
+    def test_process_params_with_sort(self):
+        params = {
+            "class_uri": 'http://tatipedia.org/Species',
+            "p": 'http://tatipedia.org/livesIn',
+            "o": 'dbpedia:Australia',
+            "lang": "pt",
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0",
+            "sort_by": "some:predicate",
+            "sort_order": "DESC",
+        }
+        expected = {'class_uri': 'http://tatipedia.org/Species',
+                    'graph_uri': 'http://tatipedia.org/',
+                    'lang': 'pt',
+                    'lang_filter_label': '\n    FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .\n',
+                    'o': '<http://dbpedia.org/ontology/Australia>',
+                    'offset': '0',
+                    'p': '<http://tatipedia.org/livesIn>',
+                    'page': '0',
+                    'per_page': '10',
+                    'po': '; some:predicate ?sort_object ; <http://tatipedia.org/livesIn> <http://dbpedia.org/ontology/Australia> .',
+                    'sort_by': 'some:predicate',
+                    'sort_by_statement': 'ORDER BY DESC(?sort_object)',
+                    'sort_order': 'DESC'}
         computed = process_params(params)
         self.assertEqual(expected, computed)
 
@@ -128,7 +212,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang_filter": "pt",
             "graph_uri": self.graph_uri,
             "per_page": "10",
-            "page": "0"
+            "page": "0",
+            "sort_by": ""
         }
         params = process_params(params)
         query = QUERY_COUNT_FILTER_INSTANCE % params
@@ -144,9 +229,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang_filter": "",
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
+            'offset': '0',
             "per_page": "10",
             "page": "0",
-            "po": "; <http://tatipedia.org/likes> <http://tatipedia.org/Capoeira> ."
+            "po": "; <http://tatipedia.org/likes> <http://tatipedia.org/Capoeira> .",
+            "sort_by_statement": ""
         }
 
         query = QUERY_FILTER_INSTANCE % params
@@ -167,7 +254,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
             "per_page": "10",
-            "page": "0"
+            "page": "0",
+            "sort_by": ""
         }
         params = process_params(params)
         query = QUERY_FILTER_INSTANCE % params
@@ -184,9 +272,12 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/Person",
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
+            "offset": "0",
             "per_page": "10",
             "page": "0",
-            "po": "; <http://tatipedia.org/dislikes> ?object ."
+            "po": "; <http://tatipedia.org/dislikes> ?object .",
+            "sort_by": "",
+            "sort_by_statement": ""
         }
         query = QUERY_FILTER_INSTANCE % params
         computed = self.query(query)
@@ -202,9 +293,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "class_uri": "http://tatipedia.org/Person",
             "lang_filter_label": "",
             "graph_uri": self.graph_uri,
+            'offset': '0',
             "per_page": "10",
             "page": "0",
-            "po": "; <http://tatipedia.org/likes> ?object ."
+            "po": "; <http://tatipedia.org/likes> ?object .",
+            "sort_by_statement": ""
         }
         query = QUERY_FILTER_INSTANCE % params
         computed_bindings = self.query(query)['results']['bindings']
@@ -234,6 +327,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0",
+            "sort_by": ""
         }
         params = process_params(params)
 
@@ -271,7 +365,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang": "pt",
             "graph_uri": self.graph_uri,
             "per_page": "10",
-            "page": "0"
+            "page": "0",
+            "sort_by": ""
         }
         params = process_params(params)
         query = query_filter_instances(params)
@@ -299,7 +394,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang_filter": "pt",
             "graph_uri": self.graph_uri,
             "per_page": "10",
-            "page": "0"
+            "page": "0",
+            "sort_by": ""
         }
         params = process_params(params)
         query = query_filter_instances(params)
@@ -331,7 +427,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang": "pt",
             "graph_uri": self.graph_uri,
             "per_page": "1",
-            "page": "0"
+            "page": "0",
+            "sort_by": ""
         }
         params = process_params(params)
         query = query_filter_instances(params)
@@ -347,7 +444,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang": "pt",
             "graph_uri": self.graph_uri,
             "per_page": "1",
-            "page": "1"
+            "page": "1",
+            "sort_by": ""
         }
         params = process_params(params)
         query = query_filter_instances(params)
@@ -363,7 +461,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "lang": "en",
             "graph_uri": self.graph_uri,
             "per_page": "10",
-            "page": "0"
+            "page": "0",
+            "sort_by": ""
         }
         params = process_params(params)
         query = query_filter_instances(params)
@@ -382,7 +481,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         list_resource.query_filter_instances = lambda params: {"results": {"bindings": []}}
         list_resource.query_count_filter_instances = lambda params: {"results": {"bindings": []}}
 
-        params = {"o": "", "p": "", "class_uri": ""}
+        params = {"o": "", "p": "", "class_uri": "", "sort_by": "", 'offset': '0'}
         response = list_resource.filter_instances(params)
         self.assertEquals(response, None)
 
@@ -396,7 +495,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
           "class_name": "klass",
           "request": MockRequest(query_string=query_string),
           "per_page": "3",
-          "page": "1"}
+          "page": "1",
+          "sort_by": ""}
         response = list_resource.filter_instances(params)  # page based on virtuoso (begins with 0)
         expected_links = [
             {

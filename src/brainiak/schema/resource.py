@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from brainiak.prefixes import MemorizeContext
-from brainiak.utils.links import crud_links, add_link
+from brainiak.utils.links import add_link
 from brainiak.utils.sparql import get_one_value, filter_values, add_language_support
 from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY

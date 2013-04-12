@@ -32,9 +32,28 @@
         :FurLenght ,
         :FurColour .
 
+# http://semantica.globo.com/person/birthPlace
+:birthPlace a owl:ObjectProperty ;
+             rdfs:label "Birth place of first individual";
+             rdfs:domain :Animal ;
+             rdfs:range :Place .
+
+# http://semantica.globo.com/person/cityOfBirth
+:birthCity a owl:ObjectProperty ;
+             owl:subPropertyOf :birthPlace ;
+             rdfs:label "Birth city of first individual" ;
+             rdfs:domain :Yorkshire_Terrier ;
+             rdfs:range :City .
+
 ##########################################
 # Classes
 ##########################################
+
+# http://example.onto/Gender
+:City a owl:Class .
+
+# http://example.onto/Species
+:Place a owl:Class .
 
 # http://example.onto/Gender
 :Gender a owl:Class .
@@ -109,13 +128,14 @@
      :motionStyle :Quadruped .
 
 # http://example.onto/Yorkshire_Terrier
-:Yorkshire_Terrier a owl:Class;
+:Yorkshire_Terrier a owl:Class ;
     rdfs:subClassOf :Canidae .
-
 
 ##########################################
 # Instances
 ##########################################
+
+:York a :birthCity .
 
 :Male a :Gender .
 :Female a :Gender .

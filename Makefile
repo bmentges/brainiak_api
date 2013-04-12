@@ -16,8 +16,8 @@ install:
 	@chmod ug+x ./.git/hooks/pre-commit
 
 test: clean pep8 pep8_tests
-	@echo "Running all tests..."
-	@nosetests -s  --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests --with-xunit
+	@echo "Running pep8, unit and integration tests..."
+	@nosetests -s  --with-coverage --cover-inclusive --cover-package=brainiak --exclude=$(HOME_BRAINIAK)/tests/acceptance --tests=$(HOME_BRAINIAK)/tests --with-xunit
 
 unit: clean
 	@echo "Running unit tests..."

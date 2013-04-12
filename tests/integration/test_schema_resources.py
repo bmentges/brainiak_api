@@ -360,14 +360,51 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             }
         ]
-        for expected_item in expected:
-            self.assertIn(expected_item, computed)
+        self.assertEqual(sorted(expected), sorted(computed))
+
+    def test_query_predicate_multiple_classes(self):
+        filter_ = "FILTER (?domain_class IN (<http://example.onto/Mammalia>, <http://example.onto/Canidae>))"
+        params = {"filter_classes_clause": filter_}
+        query = QUERY_PREDICATE_WITHOUT_LANG % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furLenght'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'},
+                u'title': {u'type': u'literal', u'value': u'Fur or hair lenght'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furColour'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
+                u'title': {u'type': u'literal', u'value': u'Fur or hair colour'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            }
+        ]
+        self.assertEqual(sorted(expected), sorted(computed))
+
+    def test_query_predicate_subproperty(self):
+        filter_ = "FILTER (?domain_class IN (<http://example.onto/Yorkshire_Terrier>))"
+        params = {"filter_classes_clause": filter_}
+        query = QUERY_PREDICATE_WITHOUT_LANG % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthCity'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://example.onto/City'},
+                u'super_property': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'},
+                u'title': {u'type': u'literal', u'value': u'Birth city of first individual'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+            }
+        ]
+        self.assertEqual(sorted(expected), sorted(computed))
 
 # TODO: test
 # QUERY_PREDICATE_WITH_LANG
 # subproperties
-# subclasses
-# multiple ranges
 # QUERY_PREDICATE_WITHOUT_LANG
 
 

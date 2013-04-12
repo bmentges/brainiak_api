@@ -114,7 +114,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         schema_resource.get_schema = lambda params: True
         create_resource.create_instance_uri = lambda class_uri: "http://unique-id"
         payload = JSON_CITY_GLOBOLAND
-        response = self.fetch('/sample-place/City', # <--- this makes this test diff from above
+        response = self.fetch('/sample-place/City',  # <--- this makes this test diff from above
             method='POST',
             body=json.dumps(payload))
         self.assertEqual(response.code, 201)

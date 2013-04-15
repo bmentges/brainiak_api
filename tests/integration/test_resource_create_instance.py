@@ -11,10 +11,10 @@ from tests.sparql import QueryTestCase
 JSON_CITY_GLOBOLAND = {
     "@context": {
         "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-        "place": "http://semantica.globo.com/place/",
+        "place": "http://test.graph/place/",
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-        "base": "http://semantica.globo.com/base/",
-        "upper": "http://semantica.globo.com/upper/"
+        "base": "http://test.graph/base/",
+        "upper": "http://test.graph/upper/"
     },
     "upper:name": "Globoland",
     "upper:fullName": "Globoland (RJ)",
@@ -31,7 +31,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     # the variables below have special meaning for QueryTestCase
     allow_triplestore_connection = True
-    graph_uri = 'http://semantica.globo.com/sample-place/'
+    graph_uri = 'http://test.graph/sample-place/'
     fixtures = []
 
     def setUp(self):
@@ -40,11 +40,6 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         super(CollectionResourceTestCase, self).setUp()
 
     def tearDown(self):
-        #query_string = QUERY_DELETE_INSTANCE % {
-        #    "graph_uri": 'http://semantica.globo.com/sample-place/',
-        #    "instance_uri": 'http://semantica.globo.com/sample-place/City/unique-id'
-        #}
-        #self.query(query_string)
         create_resource.create_instance_uri = self.original_create_instance_uri
         schema_resource.get_schema = self.original_schema_resource_get_schema
         super(CollectionResourceTestCase, self).tearDown()
@@ -107,7 +102,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(location.startswith("http://localhost:"))
         self.assertTrue(location.endswith("/sample-place/City/unique-id"))
         self.assertEqual(response.body, "")
-        self.assertInstanceExist('http://semantica.globo.com/sample-place/City', "http://unique-id")
+        self.assertInstanceExist('http://test.graph/sample-place/City', "http://unique-id")
 
     @patch("brainiak.handlers.log")
     def test_create_instance_201_without_final_slash(self, log):
@@ -122,7 +117,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(location.startswith("http://localhost:"))
         self.assertTrue(location.endswith("/sample-place/City/unique-id"))
         self.assertEqual(response.body, "")
-        self.assertInstanceExist('http://semantica.globo.com/sample-place/City', "http://unique-id")
+        self.assertInstanceExist('http://test.graph/sample-place/City', "http://unique-id")
 
     def test_query(self):
         self.graph_uri = "http://fofocapedia.org/"

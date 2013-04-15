@@ -50,7 +50,8 @@ class GetContextTestCase(unittest.TestCase):
         }
         triplestore.query_sparql = lambda query: response
         params = {"per_page": "30", "page": "0"}
-        base_url = "http://api.semantica.dev.globoi.com"
+        base_url = "http://brainiak.com"
+
         request = MockRequest(uri=base_url)
         computed = list_all_contexts(params, request)
         expected_items = [

@@ -2,7 +2,7 @@ import json
 import urllib
 from mock import patch
 
-from brainiak import triplestore
+from brainiak import triplestore, settings
 from brainiak.instance import list_resource
 from brainiak.instance.list_resource import process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
 from tests import TornadoAsyncHTTPTestCase, MockRequest
@@ -21,9 +21,9 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
     def test_filter_without_predicate_and_object(self):
         response = self.fetch('/person/Gender/', method='GET')
         expected_items = [
-            {u'title': u'Feminino', u'@id': u'http://semantica.globo.com/person/Gender/Female', u'resource_id': u'Female'},
-            {u'title': u'Masculino', u'@id': u'http://semantica.globo.com/person/Gender/Male', u'resource_id': u'Male'},
-            {u'title': u'Transg\xeanero', u'@id': u'http://semantica.globo.com/person/Gender/Transgender', u'resource_id': u'Transgender'}]
+            {u'title': u'Feminino', u'@id': settings.URI_PREFIX + 'person/Gender/Female', u'resource_id': u'Female'},
+            {u'title': u'Masculino', u'@id': settings.URI_PREFIX + u'person/Gender/Male', u'resource_id': u'Male'},
+            {u'title': u'Transg\xeanero', u'@id': settings.URI_PREFIX + u'person/Gender/Transgender', u'resource_id': u'Transgender'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 3)
@@ -42,12 +42,12 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         expected_items = [
             {
-                u'@id': u'http://semantica.globo.com/person/Gender/Female',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Female',
                 u'resource_id': u'Female',
                 u'title': u'Feminino'
             },
             {
-                u'@id': u'http://semantica.globo.com/person/Gender/Male',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
                 u'title': u'Masculino'
             }
@@ -61,7 +61,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         expected_items = [
             {
-                u'@id': u'http://semantica.globo.com/person/Gender/Transgender',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
                 u'resource_id': u'Transgender',
                 u'title': u'Transg\xeanero'
             }
@@ -75,12 +75,12 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         expected_items = [
             {
-                u'@id': u'http://semantica.globo.com/person/Gender/Transgender',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
                 u'resource_id': u'Transgender',
                 u'title': u'Transg\xeanero'
             },
             {
-                u'@id': u'http://semantica.globo.com/person/Gender/Male',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
                 u'title': u'Masculino'
             }
@@ -90,7 +90,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     def test_filter_with_object_as_string(self):
         response = self.fetch('/person/Gender/?o=Masculino&lang=pt', method='GET')
-        expected_items = [{u'title': u'Masculino', u'@id': u'http://semantica.globo.com/person/Gender/Male', u'resource_id': u'Male'}]
+        expected_items = [{u'title': u'Masculino', u'@id': settings.URI_PREFIX + u'person/Gender/Male', u'resource_id': u'Male'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 1)
@@ -100,9 +100,9 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         url = urllib.quote("http://www.w3.org/2000/01/rdf-schema#label")
         response = self.fetch('/person/Gender/?lang=pt&p=%s' % url, method='GET')
         expected_items = [
-            {u'title': u'Feminino', u'@id': u'http://semantica.globo.com/person/Gender/Female', u'resource_id': u'Female'},
-            {u'title': u'Masculino', u'@id': u'http://semantica.globo.com/person/Gender/Male', u'resource_id': u'Male'},
-            {u'title': u'Transg\xeanero', u'@id': u'http://semantica.globo.com/person/Gender/Transgender', u'resource_id': u'Transgender'}]
+            {u'title': u'Feminino', u'@id': settings.URI_PREFIX + u'person/Gender/Female', u'resource_id': u'Female'},
+            {u'title': u'Masculino', u'@id': settings.URI_PREFIX + u'person/Gender/Male', u'resource_id': u'Male'},
+            {u'title': u'Transg\xeanero', u'@id': settings.URI_PREFIX + u'person/Gender/Transgender', u'resource_id': u'Transgender'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 3)
@@ -111,7 +111,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
         url = urllib.quote("rdfs:label")
         response = self.fetch('/person/Gender/?o=Feminino&lang=pt&p=%s' % url, method='GET')
-        expected_items = [{u'title': u'Feminino', u'@id': u'http://semantica.globo.com/person/Gender/Female', u'resource_id': u'Female'}]
+        expected_items = [{u'title': u'Feminino', u'@id': settings.URI_PREFIX + u'person/Gender/Female', u'resource_id': u'Female'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 1)

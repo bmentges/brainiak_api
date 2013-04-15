@@ -1,8 +1,7 @@
 import json
 from mock import patch
-from brainiak import settings
 
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 

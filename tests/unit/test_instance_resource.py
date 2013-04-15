@@ -4,7 +4,7 @@ from mock import Mock
 
 from brainiak.instance import get_resource
 from brainiak.prefixes import MemorizeContext
-from tests import MockRequest
+from tests.mocks import MockRequest
 
 
 class TestCaseInstanceResource(unittest.TestCase):

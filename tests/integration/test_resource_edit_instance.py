@@ -1,4 +1,4 @@
-from mock import patch, Mock
+from mock import patch
 import json
 from brainiak import server
 from brainiak.instance import create_resource, edit_resource

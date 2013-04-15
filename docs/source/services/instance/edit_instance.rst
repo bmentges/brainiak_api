@@ -28,7 +28,7 @@ Sample JSON "edit_female.json":
 .. include :: examples/edit_instance_payload.rst
 
 Note that prefixes are defined in the "@context" section. 
-`Default prefixes  <http://api.semantica.dev.globoi.com/v2/_config/Prefixes>`_ are implicit and don't need to be declared.
+`Default prefixes  <http://api.semantica.dev.globoi.com/v2/prefixes>`_ are implicit and don't need to be declared.
 
 Optional query string parameters
 --------------------------------
@@ -46,8 +46,7 @@ Possible responses
 
 **Status 200**
 
-The instance was edited successfully, the response body is The
-new instance, as in :doc:`create_instance`
+The instance was edited successfully, the response body is the modified instance.
 
 **Status 400**
 

@@ -1,5 +1,5 @@
 from brainiak import settings, triplestore
-from brainiak.prefixes import expand_uri
+from brainiak.prefixes import expand_uri, shorten_uri
 from brainiak.utils.links import build_links
 from brainiak.utils.resources import decorate_with_resource_id
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value, \
@@ -18,7 +18,7 @@ WHERE {
 
 QUERY_FILTER_INSTANCE = """
 DEFINE input:inference <http://semantica.globo.com/ruleset>
-SELECT DISTINCT ?subject ?label
+SELECT DISTINCT ?subject, ?label
 WHERE {
     ?subject a <%(class_uri)s> ;
              rdfs:label ?label %(po)s
@@ -90,6 +90,8 @@ def query_count_filter_instances(query_params):
 
 
 def filter_instances(query_params):
+    predicate = query_params.get("p")
+    sort_by = query_params.get("sort_by")
     query_params = process_params(query_params)
     result_dict = query_count_filter_instances(query_params)
 
@@ -98,8 +100,15 @@ def filter_instances(query_params):
     if not total_items:
         return None
 
+    keymap = {"label": "title", "subject": "@id"}
+    # if (query_params.get("o") == "?object") and (query_params["p"] != "<http://www.w3.org/2000/01/rdf-schema#label>") and (query_params["p"] != "?predicate"):
+    #     keymap["object"] = shorten_uri(predicate)
+    # if sort_by and (query_params.get("sort_by") != query_params.get("p")) and (query_params["sort_by"] != "<http://www.w3.org/2000/01/rdf-schema#label>"):
+    #     keymap["sort_object"] = shorten_uri(sort_by)
+    # if (query_params["sort_by"] == "<http://www.w3.org/2000/01/rdf-schema#label>"):
+    #     keymap["sort_object"] = "title"
     result_dict = query_filter_instances(query_params)
-    items_list = compress_keys_and_values(result_dict, keymap={"label": "title", "subject": "@id"}, ignore_keys=["total"])
+    items_list = compress_keys_and_values(result_dict, keymap=keymap, ignore_keys=["total"])
     decorate_with_resource_id(items_list)
     return build_json(items_list, total_items, query_params)
 

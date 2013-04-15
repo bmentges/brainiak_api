@@ -51,3 +51,11 @@ tpedia:Teinolophos a tpedia:Species ;
                    tpedia:order tpedia:Monotremata ;
                    tpedia:livesIn tpedia:Australia ;
                    tpedia:status tpedia:Extinct .
+
+tpedia:SPFC a tpedia:SoccerClub ;
+            rdfs:label "São Paulo Futebol Clube";
+            tpedia:stadium "Maracanã" .
+
+tpedia:CEC a tpedia:SoccerClub ;
+           rdfs:label "Cruzeiro Esporte Clube" ;
+           tpedia:stadium "Toca da Raposa" .

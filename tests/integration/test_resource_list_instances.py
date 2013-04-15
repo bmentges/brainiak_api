@@ -150,6 +150,34 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         list_resource.query_filter_instances = self.original_query_filter_instances
         list_resource.query_count_filter_instances = self.original_query_count_filter_instances
 
+    def test_sort_by_p(self):
+        params = {
+            "class_uri": 'http://tatipedia.org/SoccerClub',
+            "p": 'http://tatipedia.org/stadium',
+            "o": '?object',
+            "sort_by": "http://tatipedia.org/stadium",
+            "sort_order": "asc",
+            "lang": "",
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0",
+        }
+        processed_params = process_params(params)
+        query = QUERY_FILTER_INSTANCE % processed_params
+        computed = self.query(query)["results"]["bindings"]
+        expected = [
+            {
+                u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
+            }
+        ]
+
+        self.assertEqual(expected, computed)
+
     def test_process_params(self):
         params = {
             "class_uri": 'http://tatipedia.org/Species',
@@ -185,7 +213,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0",
-            "sort_by": "some:predicate",
+            "sort_by": "http://some/predicate",
             "sort_order": "DESC",
         }
         expected = {'class_uri': 'http://tatipedia.org/Species',
@@ -197,8 +225,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
                     'p': '<http://tatipedia.org/livesIn>',
                     'page': '0',
                     'per_page': '10',
-                    'po': '; some:predicate ?sort_object ; <http://tatipedia.org/livesIn> <http://dbpedia.org/ontology/Australia> .',
-                    'sort_by': 'some:predicate',
+                    'po': '; <http://some/predicate> ?sort_object ; <http://tatipedia.org/livesIn> <http://dbpedia.org/ontology/Australia> .',
+                    'sort_by': '<http://some/predicate>',
                     'sort_by_statement': 'ORDER BY DESC(?sort_object)',
                     'sort_order': 'DESC'}
         computed = process_params(params)
@@ -496,7 +524,9 @@ class FilterInstancesQueryTestCase(QueryTestCase):
           "request": MockRequest(query_string=query_string),
           "per_page": "3",
           "page": "1",
-          "sort_by": ""}
+          "sort_by": "",
+          "p": "",
+          "o": ""}
         response = list_resource.filter_instances(params)  # page based on virtuoso (begins with 0)
         expected_links = [
             {

@@ -39,12 +39,12 @@ def process_params(query_params):
         - is applied to ALL literals of the query
         - labels will be filtered according to <lang>
     """
-    potential_uris = ["o", "p"]
+    potential_uris = ["o", "p", "sort_by"]
     (query_params, language_tag) = add_language_support(query_params, "label")
 
     for key in potential_uris:
         value = query_params.get(key, "")
-        if (not value.startswith("?")):
+        if value and (not value.startswith("?")):
             if (":" in value):
                 query_params[key] = "<%s>" % expand_uri(value)
             else:
@@ -55,12 +55,17 @@ def process_params(query_params):
     else:
         query_params["po"] = "; %(p)s %(o)s ." % query_params
 
+    # TODO: the code bellow urges refactoring
     sort_property = query_params["sort_by"]
-    if sort_property and sort_property != "rdfs:label":
+    if sort_property and (sort_property != "rdfs:label") and (sort_property != query_params["p"]):
         query_params["po"] = "; %(sort_by)s ?sort_object %(po)s" % query_params
         sort_by_statement = ORDER_BY % query_params
     elif sort_property == "rdfs:label":
         sort_by_statement = "ORDER BY %(sort_order)s(?label)" % query_params
+    elif sort_property == query_params["p"] and query_params["o"] == "?object":
+        sort_by_statement = "ORDER BY %(sort_order)s(?object)" % query_params
+    elif (query_params["p"] != "?predicate") and (query_params["o"] != "?object"):
+        sort_by_statement = ""
     else:
         sort_by_statement = ""
     query_params["sort_by_statement"] = sort_by_statement

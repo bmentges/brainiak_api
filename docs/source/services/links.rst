@@ -44,7 +44,7 @@ Method: GET
 
 **create**
 
-Refers to a resource that can be used to create a resource of the same type
+Refers to a service that can be used to create a resource of the same type
 as the link's context.
 
 **edit**

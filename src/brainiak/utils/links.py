@@ -1,6 +1,4 @@
 from math import ceil
-from urllib import urlencode
-from urlparse import parse_qs
 
 
 def split_into_chunks(items, chunk_size):
@@ -12,13 +10,6 @@ def split_into_chunks(items, chunk_size):
     """
     chunks = [items[index: index + chunk_size] for index in xrange(0, len(items), chunk_size)]
     return chunks
-
-
-def set_query_string_parameter(query_string, param_name, param_value):
-    query_params = parse_qs(query_string)
-    query_params[param_name] = [param_value]
-    new_query_string = urlencode(query_params, doseq=True)
-    return new_query_string
 
 
 def get_last_page(total_items, per_page):
@@ -39,56 +30,40 @@ def get_next_page(page, last_page):
         return False
 
 
-def navigation_links(base_url, query_string, page, last_page):
-    first_page_querystring = set_query_string_parameter(query_string, "page", "1")
-    last_page_querystring = set_query_string_parameter(query_string, "page", last_page)
-    nav_links = [
-        {'rel': "first", 'href': "%s?%s" % (base_url, first_page_querystring), 'method': "GET"},
-        {'rel': "last", 'href': "%s?%s" % (base_url, last_page_querystring), 'method': "GET"}
-    ]
-
-    previous_page = get_previous_page(page)
-    if previous_page:
-        previous_page_querystring = set_query_string_parameter(query_string, "page", previous_page)
-        item = {'rel': "previous", 'href': "%s?%s" % (base_url, previous_page_querystring), 'method': "GET"}
-        nav_links.append(item)
-
-    next_page = get_next_page(page, last_page)
-    if next_page:
-        next_page_querystring = set_query_string_parameter(query_string, "page", next_page)
-        item = {'rel': "next", 'href': "%s?%s" % (base_url, next_page_querystring), 'method': "GET"}
-        nav_links.append(item)
-    return nav_links
-
-
-def build_links(base_url, page, per_page, total_items, query_string):
-    """Build links for listing primitives (list contexts, list classes, list instances)."""
-
+def collection_links(query_params, total_items):
+    base_url = query_params.base_url
+    page=int(query_params["page"]) + 1,  # API's pagination begin with 1, Virtuoso's with 0
+    per_page=int(query_params["per_page"])
     last_page = get_last_page(total_items, per_page)
+    previous_page = get_previous_page(page)
+    next_page = get_next_page(page, last_page)
+    base_url_with_default_params = "{0}?{1:s}".format(base_url, query_params.args())
+    class_url = "{0}/_schema?{1:s}".format(base_url, query_params.args())
+    links = [
+        {'rel': "create", 'href': base_url_with_default_params, 'method': "POST"},
+        {'rel': "itemDescribedBy", 'href': class_url, 'method': "GET"},
+        {'rel': "first", 'href': "%s?%s" % (base_url, query_params.args(page=1)), 'method': "GET"},
+        {'rel': "last", 'href': "%s?%s" % (base_url, query_params.args(last_page=last_page)), 'method': "GET"}
+    ]
+    if previous_page:
+        links.append({'rel': "previous", 'href': "%s?%s" % (base_url, query_params.args(page=previous_page)),
+                          'method': "GET"})
+    if next_page:
+        links.append({'rel': "next", 'href': "%s?%s" % (base_url, query_params.args(page=next_page)),
+                          'method': "GET"})
+    return links
 
-    if base_url.endswith("/"):
-        resource_url = "%s{resource_id}" % base_url
-    else:
-        resource_url = "%s/{resource_id}" % base_url
 
-    self_url = base_url
-    if query_string:
-        self_url = "{0}?{1}".format(base_url, query_string)
-
-    links = [{'rel': "self", 'href': self_url}]
-
-    action_links = [
-        {'rel': "list", 'href': base_url},
-        {'rel': "item", 'href': resource_url},
-        {'rel': "create", 'href': base_url, 'method': "POST"},
+def crud_links(query_params):
+    """Build crud links."""
+    base_url = query_params.base_url
+    resource_url = query_params.resource_url
+    base_url_with_params = "{0}?{1:s}".format(base_url, query_params.args())
+    links = [
+        {'rel': "self", 'href': base_url_with_params},
         {'rel': "delete", 'href': resource_url, 'method': "DELETE"},
         {'rel': "replace", 'href': resource_url, 'method': "PUT"}
     ]
-    links.extend(action_links)
-
-    nav_links = navigation_links(base_url, query_string, page, last_page)
-    links.extend(nav_links)
-
     return links
 
 

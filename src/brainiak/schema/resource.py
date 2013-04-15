@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from brainiak.prefixes import MemorizeContext, shorten_uri
+from brainiak.prefixes import MemorizeContext
+from brainiak.utils.links import add_link
 from brainiak.utils.sparql import get_one_value, filter_values, add_language_support
 from brainiak import triplestore
-from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_type, items_from_range, OBJECT_PROPERTY
+from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
 
 
 def get_schema(query_params):
@@ -30,14 +31,20 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     effective_context = {"@language": query_params.get("lang")}
     effective_context.update(context.context)
 
-    links = [{"rel": "create",
-              "method": "POST",
-              "href": "/{context_name}/{class_name}".format(**query_params)}]
-    obj_property_links = [{"rel": property_name,
-                           "href": "/{0}/{1}".format(*(uri.split(':')))}
-                           for property_name, uri in context.object_properties.items()]
+    request = query_params["request"]
+    base_url = "{0}://{1}{2}".format(request.protocol, request.host, request.path)
 
-    links.extend(obj_property_links)
+    links = [
+        {'rel': "self", 'href': base_url},
+        {'rel': "create", 'href': query_params['class_prefix'], 'method': "POST"},
+        {'rel': "delete", 'href': base_url, 'method': "DELETE"},
+        {'rel': "replace", 'href': base_url, 'method': "PUT"}
+    ]
+    # From the schema we would like to list instances from the respective collection
+    add_link(links, "instances", query_params['instance_prefix'])
+    # Add object-properties links that define  how to retrieve reference fields
+    for property_name, uri in context.object_properties.items():
+        add_link(links, property_name, "/{0}/{1}", *(uri.split(':')))
 
     schema = {
         "type": "object",

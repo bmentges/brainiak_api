@@ -52,20 +52,20 @@ Possible responses
 If there are instances that match the query, the response body is a JSON containing instances' titles, resources_id and @ids (URIs).
 By default, the first page containing 10 items is returned (``?page=1&per_page=10``).
 
-.. include :: examples/get_instance_200.rst
+.. include :: examples/list_instance_200.rst
 
 **Status 400**
 
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. include :: examples/get_instance_400.rst
+.. include :: examples/list_instance_400.rst
 
 **Status 404**
 
 If there are no instances, the response status code is a 404.
 
-.. include :: examples/get_instance_404.rst
+.. include :: examples/list_instance_404.rst
 
 **Status 500**
 

@@ -162,6 +162,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
         }
+
         processed_params = process_params(params)
         query = QUERY_FILTER_INSTANCE % processed_params
         computed = self.query(query)["results"]["bindings"]
@@ -175,7 +176,34 @@ class FilterInstancesQueryTestCase(QueryTestCase):
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
             }
         ]
+        self.assertEqual(expected, computed)
 
+    def test_sort_by_label_with_different_p(self):
+        params = {
+            "class_uri": 'http://tatipedia.org/SoccerClub',
+            "p": 'http://tatipedia.org/stadium',
+            "o": '?object',
+            "sort_by": "rdfs:label",
+            "sort_order": "asc",
+            "lang": "",
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0",
+        }
+        # /sports/stadium/?graph_uri=http://tatipedia.org/&class_uri=http://tatipedia.org/SoccerClub&sort_by=http://tatipedia.org/stadium
+        processed_params = process_params(params)
+        query = QUERY_FILTER_INSTANCE % processed_params
+        computed = self.query(query)["results"]["bindings"]
+        expected = [
+            {
+                u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
+            }
+        ]
         self.assertEqual(expected, computed)
 
     def test_process_params(self):

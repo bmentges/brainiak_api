@@ -19,7 +19,7 @@ Sample JSON "new_city.json" for the class City_:
 .. include :: examples/create_instance_payload.rst
 
 Note that prefixes are defined in the "@context" section.
-`Default prefixes  <http://api.semantica.dev.globoi.com/v2/_config/Prefixes>`_ are implicit and don't need to be declared.
+`Default prefixes  <http://api.semantica.dev.globoi.com/v2/prefixes>`_ are implicit and don't need to be declared.
 
 Besides using ``POST`` to create new instances, it is also possible to use ``PUT`` (for more information, see :ref:`edit_instance`).
 In this case, the ``instance_id`` should be provided, which must be unique in the specified context.

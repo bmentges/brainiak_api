@@ -3,7 +3,7 @@ from brainiak.utils.sparql import add_language_support
 from brainiak import triplestore
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids
-from brainiak.utils.links import build_links, add_link
+from brainiak.utils.links import crud_links, add_link, collection_links
 from brainiak.prefixes import MemorizeContext
 
 
@@ -33,15 +33,20 @@ def assemble_list_json(query_params, query_result_dict, total_items):
     request = query_params["request"]
     base_url = "{0}://{1}{2}".format(request.protocol, request.host, request.path)
 
-    links_section = build_links(
+    resource_url = "%s/{resource_id}" % normalize(base_url)
+    links = crud_links(base_url, resource_url, query_params) + \
+            collection_links(base_url, query_params, total_items)
+
+
+    links = crud_links(base_url, query_string=request.query) + collection_links(
         base_url,
+        query_string=request.query,
         page=int(query_params["page"]) + 1,  # API's pagination begin with 1, Virtuoso's with 0
         per_page=int(query_params["per_page"]),
-        total_items=total_items,
-        query_string=request.query)
+        total_items=total_items)
 
     # Per-service links
-    add_link(links_section, 'type', "{base_url}/{{resource_id}}/_schema", base_url=base_url)
+    add_link(links, 'type', "{base_url}/{{resource_id}}/_schema", base_url=base_url)
 
     context_section = context.context
     context_section.update({"@language": query_params.get("lang")})
@@ -49,7 +54,7 @@ def assemble_list_json(query_params, query_result_dict, total_items):
     json_dict = {
         'items': items_list,
         'item_count': total_items,
-        'links': links_section,
+        'links': links,
         '@context': context_section
     }
 

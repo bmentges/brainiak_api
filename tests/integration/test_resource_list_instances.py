@@ -505,7 +505,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             },
             {
                 'href': "http://localhost:5100/ctx/klass/",
-                'rel': "list"
+                'rel': "instances"
             },
             {
                 'href': "http://localhost:5100/ctx/klass/{resource_id}",

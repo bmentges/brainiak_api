@@ -46,7 +46,8 @@ LEGACY_PREFIXES = {
     "esportes": "http://semantica.globo.com/esportes/",
     "g1": "http://semantica.globo.com/G1/",
     "tvg": "http://semantica.globo.com/tvg/",
-    "eureka": "http://semantica.globo.com/eureka/"
+    "eureka": "http://semantica.globo.com/eureka/",
+    #"tpedia": "http://tatipedia.org/"
 }
 
 _MAP_SLUG_TO_PREFIX.update(STANDARD_PREFIXES)

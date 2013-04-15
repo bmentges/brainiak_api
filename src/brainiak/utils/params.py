@@ -52,7 +52,7 @@ class ParamDict(dict):
         effective_args = {}
         effective_args.update(kw)
         for key in ParamDict.essential_params:
-            if key in self["request"].args:
+            if key in self["request"].arguments:
                 effective_args[key] = self[key]
         return urlencode(effective_args, doseq=True)
 

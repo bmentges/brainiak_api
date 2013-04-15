@@ -2,7 +2,7 @@ import json
 from mock import patch as patch_mock
 from tornado.web import Application, HTTPError
 from brainiak.handlers import BrainiakRequestHandler
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
 class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):

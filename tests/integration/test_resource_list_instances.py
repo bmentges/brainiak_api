@@ -5,7 +5,9 @@ from mock import patch
 from brainiak import triplestore
 from brainiak.instance import list_resource
 from brainiak.instance.list_resource import process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
-from tests import TornadoAsyncHTTPTestCase, MockRequest
+from brainiak.utils.params import ParamDict
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
+from tests.mocks import   MockRequest, MockHandler
 from tests.sparql import QueryTestCase
 
 
@@ -486,33 +488,32 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEquals(response, None)
 
     def test_filter_instances_result_is_not_empty(self):
-        query_string = "page=2&per_page=3"  # page based on API (begins with 1)
         sample_json = {"results": {"bindings": []}}
         count_json = {"results": {"bindings": [{"total": {"value": "12"}}]}}
         list_resource.query_filter_instances = lambda params: sample_json
         list_resource.query_count_filter_instances = lambda params: count_json
-        params = {"context_name": "ctx",
+        params = {
+          "context_name": "ctx",
           "class_name": "klass",
-          "request": MockRequest(query_string=query_string),
           "per_page": "3",
-          "page": "1",
+          "page": "2",
           "sort_by": ""}
-        response = list_resource.filter_instances(params)  # page based on virtuoso (begins with 0)
+
+        handler = MockHandler(uri="http://localhost:5100/ctx/klass")
+        query_params = ParamDict(handler, **params)
+        response = list_resource.filter_instances(query_params)  # page based on virtuoso (begins with 0)
         expected_links = [
             {
                 'href': "http://localhost:5100/ctx/klass/?page=2&per_page=3",
+                'method': "GET",
                 'rel': "self"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass/",
-                'rel': "instances"
             },
             {
                 'href': "http://localhost:5100/ctx/klass/{resource_id}",
                 'rel': "item"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/",
+                'href': "http://localhost:5100/ctx/klass",
                 'method': "POST",
                 'rel': "create"
             },
@@ -550,4 +551,4 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             }
         ]
         self.assertEquals(response["item_count"], 12)
-        self.assertEquals(response["links"], expected_links)
+        self.assertEquals(sorted(response["links"]), sorted(expected_links))

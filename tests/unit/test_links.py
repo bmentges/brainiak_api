@@ -1,9 +1,12 @@
 import unittest
 
 from brainiak.utils.links import crud_links, get_last_page, get_next_page, get_previous_page, split_into_chunks, add_link, collection_links
+from brainiak.utils.params import ParamDict
+from tests.mocks import MockHandler
 
 
 class LinksTestCase(unittest.TestCase):
+    maxDiff = None
 
     def test_add_link(self):
         link_list = []
@@ -47,108 +50,61 @@ class LinksTestCase(unittest.TestCase):
         self.assertEqual(computed, expected)
 
     def test_build_links_without_previous_without_next(self):
-        class_uri = "http://class.uri"
-        page = 1
-        per_page = 1
         total_items = 1
-        query_string = ""
-        computed = nav_links(class_uri, query_string, page, per_page, total_items)
+        handler = MockHandler(uri="http://class.uri")
+        params = {'page': 1, 'per_page': 1}
+        query_params = ParamDict(handler, **params)
+        computed = collection_links(query_params, total_items)
         expected = [
-            {
-                'href': "http://class.uri?page=1",
-                'method': "GET",
-                'rel': "first"
-            },
-            {
-                'href': "http://class.uri?page=1",
-                'method': "GET",
-                'rel': "last"
-            }
-        ]
-        self.assertEqual(computed, expected)
+            {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
+            {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
+            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'last'},
+            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'previous'}]
+        self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_links_without_previous_with_next(self):
-        class_uri = "http://class.uri"
-        page = 1
-        per_page = 1
         total_items = 2
-        query_string = ""
-        computed = nav_links(class_uri, query_string, page, per_page, total_items)
+        params = {'page': 1, 'per_page': 1}
+        handler = MockHandler(uri="http://class.uri", **params)
+        query_params = ParamDict(handler, **params)
+        computed = collection_links(query_params, total_items)
         expected = [
-            {
-                'href': "http://class.uri?page=1",
-                'method': "GET",
-                'rel': "first"
-            },
-            {
-                'href': "http://class.uri?page=2",
-                'method': "GET",
-                'rel': "last"
-            },
-            {
-                'href': "http://class.uri?page=2",
-                'method': "GET",
-                'rel': "next"
-            }
-        ]
-        self.assertEqual(computed, expected)
+            {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
+            {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
+            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://class.uri?page=2', 'method': 'GET', 'rel': 'last'},
+            {'href': 'http://class.uri?page=2', 'method': 'GET', 'rel': 'next'}]
+        self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_links_with_previous_without_next(self):
-        class_uri = "http://class.uri"
-        page = 2
-        per_page = 1
         total_items = 2
-        query_string = ""
-        computed = nav_links(class_uri, query_string, page, per_page, total_items)
+        handler = MockHandler(uri="http://class.uri")
+        params = {'page': 2, 'per_page': 1}
+        query_params = ParamDict(handler, **params)
+        computed = collection_links(query_params, total_items)
         expected = [
-            {
-                'href': "http://class.uri?page=1",
-                'method': "GET",
-                'rel': "first"
-            },
-            {
-                'href': "http://class.uri?page=2",
-                'method': "GET",
-                'rel': "last"
-            },
-            {
-                'href': "http://class.uri?page=1",
-                'method': "GET",
-                'rel': "previous"
-            }
-        ]
-        self.assertEqual(computed, expected)
+            {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
+            {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
+            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://class.uri?page=2', 'method': 'GET', 'rel': 'last'},
+            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'previous'}]
+        self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_links_with_previous_with_next(self):
-        class_uri = "http://class.uri"
-        page = 2
-        per_page = 1
         total_items = 3
-        query_string = ""
-        computed = nav_links(class_uri, query_string, page, per_page, total_items)
+        handler = MockHandler(uri="http://class.uri")
+        params = {'page': 2, 'per_page': 1}
+        query_params = ParamDict(handler, **params)
+        computed = collection_links(query_params, total_items)
         expected = [
-            {
-                'href': "http://class.uri?page=1",
-                'method': "GET",
-                'rel': "first"
-            },
-            {
-                'href': "http://class.uri?page=3",
-                'method': "GET",
-                'rel': "last"
-            },
-            {
-                'href': "http://class.uri?page=1",
-                'method': "GET",
-                'rel': "previous"
-            },
-            {
-                'href': "http://class.uri?page=3",
-                'method': "GET",
-                'rel': "next"
-            }
-        ]
-        self.assertEqual(computed, expected)
+            {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
+            {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
+            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://class.uri?page=3', 'method': 'GET', 'rel': 'last'},
+            {'href': 'http://class.uri?page=3', 'method': 'GET', 'rel': 'next'},
+            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'previous'}]
+        self.assertEqual(sorted(computed), sorted(expected))
 
     def test_split_into_chunks_empty(self):
         items = []
@@ -167,3 +123,25 @@ class LinksTestCase(unittest.TestCase):
         computed_chunks = split_into_chunks(items, 3)
         expected_chunks = [['a', 'b', 'c'], ['d', 'e']]
         self.assertEqual(computed_chunks, expected_chunks)
+
+
+# def test_build_json(self):
+#     contexts = ["a", "b", "c"]
+#     params = {"per_page": "3", "page": "0"}
+#     total_items = 6
+#     request = MockRequest(uri='http://localhost:5100/')
+#     computed = build_json(contexts, total_items, params, request)
+#     self.assertEqual(computed['items'], ["a", "b", "c"])
+#     self.assertEqual(computed['item_count'], 6)
+#     expected_links = [
+#         {'rel': 'self', 'href': 'http://localhost:5100/'},
+#         {'rel': 'instances', 'href': 'http://localhost:5100/'},
+#         {'rel': 'item', 'href': 'http://localhost:5100/{resource_id}'},
+#         {'rel': 'create', 'href': 'http://localhost:5100/', 'method': 'POST'},
+#         {'rel': 'delete', 'href': 'http://localhost:5100/{resource_id}', 'method': 'DELETE'},
+#         {'rel': 'replace', 'href': 'http://localhost:5100/{resource_id}', 'method': 'PUT'},
+#         {'rel': 'first', 'href': 'http://localhost:5100/?page=1', 'method': 'GET'},
+#         {'rel': 'last', 'href': 'http://localhost:5100/?page=2', 'method': 'GET'},
+#         {'rel': 'next', 'href': 'http://localhost:5100/?page=2', 'method': 'GET'}
+#     ]
+#     self.assertEqual(computed['links'], expected_links)

@@ -1,10 +1,10 @@
-import json
+
 import unittest
 
 import brainiak.schema.resource as schema
 from brainiak import prefixes
 from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict, get_super_properties, normalize_predicate_range, merge_ranges, join_predicates, get_common_key
-from tests import TornadoAsyncTestCase
+
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):

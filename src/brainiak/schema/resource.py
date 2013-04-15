@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from brainiak.prefixes import MemorizeContext, shorten_uri
+from brainiak.prefixes import MemorizeContext
 from brainiak.utils.sparql import get_one_value, filter_values, add_language_support
 from brainiak import triplestore
-from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_type, items_from_range, OBJECT_PROPERTY
+from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
 
 
 def get_schema(query_params):

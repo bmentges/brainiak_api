@@ -32,6 +32,10 @@ Optional parameters
 
 **o**: Filters the instances that have the (**o**)bject specified used in a triple.
 
+**sort_by**: Defines predicate used to order instances. E.g: ``sort_by=rdfs:label`` or ``sort_by=dbpprop:stadium``.
+
+**sort_order**: Defines if ordering will be ascending or descending. The default is ascending. E.g: ``sort_order=asc`` or ``sort_order=desc``.
+
 By combining ``p`` and ``o`` parameters you can specify a filter for instances that have
 this property and object values. For exeample:
 

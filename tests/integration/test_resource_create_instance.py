@@ -4,7 +4,7 @@ from mock import patch
 from brainiak.instance import create_resource
 from brainiak.instance.get_resource import QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE
 from brainiak.schema import resource as schema_resource
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 

@@ -2,7 +2,7 @@
 import json
 from mock import patch
 from brainiak import __version__, settings, server
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
 class TestInstanceResource(TornadoAsyncHTTPTestCase):
@@ -35,12 +35,18 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         u'$schema': u'http://json-schema.org/draft-03/schema#',
         u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
         u'@id': u'person:Gender',
-        u'links': [{u'href': u'/person/Gender', u'method': u'POST', u'rel': u'create'}],
+        u'links': [
+            {u'href': u'http://localhost:10023/person/Gender/_schema', u'rel': u'self'},
+            {u'href': u'http://localhost:10023/person/', u'method': u'POST', u'rel': u'create'},
+            {u'href': u'http://localhost:10023/person/Gender/_schema', u'method': u'DELETE', u'rel': u'delete'},
+            {u'href': u'http://localhost:10023/person/Gender/_schema', u'method': u'PUT', u'rel': u'replace'},
+            {u'href': u'http://localhost:10023/person/Gender/', u'rel': u'instances'}],
         u'properties': {},
         u'title': u"Gênero da Pessoa",
         u'comment': u"Gênero de uma pessoa.",
         u'type': u'object'
     }
+
     maxDiff = None
 
     def test_collection_has_options(self):

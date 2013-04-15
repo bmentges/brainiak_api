@@ -1,12 +1,9 @@
 # coding: utf-8
 import unittest
-
 import SPARQLWrapper
-import tornado
 from mock import patch
-
-from brainiak import triplestore, greenlet_tornado
-from tests import TornadoAsyncTestCase
+from brainiak import triplestore
+from tests.tornado_cases import TornadoAsyncTestCase
 
 
 class TriplestoreInitTestCase(TornadoAsyncTestCase):

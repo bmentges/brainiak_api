@@ -4,7 +4,7 @@ from tornado.httpclient import HTTPError
 
 from brainiak import triplestore
 from brainiak import greenlet_tornado
-from tests import TornadoAsyncTestCase
+from tests.tornado_cases import TornadoAsyncTestCase
 
 SIMPLE_COUNT_CLASSES_QUERY = "SELECT COUNT(*) WHERE {?s a owl:Class}"
 

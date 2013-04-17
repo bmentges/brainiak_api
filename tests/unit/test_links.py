@@ -1,4 +1,7 @@
 import unittest
+from urllib import urlencode
+from brainiak import settings
+from brainiak.handlers import ListServiceParams
 
 from brainiak.utils.links import crud_links, get_last_page, get_next_page, get_previous_page, split_into_chunks, add_link, collection_links
 from brainiak.utils.params import ParamDict
@@ -106,20 +109,24 @@ class LinksTestCase(unittest.TestCase):
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
         self.assertEqual(sorted(computed), sorted(expected))
 
-    # def test_build_links_with_param_instance_prefix(self):
-    #     total_items = 3
-    #     params = {'instance_prefix': 'base'}
-    #     handler = MockHandler(uri="http://class.uri", **params)
-    #     query_params = ParamDict(handler, **params)
-    #     computed = collection_links(query_params, total_items)
-    #     expected = [
-    #         {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
-    #         {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
-    #         {'href': 'http://class.uri?instance_prefix=base', 'method': 'GET', 'rel': 'first'},
-    #         {'href': 'http://class.uri?instance_prefix=base', 'method': 'GET', 'rel': 'last'},
-    #         {'href': 'http://class.uri?instance_prefix=base', 'method': 'GET', 'rel': 'next'},
-    #         {'href': 'http://class.uri?instance_prefix=base', 'method': 'GET', 'rel': 'previous'}]
-    #     self.assertEqual(sorted(computed), sorted(expected))
+    def test_build_links_with_param_instance_prefix(self):
+        total_items = 3
+        params = {'instance_prefix': 'http://semantica.globo.com/base/'}
+        handler = MockHandler(uri="http://class.uri", **params)
+        query_params = ListServiceParams(handler, **params)
+        computed = collection_links(query_params, total_items)
+        all_args = {'per_page': settings.DEFAULT_PER_PAGE,
+                    'page': '1'}
+        all_args.update(params)
+        inst_arg_str = urlencode(params, doseq=True)
+        all_args_str = urlencode(all_args, doseq=True)
+        expected = [
+            {'href': 'http://class.uri?{0}'.format(inst_arg_str), 'method': 'POST', 'rel': 'create'},
+            {'href': 'http://class.uri/{{resource_id}}?{0}'.format(inst_arg_str), 'method': 'GET', 'rel': 'item'},
+            {'href': 'http://class.uri?{0}'.format(all_args_str), 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://class.uri?{0}'.format(all_args_str), 'method': 'GET', 'rel': 'last'}]
+
+        self.assertEqual(sorted(computed), sorted(expected))
 
     def test_split_into_chunks_empty(self):
         items = []

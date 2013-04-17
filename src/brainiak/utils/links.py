@@ -44,39 +44,48 @@ def collection_links(query_params, total_items):
     args = query_params.args()
     if args:
         base_url_with_default_params = "{0}?{1:s}".format(base_url, args)
-        #class_url = "{0}/_schema?{1:s}".format(base_url, args)
         item_url = "{0}/{{resource_id}}?{1:s}".format(base_url, args)
     else:
         base_url_with_default_params = base_url
-        #class_url = "{0}/_schema".format(base_url)
         item_url = "{0}/{{resource_id}}".format(base_url)
     links = [
         {'rel': "create", 'href': base_url_with_default_params, 'method': "POST"},
         {'rel': "item", 'href': item_url, 'method': "GET"},
-        #{'rel': "itemDescribedBy", 'href': class_url, 'method': "GET"},
-        {'rel': "first", 'href': "%s?%s" % (base_url, query_params.args(page=1)), 'method': "GET"},
-        {'rel': "last", 'href': "%s?%s" % (base_url, query_params.args(page=last_page)), 'method': "GET"}
+        {'rel': "first", 'href': "%s?%s" % (base_url, query_params.args(page=1, per_page=per_page)), 'method': "GET"},
+        {'rel': "last", 'href': "%s?%s" % (base_url, query_params.args(page=last_page, per_page=per_page)), 'method': "GET"}
     ]
     if previous_page:
         links.append({'rel': "previous",
-                      'href': "%s?%s" % (base_url, query_params.args(page=previous_page)),
+                      'href': "%s?%s" % (base_url, query_params.args(page=previous_page, per_page=per_page)),
                       'method': "GET"})
     if next_page:
         links.append({'rel': "next",
-                      'href': "%s?%s" % (base_url, query_params.args(page=next_page)),
+                      'href': "%s?%s" % (base_url, query_params.args(page=next_page, per_page=per_page)),
                       'method': "GET"})
     return links
 
 
 def crud_links(query_params):
     """Build crud links."""
-    base_url = query_params.base_url
+    base_url = remove_last_slash(query_params.base_url)
+    try:
+        page = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
+        per_page = int(query_params["per_page"])
+    except KeyError:
+        pass
+
     resource_url = remove_last_slash(query_params.resource_url)
-    args = query_params.args()
+
+    if 'page' in query_params['request'].arguments:
+        args = query_params.args(page=page, per_page=per_page)
+    else:
+        args = query_params.args()
+
     if args:
         base_url_with_params = "{0}?{1:s}".format(base_url, args)
     else:
         base_url_with_params = remove_last_slash(base_url)
+
     links = [
         {'rel': "self", 'href': base_url_with_params, 'method': "GET"},
         {'rel': "delete", 'href': resource_url, 'method': "DELETE"},

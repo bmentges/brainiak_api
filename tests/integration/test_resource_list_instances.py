@@ -499,23 +499,29 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "2",
             "sort_by": ""}
 
-        handler = MockHandler(uri="http://localhost:5100/ctx/klass")
+        handler = MockHandler(uri="http://localhost:5100/ctx/klass", **params)
         query_params = ParamDict(handler, **params)
         response = list_resource.filter_instances(query_params)  # page based on virtuoso (begins with 0)
         expected_links = [
             {
-                'href': "http://localhost:5100/ctx/klass/?page=2&per_page=3",
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=2",
                 'method': "GET",
                 'rel': "self"
             },
             {
                 'href': "http://localhost:5100/ctx/klass/{resource_id}",
+                'method': "GET",
                 'rel': "item"
             },
             {
                 'href': "http://localhost:5100/ctx/klass",
                 'method': "POST",
                 'rel': "create"
+            },
+            {
+                'href': "http://localhost:5100/ctx/klass/_schema",
+                'method': "GET",
+                'rel': "itemDescribedBy"
             },
             {
                 'href': "http://localhost:5100/ctx/klass/{resource_id}",
@@ -530,22 +536,22 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
             },
             {
-                'href': "http://localhost:5100/ctx/klass/?per_page=3&page=1",
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
                 'method': "GET",
                 'rel': "first"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/?per_page=3&page=4",
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=4",
                 'method': "GET",
                 'rel': "last"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/?per_page=3&page=1",
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
                 'method': "GET",
                 'rel': "previous"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/?per_page=3&page=3",
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=3",
                 'method': "GET",
                 'rel': "next"
             }

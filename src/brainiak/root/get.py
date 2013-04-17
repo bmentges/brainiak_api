@@ -3,7 +3,7 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug
 from brainiak.utils import sparql
-from brainiak.utils.links import crud_links, split_into_chunks, collection_links
+from brainiak.utils.links import crud_links, split_into_chunks, collection_links, add_link
 
 # Note that pagination was done outside the query
 # because we are filtering query results based on prefixes
@@ -30,6 +30,11 @@ def list_all_contexts(params):
     contexts = contexts_pages[int(params["page"])]
 
     links = crud_links(params) + collection_links(params, total_items)
+    add_link(links,
+             "itemDescribedBy",
+             "{base_url}{{resource_id}}/_schema",
+             base_url=params.base_url)
+
     json = {
         'items': contexts,
         'item_count': total_items,

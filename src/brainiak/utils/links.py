@@ -36,7 +36,7 @@ def get_next_page(page, last_page):
 
 def collection_links(query_params, total_items):
     base_url = remove_last_slash(query_params.base_url)
-    page = int(query_params["page"]) + 1 # Params class subtracts 1 from given param
+    page = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
     per_page = int(query_params["per_page"])
     last_page = get_last_page(total_items, per_page)
     previous_page = get_previous_page(page)
@@ -85,6 +85,6 @@ def crud_links(query_params):
     return links
 
 
-def add_link(link_list, rel, href, **kw):
+def add_link(link_list, rel, href, method='GET', **kw):
     "Add an entry to the list given by ``link_list'' with key==rel and href as a string template that is formated by kw"
-    link_list.append({'rel': rel, 'href': href.format(**kw)})
+    link_list.append({'rel': rel, 'method': method, 'href': href.format(**kw)})

@@ -106,6 +106,21 @@ class LinksTestCase(unittest.TestCase):
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
         self.assertEqual(sorted(computed), sorted(expected))
 
+    # def test_build_links_with_param_instance_prefix(self):
+    #     total_items = 3
+    #     params = {'instance_prefix': 'base'}
+    #     handler = MockHandler(uri="http://class.uri", **params)
+    #     query_params = ParamDict(handler, **params)
+    #     computed = collection_links(query_params, total_items)
+    #     expected = [
+    #         {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
+    #         {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
+    #         {'href': 'http://class.uri?instance_prefix=base', 'method': 'GET', 'rel': 'first'},
+    #         {'href': 'http://class.uri?instance_prefix=base', 'method': 'GET', 'rel': 'last'},
+    #         {'href': 'http://class.uri?instance_prefix=base', 'method': 'GET', 'rel': 'next'},
+    #         {'href': 'http://class.uri?instance_prefix=base', 'method': 'GET', 'rel': 'previous'}]
+    #     self.assertEqual(sorted(computed), sorted(expected))
+
     def test_split_into_chunks_empty(self):
         items = []
         computed_chunks = split_into_chunks(items, 1)

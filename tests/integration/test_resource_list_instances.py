@@ -7,7 +7,7 @@ from brainiak.instance import list_resource
 from brainiak.instance.list_resource import process_params, query_filter_instances, QUERY_COUNT_FILTER_INSTANCE, QUERY_FILTER_INSTANCE
 from brainiak.utils.params import ParamDict
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
-from tests.mocks import   MockRequest, MockHandler
+from tests.mocks import MockHandler
 from tests.sparql import QueryTestCase
 
 
@@ -493,11 +493,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         list_resource.query_filter_instances = lambda params: sample_json
         list_resource.query_count_filter_instances = lambda params: count_json
         params = {
-          "context_name": "ctx",
-          "class_name": "klass",
-          "per_page": "3",
-          "page": "2",
-          "sort_by": ""}
+            "context_name": "ctx",
+            "class_name": "klass",
+            "per_page": "3",
+            "page": "2",
+            "sort_by": ""}
 
         handler = MockHandler(uri="http://localhost:5100/ctx/klass")
         query_params = ParamDict(handler, **params)

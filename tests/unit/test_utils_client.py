@@ -3,19 +3,7 @@
 from unittest import TestCase
 from brainiak.utils.client import extract_keys, requests, fetch_page, fetch_all_pages
 from brainiak.utils import client
-
-
-class MockRequest(object):
-
-    def __init__(self, status_code, json):
-        self.status_code = status_code
-        self._json = json
-
-    def __call__(self, *args, **kw):
-        return self
-
-    def json(self):
-        return self._json
+from tests.mocks import MockSimpleRequest
 
 
 class ClientTestCase(TestCase):
@@ -33,7 +21,7 @@ class ClientTestCase(TestCase):
 
     def test_fetch_page(self):
         expected_json_dict = {"a", 1}
-        requests.get = MockRequest(status_code=200, json=expected_json_dict)
+        requests.get = MockSimpleRequest(status_code=200, json=expected_json_dict)
         status_code, json_response = fetch_page("http://localhost:5100")
         self.assertEqual(status_code, 200)
         self.assertEqual(json_response, expected_json_dict)

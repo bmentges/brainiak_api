@@ -277,7 +277,7 @@ class RootHandler(BrainiakRequestHandler):
         with safe_params():
             self.query_params = ListServiceParams(self)
 
-        response = list_all_contexts(self.query_params, self.request)
+        response = list_all_contexts(self.query_params)
 
         self.finalize(response)
 

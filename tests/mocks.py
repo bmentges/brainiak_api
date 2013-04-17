@@ -3,6 +3,19 @@ from urlparse import urlparse
 from brainiak.utils.params import normalize_last_slash
 
 
+class MockSimpleRequest(object):
+
+    def __init__(self, status_code, json):
+        self.status_code = status_code
+        self._json = json
+
+    def __call__(self, *args, **kw):
+        return self
+
+    def json(self):
+        return self._json
+
+
 class MockRequest(object):
 
     def __init__(self,

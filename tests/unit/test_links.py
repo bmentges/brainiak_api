@@ -10,13 +10,13 @@ class LinksTestCase(unittest.TestCase):
 
     def test_add_link(self):
         link_list = []
-        expected_link_list = [{'rel': 'rel_key', 'href': 'http://A/B'}]
+        expected_link_list = [{'rel': 'rel_key', 'method': 'GET', 'href': 'http://A/B'}]
         add_link(link_list, "rel_key", "http://{a}/{b}", a="A", b="B")
         self.assertEqual(link_list, expected_link_list)
 
     def test_add_link_with_exact_href(self):
         link_list = []
-        expected_link_list = [{'rel': 'rel_key', 'href': 'http://A/B'}]
+        expected_link_list = [{'rel': 'rel_key', 'method': 'GET', 'href': 'http://A/B'}]
         add_link(link_list, "rel_key", "http://A/B")
         self.assertEqual(link_list, expected_link_list)
 
@@ -79,8 +79,8 @@ class LinksTestCase(unittest.TestCase):
 
     def test_build_links_with_previous_without_next(self):
         total_items = 2
-        handler = MockHandler(uri="http://class.uri")
         params = {'page': 2, 'per_page': 1}
+        handler = MockHandler(uri="http://class.uri", **params)
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params, total_items)
         expected = [
@@ -93,8 +93,8 @@ class LinksTestCase(unittest.TestCase):
 
     def test_build_links_with_previous_with_next(self):
         total_items = 3
-        handler = MockHandler(uri="http://class.uri")
         params = {'page': 2, 'per_page': 1}
+        handler = MockHandler(uri="http://class.uri", **params)
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params, total_items)
         expected = [

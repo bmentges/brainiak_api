@@ -6,7 +6,6 @@ from brainiak import prefixes
 from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict, get_super_properties, normalize_predicate_range, merge_ranges, join_predicates, get_common_key
 
 
-
 class AuxiliaryFunctionsTestCase(unittest.TestCase):
     maxDiff = None
 
@@ -57,7 +56,6 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                    'minItems': u'1',
                                    'title': u'Sexo',
                                    'type': 'string'}
-        # params
         name = u'http://test/person/gender'
         predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/gender'},
                      u'range': {u'type': u'uri', u'value': u'http://test/person/Gender'},
@@ -79,7 +77,6 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                    'graph': 'test',
                                    'title': u'Nome',
                                    'type': 'string'}
-        # params
         name = u'http://test/person/gender'
         predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/name'},
                      u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
@@ -321,7 +318,6 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         self.assertEqual(computed, expected)
 
     def test_convert_bindings_dict_two_predicates_single_range(self):
-        # FIXME
         class ContextMock(prefixes.MemorizeContext):
             object_properties = {}
             context = {'g1': 'http://semantica.globo.com/G1/'}

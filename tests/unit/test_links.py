@@ -58,9 +58,9 @@ class LinksTestCase(unittest.TestCase):
         expected = [
             {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
             {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
-            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'first'},
-            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'last'},
-            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'previous'}]
+            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'last'},
+            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_links_without_previous_with_next(self):
@@ -72,9 +72,9 @@ class LinksTestCase(unittest.TestCase):
         expected = [
             {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
             {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
-            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'first'},
-            {'href': 'http://class.uri?page=2', 'method': 'GET', 'rel': 'last'},
-            {'href': 'http://class.uri?page=2', 'method': 'GET', 'rel': 'next'}]
+            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'last'},
+            {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'next'}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_links_with_previous_without_next(self):
@@ -86,9 +86,9 @@ class LinksTestCase(unittest.TestCase):
         expected = [
             {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
             {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
-            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'first'},
-            {'href': 'http://class.uri?page=2', 'method': 'GET', 'rel': 'last'},
-            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'previous'}]
+            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'last'},
+            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_links_with_previous_with_next(self):
@@ -100,10 +100,10 @@ class LinksTestCase(unittest.TestCase):
         expected = [
             {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
             {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
-            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'first'},
-            {'href': 'http://class.uri?page=3', 'method': 'GET', 'rel': 'last'},
-            {'href': 'http://class.uri?page=3', 'method': 'GET', 'rel': 'next'},
-            {'href': 'http://class.uri?page=1', 'method': 'GET', 'rel': 'previous'}]
+            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://class.uri?per_page=1&page=3', 'method': 'GET', 'rel': 'last'},
+            {'href': 'http://class.uri?per_page=1&page=3', 'method': 'GET', 'rel': 'next'},
+            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_split_into_chunks_empty(self):

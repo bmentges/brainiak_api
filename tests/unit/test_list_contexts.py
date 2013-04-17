@@ -72,8 +72,8 @@ class GetContextTestCase(unittest.TestCase):
             {'rel': 'create', 'href': base_url, 'method': 'POST'},
             {'rel': 'delete', 'href': base_url + '/{resource_id}', 'method': 'DELETE'},
             {'rel': 'replace', 'href': base_url + '/{resource_id}', 'method': 'PUT'},
-            {'rel': 'first', 'href': base_url + '?page=1', 'method': 'GET'},
-            {'rel': 'last', 'href': base_url + '?page=1', 'method': 'GET'},
+            {'rel': 'first', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
+            {'rel': 'last', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
         ]
         self.assertEqual(sorted(computed["links"]), sorted(expected_links))
 

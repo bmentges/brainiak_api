@@ -1,7 +1,7 @@
 # coding: utf-8
 from mock import patch
 from brainiak import __version__, settings
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
 class TestHealthcheckResource(TornadoAsyncHTTPTestCase):

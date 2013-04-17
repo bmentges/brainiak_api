@@ -3,25 +3,7 @@ from brainiak.handlers import ListServiceParams
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
 from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS
-
-
-class MockHandler():
-
-    def __init__(self, **kw):
-        self.kw = kw
-
-    def get_argument(self, key):
-        return self.kw.get(key)
-
-    @property
-    def request(self):
-        class Dummy(object):
-            @property
-            def arguments(inner_self):
-                return self.kw.keys()
-
-        d = Dummy()
-        return d
+from tests.mocks import MockHandler
 
 
 class DefaultParamsTest(TestCase):

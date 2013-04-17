@@ -1,7 +1,7 @@
 from mock import patch
 import json
 
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from brainiak.prefixes import ROOT_CONTEXT
 
 

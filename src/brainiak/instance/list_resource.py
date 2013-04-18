@@ -1,3 +1,5 @@
+import inspect
+
 from brainiak import settings, triplestore
 from brainiak.prefixes import expand_uri, shorten_uri
 from brainiak.utils.links import build_links
@@ -30,6 +32,151 @@ OFFSET %(offset)s
 """
 
 ORDER_BY = "ORDER BY %(sort_order)s(?sort_object)"
+
+
+# TODO: move to sparql utils
+# TODO: test
+def normalize_term(term, language=""):
+    language_tag = "@%s" % language if language else ""
+    if (not term.startswith("?")):
+        if (":" in term):
+            term = "<%s>" % expand_uri(term)
+        else:
+            term = '"%s"%s' % (term, language_tag)
+    return term
+
+
+# TODO: test
+class Query(object):
+
+    skeleton = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT DISTINCT %(variables)s
+        WHERE {
+            %(triples)s
+            %(filter)s
+        }
+        %(sortby)s
+        LIMIT %(per_page)s
+        OFFSET %(offset)s
+    """
+
+    def __init__(self, params):
+        self.params = params
+
+    def should_add_predicate_and_object(self, predicate, object_):
+        predicate = shorten_uri(predicate) if not predicate.startswith("?") else predicate
+
+        generic_po = predicate.startswith("?") and object_.startswith("?")
+        rdfs_repetition = (predicate == "rdfs:label") and object_.startswith("?")
+
+        return not generic_po and not rdfs_repetition
+
+    @property
+    def triples(self):
+        tuples = [
+            ("a", "<%(class_uri)s>"),
+            ("rdfs:label", "?label")
+        ]
+
+        predicate = self.params["p"]
+        object_ = self.params["o"]
+        if self.should_add_predicate_and_object(predicate, object_):
+            predicate = normalize_term(predicate, self.params["lang"])
+            object_ = normalize_term(object_, self.params["lang"])
+            tuples.append((predicate, object_))
+
+        sort_object = self.get_sort_variable()
+        if sort_object == "?sort_object":
+            sort_predicate = normalize_term(self.params["sort_by"])
+            tuples.append((sort_predicate, sort_object))
+
+        tuples_strings = ["%s %s" % each_tuple for each_tuple in tuples]
+        statement = "?subject " + " ;\n".join(tuples_strings) + " ."
+
+        return statement % self.params
+
+    @property
+    def filter(self):
+        translatables = ["?label"]
+        statement = ""
+        filter_list = []
+        FILTER_CLAUSE = 'FILTER(langMatches(lang(%(variable)s), "%(lang)s") OR langMatches(lang(%(variable)s), "")) .'
+        if self.params["lang"]:
+            for variable in translatables:
+                statement = FILTER_CLAUSE % {
+                    "variable": variable,
+                    "lang": self.params["lang"]
+                }
+                filter_list.append(statement)
+
+        if filter_list:
+            statement = "\n".join(filter_list)
+
+        return statement
+
+    @property
+    def offset(self):
+        page = int(self.params.get("page", settings.DEFAULT_PAGE))
+        per_page = int(self.params.get("per_page", settings.DEFAULT_PER_PAGE))
+        return str(page * per_page)
+
+    def get_sort_variable(self):
+        sort_predicate = self.params["sort_by"]
+        if sort_predicate:
+            sort_predicate = shorten_uri(sort_predicate) if not sort_predicate.startswith("?") else sort_predicate
+
+            predicate = self.params["p"]
+            predicate = shorten_uri(predicate) if not predicate.startswith("?") else predicate
+
+            object_ = self.params["o"]
+
+            sort_label = "?sort_object"
+            if (sort_predicate == "rdfs:label"):
+                sort_label = "?label"
+            elif (sort_predicate == predicate) and object_.startswith("?"):
+                sort_label = object_
+            elif (sort_predicate == predicate) and not object_.startswith("?"):
+                sort_label = ""
+        else:
+            sort_label = ""
+
+        return sort_label
+
+    @property
+    def sortby(self):
+        SORT_CLAUSE = "ORDER BY %(sort_order)s(%(variable)s)"
+        sort_variable = self.get_sort_variable()
+        statement = ""
+        if sort_variable:
+            statement = SORT_CLAUSE % {
+                "sort_order": self.params["sort_order"].upper(),
+                "variable": sort_variable
+            }
+        return statement
+
+    @property
+    def variables(self):
+        items = ["?label", "?subject"]
+
+        predicate = self.params["p"]
+        object_ = self.params["o"]
+        if self.should_add_predicate_and_object(predicate, object_):
+            if predicate.startswith("?"):
+                items.append(predicate)
+            elif object_.startswith("?"):
+                items.append(object_)
+
+        sort_variable = self.get_sort_variable()
+        if sort_variable:
+            items.append(sort_variable)
+
+        items = sorted(set(items))
+        return ", ".join(items)
+
+    def to_string(self):
+        params = dict(inspect.getmembers(self), **self.params)
+        return self.skeleton % params
 
 
 def process_params(query_params):

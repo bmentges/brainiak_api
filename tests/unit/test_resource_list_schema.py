@@ -1,10 +1,8 @@
-import json
 import unittest
 
 import brainiak.schema.resource as schema
 from brainiak import prefixes
 from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict, get_super_properties, normalize_predicate_range, merge_ranges, join_predicates, get_common_key
-from tests import TornadoAsyncTestCase
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):
@@ -57,7 +55,6 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                    'minItems': u'1',
                                    'title': u'Sexo',
                                    'type': 'string'}
-        # params
         name = u'http://test/person/gender'
         predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/gender'},
                      u'range': {u'type': u'uri', u'value': u'http://test/person/Gender'},
@@ -79,7 +76,6 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                    'graph': 'test',
                                    'title': u'Nome',
                                    'type': 'string'}
-        # params
         name = u'http://test/person/gender'
         predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/name'},
                      u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
@@ -258,25 +254,25 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
 
         class ContextMock(prefixes.MemorizeContext):
             object_properties = {}
-            context = {'g1': 'http://semantica.globo.com/G1/'}
+            context = {'test': 'http://test.graph/'}
 
         context = ContextMock()
         cardinalities = {}
         bindings = [
             {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/data_de_criacao_do_conteudo'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.graph/creation_date'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#dateTime'},
-                u'title': {u'type': u'literal', u'value': u'Data de cria\xe7\xe3o do conte\xfado'},
+                u'title': {u'type': u'literal', u'value': u'Creation Date'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             }
         ]
 
         computed = convert_bindings_dict(context, bindings, cardinalities)
         expected = {
-            'base:data_de_criacao_do_conteudo': {
-                'graph': 'glb',
-                'title': u'Data de cria\xe7\xe3o do conte\xfado',
+            'http://test.graph/creation_date': {
+                'graph': 'http://test.graph/',
+                'title': u'Creation Date',
                 'type': 'string',
                 'format': 'date'
             }
@@ -288,31 +284,31 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
 
         class ContextMock(prefixes.MemorizeContext):
             object_properties = {}
-            context = {'g1': 'http://semantica.globo.com/G1/'}
+            context = {'test': 'http://test.graph/'}
 
         context = ContextMock()
         cardinalities = {}
         bindings = [
             {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_entidade'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Criatura'},
-                u'title': {u'type': u'literal', u'value': u'Entidades'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.graph/hasParent'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.graph/Person'},
+                u'title': {u'type': u'literal', u'value': u'Has parent'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             }
         ]
 
         computed = convert_bindings_dict(context, bindings, cardinalities)
         expected = {
-            'g1:cita_a_entidade': {
-                'graph': 'g1',
+            'http://test.graph/hasParent': {
+                'graph': 'http://test.graph/',
                 'range': {
                     'graph': '',
-                    '@id': 'base:Criatura',
+                    '@id': 'http://test.graph/Person',
                     'title': '',
                     'format': 'uri',
                     'type': 'string'},
-                'title': u'Entidades',
+                'title': u'Has parent',
                 'type': 'string',
                 'format': 'uri'
             }
@@ -321,7 +317,6 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         self.assertEqual(computed, expected)
 
     def test_convert_bindings_dict_two_predicates_single_range(self):
-        # FIXME
         class ContextMock(prefixes.MemorizeContext):
             object_properties = {}
             context = {'g1': 'http://semantica.globo.com/G1/'}
@@ -379,155 +374,49 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
 
         class ContextMock(prefixes.MemorizeContext):
             object_properties = {}
-            context = {'g1': 'http://semantica.globo.com/G1/'}
+            context = {'test': 'http://test.graph/'}
 
         context = ContextMock()
         cardinalities = {}
         bindings = [
             {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_entidade'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Criatura'},
-                u'title': {u'type': u'literal', u'value': u'Entidades'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.graph/predicate'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.graph/RangeOne'},
+                u'title': {u'type': u'literal', u'value': u'test'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             },
             {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_entidade'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Lugar'},
-                u'title': {u'type': u'literal', u'value': u'Entidades'},
+                u'predicate': {u'type': u'uri', u'value': u'http://test.graph/predicate'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://test.graph/'},
+                u'range': {u'type': u'uri', u'value': u'http://test.graph/RangeTwo'},
+                u'title': {u'type': u'literal', u'value': u'test'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             }
         ]
         computed = convert_bindings_dict(context, bindings, cardinalities)
         expected = {
-            'g1:cita_a_entidade': {
-                'graph': 'g1',
+            'http://test.graph/predicate': {
+                'graph': 'http://test.graph/',
                 'range': [
                     {
                         'graph': '',
-                        '@id': 'base:Criatura',
+                        '@id': 'http://test.graph/RangeOne',
                         'title': '',
                         'type': 'string',
                         'format': 'uri'
                     },
                     {
                         'graph': '',
-                        '@id': 'base:Lugar',
+                        '@id': 'http://test.graph/RangeTwo',
                         'title': '',
                         'type': 'string',
                         'format': 'uri'
                     }
                 ],
-                'title': u'Entidades',
+                'title': u'test',
                 'type': 'string',
                 'format': 'uri'
             }
         }
-        self.assertEqual(computed, expected)
-
-    def test_convert_bindings_dict_objectproperty_and_datatypeproperty(self):
-
-        class ContextMock(prefixes.MemorizeContext):
-            object_properties = {}
-            context = {'g1': 'http://semantica.globo.com/G1/', }
-
-        context = ContextMock()
-        cardinalities = {}
-        bindings = [
-            {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/tem_editoria'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Editoria'},
-                u'range_label': {u'type': u'literal', u'value': u'Editoria'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
-                u'title': {u'type': u'literal', u'value': u'Editoria'}
-            },
-            {
-                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/tem_editoria'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#integer'},
-                u'range_label': {u'type': u'literal', u'value': u'ID Editoria'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'},
-                u'title': {u'type': u'literal', u'value': u'Editoria'}
-            }
-        ]
-        computed = convert_bindings_dict(context, bindings, cardinalities)
-        expected = {
-            'g1:tem_editoria': {
-                'graph': 'g1',
-                'range': [
-                    {
-                        'graph': '',
-                        '@id': 'base:Editoria',
-                        'title': u'Editoria',
-                        'type': 'string',
-                        'format': 'uri'
-                    },
-                    {
-                        'type': 'integer'
-                    }
-                ],
-                'title': u'Editoria',
-                'type': '',
-                'format': ''
-            }
-        }
-        self.assertEqual(computed, expected)
-
-    def test_convert_bindings_dict_single_predicate_multiple_ranges_of_different_types(self):
-
-        class ContextMock(prefixes.MemorizeContext):
-            object_properties = {}
-            context = {'g1': 'http://semantica.globo.com/G1/'}
-
-        context = ContextMock()
-        cardinalities = {}
-        bindings = [
-            {
-                u'predicate': {u'type': u'uri', u'value': u'flex-predicate'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#integer'},
-                u'title': {u'type': u'literal', u'value': u'Flex-predicate'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
-            },
-            {
-                u'predicate': {u'type': u'uri', u'value': u'flex-predicate'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#boolean'},
-                u'title': {u'type': u'literal', u'value': u'Flex-predicate'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
-            },
-            {
-                u'predicate': {u'type': u'uri', u'value': u'flex-predicate'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
-                u'range': {u'type': u'uri', u'value': u'anypedia:place'},
-                u'title': {u'type': u'literal', u'value': u'Flex-predicate'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
-            }
-        ]
-        computed = convert_bindings_dict(context, bindings, cardinalities)
-        expected = {
-            u'flex-predicate': {
-                'graph': 'g1',
-                'range': [
-                    {
-                        'graph': '',
-                        '@id': u'anypedia:place',
-                        'title': '',
-                        'type': 'string',
-                        'format': 'uri'
-                    },
-                    {
-                        'type': 'boolean',
-                    },
-                    {
-                        'type': 'integer',
-                    }
-                ],
-                'title': u'Flex-predicate',
-                'type': '',
-                'format': ''
-            }
-        }
-        self.assertEqual(computed, expected)
+        self.assertItemsEqual(computed, expected)

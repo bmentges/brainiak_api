@@ -1,8 +1,9 @@
 # coding: utf-8
 import json
+from urlparse import urlparse
 from mock import patch
 from brainiak import __version__, settings, server
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
 class TestInstanceResource(TornadoAsyncHTTPTestCase):
@@ -35,12 +36,18 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         u'$schema': u'http://json-schema.org/draft-03/schema#',
         u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
         u'@id': u'person:Gender',
-        u'links': [{u'href': u'/person/Gender', u'method': u'POST', u'rel': u'create'}],
+        u'links': [
+            {u'href': u'http://localhost:10023/person/Gender/_schema?lang=pt', u'method': u'GET', u'rel': u'self'},
+            {u'href': u'http://localhost:10023/person/Gender', u'method': u'POST', u'rel': u'create'},
+            {u'href': u'http://localhost:10023/person/Gender/_schema', u'method': u'DELETE', u'rel': u'delete'},
+            {u'href': u'http://localhost:10023/person/Gender/_schema', u'method': u'PUT', u'rel': u'replace'},
+            {u'href': u'http://localhost:10023/person/Gender', u'method': u'GET', u'rel': u'instances'}],
         u'properties': {},
         u'title': u"Gênero da Pessoa",
         u'comment': u"Gênero de uma pessoa.",
         u'type': u'object'
     }
+
     maxDiff = None
 
     def test_collection_has_options(self):
@@ -62,7 +69,15 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         response = self.fetch('/person/Gender/_schema?lang=pt')
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
-        self.assertEqual(json_received, self.SAMPLE_SCHEMA_JSON)
+        # Adjust dynamic port from real to expected prior to comparison
+        effective_port = str(urlparse(json_received[u'links'][0][u'href']).port)
+        for entry in self.SAMPLE_SCHEMA_JSON[u'links']:
+            entry[u'href'] = entry[u'href'].replace('10023', effective_port)
+
+        json_received['links'] = sorted(json_received['links'])
+        self.SAMPLE_SCHEMA_JSON['links'] = sorted(self.SAMPLE_SCHEMA_JSON['links'])
+#        self.assertEqual(sorted(json_received['links']), sorted(self.SAMPLE_SCHEMA_JSON['links']))
+        self.assertEqual(json_received['links'], self.SAMPLE_SCHEMA_JSON['links'])
 
     @patch("brainiak.handlers.log")
     def test_schema_handler_with_invalid_params(self, log):

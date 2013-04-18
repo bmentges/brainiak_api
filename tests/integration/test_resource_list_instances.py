@@ -2,10 +2,12 @@ import json
 import urllib
 from mock import patch
 
-from brainiak import triplestore
+from brainiak import triplestore, settings
 from brainiak.instance import list_resource
 from brainiak.instance.list_resource import query_filter_instances, Query
-from tests import TornadoAsyncHTTPTestCase, MockRequest
+from brainiak.utils.params import ParamDict
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
+from tests.mocks import MockHandler
 from tests.sparql import QueryTestCase
 
 
@@ -21,9 +23,9 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
     def test_filter_without_predicate_and_object(self):
         response = self.fetch('/person/Gender/', method='GET')
         expected_items = [
-            {u'title': u'Feminino', u'@id': u'http://semantica.globo.com/person/Gender/Female', u'resource_id': u'Female'},
-            {u'title': u'Masculino', u'@id': u'http://semantica.globo.com/person/Gender/Male', u'resource_id': u'Male'},
-            {u'title': u'Transg\xeanero', u'@id': u'http://semantica.globo.com/person/Gender/Transgender', u'resource_id': u'Transgender'}]
+            {u'title': u'Feminino', u'@id': settings.URI_PREFIX + 'person/Gender/Female', u'resource_id': u'Female'},
+            {u'title': u'Masculino', u'@id': settings.URI_PREFIX + u'person/Gender/Male', u'resource_id': u'Male'},
+            {u'title': u'Transg\xeanero', u'@id': settings.URI_PREFIX + u'person/Gender/Transgender', u'resource_id': u'Transgender'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 3)
@@ -42,12 +44,12 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         expected_items = [
             {
-                u'@id': u'http://semantica.globo.com/person/Gender/Female',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Female',
                 u'resource_id': u'Female',
                 u'title': u'Feminino'
             },
             {
-                u'@id': u'http://semantica.globo.com/person/Gender/Male',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
                 u'title': u'Masculino'
             }
@@ -61,7 +63,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         expected_items = [
             {
-                u'@id': u'http://semantica.globo.com/person/Gender/Transgender',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
                 u'resource_id': u'Transgender',
                 u'title': u'Transg\xeanero'
             }
@@ -75,12 +77,12 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         expected_items = [
             {
-                u'@id': u'http://semantica.globo.com/person/Gender/Transgender',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
                 u'resource_id': u'Transgender',
                 u'title': u'Transg\xeanero'
             },
             {
-                u'@id': u'http://semantica.globo.com/person/Gender/Male',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
                 u'title': u'Masculino'
             }
@@ -93,7 +95,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         expected_items = [
             {
                 u'title': u'Masculino',
-                u'@id': u'http://semantica.globo.com/person/Gender/Male',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
                 u'predicate': u'http://www.w3.org/2000/01/rdf-schema#label'
             }
@@ -107,9 +109,9 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         url = urllib.quote("http://www.w3.org/2000/01/rdf-schema#label")
         response = self.fetch('/person/Gender/?lang=pt&p=%s' % url, method='GET')
         expected_items = [
-            {u'title': u'Feminino', u'@id': u'http://semantica.globo.com/person/Gender/Female', u'resource_id': u'Female'},
-            {u'title': u'Masculino', u'@id': u'http://semantica.globo.com/person/Gender/Male', u'resource_id': u'Male'},
-            {u'title': u'Transg\xeanero', u'@id': u'http://semantica.globo.com/person/Gender/Transgender', u'resource_id': u'Transgender'}]
+            {u'title': u'Feminino', u'@id': settings.URI_PREFIX + u'person/Gender/Female', u'resource_id': u'Female'},
+            {u'title': u'Masculino', u'@id': settings.URI_PREFIX + u'person/Gender/Male', u'resource_id': u'Male'},
+            {u'title': u'Transg\xeanero', u'@id': settings.URI_PREFIX + u'person/Gender/Transgender', u'resource_id': u'Transgender'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 3)
@@ -118,7 +120,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
         url = urllib.quote("rdfs:label")
         response = self.fetch('/person/Gender/?o=Feminino&lang=pt&p=%s' % url, method='GET')
-        expected_items = [{u'title': u'Feminino', u'@id': u'http://semantica.globo.com/person/Gender/Female', u'resource_id': u'Female'}]
+        expected_items = [{u'title': u'Feminino', u'@id': settings.URI_PREFIX + u'person/Gender/Female', u'resource_id': u'Female'}]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 1)
@@ -536,37 +538,45 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEquals(response, None)
 
     def test_filter_instances_result_is_not_empty(self):
-        query_string = "page=2&per_page=3"  # page based on API (begins with 1)
         sample_json = {"results": {"bindings": []}}
         count_json = {"results": {"bindings": [{"total": {"value": "12"}}]}}
         list_resource.query_filter_instances = lambda params: sample_json
         list_resource.query_count_filter_instances = lambda params: count_json
-        params = {"context_name": "ctx",
-          "class_name": "klass",
-          "request": MockRequest(query_string=query_string),
-          "per_page": "3",
-          "page": "1",
-          "sort_by": "",
-          "p": "",
-          "o": ""}
-        response = list_resource.filter_instances(params)  # page based on virtuoso (begins with 0)
+
+        params = {
+            "context_name": "ctx",
+            "class_name": "klass",
+            "per_page": "3",
+            "page": "2",
+            "sort_by": "",
+            "p": "",
+            "o": ""
+        }
+
+        handler = MockHandler(uri="http://localhost:5100/ctx/klass", **params)
+        query_params = ParamDict(handler, **params)
+        response = list_resource.filter_instances(query_params)  # page based on virtuoso (begins with 0)
+
         expected_links = [
             {
-                'href': "http://localhost:5100/ctx/klass/?page=2&per_page=3",
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=2",
+                'method': "GET",
                 'rel': "self"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/",
-                'rel': "list"
-            },
-            {
                 'href': "http://localhost:5100/ctx/klass/{resource_id}",
+                'method': "GET",
                 'rel': "item"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/",
+                'href': "http://localhost:5100/ctx/klass",
                 'method': "POST",
                 'rel': "create"
+            },
+            {
+                'href': "http://localhost:5100/ctx/klass/_schema",
+                'method': "GET",
+                'rel': "itemDescribedBy"
             },
             {
                 'href': "http://localhost:5100/ctx/klass/{resource_id}",
@@ -581,25 +591,25 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
             },
             {
-                'href': "http://localhost:5100/ctx/klass/?per_page=3&page=1",
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
                 'method': "GET",
                 'rel': "first"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/?per_page=3&page=4",
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=4",
                 'method': "GET",
                 'rel': "last"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/?per_page=3&page=1",
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
                 'method': "GET",
                 'rel': "previous"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/?per_page=3&page=3",
+                'href': "http://localhost:5100/ctx/klass?per_page=3&page=3",
                 'method': "GET",
                 'rel': "next"
             }
         ]
         self.assertEquals(response["item_count"], 12)
-        self.assertEquals(response["links"], expected_links)
+        self.assertEquals(sorted(response["links"]), sorted(expected_links))

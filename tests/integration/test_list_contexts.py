@@ -3,7 +3,7 @@ import json
 from brainiak.root.get import QUERY_LIST_CONTEXT
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.utils import sparql
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 

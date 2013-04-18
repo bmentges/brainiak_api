@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from brainiak.prefixes import MemorizeContext, shorten_uri
+from brainiak.prefixes import MemorizeContext
+from brainiak.utils.links import add_link, crud_links
 from brainiak.utils.sparql import get_one_value, filter_values, add_language_support
 from brainiak import triplestore
-from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_type, items_from_range, OBJECT_PROPERTY
+from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
 
 
 def get_schema(query_params):
@@ -30,14 +31,17 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     effective_context = {"@language": query_params.get("lang")}
     effective_context.update(context.context)
 
-    links = [{"rel": "create",
-              "method": "POST",
-              "href": "/{context_name}/{class_name}".format(**query_params)}]
-    obj_property_links = [{"rel": property_name,
-                           "href": "/{0}/{1}".format(*(uri.split(':')))}
-                           for property_name, uri in context.object_properties.items()]
+    query_params.resource_url = query_params.base_url
+    links = crud_links(query_params)
+    # From the schema we would like to list or create instances from the respective collection
+    base_url = query_params.base_url[:-9]  # remove /_schema
+    add_link(links, "instances", "{base_url}", base_url=base_url)
+    add_link(links, "create", "{base_url}", method="POST", base_url=base_url)
 
-    links.extend(obj_property_links)
+    # Add object-properties links that define  how to retrieve reference fields
+    for property_name, uri in context.object_properties.items():
+        parts = dict(zip(('ctx', 'klass'), uri.split(':')))
+        add_link(links, property_name, "/{ctx}/{klass}", **parts)
 
     schema = {
         "type": "object",
@@ -178,10 +182,15 @@ WHERE {
     ?predicate rdf:type ?type .
     OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
-    FILTER(langMatches(lang(?title), "%(lang)s") or langMatches(lang(?title), "")) .
-    FILTER(langMatches(lang(?predicate_comment), "%(lang)s") or langMatches(lang(?predicate_comment), "")) .
-    OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . FILTER(langMatches(lang(?range_label), "%(lang)s")) . } } .
+    FILTER(langMatches(lang(?title), "%(lang)s") OR langMatches(lang(?title), "")) .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
+    FILTER(langMatches(lang(?predicate_comment), "%(lang)s") OR langMatches(lang(?predicate_comment), "")) .
+    OPTIONAL {
+      GRAPH ?range_graph {
+        ?range rdfs:label ?range_label .
+        FILTER(langMatches(lang(?range_label), "%(lang)s") OR langMatches(lang(?range_label), "")) .
+      }
+    }
 }"""
 
 
@@ -262,7 +271,6 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     compressed_range_uri = context.shorten_uri(range_uri)
     compressed_range_graph = context.prefix_to_slug(range_graph)
     compressed_graph = context.prefix_to_slug(predicate_graph)
-    context.add_object_property(predicate_uri, compressed_range_uri)
 
     # build up predicate dictionary
     predicate = {}
@@ -273,6 +281,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
         predicate["comment"] = binding_row["predicate_comment"]['value']
 
     if predicate_type == OBJECT_PROPERTY:
+        context.add_object_property(predicate_uri, compressed_range_uri)
         predicate["range"] = {'@id': compressed_range_uri,
                               'graph': compressed_range_graph,
                               'title': range_label,

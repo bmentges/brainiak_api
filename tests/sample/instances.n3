@@ -1,5 +1,6 @@
 # don't change these prefixes, they are suppose to be different from Globo.com patterns
 # if you want other kind of prefixes and URIs, build another n3 fixture
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
 @prefix tpedia: <http://tatipedia.org/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -14,13 +15,15 @@ tpedia:Species a owl:Class .
 tpedia:john a tpedia:Person ;
             rdfs:label "John Jones" ;
             tpedia:likes tpedia:JiuJitsu ;
-            tpedia:likes "Aikido" .
+            tpedia:likes "Aikido" ;
+            dbpedia:nickname "JJ" .
 
 tpedia:mary a tpedia:Person ;
             rdfs:label "Mary Land" ;
             tpedia:likes tpedia:Capoeira ;
             tpedia:likes tpedia:JiuJitsu ;
-            tpedia:dislikes tpedia:BungeeJump .
+            tpedia:dislikes tpedia:BungeeJump ;
+            dbpedia:nickname "ML" .
 
 tpedia:new_york a tpedia:Place ;
                 rdfs:label "Nova Iorque"@pt ;

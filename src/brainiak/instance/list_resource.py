@@ -180,6 +180,31 @@ def query_count_filter_instances(query_params):
     return query_response
 
 
+# TODO: unit test
+def merge_by_id(items_list):
+    items_dict = {}
+    index = 0
+    pending_items = len(items_list)
+
+    while pending_items:
+        item = items_list[index]
+        uid = item["@id"]
+        existing_item = items_dict.get(uid)
+        if not existing_item:
+            items_dict[uid] = item
+            index += 1
+        else:
+            for (key, old_value) in existing_item.items():
+                new_value = item[key]
+                if isinstance(old_value, list) and not (new_value in old_value):
+                    old_value.append(new_value)
+                elif new_value != old_value:
+                    existing_item[key] = [old_value, new_value]
+            items_list.pop(index)
+        pending_items -= 1
+    return items_list
+
+
 def filter_instances(query_params):
     result_dict = query_count_filter_instances(query_params)
 
@@ -188,9 +213,15 @@ def filter_instances(query_params):
     if not total_items:
         return None
 
-    keymap = {"label": "title", "subject": "@id"}
+    keymap = {
+        "label": "title",
+        "subject": "@id",
+        "sort_object": shorten_uri(query_params["sort_by"]),
+        "object": shorten_uri(query_params["p"]),
+    }
     result_dict = query_filter_instances(query_params)
     items_list = compress_keys_and_values(result_dict, keymap=keymap, ignore_keys=["total"])
+    items_list = merge_by_id(items_list)
     decorate_with_resource_id(items_list)
     return build_json(items_list, total_items, query_params)
 

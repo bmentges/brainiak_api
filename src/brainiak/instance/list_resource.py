@@ -8,6 +8,25 @@ from brainiak.utils.sparql import compress_keys_and_values, get_one_value, norma
 
 
 class Query(object):
+    """
+    Creates SPARQL query strings for listing instances, provided
+    obligatory parameters.
+
+    Usage:
+
+    >>> params = {...}
+    >>> sparql_query = Query(params).to_string()
+
+    Obligatory keys inside params:
+        class_uri
+        lang
+        p
+        o
+        per_page
+        page
+        sort_by
+        sort_order
+    """
 
     skeleton = """
         DEFINE input:inference <http://semantica.globo.com/ruleset>
@@ -164,8 +183,12 @@ def query_count_filter_instances(query_params):
     return query_response
 
 
-# TODO: unit test
 def merge_by_id(items_list):
+    """
+    Provided two SPARQL Response rows that map the same @id,
+    merge them, replacing property's value by a list containing
+    all mapped values.
+    """
     items_dict = {}
     index = 0
     pending_items = len(items_list)

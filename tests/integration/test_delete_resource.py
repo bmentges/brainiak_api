@@ -6,7 +6,7 @@ from brainiak.instance.delete_resource import query_delete, query_dependants, \
 from brainiak import triplestore, server
 
 from tests.sparql import QueryTestCase
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
 EXPECTED_DEPENDANTS_JSON = {

@@ -4,7 +4,8 @@ from mock import Mock
 
 from brainiak.instance import get_resource
 from brainiak.prefixes import MemorizeContext
-from tests import MockRequest
+from brainiak import settings
+from tests.mocks import MockRequest
 
 
 class TestCaseInstanceResource(unittest.TestCase):
@@ -29,7 +30,7 @@ class TestCaseInstanceResource(unittest.TestCase):
                         'context_name': 'place',
                         'class_name': 'Country',
                         'instance_id': 'Brazil',
-                        'instance_uri': 'http://semantica.globo.com/place/Country/Brazil'}
+                        'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil'}
 
         response = get_resource.get_instance(query_params)
 
@@ -49,7 +50,7 @@ class TestCaseInstanceResource(unittest.TestCase):
                         'context_name': 'place',
                         'class_name': 'Country',
                         'instance_id': 'Brazil',
-                        'instance_uri': 'http://semantica.globo.com/place/Country/Brazil'}
+                        'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil'}
 
         response = get_resource.get_instance(query_params)
 

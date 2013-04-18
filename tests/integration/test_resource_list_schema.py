@@ -4,10 +4,12 @@ from brainiak import prefixes
 from brainiak import triplestore
 from brainiak.schema.resource import build_class_schema_query, \
         _query_superclasses, query_superclasses, QUERY_CARDINALITIES, \
-        QUERY_PREDICATE_WITH_LANG, QUERY_PREDICATE_WITHOUT_LANG, \
+        QUERY_PREDICATE_WITHOUT_LANG, QUERY_PREDICATE_WITH_LANG, \
         QUERY_SUPERCLASS
+from brainiak.utils.params import ParamDict
+from tests.mocks import MockHandler
 
-from tests import TornadoAsyncTestCase
+from tests.tornado_cases import TornadoAsyncTestCase
 from tests.sparql import QueryTestCase
 
 
@@ -469,8 +471,10 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
             "graph_uri": "test_graph",
             "lang": "en"
         }
+        handler = MockHandler(uri="http://class.uri")
+        query_params = ParamDict(handler, **params)
 
-        response = schema.get_schema(params)
+        response = schema.get_schema(query_params)
         schema_response = response
 
         self.assertIn("title", schema_response)

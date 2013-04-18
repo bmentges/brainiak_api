@@ -4,7 +4,7 @@ from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import crud_links, collection_links, add_link, remove_last_slash
 from brainiak.utils.resources import decorate_with_resource_id
-from brainiak.utils.sparql import add_language_support, compress_keys_and_values, get_one_value, normalize_term
+from brainiak.utils.sparql import compress_keys_and_values, get_one_value, normalize_term
 
 
 class Query(object):

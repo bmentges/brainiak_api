@@ -70,6 +70,8 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         context.prefix_to_slug('http://test/person')
         # test call
         effective_predicate_dict = assemble_predicate(name, predicate, cardinalities, context)
+        self.assertEqual(context.object_properties, {'test:gender': 'test:Gender'})
+        self.assertEqual(context.context, {'test': u'http://test/person/'})
         self.assertEqual(expected_predicate_dict, effective_predicate_dict)
 
     def test_assemble_predicate_with_datatype_property(self):
@@ -91,6 +93,8 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         context.prefix_to_slug('http://test/person')
         # test call
         effective_predicate_dict = assemble_predicate(name, predicate, cardinalities, context)
+        self.assertEqual(len(context.object_properties), 0)
+        self.assertEqual(context.context, {'test': u'http://test/person/', 'xsd': 'http://www.w3.org/2001/XMLSchema#'})
         self.assertEqual(expected_predicate_dict, effective_predicate_dict)
 
     def test_get_super_properties(self):

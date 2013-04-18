@@ -6,7 +6,7 @@ from brainiak.context import list_resource
 from brainiak import greenlet_tornado
 from brainiak.utils.sparql import compress_keys_and_values
 
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 

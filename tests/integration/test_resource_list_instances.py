@@ -23,9 +23,25 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
     def test_filter_without_predicate_and_object(self):
         response = self.fetch('/person/Gender/', method='GET')
         expected_items = [
-            {u'title': u'Feminino', u'@id': settings.URI_PREFIX + 'person/Gender/Female', u'resource_id': u'Female'},
-            {u'title': u'Masculino', u'@id': settings.URI_PREFIX + u'person/Gender/Male', u'resource_id': u'Male'},
-            {u'title': u'Transg\xeanero', u'@id': settings.URI_PREFIX + u'person/Gender/Transgender', u'resource_id': u'Transgender'}]
+            {
+                u'title': u'Feminino',
+                u'@id': settings.URI_PREFIX + 'person/Gender/Female',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Female'
+            },
+            {
+                u'title': u'Masculino',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Male',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Male'
+            },
+            {
+                u'title': u'Transg\xeanero',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Transgender'
+            }
+        ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 3)
@@ -46,11 +62,13 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Female',
                 u'resource_id': u'Female',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Feminino'
             },
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Masculino'
             }
         ]
@@ -65,6 +83,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
                 u'resource_id': u'Transgender',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Transg\xeanero'
             }
         ]
@@ -79,11 +98,13 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
                 u'resource_id': u'Transgender',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Transg\xeanero'
             },
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Masculino'
             }
         ]
@@ -97,6 +118,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'title': u'Masculino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'predicate': u'http://www.w3.org/2000/01/rdf-schema#label'
             }
         ]
@@ -109,9 +131,25 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         url = urllib.quote("http://www.w3.org/2000/01/rdf-schema#label")
         response = self.fetch('/person/Gender/?lang=pt&p=%s' % url, method='GET')
         expected_items = [
-            {u'title': u'Feminino', u'@id': settings.URI_PREFIX + u'person/Gender/Female', u'resource_id': u'Female'},
-            {u'title': u'Masculino', u'@id': settings.URI_PREFIX + u'person/Gender/Male', u'resource_id': u'Male'},
-            {u'title': u'Transg\xeanero', u'@id': settings.URI_PREFIX + u'person/Gender/Transgender', u'resource_id': u'Transgender'}]
+            {
+                u'title': u'Feminino',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Female',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Female'
+            },
+            {
+                u'title': u'Masculino',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Male',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Male'
+            },
+            {
+                u'title': u'Transg\xeanero',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Transgender'
+            }
+        ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 3)
@@ -120,7 +158,13 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
         url = urllib.quote("rdfs:label")
         response = self.fetch('/person/Gender/?o=Feminino&lang=pt&p=%s' % url, method='GET')
-        expected_items = [{u'title': u'Feminino', u'@id': settings.URI_PREFIX + u'person/Gender/Female', u'resource_id': u'Female'}]
+        expected_items = [
+            {
+                u'title': u'Feminino',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Female',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Female'}
+        ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 1)
@@ -147,12 +191,14 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         expected_items = [
             {
                 u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'http://tatipedia.org/Capoeira'],
+                u'instance_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'mary',
                 u'@id': u'http://tatipedia.org/mary',
                 u'title': u'Mary Land'
             },
             {
                 u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'Aikido'],
+                u'instance_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'john',
                 u'@id': u'http://tatipedia.org/john',
                 u'title': u'John Jones'
@@ -169,12 +215,14 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u'dbpedia:nickname': u'JJ',
                 u'resource_id': u'john',
+                u'instance_prefix': u'http://tatipedia.org/',
                 u'@id': u'http://tatipedia.org/john',
                 u'title': u'John Jones'
             },
             {
                 u'dbpedia:nickname': u'ML',
                 u'resource_id': u'mary',
+                u'instance_prefix': u'http://tatipedia.org/',
                 u'@id': u'http://tatipedia.org/mary',
                 u'title': u'Mary Land'
             }

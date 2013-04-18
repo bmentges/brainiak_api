@@ -182,10 +182,15 @@ WHERE {
     ?predicate rdf:type ?type .
     OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
-    FILTER(langMatches(lang(?title), "%(lang)s") or langMatches(lang(?title), "")) .
-    FILTER(langMatches(lang(?predicate_comment), "%(lang)s") or langMatches(lang(?predicate_comment), "")) .
-    OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . FILTER(langMatches(lang(?range_label), "%(lang)s")) . } } .
+    FILTER(langMatches(lang(?title), "%(lang)s") OR langMatches(lang(?title), "")) .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
+    FILTER(langMatches(lang(?predicate_comment), "%(lang)s") OR langMatches(lang(?predicate_comment), "")) .
+    OPTIONAL {
+      GRAPH ?range_graph {
+        ?range rdfs:label ?range_label .
+        FILTER(langMatches(lang(?range_label), "%(lang)s") OR langMatches(lang(?range_label), "")) .
+      }
+    }
 }"""
 
 

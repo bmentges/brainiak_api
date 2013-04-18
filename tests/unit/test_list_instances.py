@@ -1,10 +1,87 @@
 import unittest
 
-from brainiak.instance.list_resource import Query
+from brainiak.instance.list_resource import Query, merge_by_id
 
 
 def strip(query_string):
     return [item.strip() for item in query_string.split("\n") if item.strip() != '']
+
+
+class MergeByIdTestCase(unittest.TestCase):
+
+    def test_no_merge(self):
+        values = [
+            {
+                "@id": 1,
+                "some property": "some value",
+            },
+            {
+                "@id": 2,
+                "some property": "some other value",
+            }
+        ]
+        computed = merge_by_id(values)
+        self.assertEqual(computed, values)
+
+    def test_single_merge(self):
+        values = [
+            {
+                "@id": 1,
+                "some property": "some value",
+            },
+            {
+                "@id": 2,
+                "some property": "some other value",
+            },
+            {
+                "@id": 1,
+                "some property": "a thid value",
+            }
+        ]
+        expected = [
+            {
+                "@id": 1,
+                "some property": ["some value", "a thid value"],
+            },
+            {
+                "@id": 2,
+                "some property": "some other value",
+            }
+        ]
+        computed = merge_by_id(values)
+        self.assertEqual(computed, expected)
+
+    def test_two_merges(self):
+        values = [
+            {
+                "@id": 1,
+                "some property": "some value",
+            },
+            {
+                "@id": 2,
+                "some property": "some other value",
+            },
+            {
+                "@id": 1,
+                "some property": "a thid value",
+            },
+            {
+                "@id": 2,
+                "some property": "last value",
+            }
+        ]
+        expected = [
+            {
+                "@id": 1,
+                "some property": ["some value", "a thid value"]
+            },
+            {
+                "@id": 2,
+                "some property": ["some other value", "last value"]
+            }
+        ]
+        computed = merge_by_id(values)
+        self.assertEqual(computed, expected)
 
 
 class ListQueryTestCase(unittest.TestCase):

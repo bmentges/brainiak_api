@@ -5,6 +5,19 @@ from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, PrefixError
 
 
 def normalize_term(term, language=""):
+    """
+    Provided a query term (literal, variable, expanded uri or
+    compressed uri), and language (to be applied in literals),
+    return the term in the form so it can be used inside a
+    SPARQL Query.
+
+    examples:
+      (1) http://expanded.predicate -> <http://expanded.predicate>
+      (2) compressed:predicate -> compressed:predicate
+      (3) "some literal" -> '"some literal"@lang'
+      (4) ?variable -> ?variable
+
+    """
     language_tag = "@%s" % language if language else ""
     if (not term.startswith("?")):
         if (":" in term):

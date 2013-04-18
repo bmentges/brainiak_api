@@ -215,7 +215,7 @@ class ListQueryTestCase(unittest.TestCase):
         computed = query.to_string(count=True)
         expected = """
         DEFINE input:inference <http://semantica.globo.com/ruleset>
-        SELECT count(DISTINCT ?subject) as total
+        SELECT count(DISTINCT ?subject) as ?total
         WHERE {
             ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .

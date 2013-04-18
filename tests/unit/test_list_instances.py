@@ -208,3 +208,17 @@ class ListQueryTestCase(unittest.TestCase):
         OFFSET 0
         """
         self.assertEqual(strip(computed), strip(expected))
+
+    def test_count_query_without_extras(self):
+        params = self.default_params
+        query = Query(params)
+        computed = query.to_string(count=True)
+        expected = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT count(DISTINCT ?subject) as total
+        WHERE {
+            ?subject a <http://some.graph/SomeClass> ;
+                     rdfs:label ?label .
+        }
+        """
+        self.assertEqual(strip(computed), strip(expected))

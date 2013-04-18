@@ -46,7 +46,6 @@ def normalize_term(term, language=""):
     return term
 
 
-# TODO: test
 class Query(object):
 
     skeleton = """
@@ -59,6 +58,15 @@ class Query(object):
         %(sortby)s
         LIMIT %(per_page)s
         OFFSET %(offset)s
+    """
+
+    skeleton_count = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT count(DISTINCT ?subject) as total
+        WHERE {
+            %(triples)s
+            %(filter)s
+        }
     """
 
     def __init__(self, params):
@@ -174,9 +182,13 @@ class Query(object):
         items = sorted(set(items))
         return ", ".join(items)
 
-    def to_string(self):
+    def to_string(self, count=False):
         params = dict(inspect.getmembers(self), **self.params)
-        return self.skeleton % params
+        if count:
+            query_string = self.skeleton_count % params
+        else:
+            query_string = self.skeleton % params
+        return query_string
 
 
 def process_params(query_params):

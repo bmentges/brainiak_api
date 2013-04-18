@@ -1,25 +1,10 @@
 import inspect
 
 from brainiak import settings, triplestore
-from brainiak.prefixes import expand_uri, PrefixError, shorten_uri
+from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import crud_links, collection_links, add_link, remove_last_slash
 from brainiak.utils.resources import decorate_with_resource_id
-from brainiak.utils.sparql import compress_keys_and_values, get_one_value, add_language_support
-
-
-# TODO: move to sparql utils
-# TODO: unit test
-def normalize_term(term, language=""):
-    language_tag = "@%s" % language if language else ""
-    if (not term.startswith("?")):
-        if (":" in term):
-            try:
-                term = "<%s>" % expand_uri(term)
-            except PrefixError:
-                pass
-        else:
-            term = '"%s"%s' % (term, language_tag)
-    return term
+from brainiak.utils.sparql import add_language_support, compress_keys_and_values, get_one_value, normalize_term
 
 
 class Query(object):

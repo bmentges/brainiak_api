@@ -447,18 +447,18 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
         computed_bindings = self.query(query)["results"]["bindings"]
         expected_bindings = [
-                                {
-                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Platypus'},
-                                    u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Ornitorrinco'}
-                                },
-                                {
-                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Echidna'},
-                                    u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Equidna'}
-                                },
-                                {
-                                    u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Teinolophos'},
-                                    u'label': {u'type': u'literal', u'value': u"Teinolophos trusleri"}
-                                }
+            {
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Platypus'},
+                u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Ornitorrinco'}
+            },
+            {
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Echidna'},
+                u'label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Equidna'}
+            },
+            {
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Teinolophos'},
+                u'label': {u'type': u'literal', u'value': u"Teinolophos trusleri"}
+            }
         ]
 
         self.assertEqual(len(computed_bindings), 3)
@@ -475,7 +475,6 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "0",
             "sort_by": ""
         }
-        #params = process_params(params)
         query = query_filter_instances(params)
 
         computed_bindings = self.query(query)["results"]["bindings"]
@@ -492,7 +491,6 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "1",
             "sort_by": ""
         }
-        #params = process_params(params)
         query = query_filter_instances(params)
 
         computed_bindings = self.query(query)["results"]["bindings"]

@@ -55,6 +55,11 @@ class ParamsTestCase(TestCase):
         params = ParamDict(handler)
         self.assertEquals(params["lang"], "pt")
 
+    def test_expand_curie(self):
+        handler = MockHandler(graph_uri="glb")
+        params = ParamDict(handler)
+        self.assertEquals(params["graph_uri"], "http://semantica.globo.com/")
+
     def test_post_override_with_sort_order(self):
         handler = MockHandler(sort_order="asc")
 

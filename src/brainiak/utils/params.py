@@ -60,7 +60,10 @@ class ParamDict(dict):
         """Process collateral effects in params that are related.
         Changes in *_prefix should reflect in *_uri.
         """
-        if key == "graph_prefix":
+        if key in ('graph_uri', 'class_uri'):
+            dict.__setitem__(self, key, safe_slug_to_prefix(value))
+
+        elif key == "graph_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
             if self["context_name"] != ROOT_CONTEXT:
                 dict.__setitem__(self, "graph_uri", "{0}{1}/".format(self["graph_prefix"], self["context_name"]))

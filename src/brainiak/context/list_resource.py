@@ -1,6 +1,6 @@
+from brainiak import triplestore
 from brainiak.utils.resources import decorate_with_resource_id
 from brainiak.utils.sparql import add_language_support
-from brainiak import triplestore
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids
 from brainiak.utils.links import crud_links, add_link, collection_links

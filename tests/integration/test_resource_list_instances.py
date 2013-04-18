@@ -179,10 +179,6 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertEqual(computed_items, expected_items)
 
-# TODO:
-# test compression of predicate
-# test sort_object renaming
-
 
 class FilterInstancesQueryTestCase(QueryTestCase):
     allow_triplestore_connection = True

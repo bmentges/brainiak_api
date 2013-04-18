@@ -1,8 +1,23 @@
 import unittest
+from brainiak.prefixes import MemorizeContext
 
 import brainiak.schema.resource as schema
 from brainiak import prefixes
-from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict, get_super_properties, normalize_predicate_range, merge_ranges, join_predicates, get_common_key
+from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict, get_super_properties, normalize_predicate_range, merge_ranges, join_predicates, get_common_key, expand_object_properties_links
+
+
+class ExpandLinksTestCase(unittest.TestCase):
+    maxDiff = None
+
+    def test_expand_links_with_URL(self):
+        links = []
+        context = MemorizeContext()
+        context.add_object_property("http://www.bbc.co.uk/ontologies/asset/primaryAsset",
+                                    "http://www.bbc.co.uk/ontologies/asset/Asset")
+        expand_object_properties_links(links, context)
+
+        self.assertEqual(links[0]['href'], 'http://www.bbc.co.uk/ontologies/asset/Asset')
+        self.assertEqual(links[0]['rel'], "http://www.bbc.co.uk/ontologies/asset/primaryAsset")
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):

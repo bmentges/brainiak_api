@@ -212,6 +212,17 @@ def merge_by_id(items_list):
     return items_list
 
 
+def extract_prefix(url):
+    prefix = url.rsplit('/', 1)[0]
+    return "{0}/".format(prefix)
+
+
+def add_instance_prefix(items_list):
+    for item in items_list:
+        uri = item["@id"]
+        item["instance_prefix"] = extract_prefix(uri)
+
+
 def filter_instances(query_params):
     result_dict = query_count_filter_instances(query_params)
 
@@ -229,6 +240,7 @@ def filter_instances(query_params):
     result_dict = query_filter_instances(query_params)
     items_list = compress_keys_and_values(result_dict, keymap=keymap, ignore_keys=["total"])
     items_list = merge_by_id(items_list)
+    add_instance_prefix(items_list)
     decorate_with_resource_id(items_list)
     return build_json(items_list, total_items, query_params)
 

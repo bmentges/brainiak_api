@@ -3,7 +3,7 @@ from brainiak.utils.resources import decorate_with_resource_id
 from brainiak.utils.sparql import add_language_support
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids
-from brainiak.utils.links import crud_links, add_link, collection_links
+from brainiak.utils.links import crud_links, add_link, collection_links, remove_last_slash
 from brainiak.prefixes import MemorizeContext
 
 
@@ -33,7 +33,7 @@ def assemble_list_json(query_params, query_result_dict, total_items):
     links = crud_links(query_params) + collection_links(query_params, total_items)
 
     # Per-service links
-    add_link(links, 'type', "{base_url}/{{resource_id}}/_schema", base_url=query_params.base_url)
+    add_link(links, 'type', "{base_url}/{{resource_id}}/_schema", base_url=remove_last_slash(query_params.base_url))
 
     context_section = context.context
     context_section.update({"@language": query_params.get("lang")})

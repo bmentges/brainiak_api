@@ -1,23 +1,21 @@
+.. _hypermedia:
+
 Hypermedia Support
 ==================
 
-All resources may have one or more links properties linking to other resources.
-These are meant to provide explicit URLs so that proper API clients don’t need to construct URLs on their own.
-It is highly recommended that API clients use these. Doing so will make future upgrades of the API easier for developers.
+Any resource may have one or more properties linking to other resources, represented in the resource's link section.
+These links are meant to provide explicit URLs so that proper API clients don’t need to hardcode URLs to API services.
+In hypermedia APIs you should be able to navigate through API services from the ``/``.
+It is highly recommended that API clients use these links, because API service URLs may change in production without previous notice to clients.
 All URLs are expected to be proper RFC 6570 URI templates.
 
-TODO: improve
+Each link is described by attributes, typically: rel, href and method.
+The ``rel`` attribute describes the purpose of the link.
+The ``method`` attribute describes which HTTP verb should be used to follow the ink.
+The ``href`` attribute describes the URL of the link.
+The href value can be an exact string, or a string template whose variable placeholders are given from the items section.
 
-
-**Links in response**
-
-
-In hypermedia APIs you should be able to navigate through API services from the ``/``.
-In each service there is a link to other related resources. For example, if you
-query for a specific resource (a entry in a database), in the response you should
-get links to actions related to that resource, like editing it, removing it, etc.
-
-Therefore, in the response we have a ``links`` section like this:
+We give an example of a link section below:
 
 .. highlight:: json
 
@@ -46,3 +44,5 @@ Therefore, in the response we have a ``links`` section like this:
       }
     ]
   }
+
+A complete documentation of ``rel`` values is given in the section :ref:`links_spec`.

@@ -40,10 +40,9 @@ class GetContextTestCase(unittest.TestCase):
 
     def test_list_classes_return_None(self):
         list_resource.get_one_value = lambda x, y: "1"
-        list_resource.assemble_list_json = lambda x,y,z: "expected result"
+        list_resource.assemble_list_json = lambda x, y, z: "expected result"
 
         handler = MockHandler()
         params = ParamDict(handler, context_name="context_name", class_name="class_name")
         expected = list_resource.list_classes(params)
         self.assertEqual(expected, "expected result")
-

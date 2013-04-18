@@ -1,10 +1,10 @@
-from mock import patch, Mock
+from mock import patch
 import json
 from brainiak import server
 from brainiak.instance import create_resource, edit_resource
 from brainiak.utils.sparql import is_modify_response_successful
 
-from tests import TornadoAsyncHTTPTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 

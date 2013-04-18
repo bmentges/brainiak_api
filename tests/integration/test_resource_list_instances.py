@@ -130,6 +130,60 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 404)
 
 
+class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
+
+    maxDiff = None
+    allow_triplestore_connection = True
+    fixtures = ["tests/sample/instances.n3"]
+    graph_uri = "http://tatipedia.org/"
+
+    @patch("brainiak.handlers.log")
+    def test_json_returns_object_per_item(self, log):
+        response = self.fetch('/tpedia/Person/?p=http://tatipedia.org/likes&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'http://tatipedia.org/Capoeira'],
+                u'resource_id': u'mary',
+                u'@id': u'http://tatipedia.org/mary',
+                u'title': u'Mary Land'
+            },
+            {
+                u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'Aikido'],
+                u'resource_id': u'john',
+                u'@id': u'http://tatipedia.org/john',
+                u'title': u'John Jones'
+            }
+        ]
+        self.assertEqual(sorted(computed_items), sorted(expected_items))
+
+    @patch("brainiak.handlers.log")
+    def test_json_returns_sortby_per_item(self, log):
+        response = self.fetch('/tpedia/Person/?sort_by=dbpedia:nickname&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u'dbpedia:nickname': u'JJ',
+                u'resource_id': u'john',
+                u'@id': u'http://tatipedia.org/john',
+                u'title': u'John Jones'
+            },
+            {
+                u'dbpedia:nickname': u'ML',
+                u'resource_id': u'mary',
+                u'@id': u'http://tatipedia.org/mary',
+                u'title': u'Mary Land'
+            }
+        ]
+        self.assertEqual(computed_items, expected_items)
+
+# TODO:
+# test compression of predicate
+# test sort_object renaming
+
+
 class FilterInstancesQueryTestCase(QueryTestCase):
     allow_triplestore_connection = True
     fixtures = ["tests/sample/instances.n3"]
@@ -202,60 +256,6 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             }
         ]
         self.assertEqual(expected, computed)
-
-    # def test_process_params(self):
-    #     params = {
-    #         "class_uri": 'http://tatipedia.org/Species',
-    #         "p": 'http://tatipedia.org/livesIn',
-    #         "o": 'dbpedia:Australia',
-    #         "lang": "pt",
-    #         "graph_uri": self.graph_uri,
-    #         "per_page": "10",
-    #         "page": "0",
-    #         "sort_by": ""
-    #     }
-    #     expected = {'class_uri': 'http://tatipedia.org/Species',
-    #                 'graph_uri': 'http://tatipedia.org/',
-    #                 'lang': 'pt',
-    #                 'lang_filter_label': '\n    FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .\n',
-    #                 'o': '<http://dbpedia.org/ontology/Australia>',
-    #                 'offset': '0',
-    #                 'p': '<http://tatipedia.org/livesIn>',
-    #                 'page': '0',
-    #                 'per_page': '10',
-    #                 'po': '; <http://tatipedia.org/livesIn> <http://dbpedia.org/ontology/Australia> .',
-    #                 'sort_by': '',
-    #                 'sort_by_statement': ''}
-    #     computed = process_params(params)
-    #     self.assertEqual(expected, computed)
-
-    # def test_process_params_with_sort(self):
-    #     params = {
-    #         "class_uri": 'http://tatipedia.org/Species',
-    #         "p": 'http://tatipedia.org/livesIn',
-    #         "o": 'dbpedia:Australia',
-    #         "lang": "pt",
-    #         "graph_uri": self.graph_uri,
-    #         "per_page": "10",
-    #         "page": "0",
-    #         "sort_by": "http://some/predicate",
-    #         "sort_order": "DESC",
-    #     }
-    #     expected = {'class_uri': 'http://tatipedia.org/Species',
-    #                 'graph_uri': 'http://tatipedia.org/',
-    #                 'lang': 'pt',
-    #                 'lang_filter_label': '\n    FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .\n',
-    #                 'o': '<http://dbpedia.org/ontology/Australia>',
-    #                 'offset': '0',
-    #                 'p': '<http://tatipedia.org/livesIn>',
-    #                 'page': '0',
-    #                 'per_page': '10',
-    #                 'po': '; <http://some/predicate> ?sort_object ; <http://tatipedia.org/livesIn> <http://dbpedia.org/ontology/Australia> .',
-    #                 'sort_by': '<http://some/predicate>',
-    #                 'sort_by_statement': 'ORDER BY DESC(?sort_object)',
-    #                 'sort_order': 'DESC'}
-    #     computed = process_params(params)
-    #     self.assertEqual(expected, computed)
 
     def test_count_query(self):
         params = {

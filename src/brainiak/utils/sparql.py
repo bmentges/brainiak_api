@@ -1,7 +1,20 @@
 # coding: utf-8
 import re
 import uuid
-from brainiak.prefixes import is_compressed_uri, is_uri, shorten_uri
+from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, PrefixError, shorten_uri
+
+
+def normalize_term(term, language=""):
+    language_tag = "@%s" % language if language else ""
+    if (not term.startswith("?")):
+        if (":" in term):
+            try:
+                term = "<%s>" % expand_uri(term)
+            except PrefixError:
+                pass
+        else:
+            term = '"%s"%s' % (term, language_tag)
+    return term
 
 
 def has_lang(literal):

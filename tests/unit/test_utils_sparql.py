@@ -402,3 +402,30 @@ class LanguageSupportTestCase(unittest.TestCase):
         (response_params, language_tag) = add_language_support(query_params, "label")
         self.assertIn(expected_filter, response_params["lang_filter_label"])
         self.assertEquals("@en", language_tag)
+
+
+class NormalizeTerm(unittest.TestCase):
+
+    def test_normalize_term_expanded_uri(self):
+        term = "http://expanded.uri"
+        computed = normalize_term(term)
+        expected = "<http://expanded.uri>"
+        self.assertEqual(computed, expected)
+
+    def test_normalize_term_short_uri(self):
+        term = "short:uri"
+        computed = normalize_term(term)
+        expected = "short:uri"
+        self.assertEqual(computed, expected)
+
+    def test_normalize_term_translated_literal(self):
+        term = "Some string"
+        computed = normalize_term(term)
+        expected = '"Some string"'
+        self.assertEqual(computed, expected)
+
+    def test_normalize_term_translated_literal_translated(self):
+        term = "Some string"
+        computed = normalize_term(term, "pt")
+        expected = '"Some string"@pt'
+        self.assertEqual(computed, expected)

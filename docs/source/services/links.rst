@@ -1,10 +1,12 @@
+.. _links_spec:
+
 Links Specification
 -------------------
 
 In our API, successful responses have a ``links`` section that state
-possible actions for the resource being retrieved. For more about this concept, see :doc:`../concepts`.
+possible actions for the resource being retrieved. For more about this concept, see :doc:`../concepts` and :doc:`hypermedia`.
 
-Therefore, in the response we have a ``links`` section like this:
+For example:
 
 .. highlight:: json
 
@@ -34,11 +36,12 @@ Therefore, in the response we have a ``links`` section like this:
     ]
   }
 
-The possible link relations are (defined in the ``rel`` key):
+
+Defined by the ``rel`` key, the possible link relations are:
 
 **self**
 
-The resource URI itself, i.e. an identifier to the link's context.
+The resource URL itself, i.e. an identifier to the resource that owns the links.
 
 Method: GET
 

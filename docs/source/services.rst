@@ -1,5 +1,5 @@
 Services
-=============
+========
 
 The API services should be easy to remember, easy to use, and extensible.
 
@@ -23,6 +23,7 @@ see :ref:`concept-context`, :ref:`concept-schema`, :ref:`concept-collection`, an
    services/links.rst
    services/pagination.rst
    services/errors.rst
+   services/i18n.rst
 
 
 .. _resource_url_convention:

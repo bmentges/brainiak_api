@@ -1,4 +1,4 @@
-.. _edit_instance
+.. _edit_instance:
 
 Edit a Instance
 ===============
@@ -27,7 +27,7 @@ Sample JSON "edit_female.json":
 
 .. include :: examples/edit_instance_payload.rst
 
-Note that prefixes are defined in the "@context" section. 
+Note that prefixes are defined in the "@context" section.
 `Default prefixes  <http://api.semantica.dev.globoi.com/v2/prefixes>`_ are implicit and don't need to be declared.
 
 Optional query string parameters

@@ -78,6 +78,24 @@ class ParamsTestCase(TestCase):
         params = ListParamDict(handler)
         self.assertEquals(params["sort_order"], "")
 
+    def test_post_override_with_sort_include_empty(self):
+        handler = MockHandler(sort_include_empty="0")
+
+        class ListParamDict(ParamDict):
+            extra_params = LIST_PARAMS
+
+        params = ListParamDict(handler)
+        self.assertEquals(params["sort_include_empty"], "0")
+
+    def test_post_override_without_sort_include_empty(self):
+        handler = MockHandler()
+
+        class ListParamDict(ParamDict):
+            extra_params = LIST_PARAMS
+
+        params = ListParamDict(handler)
+        self.assertEquals(params["sort_include_empty"], "1")
+
     def test_post_override_with_page(self):
         handler = MockHandler(page="3")
         params = ListServiceParams(handler)

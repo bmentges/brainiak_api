@@ -229,6 +229,58 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertEqual(computed_items, expected_items)
 
+    @patch("brainiak.handlers.log")
+    def test_json_returns_sortby_include_empty_value(self, log):
+        response = self.fetch('/tpedia/SoccerClub/?graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&sort_by=http://tatipedia.org/stadium', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u"title": u"Clube de Regatas do Flamengo",
+                u"instance_prefix": u"http://tatipedia.org/",
+                u"@id": u"http://tatipedia.org/CRF",
+                u"resource_id": u"CRF"
+            },
+            {
+                u"title": u'S\xe3o Paulo Futebol Clube',
+                u"instance_prefix": u"http://tatipedia.org/",
+                u"@id": u"http://tatipedia.org/SPFC",
+                u"http://tatipedia.org/stadium": u"Morumbi",
+                u"resource_id": u"SPFC"
+            },
+            {
+                u"title": u"Cruzeiro Esporte Clube",
+                u"instance_prefix": u"http://tatipedia.org/",
+                u"@id": u"http://tatipedia.org/CEC",
+                u"http://tatipedia.org/stadium": u"Toca da Raposa",
+                u"resource_id": u"CEC"
+            }
+        ]
+        self.assertEqual(computed_items, expected_items)
+
+    @patch("brainiak.handlers.log")
+    def test_json_returns_sortby_exclude_empty_value(self, log):
+        response = self.fetch('/tpedia/SoccerClub/?graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&sort_by=http://tatipedia.org/stadium&sort_include_empty=0', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u"title": u'S\xe3o Paulo Futebol Clube',
+                u"instance_prefix": u"http://tatipedia.org/",
+                u"@id": u"http://tatipedia.org/SPFC",
+                u"http://tatipedia.org/stadium": u"Morumbi",
+                u"resource_id": u"SPFC"
+            },
+            {
+                u"title": u"Cruzeiro Esporte Clube",
+                u"instance_prefix": u"http://tatipedia.org/",
+                u"@id": u"http://tatipedia.org/CEC",
+                u"http://tatipedia.org/stadium": u"Toca da Raposa",
+                u"resource_id": u"CEC"
+            }
+        ]
+        self.assertEqual(computed_items, expected_items)
+
 
 class FilterInstancesQueryTestCase(QueryTestCase):
     allow_triplestore_connection = True
@@ -245,6 +297,68 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         triplestore.query_sparql = self.original_query_sparql
         list_resource.query_filter_instances = self.original_query_filter_instances
         list_resource.query_count_filter_instances = self.original_query_count_filter_instances
+
+    def test_sort_by(self):
+        params = {
+            "class_uri": 'http://tatipedia.org/SoccerClub',
+            "p": "?predicate",
+            "o": "?object",
+            "sort_by": 'http://tatipedia.org/stadium',
+            "sort_order": "asc",
+            "sort_include_empty": "1",
+            "lang": "",
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0",
+        }
+        query = Query(params).to_string()
+        computed = self.query(query)["results"]["bindings"]
+        expected = [
+            {
+                u'label': {u'type': u'literal', u'value': u'Clube de Regatas do Flamengo'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CRF'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
+                u'sort_object': {u'type': u'literal', u'value': u'Morumbi'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
+                u'sort_object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
+            }
+        ]
+        self.assertEqual(computed, expected)
+
+    def test_sort_by_exclude_empty_values(self):
+        params = {
+            "class_uri": 'http://tatipedia.org/SoccerClub',
+            "p": "?predicate",
+            "o": "?object",
+            "sort_by": 'http://tatipedia.org/stadium',
+            "sort_order": "asc",
+            "sort_include_empty": "0",
+            "lang": "",
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0",
+        }
+        query = Query(params).to_string()
+        computed = self.query(query)["results"]["bindings"]
+        expected = [
+            {
+                u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
+                u'sort_object': {u'type': u'literal', u'value': u'Morumbi'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
+                u'sort_object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
+            }
+        ]
+        self.assertEqual(computed, expected)
 
     def test_sort_by_p(self):
         params = {
@@ -264,7 +378,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         expected = [
             {
                 u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
-                u'object': {u'type': u'literal', u'value': u'Maracan\xe3'},
+                u'object': {u'type': u'literal', u'value': u'Morumbi'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
             },
             {
@@ -297,7 +411,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             },
             {
                 u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
-                u'object': {u'type': u'literal', u'value': u'Maracan\xe3'},
+                u'object': {u'type': u'literal', u'value': u'Morumbi'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
             }
         ]

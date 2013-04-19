@@ -75,12 +75,16 @@ class Query(object):
             tuples.append((predicate, object_))
 
         sort_object = self.get_sort_variable()
+        sort_sufix = ""
         if sort_object == "?sort_object":
             sort_predicate = normalize_term(self.params["sort_by"])
-            tuples.append((sort_predicate, sort_object))
+            if self.params["sort_include_empty"] == "1":
+                sort_sufix = "OPTIONAL {?subject %s ?sort_object}" % sort_predicate
+            else:
+                tuples.append((sort_predicate, sort_object))
 
         tuples_strings = ["%s %s" % each_tuple for each_tuple in tuples]
-        statement = "?subject " + " ;\n".join(tuples_strings) + " ."
+        statement = "?subject " + " ;\n".join(tuples_strings) + " .\n" + sort_sufix
 
         return statement % self.params
 
@@ -212,11 +216,13 @@ def merge_by_id(items_list):
     return items_list
 
 
+# TODO: unit test, move to urls
 def extract_prefix(url):
     prefix = url.rsplit('/', 1)[0]
     return "{0}/".format(prefix)
 
 
+# TODO: unit test
 def add_instance_prefix(items_list):
     for item in items_list:
         uri = item["@id"]

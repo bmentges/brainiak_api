@@ -38,9 +38,6 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         u'@id': u'person:Gender',
         u'links': [
             {u'href': u'http://localhost:10023/person/Gender/_schema?lang=pt', u'method': u'GET', u'rel': u'self'},
-            {u'href': u'http://localhost:10023/person/Gender', u'method': u'POST', u'rel': u'create'},
-            {u'href': u'http://localhost:10023/person/Gender/_schema', u'method': u'DELETE', u'rel': u'delete'},
-            {u'href': u'http://localhost:10023/person/Gender/_schema', u'method': u'PUT', u'rel': u'replace'},
             {u'href': u'http://localhost:10023/person/Gender', u'method': u'GET', u'rel': u'instances'}],
         u'properties': {},
         u'title': u"Gênero da Pessoa",

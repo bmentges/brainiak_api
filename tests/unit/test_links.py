@@ -122,7 +122,6 @@ class CollectionLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params, total_items)
         expected = [
-            {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
             {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'last'},
@@ -136,7 +135,6 @@ class CollectionLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params, total_items)
         expected = [
-            {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
             {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
             {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'last'},
@@ -164,7 +162,6 @@ class CollectionLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params, total_items)
         expected = [
-            {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
             {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
             {'href': 'http://class.uri?per_page=1&page=3', 'method': 'GET', 'rel': 'last'},
@@ -184,7 +181,6 @@ class CollectionLinksTestCase(unittest.TestCase):
         inst_arg_str = urlencode(params, doseq=True)
         all_args_str = urlencode(all_args, doseq=True)
         expected = [
-            {'href': 'http://class.uri?{0}'.format(inst_arg_str), 'method': 'POST', 'rel': 'create'},
             {'href': 'http://class.uri/{{resource_id}}?{0}'.format(inst_arg_str), 'method': 'GET', 'rel': 'item'},
             {'href': 'http://class.uri?{0}'.format(all_args_str), 'method': 'GET', 'rel': 'first'},
             {'href': 'http://class.uri?{0}'.format(all_args_str), 'method': 'GET', 'rel': 'last'}]

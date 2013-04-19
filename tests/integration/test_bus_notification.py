@@ -1,12 +1,18 @@
 from mock import patch
+import time
+
 import ujson as json
+import stomp
+
 from brainiak import server
-from brainiak.event_bus import event_bus_connection, EVENT_BUS_TOPIC
+from brainiak.event_bus import event_bus_connection
+from brainiak.settings import EVENT_BUS_HOST, EVENT_BUS_PORT
 
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
-messageQueue = []
+message_queue_solr = []
+message_queue_elastic = []
 
 
 class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
@@ -22,17 +28,31 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     def setUp(self):
         super(BusNotificationTestCase, self).setUp()
-        event_bus_connection.set_listener("listener", BusListener())
         event_bus_connection.start()
         event_bus_connection.connect()
-        event_bus_connection.subscribe(destination=EVENT_BUS_TOPIC, ack='auto')
+        event_bus_connection.set_listener("listener", NotifierListener())
+
+        self.connection_message_queue_solr = stomp.Connection(host_and_ports=[(EVENT_BUS_HOST, EVENT_BUS_PORT)])
+        self.connection_message_queue_solr.start()
+        self.connection_message_queue_solr.connect()
+        global message_queue_solr
+        self.connection_message_queue_solr.set_listener("listener", SolrQueueListener())
+        self.connection_message_queue_solr.subscribe(destination="/queue/solr", ack='auto')
+
+        self.connection_message_queue_elastic = stomp.Connection(host_and_ports=[(EVENT_BUS_HOST, EVENT_BUS_PORT)])
+        self.connection_message_queue_elastic.start()
+        self.connection_message_queue_elastic.connect()
+        global message_queue_elastic
+        self.connection_message_queue_elastic.set_listener("listener", ElasticQueueListener())
+        self.connection_message_queue_elastic.subscribe(destination="/queue/elasticsearch", ack='auto')
 
     def tearDown(self):
-        global messageQueue
-        messageQueue = []
+        event_bus_connection.stop()
+        self.connection_message_queue_solr.stop()
+        self.connection_message_queue_elastic.stop()
 
     @patch("brainiak.handlers.log")
-    def test_edit_instance_200_adding_predicate(self, log):
+    def test_notify_event_bus_on_put_instance(self, log):
         expected_message = {
             "instance": "http://tatipedia.org/new_york",
             "class": "http://tatipedia.org/Place",
@@ -44,10 +64,28 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             method='PUT',
             body=json.dumps({}))
         self.assertEqual(modified_new_york.code, 200)
-        self.assertEqual(messageQueue[0], json.dumps(expected_message))
+        self.assertEqual(message_queue_solr[0], json.dumps(expected_message))
+        self.assertEqual(message_queue_elastic[0], json.dumps(expected_message))
 
 
-class BusListener(object):
+class NotifierListener(object):
+
+    def on_send(self, headers, body):
+        # necessary for the subscriber to read the sent message
+        time.sleep(2)
+
+
+class SolrQueueListener(object):
 
     def on_message(self, headers, message):
-        messageQueue.append(message)
+        global message_queue_solr
+        message_queue_solr = []
+        message_queue_solr.append(message)
+
+
+class ElasticQueueListener(object):
+
+    def on_message(self, headers, message):
+        global message_queue_elastic
+        message_queue_elastic = []
+        message_queue_elastic.append(message)

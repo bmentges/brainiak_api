@@ -146,7 +146,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         computed_items = json.loads(response.body)["items"]
         expected_items = [
             {
-                u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'http://tatipedia.org/Capoeira'],
+                u'http://tatipedia.org/likes': [u'http://tatipedia.org/Capoeira', u'http://tatipedia.org/JiuJitsu'],
                 u'resource_id': u'mary',
                 u'@id': u'http://tatipedia.org/mary',
                 u'title': u'Mary Land'
@@ -158,7 +158,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'title': u'John Jones'
             }
         ]
-        self.assertEqual(sorted(computed_items), sorted(expected_items))
+        self.assertItemsEqual(computed_items, expected_items)
 
     @patch("brainiak.handlers.log")
     def test_json_returns_sortby_per_item(self, log):

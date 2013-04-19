@@ -95,7 +95,8 @@ class ListQueryTestCase(unittest.TestCase):
             "p": "?predicate",
             "o": "?object",
             "sort_by": "",
-            "sort_order": "asc"
+            "sort_order": "asc",
+            "sort_include_empty": "1"
     }
     maxDiff = None
 
@@ -230,6 +231,27 @@ class ListQueryTestCase(unittest.TestCase):
         params = self.default_params.copy()
         params["sort_by"] = "dbpedia:predicate"
         params["sort_order"] = "asc"
+        query = Query(params)
+        computed = query.to_string()
+        expected = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT DISTINCT ?label, ?sort_object, ?subject
+        WHERE {
+            ?subject a <http://some.graph/SomeClass> ;
+                     rdfs:label ?label .
+            OPTIONAL {?subject <http://dbpedia.org/ontology/predicate> ?sort_object}
+        }
+        ORDER BY ASC(?sort_object)
+        LIMIT 10
+        OFFSET 0
+        """
+        self.assertEqual(strip(computed), strip(expected))
+
+    def test_query_with_sort_exclude_empty(self):
+        params = self.default_params.copy()
+        params["sort_by"] = "dbpedia:predicate"
+        params["sort_order"] = "asc"
+        params["sort_include_empty"] = "0"
         query = Query(params)
         computed = query.to_string()
         expected = """

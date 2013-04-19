@@ -724,7 +724,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
                 'rel': "self"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/{resource_id}?instance_prefix=http://semantica.globo.com/ctx/klass",
+                'href': "http://localhost:5100/ctx/klass/{resource_id}?instance_prefix={instance_prefix}",
                 'method': "GET",
                 'rel': "item"
             },

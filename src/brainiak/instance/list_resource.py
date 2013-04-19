@@ -254,8 +254,7 @@ def filter_instances(query_params):
 def build_json(items_list, total_items, query_params):
     base_url = remove_last_slash(query_params.base_url)
     links = self_link(query_params) + collection_links(query_params, total_items)
-    instance_prefix = shorten_uri(remove_last_slash(query_params['instance_prefix']))
-    href = "{0}/{{resource_id}}?instance_prefix={1}".format(base_url, instance_prefix)
+    href = "{0}/{{resource_id}}?instance_prefix={{instance_prefix}}".format(base_url)
     add_link(links, 'item', href)
     add_link(links, "create", base_url, method='POST', schema={'$ref': '{0}/_schema'.format(base_url)})
     json = {

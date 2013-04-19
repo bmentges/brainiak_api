@@ -2,7 +2,7 @@ import inspect
 
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import crud_links, collection_links, add_link, remove_last_slash
+from brainiak.utils.links import crud_links, collection_links, add_link, remove_last_slash, self_link
 from brainiak.utils.resources import decorate_with_resource_id
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value, normalize_term
 
@@ -252,8 +252,10 @@ def filter_instances(query_params):
 
 
 def build_json(items_list, total_items, query_params):
-    links = crud_links(query_params) + collection_links(query_params, total_items)
-    add_link(links, "itemDescribedBy", "{base_url}/_schema", base_url=remove_last_slash(query_params.base_url))
+    base_url = remove_last_slash(query_params.base_url)
+    links = self_link(query_params) + collection_links(query_params, total_items)
+    add_link(links, "item", base_url + "/{resource_id}")
+    add_link(links, "create", base_url, method='POST', schema={'$ref': '{0}/_schema'.format(base_url)})
     json = {
         'items': items_list,
         'item_count': total_items,

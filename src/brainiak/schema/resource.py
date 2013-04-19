@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from brainiak.prefixes import MemorizeContext
-from brainiak.utils.links import add_link, crud_links
+from brainiak.utils.links import add_link, self_link
 from brainiak.utils.sparql import get_one_value, filter_values, add_language_support
 from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
@@ -32,11 +32,9 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     effective_context.update(context.context)
 
     query_params.resource_url = query_params.base_url
-    links = crud_links(query_params)
-    # From the schema we would like to list or create instances from the respective collection
+    links = self_link(query_params)
     base_url = query_params.base_url[:-9]  # remove /_schema
-    add_link(links, "instances", "{base_url}", base_url=base_url)
-    add_link(links, "create", "{base_url}", method="POST", base_url=base_url)
+    add_link(links, "instances", base_url)
 
     expand_object_properties_links(links, context)
 
@@ -61,7 +59,7 @@ def expand_object_properties_links(links, context):
     for property_name, uri in context.object_properties.items():
         if (not "://" in uri) and (':' in uri):
             parts = dict(zip(('ctx', 'klass'), uri.split(':')))
-            add_link(links, property_name, "/{ctx}/{klass}", **parts)
+            add_link(links, property_name, "/{ctx}/{klass}".format(**parts))
         else:
             add_link(links, property_name, uri)
 

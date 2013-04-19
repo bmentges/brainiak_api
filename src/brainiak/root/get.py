@@ -31,7 +31,7 @@ def list_all_contexts(params):
 
     links = crud_links(params) + collection_links(params, total_items)
     add_link(links,
-             "itemDescribedBy",
+             "instances",
              "{base_url}{{resource_id}}/_schema",
              base_url=params.base_url)
 

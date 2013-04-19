@@ -69,14 +69,14 @@ def collection_links(query_params, total_items):
     previous_page = get_previous_page(link_params['page'])
     next_page = get_next_page(link_params['page'], last_page)
 
-    if args:
-        item_url = "{0}/{{resource_id}}?{1:s}".format(base_url, args)
-    else:
-        item_url = "{0}/{{resource_id}}".format(base_url)
+    # if args:
+    #     item_url = "{0}/{{resource_id}}?{1:s}".format(base_url, args)
+    # else:
+    #     item_url = "{0}/{{resource_id}}".format(base_url)
 
     links = [
         # {'rel': "create", 'href': link_params['base_url_with_params'], 'method': "POST"},
-        {'rel': "item", 'href': item_url, 'method': "GET"},
+        # {'rel': "item", 'href': item_url, 'method': "GET"},
         {'rel': "first", 'href': "%s?%s" % (base_url, query_params.args(page=1, per_page=per_page)), 'method': "GET"},
         {'rel': "last", 'href': "%s?%s" % (base_url, query_params.args(page=last_page, per_page=per_page)), 'method': "GET"}
     ]
@@ -104,9 +104,11 @@ def crud_links(query_params):
 def self_link(query_params):
     "Produce a list with a single 'self' link entry"
     link_params = prepare_link_params(query_params)
-    return  [{'rel': "self", 'href': link_params['base_url_with_params'], 'method': "GET"}]
+    return [{'rel': "self", 'href': link_params['base_url_with_params'], 'method': "GET"}]
 
 
 def add_link(link_list, rel, href, method='GET', **kw):
     "Add an entry to the list given by ``link_list'' with key==rel and href as a string template that is formated by kw"
-    link_list.append({'rel': rel, 'method': method, 'href': href.format(**kw)})
+    link = {'rel': rel, 'method': method, 'href': href}
+    link.update(kw)
+    link_list.append(link)

@@ -731,24 +731,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             {
                 'href': "http://localhost:5100/ctx/klass",
                 'method': "POST",
-                'rel': "create"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass/_schema",
-                'method': "GET",
-                'rel': "itemDescribedBy"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass/{resource_id}",
-                'method': "DELETE",
-                'rel': "delete"
-
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass/{resource_id}",
-                'method': "PUT",
-                'rel': "replace"
-
+                'rel': "create",
+                'schema': {'$ref': 'http://localhost:5100/ctx/klass/_schema'}
             },
             {
                 'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",

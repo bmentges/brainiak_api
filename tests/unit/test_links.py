@@ -64,8 +64,8 @@ class AddLinksTestCase(unittest.TestCase):
 
     def test_add_link(self):
         link_list = []
-        expected_link_list = [{'rel': 'rel_key', 'method': 'GET', 'href': 'http://A/B'}]
-        add_link(link_list, "rel_key", "http://{a}/{b}", a="A", b="B")
+        expected_link_list = [{'rel': 'rel_key', 'method': 'GET', 'href': 'http://A/B', 'foo': 'bar'}]
+        add_link(link_list, "rel_key", "http://A/B", foo='bar')
         self.assertEqual(link_list, expected_link_list)
 
     def test_add_link_with_exact_href(self):
@@ -83,7 +83,6 @@ class CrudLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler)
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri', 'method': 'GET', 'rel': 'self'},
             {'href': 'http://any.uri/{resource_id}', 'method': 'DELETE', 'rel': 'delete'},
             {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace'}]
         self.assertEqual(sorted(computed), sorted(expected))
@@ -95,7 +94,6 @@ class CrudLinksTestCase(unittest.TestCase):
         self.assertEqual(query_params.resource_url, "http://any.uri/{resource_id}")
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri', 'method': 'GET', 'rel': 'self'},
             {'href': 'http://any.uri/{resource_id}', 'method': 'DELETE', 'rel': 'delete'},
             {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace'}]
         self.assertEqual(sorted(computed), sorted(expected))
@@ -106,7 +104,6 @@ class CrudLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri?per_page=50&page=3', 'method': 'GET', 'rel': 'self'},
             {'href': 'http://any.uri/{resource_id}', 'method': 'DELETE', 'rel': 'delete'},
             {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace'}]
         self.assertEqual(sorted(computed), sorted(expected))
@@ -122,7 +119,6 @@ class CollectionLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params, total_items)
         expected = [
-            {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'last'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
@@ -135,7 +131,6 @@ class CollectionLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params, total_items)
         expected = [
-            {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
             {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'last'},
             {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'next'}]
@@ -148,8 +143,6 @@ class CollectionLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params, total_items)
         expected = [
-            {'href': 'http://class.uri', 'method': 'POST', 'rel': 'create'},
-            {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
             {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'last'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
@@ -162,7 +155,6 @@ class CollectionLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params, total_items)
         expected = [
-            {'href': 'http://class.uri/{resource_id}', 'method': 'GET', 'rel': 'item'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
             {'href': 'http://class.uri?per_page=1&page=3', 'method': 'GET', 'rel': 'last'},
             {'href': 'http://class.uri?per_page=1&page=3', 'method': 'GET', 'rel': 'next'},
@@ -181,7 +173,6 @@ class CollectionLinksTestCase(unittest.TestCase):
         inst_arg_str = urlencode(params, doseq=True)
         all_args_str = urlencode(all_args, doseq=True)
         expected = [
-            {'href': 'http://class.uri/{{resource_id}}?{0}'.format(inst_arg_str), 'method': 'GET', 'rel': 'item'},
             {'href': 'http://class.uri?{0}'.format(all_args_str), 'method': 'GET', 'rel': 'first'},
             {'href': 'http://class.uri?{0}'.format(all_args_str), 'method': 'GET', 'rel': 'last'}]
 

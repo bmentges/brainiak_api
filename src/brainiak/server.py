@@ -6,6 +6,7 @@ from tornado.web import Application as TornadoApplication
 from brainiak import __doc__, log, settings
 from brainiak.greenlet_tornado import greenlet_set_ioloop
 from brainiak.handlers import get_routes
+from brainiak.event_bus import event_bus_connection
 
 server = None
 
@@ -25,6 +26,8 @@ def main(args):  # pragma: no cover
     server.listen(settings.SERVER_PORT)
     io_loop = IOLoop.instance()
     greenlet_set_ioloop(io_loop)
+    event_bus_connection.start()
+    event_bus_connection.connect()
     io_loop.start()
 
 

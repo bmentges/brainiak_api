@@ -20,7 +20,8 @@ FILTER_PARAMS = DefaultParamsDict(p="?predicate", o="?object")
 LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
                                 per_page=settings.DEFAULT_PER_PAGE,
                                 sort_by="",
-                                sort_order="ASC")
+                                sort_order="ASC",
+                                sort_include_empty="1")
 
 
 def normalize_last_slash(url):

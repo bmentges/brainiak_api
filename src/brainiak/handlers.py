@@ -21,6 +21,7 @@ from brainiak.prefix.list_resource import list_prefixes
 from brainiak.root.get import list_all_contexts
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
 from brainiak.greenlet_tornado import greenlet_asynchronous
+from brainiak.event_bus import notify_bus
 
 custom_decorator.wrapper = greenlet_asynchronous
 
@@ -196,6 +197,9 @@ class InstanceHandler(BrainiakRequestHandler):
             edit_instance(self.query_params, instance_data)
 
         response = get_instance(self.query_params)
+
+        notify_bus(uri=response["@id"], klass=self.query_params["class_uri"],
+                   graph=self.query_params["graph_uri"], action="PUT")
 
         self.finalize(response)
 

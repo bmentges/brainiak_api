@@ -186,7 +186,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
     allow_triplestore_connection = True
 
     def test_news_filtered_by_sports_graph(self):
-        response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/sports&class_prefix=http://dbpedia.org/ontology/', method='GET')
+        response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/sports', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         computed_item_count = body["item_count"]
@@ -201,7 +201,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(computed_items, expected_items)
 
     def test_news_filtered_by_politics_graph(self):
-        response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/politics&class_prefix=http://dbpedia.org/ontology/', method='GET')
+        response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/politics', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         computed_item_count = body["item_count"]

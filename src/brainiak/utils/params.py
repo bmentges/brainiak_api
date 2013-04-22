@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from urllib import urlencode
 from brainiak import settings
-from brainiak.prefixes import safe_slug_to_prefix, ROOT_CONTEXT
+from brainiak.prefixes import safe_slug_to_prefix
 
 
 class InvalidParam(Exception):

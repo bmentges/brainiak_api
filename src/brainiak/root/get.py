@@ -27,7 +27,10 @@ def list_all_contexts(params):
         raise HTTPError(404, log_message="No contexts were found.")
 
     contexts_pages = split_into_chunks(filtered_contexts, int(params["per_page"]))
-    contexts = contexts_pages[int(params["page"])]
+    try:
+        contexts = contexts_pages[int(params["page"])]
+    except IndexError:
+        raise HTTPError(404, log_message="Page {0:d} not found.".format(int(params["page"]) + 1))
 
     links = self_link(params) + collection_links(params, total_items)
     add_link(links, "instances", params.base_url + "{resource_id}")

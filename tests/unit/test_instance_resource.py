@@ -88,7 +88,7 @@ class AssembleTestCase(unittest.TestCase):
             {'rel': 'describedBy', 'href': 'http://mock.test.com/schema/klass/_schema', 'method': 'GET'},
             {'rel': 'inCollection', 'href': 'http://mock.test.com/schema/klass', 'method': 'GET'},
             {'rel': 'delete', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT'}
+            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_schema'}}
         ]
 
         self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
@@ -121,7 +121,7 @@ class AssembleTestCase(unittest.TestCase):
             {'rel': 'describedBy', 'href': 'http://mock.test.com/schema/klass/_schema', 'method': 'GET'},
             {'rel': 'inCollection', 'href': 'http://mock.test.com/schema/klass', 'method': 'GET'},
             {'rel': 'delete', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT'},
+            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_schema'}},
             {'rel': 'person', 'href': '/person/Person'}
         ]
 

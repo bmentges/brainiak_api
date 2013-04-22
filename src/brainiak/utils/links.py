@@ -85,10 +85,16 @@ def collection_links(query_params, total_items):
 
 def crud_links(query_params):
     """Build crud links."""
+    schema_url = "{0}://{1}/{2}/{3}/_schema".format(
+        query_params['request'].protocol,
+        query_params['request'].host,
+        query_params['context_name'],
+        query_params['class_name'])
+
     link_params = prepare_link_params(query_params)
     links = [
         {'rel': "delete", 'href': link_params['resource_url'], 'method': "DELETE"},
-        {'rel': "replace", 'href': link_params['resource_url'], 'method': "PUT"}
+        {'rel': "replace", 'href': link_params['resource_url'], 'method': "PUT", 'schema': {'$ref': schema_url}}
     ]
     return links
 

@@ -54,6 +54,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     query_params.resource_url = "{0}/{1}".format(base_url, query_params['instance_id'])
     action_links = self_link(query_params) + crud_links(query_params)
     add_link(links, 'describedBy', href_schema_url)
+    add_link(links, 'inCollection', base_url)
 
     links.extend(action_links)
 

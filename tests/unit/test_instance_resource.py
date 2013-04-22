@@ -84,6 +84,7 @@ class AssembleTestCase(unittest.TestCase):
         expected_links = [
             {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
             {'rel': 'describedBy', 'href': 'http://mock.test.com/schema/klass/_schema', 'method': 'GET'},
+            {'rel': 'inCollection', 'href': 'http://mock.test.com/schema/klass', 'method': 'GET'},
             {'rel': 'delete', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'DELETE'},
             {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT'}
         ]
@@ -116,6 +117,7 @@ class AssembleTestCase(unittest.TestCase):
         expected_links = [
             {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
             {'rel': 'describedBy', 'href': 'http://mock.test.com/schema/klass/_schema', 'method': 'GET'},
+            {'rel': 'inCollection', 'href': 'http://mock.test.com/schema/klass', 'method': 'GET'},
             {'rel': 'delete', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'DELETE'},
             {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT'},
             {'rel': 'person', 'href': '/person/Person'}

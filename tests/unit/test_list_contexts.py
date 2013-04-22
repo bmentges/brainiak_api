@@ -67,11 +67,7 @@ class GetContextTestCase(unittest.TestCase):
         self.assertEqual(computed["item_count"], 2)
         expected_links = [
             {'rel': 'self', 'href': base_url, 'method': 'GET'},
-            {'rel': 'itemDescribedBy', 'href': base_url + '/{resource_id}/_schema', 'method': 'GET'},
-            {'rel': 'item', 'href': base_url + '/{resource_id}', 'method': 'GET'},
-            {'rel': 'create', 'href': base_url, 'method': 'POST'},
-            {'rel': 'delete', 'href': base_url + '/{resource_id}', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': base_url + '/{resource_id}', 'method': 'PUT'},
+            {'rel': 'instances', 'href': base_url + '/{resource_id}', 'method': 'GET'},
             {'rel': 'first', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
             {'rel': 'last', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
         ]

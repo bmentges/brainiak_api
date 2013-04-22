@@ -84,7 +84,7 @@ class CrudLinksTestCase(unittest.TestCase):
         computed = crud_links(query_params)
         expected = [
             {'href': 'http://any.uri/{resource_id}', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace'}]
+            {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/invalid_context/invalid_class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_crud_links_without_params_ok_with_slash(self):
@@ -95,7 +95,7 @@ class CrudLinksTestCase(unittest.TestCase):
         computed = crud_links(query_params)
         expected = [
             {'href': 'http://any.uri/{resource_id}', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace'}]
+            {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/invalid_context/invalid_class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_crud_links_with_params_ok(self):
@@ -105,7 +105,7 @@ class CrudLinksTestCase(unittest.TestCase):
         computed = crud_links(query_params)
         expected = [
             {'href': 'http://any.uri/{resource_id}', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace'}]
+            {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/invalid_context/invalid_class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
 

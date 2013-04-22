@@ -31,7 +31,7 @@ def normalize_last_slash(url):
 class ParamDict(dict):
     "Utility class to generate default params on demand and memoize results"
     extra_params = {}
-    essential_params = ('graph_prefix', 'class_prefix', 'instance_prefix', 'graph_uri', 'class_uri', 'instance_uri', 'lang')
+    essential_params = ('class_prefix', 'instance_prefix', 'graph_uri', 'class_uri', 'instance_uri', 'lang')
 
     def __init__(self, handler, *args, **kw):
         dict.__init__(self, *args, **kw)
@@ -64,12 +64,15 @@ class ParamDict(dict):
         if key in ('graph_uri', 'class_uri'):
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
 
-        elif key == "graph_prefix":
-            dict.__setitem__(self, key, safe_slug_to_prefix(value))
-            if self["context_name"] != ROOT_CONTEXT:
-                dict.__setitem__(self, "graph_uri", "{0}{1}/".format(self["graph_prefix"], self["context_name"]))
-            else:
-                dict.__setitem__(self, "graph_uri", settings.URI_PREFIX)
+        elif key == "context_name":
+            dict.__setitem__(self, key, value)
+            uri = safe_slug_to_prefix(value)
+            dict.__setitem__(self, "graph_uri", uri)
+            dict.__setitem__(self, "class_prefix", uri)
+
+        elif key == "class_name":
+            dict.__setitem__(self, key, value)
+            dict.__setitem__(self, "class_uri", "{0}{1}".format(self["class_prefix"], self["class_name"]))
 
         elif key == "class_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
@@ -89,8 +92,8 @@ class ParamDict(dict):
         self["class_name"] = self.get("class_name", "invalid_class")
         self["instance_id"] = self.get("instance_id", "invalid_instance")
 
-        self["graph_prefix"] = settings.URI_PREFIX
-        self["class_prefix"] = self.get("graph_uri")
+        self["graph_uri"] = safe_slug_to_prefix(self["context_name"])
+        self["class_prefix"] = self["graph_uri"]
         self["instance_prefix"] = self.get("class_uri") + "/"
 
     def _override_with(self, handler):

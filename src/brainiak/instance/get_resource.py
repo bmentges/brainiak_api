@@ -33,6 +33,7 @@ def build_items_dict(context, bindings):
             items_dict[key] = value_list
         else:
             items_dict[key] = value
+        items_dict["rdfs:label"] = context.shorten_uri(item["label"]["value"])
     return items_dict
 
 
@@ -69,9 +70,13 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
-SELECT ?p ?o {
+SELECT ?p ?o ?label {
 <%(instance_uri)s> a <%(class_uri)s>;
-    ?p ?o}
+    rdfs:label ?label;
+    ?p ?o .
+FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
+FILTER (! (?p = rdfs:label))
+}
 """
 
 

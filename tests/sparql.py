@@ -158,6 +158,7 @@ class QueryTestCase(SimpleTestCase):
     allow_triplestore_connection = False
     allow_inference = True
     fixtures = []
+    fixtures_by_graph = {}
 
     # Mock related
     originalSPARQLWrapper = Wrapper.SPARQLWrapper
@@ -181,12 +182,12 @@ class QueryTestCase(SimpleTestCase):
     def _setup_triplestore(self):
         self._restore_triplestore()
 
-    def _load_fixture_to_memory(self, fixture):
+    def _load_fixture_to_memory(self, fixture, graph=None):
         graph.parse(fixture, format="n3")
 
-    def _load_fixture_to_triplestore(self, fixture):
+    def _load_fixture_to_triplestore(self, fixture, graph):
         fixture = copy_ttl_to_virtuoso_dir(fixture)
-        isql_up = ISQL_UP % {"ttl": fixture, "graph": self.graph_uri}
+        isql_up = ISQL_UP % {"ttl": fixture, "graph": graph}
         run_isql(isql_up)
 
     def _pre_setup(self):
@@ -197,12 +198,18 @@ class QueryTestCase(SimpleTestCase):
             setup = self._setup_mocked_triplestore
             load = self._load_fixture_to_memory
 
-        setup()
-        for fixture in self.fixtures:
-            load(fixture)
+        if not self.fixtures_by_graph:
+            setup()
+            for fixture in self.fixtures:
+                load(fixture, self.graph_uri)
+        else:
+            setup()
+            for (graph, fixtures) in self.fixtures_by_graph.items():
+                for fixture in fixtures:
+                    load(fixture, graph)
 
-    def _drop_graph_from_triplestore(self):
-        isql_down = ISQL_DOWN % {"graph": self.graph_uri}
+    def _drop_graph_from_triplestore(self, graph):
+        isql_down = ISQL_DOWN % {"graph": graph}
         run_isql(isql_down)
 
     def _restore_triplestore(self):
@@ -212,8 +219,12 @@ class QueryTestCase(SimpleTestCase):
 
     def _post_teardown(self):
         self._restore_triplestore()
-        if self.allow_triplestore_connection:
-            self._drop_graph_from_triplestore()
+        if not self.fixtures_by_graph:
+            if self.allow_triplestore_connection:
+                self._drop_graph_from_triplestore(self.graph_uri)
+        else:
+            for graph in self.fixtures_by_graph.keys():
+                self._drop_graph_from_triplestore(graph)
 
     def query(self, query_string, graph=None):
         endpoint = settings.SPARQL_ENDPOINT
@@ -222,13 +233,19 @@ class QueryTestCase(SimpleTestCase):
         mode = settings.SPARQL_ENDPOINT_AUTH_MODE
         realm = settings.SPARQL_ENDPOINT_REALM
 
-        if self.allow_inference:
-            enable_inference_at_graph(self.graph_uri)
+        if not self.fixtures_by_graph:
+            if self.allow_inference:
+                enable_inference_at_graph(self.graph_uri)
+        else:
+            for graph in self.fixtures_by_graph.keys():
+                enable_inference_at_graph(graph)
 
         endpoint = Wrapper.SPARQLWrapper(endpoint)
         endpoint.setCredentials(user, password, mode=mode, realm=realm)
         if graph is None:
             endpoint.addDefaultGraph(self.graph_uri)
+        elif not graph:
+            pass
         else:
             endpoint.addDefaultGraph(graph)
         endpoint.setReturnFormat(JSON)

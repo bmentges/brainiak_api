@@ -176,6 +176,46 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 404)
 
 
+class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
+    fixtures_by_graph = {
+        "http://brmedia.com/sports": ["tests/sample/sports.n3"],
+        "http://brmedia.com/politics": ["tests/sample/politics.n3"],
+        "http://brmedia.com/entertainment": ["tests/sample/entertainment.n3"]
+    }
+    maxDiff = None
+    allow_triplestore_connection = True
+
+    def test_news_filtered_by_sports_graph(self):
+        response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/sports&class_prefix=http://dbpedia.org/ontology/', method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        computed_item_count = body["item_count"]
+        computed_items = body["items"]
+        expected_items = [{
+            u'resource_id': u'news_cricket',
+            u'instance_prefix': u'http://brmedia.com/',
+            u'@id': u'http://brmedia.com/news_cricket',
+            u'title': u'Cricket becomes the most popular sport of Brazil'
+        }]
+        self.assertEqual(computed_item_count, 1)
+        self.assertEqual(computed_items, expected_items)
+
+    def test_news_filtered_by_politics_graph(self):
+        response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/politics&class_prefix=http://dbpedia.org/ontology/', method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        computed_item_count = body["item_count"]
+        computed_items = body["items"]
+        expected_items = [{
+            u'resource_id': u'news_president_answer',
+            u'instance_prefix': u'http://brmedia.com/',
+            u'@id': u'http://brmedia.com/news_president_answer',
+            u'title': u"President explains the reason for the war - it is 42"
+        }]
+        self.assertEqual(computed_item_count, 1)
+        self.assertEqual(computed_items, expected_items)
+
+
 class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None

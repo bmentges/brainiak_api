@@ -19,6 +19,7 @@ class Query(object):
 
     Obligatory params' keys (provided while creating object):
         class_uri
+        graph_uri
         lang
         p
         o
@@ -85,8 +86,9 @@ class Query(object):
 
         tuples_strings = ["%s %s" % each_tuple for each_tuple in tuples]
         statement = "?subject " + " ;\n".join(tuples_strings) + " .\n" + sort_sufix
+        statements = statement % self.params
 
-        return statement % self.params
+        return 'GRAPH ?g { %s }' % statements
 
     @property
     def filter(self):
@@ -102,6 +104,7 @@ class Query(object):
                 }
                 filter_list.append(statement)
 
+        filter_list.append("FILTER(?g = <%(graph_uri)s>) ." % self.params)
         if filter_list:
             statement = "\n".join(filter_list)
 

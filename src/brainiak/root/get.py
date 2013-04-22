@@ -1,7 +1,7 @@
 from tornado.web import HTTPError
 
 from brainiak import triplestore
-from brainiak.prefixes import prefix_to_slug
+from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql
 from brainiak.utils.links import self_link, split_into_chunks, collection_links, add_link
 
@@ -44,6 +44,9 @@ def filter_and_build_contexts(contexts_uris):
     contexts = []
     for uri in contexts_uris:
         slug = prefix_to_slug(uri)
+        # ignore standard graphs
+        if slug in STANDARD_PREFIXES:
+            continue
         if slug != uri:
             context_info = {
                 "title": slug,

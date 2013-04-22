@@ -30,6 +30,17 @@ class MockedTestCase(unittest.TestCase):
         get.filter_and_build_contexts = mock_filter_and_build_contexts
         self.assertRaises(HTTPError, list_all_contexts, 'irrelevant_params')
 
+    def test_raises_http_error_invalid_page(self):
+        triplestore.query_sparql = lambda query: None
+        sparql.filter_values = lambda a, b: []
+
+        def mock_filter_and_build_contexts(contexts_uris):
+            return []
+        get.filter_and_build_contexts = mock_filter_and_build_contexts
+        handler = MockHandler()
+        params = ParamDict(handler, page='100')
+        self.assertRaises(HTTPError, list_all_contexts, params)
+
 
 class GetContextTestCase(unittest.TestCase):
 

@@ -69,7 +69,10 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
 SELECT ?p ?o {
 <%(instance_uri)s> a <%(class_uri)s>;
-    ?p ?o}
+    rdfs:label ?label;
+    ?p ?o .
+FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
+}
 """
 
 

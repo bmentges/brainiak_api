@@ -87,7 +87,6 @@ class AssembleTestCase(unittest.TestCase):
         self.assertEqual(computed["@id"], "http://localhost:5100/ctx/klass/instance")
         self.assertEqual(computed["@type"], "ctx:klass")
         self.assertEqual(computed["@context"], {})
-        self.assertEqual(computed["$schema"], 'http://localhost:5100/ctx/klass/_schema')
         self.assertItemsEqual(computed["links"], expected_links)
 
     def test_assemble_instance_json_links_with_context(self):
@@ -119,7 +118,6 @@ class AssembleTestCase(unittest.TestCase):
         self.assertEqual(computed["@id"], "http://localhost:5100/ctx/klass/instance")
         self.assertEqual(computed["@type"], "ctx:klass")
         self.assertIsInstance(computed["@context"], InnerContextMock)
-        self.assertEqual(computed["$schema"], 'http://localhost:5100/ctx/klass/_schema')
         self.assertEqual(sorted(computed["links"]), sorted(expected_links))
 
 

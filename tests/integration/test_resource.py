@@ -21,7 +21,8 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         response = self.fetch('/person/Gender/Male')
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
-        self.assertTrue(json_received['$schema'].endswith('_schema'))
+        self.assertEqual(json_received['@type'], 'person:Gender')
+        self.assertEqual(json_received['@id'], "http://semantica.globo.com/person/Gender/Male")
 
     def test_instance_has_options(self):
         response = self.fetch('/person/Gender/Female', method='OPTIONS')

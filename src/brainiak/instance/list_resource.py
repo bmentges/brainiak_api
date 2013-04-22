@@ -9,7 +9,7 @@ from brainiak.utils.sparql import compress_keys_and_values, get_one_value, norma
 
 class Query(object):
     """
-    Creates SPARQL query strings for listing instances, provided
+    Creates a SPARQL query for listing instances, provided
     obligatory parameters.
 
     Usage:
@@ -17,7 +17,7 @@ class Query(object):
     >>> params = {...}
     >>> sparql_query = Query(params).to_string()
 
-    Obligatory keys inside params:
+    Obligatory params' keys (provided while creating object):
         class_uri
         lang
         p

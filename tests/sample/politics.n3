@@ -1,0 +1,10 @@
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+@prefix brmedia: <http://brmedia.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+dbpedia:News a owl:Class .
+
+brmedia:news_president_answer
+    a dbpedia:News;
+    rdfs:label "President explains the reason for the war - it is 42" .

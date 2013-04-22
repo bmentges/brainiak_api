@@ -31,7 +31,8 @@ class TestCaseInstanceResource(unittest.TestCase):
                         'context_name': 'place',
                         'class_name': 'Country',
                         'instance_id': 'Brazil',
-                        'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil'}
+                        'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil',
+                        'lang': 'pt'}
 
         response = get_resource.get_instance(query_params)
 
@@ -51,7 +52,8 @@ class TestCaseInstanceResource(unittest.TestCase):
                         'context_name': 'place',
                         'class_name': 'Country',
                         'instance_id': 'Brazil',
-                        'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil'}
+                        'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil',
+                        'lang': 'pt'}
 
         response = get_resource.get_instance(query_params)
 
@@ -133,10 +135,10 @@ class BuildItemsDictTestCase(unittest.TestCase):
 
     def test_build_items_dict(self):
         bindings = [
-            {"p": {"value": "key1"}, "o": {"value": "value1"}},
-            {"p": {"value": "key1"}, "o": {"value": "value2"}},
-            {"p": {"value": "key2"}, "o": {"value": "value2"}},
+            {"p": {"value": "key1"}, "o": {"value": "value1"}, "label": {"value": "label1"}},
+            {"p": {"value": "key1"}, "o": {"value": "value2"}, "label": {"value": "label1"}},
+            {"p": {"value": "key2"}, "o": {"value": "value2"}, "label": {"value": "label1"}}
         ]
-        expected = {"key1": ["value1", "value2"], "key2": "value2"}
+        expected = {"key1": ["value1", "value2"], "key2": "value2", 'rdfs:label': 'label1'}
         response = get_resource.build_items_dict(MemorizeContext(), bindings)
-        self.assertEqual(expected, response)
+        self.assertEqual(response, expected)

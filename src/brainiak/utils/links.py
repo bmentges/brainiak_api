@@ -61,7 +61,6 @@ def prepare_link_params(query_params):
 def collection_links(query_params, total_items):
 
     link_params = prepare_link_params(query_params)
-    args = link_params['args']
     base_url = link_params['base_url']
     per_page = link_params['per_page']
 
@@ -69,14 +68,7 @@ def collection_links(query_params, total_items):
     previous_page = get_previous_page(link_params['page'])
     next_page = get_next_page(link_params['page'], last_page)
 
-    # if args:
-    #     item_url = "{0}/{{resource_id}}?{1:s}".format(base_url, args)
-    # else:
-    #     item_url = "{0}/{{resource_id}}".format(base_url)
-
     links = [
-        # {'rel': "create", 'href': link_params['base_url_with_params'], 'method': "POST"},
-        # {'rel': "item", 'href': item_url, 'method': "GET"},
         {'rel': "first", 'href': "%s?%s" % (base_url, query_params.args(page=1, per_page=per_page)), 'method': "GET"},
         {'rel': "last", 'href': "%s?%s" % (base_url, query_params.args(page=last_page, per_page=per_page)), 'method': "GET"}
     ]

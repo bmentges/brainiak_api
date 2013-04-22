@@ -119,7 +119,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_class_undefined(self, log):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nClass (http://semantica.globo.com/animals/Ornithorhynchus) in graph (http://semantica.globo.com/animals/) was not found."}')
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nClass (animalsOrnithorhynchus) in graph (animals) was not found."}')
 
 
 class TestHealthcheckResource(TornadoAsyncHTTPTestCase):

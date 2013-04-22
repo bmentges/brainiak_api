@@ -47,7 +47,8 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     def checkInstanceExistance(self, class_uri, instance_uri):
         query_string = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % {
             "class_uri": class_uri,
-            "instance_uri": instance_uri
+            "instance_uri": instance_uri,
+            "lang": "pt"
         }
         response = self.query(query_string)
         return response['results']['bindings'] != []

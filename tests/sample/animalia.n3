@@ -47,7 +47,7 @@
 
 # http://example.onto/person/cityOfBirth
 :birthCity a owl:ObjectProperty ;
-             owl:subPropertyOf :birthPlace ;
+             rdfs:subPropertyOf :birthPlace ;
              rdfs:label "Birth city of first known member of Species" ;
              rdfs:domain :Yorkshire_Terrier ;
              rdfs:range :City .

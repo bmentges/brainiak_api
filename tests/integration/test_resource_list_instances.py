@@ -23,9 +23,25 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
     def test_filter_without_predicate_and_object(self):
         response = self.fetch('/person/Gender/', method='GET')
         expected_items = [
-            {u'title': u'Feminino', u'@id': settings.URI_PREFIX + 'person/Gender/Female', u'resource_id': u'Female'},
-            {u'title': u'Masculino', u'@id': settings.URI_PREFIX + u'person/Gender/Male', u'resource_id': u'Male'},
-            {u'title': u'Transg\xeanero', u'@id': settings.URI_PREFIX + u'person/Gender/Transgender', u'resource_id': u'Transgender'}]
+            {
+                u'title': u'Feminino',
+                u'@id': settings.URI_PREFIX + 'person/Gender/Female',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Female'
+            },
+            {
+                u'title': u'Masculino',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Male',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Male'
+            },
+            {
+                u'title': u'Transg\xeanero',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Transgender'
+            }
+        ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 3)
@@ -46,11 +62,13 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Female',
                 u'resource_id': u'Female',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Feminino'
             },
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Masculino'
             }
         ]
@@ -65,6 +83,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
                 u'resource_id': u'Transgender',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Transg\xeanero'
             }
         ]
@@ -79,11 +98,13 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
                 u'resource_id': u'Transgender',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Transg\xeanero'
             },
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Masculino'
             }
         ]
@@ -97,6 +118,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'title': u'Masculino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'predicate': u'http://www.w3.org/2000/01/rdf-schema#label'
             }
         ]
@@ -109,9 +131,25 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         url = urllib.quote("http://www.w3.org/2000/01/rdf-schema#label")
         response = self.fetch('/person/Gender/?lang=pt&p=%s' % url, method='GET')
         expected_items = [
-            {u'title': u'Feminino', u'@id': settings.URI_PREFIX + u'person/Gender/Female', u'resource_id': u'Female'},
-            {u'title': u'Masculino', u'@id': settings.URI_PREFIX + u'person/Gender/Male', u'resource_id': u'Male'},
-            {u'title': u'Transg\xeanero', u'@id': settings.URI_PREFIX + u'person/Gender/Transgender', u'resource_id': u'Transgender'}]
+            {
+                u'title': u'Feminino',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Female',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Female'
+            },
+            {
+                u'title': u'Masculino',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Male',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Male'
+            },
+            {
+                u'title': u'Transg\xeanero',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Transgender'
+            }
+        ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 3)
@@ -120,7 +158,13 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
         url = urllib.quote("rdfs:label")
         response = self.fetch('/person/Gender/?o=Feminino&lang=pt&p=%s' % url, method='GET')
-        expected_items = [{u'title': u'Feminino', u'@id': settings.URI_PREFIX + u'person/Gender/Female', u'resource_id': u'Female'}]
+        expected_items = [
+            {
+                u'title': u'Feminino',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Female',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Female'}
+        ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 1)
@@ -130,6 +174,46 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
     def test_filter_with_no_results(self, log):
         response = self.fetch('/person/Gender/?o=Xubiru&lang=pt', method='GET')
         self.assertEqual(response.code, 404)
+
+
+class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
+    fixtures_by_graph = {
+        "http://brmedia.com/sports": ["tests/sample/sports.n3"],
+        "http://brmedia.com/politics": ["tests/sample/politics.n3"],
+        "http://brmedia.com/entertainment": ["tests/sample/entertainment.n3"]
+    }
+    maxDiff = None
+    allow_triplestore_connection = True
+
+    def test_news_filtered_by_sports_graph(self):
+        response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/sports', method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        computed_item_count = body["item_count"]
+        computed_items = body["items"]
+        expected_items = [{
+            u'resource_id': u'news_cricket',
+            u'instance_prefix': u'http://brmedia.com/',
+            u'@id': u'http://brmedia.com/news_cricket',
+            u'title': u'Cricket becomes the most popular sport of Brazil'
+        }]
+        self.assertEqual(computed_item_count, 1)
+        self.assertEqual(computed_items, expected_items)
+
+    def test_news_filtered_by_politics_graph(self):
+        response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/politics', method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        computed_item_count = body["item_count"]
+        computed_items = body["items"]
+        expected_items = [{
+            u'resource_id': u'news_president_answer',
+            u'instance_prefix': u'http://brmedia.com/',
+            u'@id': u'http://brmedia.com/news_president_answer',
+            u'title': u"President explains the reason for the war - it is 42"
+        }]
+        self.assertEqual(computed_item_count, 1)
+        self.assertEqual(computed_items, expected_items)
 
 
 class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
@@ -146,19 +230,21 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         computed_items = json.loads(response.body)["items"]
         expected_items = [
             {
-                u'http://tatipedia.org/likes': [u'http://tatipedia.org/Capoeira', u'http://tatipedia.org/JiuJitsu'],
+                u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'http://tatipedia.org/Capoeira'],
+                u'instance_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'mary',
                 u'@id': u'http://tatipedia.org/mary',
                 u'title': u'Mary Land'
             },
             {
                 u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'Aikido'],
+                u'instance_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'john',
                 u'@id': u'http://tatipedia.org/john',
                 u'title': u'John Jones'
             }
         ]
-        self.assertItemsEqual(computed_items, expected_items)
+        self.assertItemsEqual(sorted(computed_items), sorted(expected_items))
 
     @patch("brainiak.handlers.log")
     def test_json_returns_sortby_per_item(self, log):
@@ -169,14 +255,68 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u'dbpedia:nickname': u'JJ',
                 u'resource_id': u'john',
+                u'instance_prefix': u'http://tatipedia.org/',
                 u'@id': u'http://tatipedia.org/john',
                 u'title': u'John Jones'
             },
             {
                 u'dbpedia:nickname': u'ML',
                 u'resource_id': u'mary',
+                u'instance_prefix': u'http://tatipedia.org/',
                 u'@id': u'http://tatipedia.org/mary',
                 u'title': u'Mary Land'
+            }
+        ]
+        self.assertEqual(computed_items, expected_items)
+
+    @patch("brainiak.handlers.log")
+    def test_json_returns_sortby_include_empty_value(self, log):
+        response = self.fetch('/tpedia/SoccerClub/?graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&sort_by=http://tatipedia.org/stadium', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u"title": u"Clube de Regatas do Flamengo",
+                u"instance_prefix": u"http://tatipedia.org/",
+                u"@id": u"http://tatipedia.org/CRF",
+                u"resource_id": u"CRF"
+            },
+            {
+                u"title": u'S\xe3o Paulo Futebol Clube',
+                u"instance_prefix": u"http://tatipedia.org/",
+                u"@id": u"http://tatipedia.org/SPFC",
+                u"http://tatipedia.org/stadium": u"Morumbi",
+                u"resource_id": u"SPFC"
+            },
+            {
+                u"title": u"Cruzeiro Esporte Clube",
+                u"instance_prefix": u"http://tatipedia.org/",
+                u"@id": u"http://tatipedia.org/CEC",
+                u"http://tatipedia.org/stadium": u"Toca da Raposa",
+                u"resource_id": u"CEC"
+            }
+        ]
+        self.assertEqual(computed_items, expected_items)
+
+    @patch("brainiak.handlers.log")
+    def test_json_returns_sortby_exclude_empty_value(self, log):
+        response = self.fetch('/tpedia/SoccerClub/?graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&sort_by=http://tatipedia.org/stadium&sort_include_empty=0', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u"title": u'S\xe3o Paulo Futebol Clube',
+                u"instance_prefix": u"http://tatipedia.org/",
+                u"@id": u"http://tatipedia.org/SPFC",
+                u"http://tatipedia.org/stadium": u"Morumbi",
+                u"resource_id": u"SPFC"
+            },
+            {
+                u"title": u"Cruzeiro Esporte Clube",
+                u"instance_prefix": u"http://tatipedia.org/",
+                u"@id": u"http://tatipedia.org/CEC",
+                u"http://tatipedia.org/stadium": u"Toca da Raposa",
+                u"resource_id": u"CEC"
             }
         ]
         self.assertEqual(computed_items, expected_items)
@@ -198,6 +338,68 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         list_resource.query_filter_instances = self.original_query_filter_instances
         list_resource.query_count_filter_instances = self.original_query_count_filter_instances
 
+    def test_sort_by(self):
+        params = {
+            "class_uri": 'http://tatipedia.org/SoccerClub',
+            "p": "?predicate",
+            "o": "?object",
+            "sort_by": 'http://tatipedia.org/stadium',
+            "sort_order": "asc",
+            "sort_include_empty": "1",
+            "lang": "",
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0",
+        }
+        query = Query(params).to_string()
+        computed = self.query(query)["results"]["bindings"]
+        expected = [
+            {
+                u'label': {u'type': u'literal', u'value': u'Clube de Regatas do Flamengo'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CRF'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
+                u'sort_object': {u'type': u'literal', u'value': u'Morumbi'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
+                u'sort_object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
+            }
+        ]
+        self.assertEqual(computed, expected)
+
+    def test_sort_by_exclude_empty_values(self):
+        params = {
+            "class_uri": 'http://tatipedia.org/SoccerClub',
+            "p": "?predicate",
+            "o": "?object",
+            "sort_by": 'http://tatipedia.org/stadium',
+            "sort_order": "asc",
+            "sort_include_empty": "0",
+            "lang": "",
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0",
+        }
+        query = Query(params).to_string()
+        computed = self.query(query)["results"]["bindings"]
+        expected = [
+            {
+                u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
+                u'sort_object': {u'type': u'literal', u'value': u'Morumbi'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
+                u'sort_object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
+            }
+        ]
+        self.assertEqual(computed, expected)
+
     def test_sort_by_p(self):
         params = {
             "class_uri": 'http://tatipedia.org/SoccerClub',
@@ -216,7 +418,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         expected = [
             {
                 u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
-                u'object': {u'type': u'literal', u'value': u'Maracan\xe3'},
+                u'object': {u'type': u'literal', u'value': u'Morumbi'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
             },
             {
@@ -249,7 +451,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             },
             {
                 u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
-                u'object': {u'type': u'literal', u'value': u'Maracan\xe3'},
+                u'object': {u'type': u'literal', u'value': u'Morumbi'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
             }
         ]
@@ -562,31 +764,15 @@ class FilterInstancesQueryTestCase(QueryTestCase):
                 'rel': "self"
             },
             {
-                'href': "http://localhost:5100/ctx/klass/{resource_id}",
+                'href': "http://localhost:5100/ctx/klass/{resource_id}?instance_prefix={instance_prefix}",
                 'method': "GET",
                 'rel': "item"
             },
             {
                 'href': "http://localhost:5100/ctx/klass",
                 'method': "POST",
-                'rel': "create"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass/_schema",
-                'method': "GET",
-                'rel': "itemDescribedBy"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass/{resource_id}",
-                'method': "DELETE",
-                'rel': "delete"
-
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass/{resource_id}",
-                'method': "PUT",
-                'rel': "replace"
-
+                'rel': "create",
+                'schema': {'$ref': 'http://localhost:5100/ctx/klass/_schema'}
             },
             {
                 'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",

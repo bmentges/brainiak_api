@@ -2,12 +2,32 @@ import inspect
 
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import crud_links, collection_links, add_link, remove_last_slash
+from brainiak.utils.links import collection_links, add_link, remove_last_slash, self_link
 from brainiak.utils.resources import decorate_with_resource_id
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value, normalize_term
 
 
 class Query(object):
+    """
+    Creates a SPARQL query for listing instances, provided
+    obligatory parameters.
+
+    Usage:
+
+    >>> params = {...}
+    >>> sparql_query = Query(params).to_string()
+
+    Obligatory params' keys (provided while creating object):
+        class_uri
+        graph_uri
+        lang
+        p
+        o
+        per_page
+        page
+        sort_by
+        sort_order
+    """
 
     skeleton = """
         DEFINE input:inference <http://semantica.globo.com/ruleset>
@@ -56,14 +76,19 @@ class Query(object):
             tuples.append((predicate, object_))
 
         sort_object = self.get_sort_variable()
+        sort_sufix = ""
         if sort_object == "?sort_object":
             sort_predicate = normalize_term(self.params["sort_by"])
-            tuples.append((sort_predicate, sort_object))
+            if self.params["sort_include_empty"] == "1":
+                sort_sufix = "OPTIONAL {?subject %s ?sort_object}" % sort_predicate
+            else:
+                tuples.append((sort_predicate, sort_object))
 
         tuples_strings = ["%s %s" % each_tuple for each_tuple in tuples]
-        statement = "?subject " + " ;\n".join(tuples_strings) + " ."
+        statement = "?subject " + " ;\n".join(tuples_strings) + " .\n" + sort_sufix
+        statements = statement % self.params
 
-        return statement % self.params
+        return 'GRAPH ?g { %s }' % statements
 
     @property
     def filter(self):
@@ -79,6 +104,7 @@ class Query(object):
                 }
                 filter_list.append(statement)
 
+        filter_list.append("FILTER(?g = <%(graph_uri)s>) ." % self.params)
         if filter_list:
             statement = "\n".join(filter_list)
 
@@ -164,8 +190,12 @@ def query_count_filter_instances(query_params):
     return query_response
 
 
-# TODO: unit test
 def merge_by_id(items_list):
+    """
+    Provided two SPARQL Response rows that map the same @id,
+    merge them, replacing property's value by a list containing
+    all mapped values.
+    """
     items_dict = {}
     index = 0
     pending_items = len(items_list)
@@ -189,6 +219,19 @@ def merge_by_id(items_list):
     return items_list
 
 
+# TODO: unit test, move to urls
+def extract_prefix(url):
+    prefix = url.rsplit('/', 1)[0]
+    return "{0}/".format(prefix)
+
+
+# TODO: unit test
+def add_instance_prefix(items_list):
+    for item in items_list:
+        uri = item["@id"]
+        item["instance_prefix"] = extract_prefix(uri)
+
+
 def filter_instances(query_params):
     result_dict = query_count_filter_instances(query_params)
 
@@ -206,13 +249,17 @@ def filter_instances(query_params):
     result_dict = query_filter_instances(query_params)
     items_list = compress_keys_and_values(result_dict, keymap=keymap, ignore_keys=["total"])
     items_list = merge_by_id(items_list)
+    add_instance_prefix(items_list)
     decorate_with_resource_id(items_list)
     return build_json(items_list, total_items, query_params)
 
 
 def build_json(items_list, total_items, query_params):
-    links = crud_links(query_params) + collection_links(query_params, total_items)
-    add_link(links, "itemDescribedBy", "{base_url}/_schema", base_url=remove_last_slash(query_params.base_url))
+    base_url = remove_last_slash(query_params.base_url)
+    links = self_link(query_params) + collection_links(query_params, total_items)
+    href = "{0}/{{resource_id}}?instance_prefix={{instance_prefix}}".format(base_url)
+    add_link(links, 'item', href)
+    add_link(links, "create", base_url, method='POST', schema={'$ref': '{0}/_schema'.format(base_url)})
     json = {
         'items': items_list,
         'item_count': total_items,

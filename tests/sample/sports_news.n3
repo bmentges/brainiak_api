@@ -1,0 +1,8 @@
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+@prefix brmedia: <http://brmedia.com/> .
+
+dbpedia:News a owl:Class .
+
+
+
+

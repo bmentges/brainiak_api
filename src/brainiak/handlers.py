@@ -199,7 +199,7 @@ class InstanceHandler(BrainiakRequestHandler):
         response = get_instance(self.query_params)
 
         if response:
-            notify_bus(uri=response["@id"], klass=self.query_params["class_uri"],
+            notify_bus(instance=response["@id"], klass=self.query_params["class_uri"],
                        graph=self.query_params["graph_uri"], action="PUT")
 
         self.finalize(response)
@@ -213,7 +213,7 @@ class InstanceHandler(BrainiakRequestHandler):
 
         if deleted:
             response = 204
-            notify_bus(uri=self.query_params["instance_uri"], klass=self.query_params["class_uri"],
+            notify_bus(instance=self.query_params["instance_uri"], klass=self.query_params["class_uri"],
                        graph=self.query_params["graph_uri"], action="DELETE")
         else:
             response = None
@@ -259,8 +259,12 @@ class CollectionHandler(BrainiakRequestHandler):
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
 
-        instance_id = create_instance(self.query_params, instance_data)
+        (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
         instance_url = self.build_resource_url(instance_id)
+
+        notify_bus(instance=instance_uri, klass=self.query_params["class_uri"],
+                   graph=self.query_params["graph_uri"], action="POST")
+
         self.set_status(201)
         self.set_header("location", instance_url)
         self.finalize("")

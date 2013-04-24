@@ -9,9 +9,9 @@ EVENT_BUS_QUEUES = "/queue/solr,elasticsearch"
 event_bus_connection = stomp.Connection(host_and_ports=[(EVENT_BUS_HOST, EVENT_BUS_PORT)])
 
 
-def notify_bus(uri, klass, graph, action):
+def notify_bus(instance, klass, graph, action):
     notifiable_dict = {
-        "instance": uri,
+        "instance": instance,
         "class": klass,
         "graph": graph,
         "action": action

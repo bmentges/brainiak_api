@@ -210,7 +210,12 @@ class InstanceHandler(BrainiakRequestHandler):
 
         deleted = delete_instance(self.query_params)
 
-        response = 204 if deleted else None
+        if deleted:
+            response = 204
+            notify_bus(uri=self.query_params["instance_uri"], klass=self.query_params["class_uri"],
+                       graph=self.query_params["graph_uri"], action="DELETE")
+        else:
+            response = None
 
         self.finalize(response)
 

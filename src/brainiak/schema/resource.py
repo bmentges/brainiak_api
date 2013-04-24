@@ -185,7 +185,7 @@ WHERE {
     FILTER (!isBlank(?range))
     ?predicate rdfs:label ?title .
     ?predicate rdf:type ?type .
-    OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
+    OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
     FILTER(langMatches(lang(?title), "%(lang)s") OR langMatches(lang(?title), "")) .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
@@ -230,7 +230,7 @@ WHERE {
     FILTER (!isBlank(?range))
     ?predicate rdfs:label ?title .
     ?predicate rdf:type ?type .
-    OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
+    OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
     OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . } } .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
@@ -366,7 +366,6 @@ def convert_bindings_dict(context, bindings, cardinalities):
     for binding_row in bindings:
         predicate_uri = binding_row['predicate']['value']
         predicate_key = context.shorten_uri(predicate_uri)
-
         if not predicate_uri in super_predicates:
             predicate = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
             existing_predicate = assembled_predicates.get(predicate_key, False)

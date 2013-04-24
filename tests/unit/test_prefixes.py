@@ -2,7 +2,7 @@
 
 import unittest
 from brainiak import prefixes
-from brainiak.prefixes import _MAP_SLUG_TO_PREFIX, expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri, prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix, uri_to_slug
+from brainiak.prefixes import expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri, prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix, uri_to_slug
 
 
 class PrefixesTestCase(unittest.TestCase):
@@ -95,6 +95,13 @@ class MemorizeContextTestCase(unittest.TestCase):
     def test_unique_object_properties(self):
         self.context.add_object_property("ctx:field_name", "upper:Entity")
         self.assertIn('ctx:field_name', self.context.object_properties)
+
+    def test_object_properties_with_URL(self):
+        self.context.add_object_property("http://www.bbc.co.uk/ontologies/asset/Asset",
+                                         "http://www.bbc.co.uk/ontologies/asset/primaryAsset")
+        self.assertIn('http://www.bbc.co.uk/ontologies/asset/Asset', self.context.object_properties)
+        self.assertEqual(self.context.object_properties['http://www.bbc.co.uk/ontologies/asset/Asset'],
+                         "http://www.bbc.co.uk/ontologies/asset/primaryAsset")
 
     def test_prefix_to_slug(self):
         self.assertEqual(self.context.prefix_to_slug('http://www.w3.org/1999/02/22-rdf-syntax-ns#'), 'rdf')

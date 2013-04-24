@@ -70,6 +70,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
+DEFINE input:inference <http://semantica.globo.com/ruleset>
 SELECT ?p ?o ?label {
 <%(instance_uri)s> a <%(class_uri)s>;
     rdfs:label ?label;

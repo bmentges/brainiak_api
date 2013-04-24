@@ -1,9 +1,9 @@
 from tornado.web import HTTPError
 
 from brainiak import triplestore
-from brainiak.prefixes import prefix_to_slug
+from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql
-from brainiak.utils.links import crud_links, split_into_chunks, collection_links, add_link
+from brainiak.utils.links import self_link, split_into_chunks, collection_links, add_link
 
 # Note that pagination was done outside the query
 # because we are filtering query results based on prefixes
@@ -27,13 +27,13 @@ def list_all_contexts(params):
         raise HTTPError(404, log_message="No contexts were found.")
 
     contexts_pages = split_into_chunks(filtered_contexts, int(params["per_page"]))
-    contexts = contexts_pages[int(params["page"])]
+    try:
+        contexts = contexts_pages[int(params["page"])]
+    except IndexError:
+        raise HTTPError(404, log_message="Page {0:d} not found.".format(int(params["page"]) + 1))
 
-    links = crud_links(params) + collection_links(params, total_items)
-    add_link(links,
-             "itemDescribedBy",
-             "{base_url}{{resource_id}}/_schema",
-             base_url=params.base_url)
+    links = self_link(params) + collection_links(params, total_items)
+    add_link(links, "instances", params.base_url + "{resource_id}")
 
     json = {
         'items': contexts,
@@ -47,6 +47,9 @@ def filter_and_build_contexts(contexts_uris):
     contexts = []
     for uri in contexts_uris:
         slug = prefix_to_slug(uri)
+        # ignore standard graphs
+        if slug in STANDARD_PREFIXES:
+            continue
         if slug != uri:
             context_info = {
                 "title": slug,

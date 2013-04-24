@@ -119,7 +119,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
-                u'predicate': u'http://www.w3.org/2000/01/rdf-schema#label'
+                u'predicate': [u'http://semantica.globo.com/upper/name', u'http://www.w3.org/2000/01/rdf-schema#label']
             }
         ]
         received_response = json.loads(response.body)

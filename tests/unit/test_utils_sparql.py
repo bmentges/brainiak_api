@@ -429,3 +429,9 @@ class NormalizeTerm(unittest.TestCase):
         computed = normalize_term(term, "pt")
         expected = '"Some string"@pt'
         self.assertEqual(computed, expected)
+
+    def test_normalize_term_variable(self):
+        term = "?variable"
+        computed = normalize_term(term, "pt")
+        expected = "?variable"
+        self.assertEqual(computed, expected)

@@ -1,10 +1,87 @@
 import unittest
 
-from brainiak.instance.list_resource import Query
+from brainiak.instance.list_resource import Query, merge_by_id
 
 
 def strip(query_string):
     return [item.strip() for item in query_string.split("\n") if item.strip() != '']
+
+
+class MergeByIdTestCase(unittest.TestCase):
+
+    def test_no_merge(self):
+        values = [
+            {
+                "@id": 1,
+                "some property": "some value",
+            },
+            {
+                "@id": 2,
+                "some property": "some other value",
+            }
+        ]
+        computed = merge_by_id(values)
+        self.assertEqual(computed, values)
+
+    def test_single_merge(self):
+        values = [
+            {
+                "@id": 1,
+                "some property": "some value",
+            },
+            {
+                "@id": 2,
+                "some property": "some other value",
+            },
+            {
+                "@id": 1,
+                "some property": "a thid value",
+            }
+        ]
+        expected = [
+            {
+                "@id": 1,
+                "some property": ["some value", "a thid value"],
+            },
+            {
+                "@id": 2,
+                "some property": "some other value",
+            }
+        ]
+        computed = merge_by_id(values)
+        self.assertEqual(computed, expected)
+
+    def test_two_merges(self):
+        values = [
+            {
+                "@id": 1,
+                "some property": "some value",
+            },
+            {
+                "@id": 2,
+                "some property": "some other value",
+            },
+            {
+                "@id": 1,
+                "some property": "a thid value",
+            },
+            {
+                "@id": 2,
+                "some property": "last value",
+            }
+        ]
+        expected = [
+            {
+                "@id": 1,
+                "some property": ["some value", "a thid value"]
+            },
+            {
+                "@id": 2,
+                "some property": ["some other value", "last value"]
+            }
+        ]
+        computed = merge_by_id(values)
+        self.assertEqual(computed, expected)
 
 
 class ListQueryTestCase(unittest.TestCase):
@@ -18,7 +95,8 @@ class ListQueryTestCase(unittest.TestCase):
             "p": "?predicate",
             "o": "?object",
             "sort_by": "",
-            "sort_order": "asc"
+            "sort_order": "asc",
+            "sort_include_empty": "1"
     }
     maxDiff = None
 
@@ -30,9 +108,12 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
+                     }
+            FILTER(?g = <http://some.graph/>) .
         }
+
         LIMIT 10
         OFFSET 0
         """
@@ -48,8 +129,10 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
+                     }
+            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 15
         OFFSET 30
@@ -65,9 +148,11 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?object, ?subject
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://some.graph/predicate> ?object .
+                     }
+            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10
         OFFSET 0
@@ -83,8 +168,10 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
+                     }
+            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10
         OFFSET 0
@@ -100,9 +187,11 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?object, ?subject
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://schema.org/Creature> ?object .
+                     }
+            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10
         OFFSET 0
@@ -119,9 +208,11 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://schema.org/Creature> "Xubiru" .
+                     }
+            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10
         OFFSET 0
@@ -139,10 +230,12 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://schema.org/Creature> "Xubiru"@pt .
+                     }
             FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .
+            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10
         OFFSET 0
@@ -159,9 +252,33 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?sort_object, ?subject
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+                     rdfs:label ?label .
+            OPTIONAL {?subject <http://dbpedia.org/ontology/predicate> ?sort_object} }
+            FILTER(?g = <http://some.graph/>) .
+        }
+        ORDER BY ASC(?sort_object)
+        LIMIT 10
+        OFFSET 0
+        """
+        self.assertEqual(strip(computed), strip(expected))
+
+    def test_query_with_sort_exclude_empty(self):
+        params = self.default_params.copy()
+        params["sort_by"] = "dbpedia:predicate"
+        params["sort_order"] = "asc"
+        params["sort_include_empty"] = "0"
+        query = Query(params)
+        computed = query.to_string()
+        expected = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT DISTINCT ?label, ?sort_object, ?subject
+        WHERE {
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://dbpedia.org/ontology/predicate> ?sort_object .
+                     }
+            FILTER(?g = <http://some.graph/>) .
         }
         ORDER BY ASC(?sort_object)
         LIMIT 10
@@ -179,8 +296,10 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
+                     }
+            FILTER(?g = <http://some.graph/>) .
         }
         ORDER BY DESC(?label)
         LIMIT 10
@@ -199,9 +318,11 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?object, ?subject
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://schema.org/another_predicate> ?object .
+                     }
+            FILTER(?g = <http://some.graph/>) .
         }
         ORDER BY DESC(?object)
         LIMIT 10
@@ -217,8 +338,10 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT count(DISTINCT ?subject) as ?total
         WHERE {
-            ?subject a <http://some.graph/SomeClass> ;
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
+                     }
+            FILTER(?g = <http://some.graph/>) .
         }
         """
         self.assertEqual(strip(computed), strip(expected))

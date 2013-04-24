@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from brainiak import triplestore
 from brainiak.prefixes import MemorizeContext
+from brainiak.utils.links import self_link, crud_links, add_link, remove_last_slash
 from brainiak.utils.sparql import is_result_empty
 
 
@@ -32,35 +33,36 @@ def build_items_dict(context, bindings):
             items_dict[key] = value_list
         else:
             items_dict[key] = value
+        items_dict["rdfs:label"] = context.shorten_uri(item["label"]["value"])
     return items_dict
 
 
 def assemble_instance_json(query_params, query_result_dict, context=None):
     if context is None:
         context = MemorizeContext()
-    request = query_params['request']
-    base_url = request.headers.get("Host")
+
     items = build_items_dict(context, query_result_dict['results']['bindings'])
     links = [{"rel": property_name,
              "href": "/{0}/{1}".format(*(uri.split(':')))}
              for property_name, uri in context.object_properties.items()]
 
-    self_url = request.full_url()
-    schema_url = "http://{0}/{1}/{2}/_schema".format(base_url, query_params['context_name'], query_params['class_name'])
+    base_url = "{0}://{1}/{2}/{3}".format(
+        query_params['request'].protocol,
+        query_params['request'].host,
+        query_params['context_name'],
+        query_params['class_name'])
+    href_schema_url = "{0}/_schema".format(base_url)
+    query_params.resource_url = "{0}/{1}".format(base_url, query_params['instance_id'])
+    action_links = self_link(query_params) + crud_links(query_params)
+    add_link(links, 'describedBy', href_schema_url)
+    add_link(links, 'inCollection', base_url)
 
-    action_links = [
-        {'rel': 'self', 'href': self_url},
-        {'rel': 'describedBy', 'href': schema_url},
-        {'rel': 'replace', 'method': 'PUT', 'href': self_url},
-        {'rel': 'delete', 'method': 'DELETE', 'href': self_url}
-    ]
     links.extend(action_links)
 
     instance = {
         "@id": query_params['instance_uri'],
         "@type": "{0}:{1}".format(query_params['context_name'], query_params['class_name']),
         "@context": context.context,
-        "$schema": schema_url,
         "links": links,
     }
     instance.update(items)
@@ -68,9 +70,13 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
-SELECT ?p ?o {
+SELECT ?p ?o ?label {
 <%(instance_uri)s> a <%(class_uri)s>;
-    ?p ?o}
+    rdfs:label ?label;
+    ?p ?o .
+FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
+FILTER (! (?p = rdfs:label))
+}
 """
 
 

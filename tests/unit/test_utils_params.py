@@ -55,6 +55,11 @@ class ParamsTestCase(TestCase):
         params = ParamDict(handler)
         self.assertEquals(params["lang"], "pt")
 
+    def test_expand_curie(self):
+        handler = MockHandler(graph_uri="glb")
+        params = ParamDict(handler)
+        self.assertEquals(params["graph_uri"], "http://semantica.globo.com/")
+
     def test_post_override_with_sort_order(self):
         handler = MockHandler(sort_order="asc")
 
@@ -73,6 +78,24 @@ class ParamsTestCase(TestCase):
         params = ListParamDict(handler)
         self.assertEquals(params["sort_order"], "")
 
+    def test_post_override_with_sort_include_empty(self):
+        handler = MockHandler(sort_include_empty="0")
+
+        class ListParamDict(ParamDict):
+            extra_params = LIST_PARAMS
+
+        params = ListParamDict(handler)
+        self.assertEquals(params["sort_include_empty"], "0")
+
+    def test_post_override_without_sort_include_empty(self):
+        handler = MockHandler()
+
+        class ListParamDict(ParamDict):
+            extra_params = LIST_PARAMS
+
+        params = ListParamDict(handler)
+        self.assertEquals(params["sort_include_empty"], "1")
+
     def test_post_override_with_page(self):
         handler = MockHandler(page="3")
         params = ListServiceParams(handler)
@@ -82,3 +105,39 @@ class ParamsTestCase(TestCase):
     def test_override_with_invalid_argument(self):
         handler = MockHandler(inexistent_argument="whatever")
         self.assertRaises(InvalidParam, ParamDict, handler, class_name="default_class_name")
+
+    def test_class_uri_from_context_and_class(self):
+        handler = MockHandler()
+        params = ParamDict(handler, context_name='dbpedia', class_name='Actor')
+        self.assertEquals(params["class_uri"], "http://dbpedia.org/ontology/Actor")
+
+    def test_class_uri_from_context_and_class_with_class_uri(self):
+        handler = MockHandler(class_uri="http://someprefix/someClass")
+        params = ParamDict(handler, context_name='dbpedia', class_name='Actor')
+        self.assertEquals(params["class_uri"], "http://someprefix/someClass")
+
+    def test_class_uri_from_context_and_class_with_class_prefix(self):
+        handler = MockHandler(class_prefix="http://someprefix/")
+        params = ParamDict(handler, context_name='dbpedia', class_name='Actor')
+        self.assertEquals(params["class_prefix"], "http://someprefix/")
+
+    def test_class_uri_from_context_and_class_with_class_prefix(self):
+        handler = MockHandler(class_prefix="http://someprefix/")
+        params = ParamDict(handler, context_name='dbpedia', class_name='Actor')
+        self.assertEquals(params["class_uri"], "http://someprefix/Actor")
+
+    def test_class_uri_from_context_and_class_with_class_prefix(self):
+        handler = MockHandler(class_prefix="http://someprefix/")
+        params = ParamDict(handler, context_name='dbpedia', class_name='Actor')
+        self.assertEquals(params["class_uri"], "http://someprefix/Actor")
+
+    def test_context_name_affects_class_prefix_and_graph_uri(self):
+        handler = MockHandler()
+        params = ParamDict(handler, context_name='dbpedia')
+        self.assertEquals(params["class_prefix"], "http://dbpedia.org/ontology/")
+        self.assertEquals(params["graph_uri"], "http://dbpedia.org/ontology/")
+
+    def test_context_class_instance_define_instance_uri(self):
+        handler = MockHandler()
+        params = ParamDict(handler, context_name='dbpedia', class_name='klass', instance_id='inst')
+        self.assertEquals(params["instance_uri"], "http://dbpedia.org/ontology/klass/inst")

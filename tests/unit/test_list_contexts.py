@@ -30,6 +30,17 @@ class MockedTestCase(unittest.TestCase):
         get.filter_and_build_contexts = mock_filter_and_build_contexts
         self.assertRaises(HTTPError, list_all_contexts, 'irrelevant_params')
 
+    def test_raises_http_error_invalid_page(self):
+        triplestore.query_sparql = lambda query: None
+        sparql.filter_values = lambda a, b: []
+
+        def mock_filter_and_build_contexts(contexts_uris):
+            return []
+        get.filter_and_build_contexts = mock_filter_and_build_contexts
+        handler = MockHandler()
+        params = ParamDict(handler, page='100')
+        self.assertRaises(HTTPError, list_all_contexts, params)
+
 
 class GetContextTestCase(unittest.TestCase):
 
@@ -45,8 +56,8 @@ class GetContextTestCase(unittest.TestCase):
         response = {
             "results":
                 {"bindings": [
-                    {"graph": {"value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}},
-                    {"graph": {"value": "http://www.w3.org/2002/07/owl#"}}
+                    {"graph": {"value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}},  # filtered out because it is standard
+                    {"graph": {"value": "http://dbpedia.org/ontology/"}}
                 ]}
         }
         triplestore.query_sparql = lambda query: response
@@ -56,22 +67,15 @@ class GetContextTestCase(unittest.TestCase):
         params = ParamDict(handler, **param_dict)
         computed = list_all_contexts(params)
         expected_items = [
-            {'@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-             'title': 'rdf',
-             'resource_id': '22-rdf-syntax-ns#'},
-            {'@id': 'http://www.w3.org/2002/07/owl#',
-             'title': 'owl',
-             'resource_id': 'owl#'}
+            {'@id': 'http://dbpedia.org/ontology/',
+             'title': 'dbpedia',
+             'resource_id': 'ontology'}
         ]
         self.assertEqual(computed["items"], expected_items)
-        self.assertEqual(computed["item_count"], 2)
+        self.assertEqual(computed["item_count"], 1)
         expected_links = [
             {'rel': 'self', 'href': base_url, 'method': 'GET'},
-            {'rel': 'itemDescribedBy', 'href': base_url + '/{resource_id}/_schema', 'method': 'GET'},
-            {'rel': 'item', 'href': base_url + '/{resource_id}', 'method': 'GET'},
-            {'rel': 'create', 'href': base_url, 'method': 'POST'},
-            {'rel': 'delete', 'href': base_url + '/{resource_id}', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': base_url + '/{resource_id}', 'method': 'PUT'},
+            {'rel': 'instances', 'href': base_url + '/{resource_id}', 'method': 'GET'},
             {'rel': 'first', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
             {'rel': 'last', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
         ]
@@ -80,30 +84,24 @@ class GetContextTestCase(unittest.TestCase):
     def test_build_contexts_that_exist_in_prefixes(self):
         contexts_uris = [
             "http://www.w3.org/2006/time#",
-            'http://xmlns.com/foaf/0.1/'
+            'http://xmlns.com/foaf/0.1/'  # filtered out because it is standard
         ]
         computed = filter_and_build_contexts(contexts_uris)
         expected = [
             {'@id': 'http://www.w3.org/2006/time#',
              'title': 'time',
              'resource_id': 'time#'},
-            {'@id': 'http://xmlns.com/foaf/0.1/',
-             'title': 'foaf',
-             'resource_id': '0.1'}
         ]
         self.assertEqual(computed, expected)
 
     def test_build_contexts_of_which_one_doesnt_exist_in_prefixes(self):
         contexts_uris = [
-            'http://purl.org/dc/elements/1.1/',
+            'http://purl.org/dc/elements/1.1/',  # filtered out because it is standard
             'http://dbpedia.org/ontology/',
             'http://unregistered.prefix'
         ]
         computed = filter_and_build_contexts(contexts_uris)
         expected = [
-            {'@id': 'http://purl.org/dc/elements/1.1/',
-             'title': 'dc',
-             'resource_id': '1.1'},
             {'@id': 'http://dbpedia.org/ontology/',
              'title': 'dbpedia',
              'resource_id': 'ontology'}

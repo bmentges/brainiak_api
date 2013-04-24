@@ -67,11 +67,34 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(message_queue_solr[0], json.dumps(expected_message))
         self.assertEqual(message_queue_elastic[0], json.dumps(expected_message))
 
+    @patch("brainiak.handlers.log")
+    def test_notify_event_bus_on_delete_instance(self, log):
+        expected_message = {
+            "instance": "http://tatipedia.org/new_york",
+            "class": "http://tatipedia.org/Place",
+            "graph": "http://somegraph.org/",
+            "action": "DELETE"
+        }
+
+        modified_new_york = self.fetch(
+            '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+            method='PUT',
+            body=json.dumps({}))
+        self.assertEqual(modified_new_york.code, 200)
+
+        deleted_new_york = self.fetch(
+            '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+            method='DELETE')
+        self.assertEqual(deleted_new_york.code, 204)
+
+        self.assertEqual(message_queue_solr[0], json.dumps(expected_message))
+        self.assertEqual(message_queue_elastic[0], json.dumps(expected_message))
+
 
 class NotifierListener(object):
 
     def on_send(self, headers, body):
-        # necessary for the subscriber to read the sent message
+        # necessary for the subscribers to read the sent message
         time.sleep(2)
 
 

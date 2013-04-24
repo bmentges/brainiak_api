@@ -25,4 +25,4 @@ DEFAULT_PER_PAGE = "10"
 DEFAULT_PAGE = "0"
 
 EVENT_BUS_HOST = '<%= event_bus_host %>'
-EVENT_BUS_PORT = '<%= event_bus_port %>'
+EVENT_BUS_PORT = 61613

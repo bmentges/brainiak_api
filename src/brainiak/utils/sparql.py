@@ -4,6 +4,13 @@ import uuid
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, PrefixError, shorten_uri
 
 
+def calculate_offset(query_params, default_page, default_per_page):
+    "Calculate offset fort SPARQL query given page and per_page parameters"
+    page = int(query_params.get("page", default_page))
+    per_page = int(query_params.get("per_page", default_per_page))
+    return str(page * per_page)
+
+
 def normalize_term(term, language=""):
     """
     Provided a query term (literal, variable, expanded uri or

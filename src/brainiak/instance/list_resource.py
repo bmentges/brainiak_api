@@ -4,7 +4,7 @@ from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import collection_links, add_link, remove_last_slash, self_link
 from brainiak.utils.resources import decorate_with_resource_id
-from brainiak.utils.sparql import compress_keys_and_values, get_one_value, normalize_term
+from brainiak.utils.sparql import compress_keys_and_values, get_one_value, normalize_term, calculate_offset
 
 
 class Query(object):
@@ -112,9 +112,7 @@ class Query(object):
 
     @property
     def offset(self):
-        page = int(self.params.get("page", settings.DEFAULT_PAGE))
-        per_page = int(self.params.get("per_page", settings.DEFAULT_PER_PAGE))
-        return str(page * per_page)
+        return calculate_offset(self.params, settings.DEFAULT_PAGE, settings.DEFAULT_PER_PAGE)
 
     def get_sort_variable(self):
         sort_predicate = self.params["sort_by"]

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.utils.sparql import create_explicit_triples, create_instance_uri, create_implicit_triples, \

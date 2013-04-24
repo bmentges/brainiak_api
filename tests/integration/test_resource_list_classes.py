@@ -19,6 +19,18 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     maxDiff = None
 
     @patch("brainiak.handlers.log")
+    def test_list_classes_two_pages_in_sequence(self, log):
+        response_page1 = self.fetch('/test/?page=1&per_page=2&graph_uri={0}'.format(self.graph_uri), method='GET')
+        self.assertEqual(response_page1.code, 200)
+        response_page2 = self.fetch('/test/?page=2&per_page=2&graph_uri={0}'.format(self.graph_uri), method='GET')
+        self.assertEqual(response_page2.code, 200)
+        response1 = json.loads(response_page1.body)
+        response2 = json.loads(response_page2.body)
+        set1 = {i[u"@id"] for i in response1['items']}
+        set2 = {i[u"@id"] for i in response2['items']}
+        self.assertFalse(set1.intersection(set2))
+
+    @patch("brainiak.handlers.log")
     def test_list_classes_400(self, log):
         response = self.fetch('/test/?wrong_param=1', method='GET')
         self.assertEqual(response.code, 400)

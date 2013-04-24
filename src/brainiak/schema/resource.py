@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from brainiak.prefixes import MemorizeContext
-from brainiak.utils.links import add_link, crud_links
+from brainiak.utils.links import add_link, self_link
 from brainiak.utils.sparql import get_one_value, filter_values, add_language_support
 from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
@@ -32,16 +32,11 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     effective_context.update(context.context)
 
     query_params.resource_url = query_params.base_url
-    links = crud_links(query_params)
-    # From the schema we would like to list or create instances from the respective collection
+    links = self_link(query_params)
     base_url = query_params.base_url[:-9]  # remove /_schema
-    add_link(links, "instances", "{base_url}", base_url=base_url)
-    add_link(links, "create", "{base_url}", method="POST", base_url=base_url)
+    add_link(links, "instances", base_url)
 
-    # Add object-properties links that define  how to retrieve reference fields
-    for property_name, uri in context.object_properties.items():
-        parts = dict(zip(('ctx', 'klass'), uri.split(':')))
-        add_link(links, property_name, "/{ctx}/{klass}", **parts)
+    expand_object_properties_links(links, context)
 
     schema = {
         "type": "object",
@@ -57,6 +52,16 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
         schema["comment"] = comment
 
     return schema
+
+
+def expand_object_properties_links(links, context):
+    "Add object-properties links that define how to retrieve reference fields"
+    for property_name, uri in context.object_properties.items():
+        if (not "://" in uri) and (':' in uri):
+            parts = dict(zip(('ctx', 'klass'), uri.split(':')))
+            add_link(links, property_name, "/{ctx}/{klass}".format(**parts))
+        else:
+            add_link(links, property_name, uri)
 
 
 QUERY_CLASS_SCHEMA = """
@@ -180,7 +185,7 @@ WHERE {
     FILTER (!isBlank(?range))
     ?predicate rdfs:label ?title .
     ?predicate rdf:type ?type .
-    OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
+    OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
     FILTER(langMatches(lang(?title), "%(lang)s") OR langMatches(lang(?title), "")) .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
@@ -225,7 +230,7 @@ WHERE {
     FILTER (!isBlank(?range))
     ?predicate rdfs:label ?title .
     ?predicate rdf:type ?type .
-    OPTIONAL { ?predicate owl:subPropertyOf ?super_property } .
+    OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
     OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . } } .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
@@ -361,7 +366,6 @@ def convert_bindings_dict(context, bindings, cardinalities):
     for binding_row in bindings:
         predicate_uri = binding_row['predicate']['value']
         predicate_key = context.shorten_uri(predicate_uri)
-
         if not predicate_uri in super_predicates:
             predicate = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
             existing_predicate = assembled_predicates.get(predicate_key, False)

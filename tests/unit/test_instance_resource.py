@@ -5,7 +5,8 @@ from mock import Mock
 from brainiak.instance import get_resource
 from brainiak.prefixes import MemorizeContext
 from brainiak import settings
-from tests.mocks import MockRequest
+from brainiak.utils.params import ParamDict
+from tests.mocks import MockRequest, MockHandler
 
 
 class TestCaseInstanceResource(unittest.TestCase):
@@ -30,7 +31,8 @@ class TestCaseInstanceResource(unittest.TestCase):
                         'context_name': 'place',
                         'class_name': 'Country',
                         'instance_id': 'Brazil',
-                        'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil'}
+                        'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil',
+                        'lang': 'pt'}
 
         response = get_resource.get_instance(query_params)
 
@@ -50,7 +52,8 @@ class TestCaseInstanceResource(unittest.TestCase):
                         'context_name': 'place',
                         'class_name': 'Country',
                         'instance_id': 'Brazil',
-                        'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil'}
+                        'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil',
+                        'lang': 'pt'}
 
         response = get_resource.get_instance(query_params)
 
@@ -69,26 +72,29 @@ class AssembleTestCase(unittest.TestCase):
         get_resource.build_items_dict = self.original_build_items
 
     def test_assemble_instance_json_links(self):
-        query_params = {'request': MockRequest(instance="instance"),
-                        'context_name': 'ctx',
-                        'class_name': 'klass',
-                        'instance_uri': 'http://localhost:5100/ctx/klass/instance'}
+        param_dict = {'context_name': 'schema',
+                      'class_name': 'klass',
+                      'instance_id': 'instance'}
+
+        handler = MockHandler(uri="http://mock.test.com/schema/klass/instance", **param_dict)
+        query_params = ParamDict(handler, **param_dict)
+
         query_result_dict = {'results': {'bindings': []}}
 
         get_resource.build_items_dict = lambda context, bindings: {}
         computed = get_resource.assemble_instance_json(query_params, query_result_dict)
         expected_links = [
-            {'rel': 'self', 'href': 'http://localhost:5100/ctx/klass/instance'},
-            {'rel': 'describedBy', 'href': 'http://localhost:5100/ctx/klass/_schema'},
-            {'rel': 'delete', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'PUT'}
+            {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
+            {'rel': 'describedBy', 'href': 'http://mock.test.com/schema/klass/_schema', 'method': 'GET'},
+            {'rel': 'inCollection', 'href': 'http://mock.test.com/schema/klass', 'method': 'GET'},
+            {'rel': 'delete', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'DELETE'},
+            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_schema'}}
         ]
 
-        self.assertEqual(computed["@id"], "http://localhost:5100/ctx/klass/instance")
-        self.assertEqual(computed["@type"], "ctx:klass")
+        self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
+        self.assertEqual(computed["@type"], "schema:klass")
         self.assertEqual(computed["@context"], {})
-        self.assertEqual(computed["$schema"], 'http://localhost:5100/ctx/klass/_schema')
-        self.assertItemsEqual(computed["links"], expected_links)
+        self.assertEqual(sorted(computed["links"]), sorted(expected_links))
 
     def test_assemble_instance_json_links_with_context(self):
 
@@ -100,26 +106,28 @@ class AssembleTestCase(unittest.TestCase):
             object_properties = {"person": "person:Person"}
 
         context = ContextMock()
-        query_params = {'request': MockRequest(instance="instance"),
-                        'context_name': 'ctx',
-                        'class_name': 'klass',
-                        'instance_uri': 'http://localhost:5100/ctx/klass/instance'}
+        param_dict = {'context_name': 'schema',
+                      'class_name': 'klass',
+                      'instance_id': 'instance'}
+        handler = MockHandler(uri="http://mock.test.com/schema/klass/instance", **param_dict)
+        query_params = ParamDict(handler, **param_dict)
+
         query_result_dict = {'results': {'bindings': []}}
         get_resource.build_items_dict = lambda context, bindings: {}
 
         computed = get_resource.assemble_instance_json(query_params, query_result_dict, context)
         expected_links = [
-            {'rel': 'self', 'href': 'http://localhost:5100/ctx/klass/instance'},
-            {'rel': 'describedBy', 'href': 'http://localhost:5100/ctx/klass/_schema'},
-            {'rel': 'delete', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': 'http://localhost:5100/ctx/klass/instance', 'method': 'PUT'},
+            {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
+            {'rel': 'describedBy', 'href': 'http://mock.test.com/schema/klass/_schema', 'method': 'GET'},
+            {'rel': 'inCollection', 'href': 'http://mock.test.com/schema/klass', 'method': 'GET'},
+            {'rel': 'delete', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'DELETE'},
+            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_schema'}},
             {'rel': 'person', 'href': '/person/Person'}
         ]
 
-        self.assertEqual(computed["@id"], "http://localhost:5100/ctx/klass/instance")
-        self.assertEqual(computed["@type"], "ctx:klass")
+        self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
+        self.assertEqual(computed["@type"], "schema:klass")
         self.assertIsInstance(computed["@context"], InnerContextMock)
-        self.assertEqual(computed["$schema"], 'http://localhost:5100/ctx/klass/_schema')
         self.assertEqual(sorted(computed["links"]), sorted(expected_links))
 
 
@@ -127,10 +135,10 @@ class BuildItemsDictTestCase(unittest.TestCase):
 
     def test_build_items_dict(self):
         bindings = [
-            {"p": {"value": "key1"}, "o": {"value": "value1"}},
-            {"p": {"value": "key1"}, "o": {"value": "value2"}},
-            {"p": {"value": "key2"}, "o": {"value": "value2"}},
+            {"p": {"value": "key1"}, "o": {"value": "value1"}, "label": {"value": "label1"}},
+            {"p": {"value": "key1"}, "o": {"value": "value2"}, "label": {"value": "label1"}},
+            {"p": {"value": "key2"}, "o": {"value": "value2"}, "label": {"value": "label1"}}
         ]
-        expected = {"key1": ["value1", "value2"], "key2": "value2"}
+        expected = {"key1": ["value1", "value2"], "key2": "value2", 'rdfs:label': 'label1'}
         response = get_resource.build_items_dict(MemorizeContext(), bindings)
-        self.assertEqual(expected, response)
+        self.assertEqual(response, expected)

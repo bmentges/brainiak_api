@@ -21,7 +21,8 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         response = self.fetch('/person/Gender/Male')
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
-        self.assertTrue(json_received['$schema'].endswith('_schema'))
+        self.assertEqual(json_received['@type'], 'person:Gender')
+        self.assertEqual(json_received['@id'], "http://semantica.globo.com/person/Gender/Male")
 
     def test_instance_has_options(self):
         response = self.fetch('/person/Gender/Female', method='OPTIONS')
@@ -38,9 +39,6 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         u'@id': u'person:Gender',
         u'links': [
             {u'href': u'http://localhost:10023/person/Gender/_schema?lang=pt', u'method': u'GET', u'rel': u'self'},
-            {u'href': u'http://localhost:10023/person/Gender', u'method': u'POST', u'rel': u'create'},
-            {u'href': u'http://localhost:10023/person/Gender/_schema', u'method': u'DELETE', u'rel': u'delete'},
-            {u'href': u'http://localhost:10023/person/Gender/_schema', u'method': u'PUT', u'rel': u'replace'},
             {u'href': u'http://localhost:10023/person/Gender', u'method': u'GET', u'rel': u'instances'}],
         u'properties': {},
         u'title': u"Gênero da Pessoa",
@@ -121,7 +119,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_class_undefined(self, log):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nClass (http://semantica.globo.com/animals/Ornithorhynchus) in graph (http://semantica.globo.com/animals/) was not found."}')
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nClass (animalsOrnithorhynchus) in graph (animals) was not found."}')
 
 
 class TestHealthcheckResource(TornadoAsyncHTTPTestCase):

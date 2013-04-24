@@ -34,23 +34,41 @@ def get_next_page(page, last_page):
         return False
 
 
-def collection_links(query_params, total_items):
-    base_url = remove_last_slash(query_params.base_url)
-    page = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
-    per_page = int(query_params["per_page"])
-    last_page = get_last_page(total_items, per_page)
-    previous_page = get_previous_page(page)
-    next_page = get_next_page(page, last_page)
-    args = query_params.args()
-    if args:
-        base_url_with_default_params = "{0}?{1:s}".format(base_url, args)
-        item_url = "{0}/{{resource_id}}?{1:s}".format(base_url, args)
+def prepare_link_params(query_params):
+    "Utility function shared amongst assemble link functions that sets some reused params"
+    link_params = {}
+    link_params['base_url'] = remove_last_slash(query_params.base_url)
+    try:
+        link_params['page'] = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
+        link_params['per_page'] = int(query_params["per_page"])
+    except KeyError:
+        pass
+    link_params['resource_url'] = remove_last_slash(query_params.resource_url)
+
+    if 'page' in query_params['request'].arguments:
+        link_params['args'] = query_params.args(page=link_params['page'], per_page=link_params['per_page'])
     else:
-        base_url_with_default_params = base_url
-        item_url = "{0}/{{resource_id}}".format(base_url)
+        link_params['args'] = query_params.args()
+
+    if link_params['args']:
+        link_params['base_url_with_params'] = "{0}?{1:s}".format(link_params['base_url'], link_params['args'])
+    else:
+        link_params['base_url_with_params'] = remove_last_slash(link_params['base_url'])
+
+    return link_params
+
+
+def collection_links(query_params, total_items):
+
+    link_params = prepare_link_params(query_params)
+    base_url = link_params['base_url']
+    per_page = link_params['per_page']
+
+    last_page = get_last_page(total_items, link_params['per_page'])
+    previous_page = get_previous_page(link_params['page'])
+    next_page = get_next_page(link_params['page'], last_page)
+
     links = [
-        {'rel': "create", 'href': base_url_with_default_params, 'method': "POST"},
-        {'rel': "item", 'href': item_url, 'method': "GET"},
         {'rel': "first", 'href': "%s?%s" % (base_url, query_params.args(page=1, per_page=per_page)), 'method': "GET"},
         {'rel': "last", 'href': "%s?%s" % (base_url, query_params.args(page=last_page, per_page=per_page)), 'method': "GET"}
     ]
@@ -67,33 +85,28 @@ def collection_links(query_params, total_items):
 
 def crud_links(query_params):
     """Build crud links."""
-    base_url = remove_last_slash(query_params.base_url)
-    try:
-        page = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
-        per_page = int(query_params["per_page"])
-    except KeyError:
-        pass
+    schema_url = "{0}://{1}/{2}/{3}/_schema".format(
+        query_params['request'].protocol,
+        query_params['request'].host,
+        query_params['context_name'],
+        query_params['class_name'])
 
-    resource_url = remove_last_slash(query_params.resource_url)
-
-    if 'page' in query_params['request'].arguments:
-        args = query_params.args(page=page, per_page=per_page)
-    else:
-        args = query_params.args()
-
-    if args:
-        base_url_with_params = "{0}?{1:s}".format(base_url, args)
-    else:
-        base_url_with_params = remove_last_slash(base_url)
-
+    link_params = prepare_link_params(query_params)
     links = [
-        {'rel': "self", 'href': base_url_with_params, 'method': "GET"},
-        {'rel': "delete", 'href': resource_url, 'method': "DELETE"},
-        {'rel': "replace", 'href': resource_url, 'method': "PUT"}
+        {'rel': "delete", 'href': link_params['resource_url'], 'method': "DELETE"},
+        {'rel': "replace", 'href': link_params['resource_url'], 'method': "PUT", 'schema': {'$ref': schema_url}}
     ]
     return links
 
 
+def self_link(query_params):
+    "Produce a list with a single 'self' link entry"
+    link_params = prepare_link_params(query_params)
+    return [{'rel': "self", 'href': link_params['base_url_with_params'], 'method': "GET"}]
+
+
 def add_link(link_list, rel, href, method='GET', **kw):
     "Add an entry to the list given by ``link_list'' with key==rel and href as a string template that is formated by kw"
-    link_list.append({'rel': rel, 'method': method, 'href': href.format(**kw)})
+    link = {'rel': rel, 'method': method, 'href': href}
+    link.update(kw)
+    link_list.append(link)

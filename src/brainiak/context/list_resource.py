@@ -1,6 +1,6 @@
-from brainiak import triplestore
+from brainiak import triplestore, settings
 from brainiak.utils.resources import decorate_with_resource_id
-from brainiak.utils.sparql import add_language_support
+from brainiak.utils.sparql import add_language_support, calculate_offset
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids
 from brainiak.utils.links import add_link, collection_links, remove_last_slash, self_link
@@ -70,10 +70,13 @@ FROM <%(graph_uri)s>
     %(lang_filter_label)s
 }
 LIMIT %(per_page)s
-OFFSET %(page)s
+OFFSET %(offset)s
 """
 
 
 def query_classes_list(query_params):
+    offset = calculate_offset(query_params, settings.DEFAULT_PAGE, settings.DEFAULT_PER_PAGE)
+    query_params['offset'] = offset
     query = QUERY_ALL_CLASSES_OF_A_GRAPH % query_params
+    del query_params['offset']
     return triplestore.query_sparql(query)

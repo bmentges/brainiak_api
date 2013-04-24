@@ -198,8 +198,9 @@ class InstanceHandler(BrainiakRequestHandler):
 
         response = get_instance(self.query_params)
 
-        notify_bus(uri=response["@id"], klass=self.query_params["class_uri"],
-                   graph=self.query_params["graph_uri"], action="PUT")
+        if response:
+            notify_bus(uri=response["@id"], klass=self.query_params["class_uri"],
+                       graph=self.query_params["graph_uri"], action="PUT")
 
         self.finalize(response)
 

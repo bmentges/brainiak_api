@@ -57,8 +57,11 @@ tpedia:Teinolophos a tpedia:Species ;
 
 tpedia:SPFC a tpedia:SoccerClub ;
             rdfs:label "São Paulo Futebol Clube";
-            tpedia:stadium "Maracanã" .
+            tpedia:stadium "Morumbi" .
 
 tpedia:CEC a tpedia:SoccerClub ;
            rdfs:label "Cruzeiro Esporte Clube" ;
            tpedia:stadium "Toca da Raposa" .
+
+tpedia:CRF a tpedia:SoccerClub ;
+           rdfs:label "Clube de Regatas do Flamengo" .

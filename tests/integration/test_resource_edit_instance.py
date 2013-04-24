@@ -65,9 +65,9 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 400)
 
     @patch("brainiak.handlers.log")
-    @patch("brainiak.handlers.notify_bus")  # Bus notification test is in a separated test file
-    def test_edit_instance_that_doesnt_exist_201(self, logs, notify_bus):
-        response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='PUT', body=json.dumps({}))
+    @patch("brainiak.handlers.notify_bus")
+    def test_edit_instance_that_doesnt_exist_201(self, log, notify_bus):  # Bus notification test is in a separated test file
+        response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='PUT', body=json.dumps({"rdfs:label": "Inexistent city"}))
         self.assertEqual(response.code, 201)
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))

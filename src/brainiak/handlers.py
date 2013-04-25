@@ -230,6 +230,7 @@ class InstanceHandler(BrainiakRequestHandler):
             self.set_status(response)
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25
 
+
 class CollectionHandler(BrainiakRequestHandler):
 
     def __init__(self, *args, **kwargs):

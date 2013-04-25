@@ -4,6 +4,10 @@ import uuid
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, PrefixError, shorten_uri
 
 
+def get_super_properties(bindings):
+    return [item['super_property']['value'] for item in bindings if 'super_property' in item]
+
+
 def calculate_offset(query_params, default_page, default_per_page):
     "Calculate offset fort SPARQL query given page and per_page parameters"
     page = int(query_params.get("page", default_page))

@@ -91,7 +91,8 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(body["error"], u"HTTP error: 404\nClass X doesn't exist in context xubiru.")
 
     @patch("brainiak.handlers.log")
-    def test_create_instance_201(self, log):
+    @patch("brainiak.handlers.notify_bus")
+    def test_create_instance_201(self, log, notify_bus):
         schema_resource.get_schema = lambda params: True
         create_resource.create_instance_uri = lambda class_uri: "http://unique-id"
         payload = JSON_CITY_GLOBOLAND
@@ -106,7 +107,8 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertInstanceExist('http://test.graph/sample-place/City', "http://unique-id")
 
     @patch("brainiak.handlers.log")
-    def test_create_instance_201_without_final_slash(self, log):
+    @patch("brainiak.handlers.notify_bus")
+    def test_create_instance_201_without_final_slash(self, log, notify_bus):
         schema_resource.get_schema = lambda params: True
         create_resource.create_instance_uri = lambda class_uri: "http://unique-id"
         payload = JSON_CITY_GLOBOLAND

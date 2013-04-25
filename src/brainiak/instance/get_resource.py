@@ -2,7 +2,7 @@
 from brainiak import triplestore
 from brainiak.prefixes import MemorizeContext
 from brainiak.utils.links import self_link, crud_links, add_link, remove_last_slash
-from brainiak.utils.sparql import is_result_empty
+from brainiak.utils.sparql import get_super_properties, is_result_empty
 
 
 def get_instance(query_params):
@@ -20,20 +20,23 @@ def get_instance(query_params):
 
 
 def build_items_dict(context, bindings):
+    super_predicates = get_super_properties(bindings)
+
     items_dict = {}
     for item in bindings:
-        key = context.shorten_uri(item["p"]["value"])
-        value = context.shorten_uri(item["o"]["value"])
-        if key in items_dict:
-            if not isinstance(items_dict[key], list):
-                value_list = [items_dict[key]]
+        predicate_uri = context.shorten_uri(item["predicate"]["value"])
+        if not predicate_uri in super_predicates:
+            value = context.shorten_uri(item["object"]["value"])
+            if predicate_uri in items_dict:
+                if not isinstance(items_dict[predicate_uri], list):
+                    value_list = [items_dict[predicate_uri]]
+                else:
+                    value_list = items_dict[predicate_uri]
+                value_list.append(value)
+                items_dict[predicate_uri] = value_list
             else:
-                value_list = items_dict[key]
-            value_list.append(value)
-            items_dict[key] = value_list
-        else:
-            items_dict[key] = value
-        items_dict["rdfs:label"] = context.shorten_uri(item["label"]["value"])
+                items_dict[predicate_uri] = value
+            items_dict["rdfs:label"] = context.shorten_uri(item["label"]["value"])
     return items_dict
 
 
@@ -71,13 +74,13 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
 DEFINE input:inference <%(ruleset)s>
-SELECT ?p ?o ?label ?super_property {
+SELECT ?predicate ?object ?label ?super_property {
     <%(instance_uri)s> a <%(class_uri)s>;
         rdfs:label ?label;
-        ?p ?o .
-OPTIONAL { ?p rdfs:subPropertyOf ?super_property } .
+        ?predicate ?object .
+OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
 FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
-FILTER (! (?p = rdfs:label))
+FILTER (! (?predicate = rdfs:label))
 }
 """
 

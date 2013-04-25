@@ -24,4 +24,4 @@ def notify_bus(instance, klass, graph, action):
         event_bus_connection.send(message, destination=EVENT_BUS_QUEUES)
         log.logger.info("BUS NOTIFICATION\n" + message)
     except (ConnectionClosedException, NotConnectedException, ProtocolException) as e:
-        raise Exception("Error when notifying event bus. Type: " + e)
+        raise Exception("Error when notifying event bus. Type: " + str(e.__class__))

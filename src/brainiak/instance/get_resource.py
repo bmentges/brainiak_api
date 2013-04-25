@@ -2,7 +2,7 @@
 from brainiak import triplestore
 from brainiak.prefixes import MemorizeContext
 from brainiak.utils.links import self_link, crud_links, add_link, remove_last_slash
-from brainiak.utils.sparql import is_result_empty
+from brainiak.utils.sparql import get_super_properties, is_result_empty
 
 
 def get_instance(query_params):
@@ -20,20 +20,30 @@ def get_instance(query_params):
 
 
 def build_items_dict(context, bindings):
+    super_predicates = get_super_properties(bindings)
+
     items_dict = {}
     for item in bindings:
-        key = context.shorten_uri(item["p"]["value"])
-        value = context.shorten_uri(item["o"]["value"])
-        if key in items_dict:
-            if not isinstance(items_dict[key], list):
-                value_list = [items_dict[key]]
+        predicate_uri = context.shorten_uri(item["predicate"]["value"])
+        value = context.shorten_uri(item["object"]["value"])
+        if predicate_uri in items_dict:
+            if not isinstance(items_dict[predicate_uri], list):
+                value_list = [items_dict[predicate_uri]]
             else:
-                value_list = items_dict[key]
+                value_list = items_dict[predicate_uri]
             value_list.append(value)
-            items_dict[key] = value_list
+            items_dict[predicate_uri] = value_list
         else:
-            items_dict[key] = value
+            items_dict[predicate_uri] = value
         items_dict["rdfs:label"] = context.shorten_uri(item["label"]["value"])
+
+    for (analyzed_predicate, value) in items_dict.items():
+        if analyzed_predicate in super_predicates.keys():
+            sub_predicate = super_predicates[analyzed_predicate]
+            sub_value = items_dict[sub_predicate]
+            if value == sub_value:
+                items_dict.pop(analyzed_predicate)
+
     return items_dict
 
 
@@ -70,17 +80,19 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
-DEFINE input:inference <http://semantica.globo.com/ruleset>
-SELECT ?p ?o ?label {
-<%(instance_uri)s> a <%(class_uri)s>;
-    rdfs:label ?label;
-    ?p ?o .
+DEFINE input:inference <%(ruleset)s>
+SELECT ?predicate ?object ?label ?super_property {
+    <%(instance_uri)s> a <%(class_uri)s>;
+        rdfs:label ?label;
+        ?predicate ?object .
+OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
 FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
-FILTER (! (?p = rdfs:label))
+FILTER (! (?predicate = rdfs:label))
 }
 """
 
 
 def query_all_properties_and_objects(query_params):
+    query_params["ruleset"] = "http://semantica.globo.com/ruleset"
     query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % query_params
     return triplestore.query_sparql(query)

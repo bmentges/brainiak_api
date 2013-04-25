@@ -1,6 +1,7 @@
 import json
 from mock import patch
 
+from brainiak.instance.get_resource import QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -8,7 +9,7 @@ from tests.sparql import QueryTestCase
 class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     allow_triplestore_connection = True
-    fixtures = ["tests/sample/gender.n3"]
+    fixtures = ["tests/sample/gender.n3", "tests/sample/animalia.n3"]
     graph_uri = "http://test.com/"
 
     maxDiff = None
@@ -42,3 +43,62 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(body['@type'], u'person:Gender')
         self.assertEqual(body['rdf:type'], u'http://test.com/person/Gender')
         self.assertEqual(body['rdfs:label'], u'Teste')
+
+
+class InstanceQueryTestCase(QueryTestCase):
+
+    allow_triplestore_connection = True
+    fixtures = ["tests/sample/animalia.n3"]
+    graph_uri = "http://test.com/"
+
+    maxDiff = None
+
+    def test_instance_query(self):
+        params = {
+            "lang": "en",
+            "class_uri": "http://example.onto/Yorkshire_Terrier",
+            "instance_uri": "http://example.onto/Nina",
+            "ruleset": "http://test.com/ruleset"
+        }
+        query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % params
+        computed = self.query(query)["results"]["bindings"]
+        non_blank_expected = [
+            {
+                u'label': {u'type': u'literal', u'value': u'Nina Fox'},
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/Yorkshire_Terrier'},
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Nina Fox'},
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/Canidae'},
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Nina Fox'},
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/Mammalia'},
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Nina Fox'},
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/Animal'},
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Nina Fox'},
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/Species'},
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Nina Fox'},
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/York'},
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthCity'},
+                u'super_property': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'}
+            },
+            {
+                u'label': {u'type': u'literal', u'value': u'Nina Fox'},
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/York'},
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'}
+            }
+        ]
+        for item in non_blank_expected:
+            self.assertIn(item, computed)

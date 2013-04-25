@@ -10,6 +10,10 @@ from SPARQLWrapper import Wrapper, JSON
 from brainiak import settings
 
 
+def strip(query_string):
+    return [item.strip() for item in query_string.split("\n") if item.strip() != '']
+
+
 class SimpleTestCase(unittest.TestCase):
 
     maxDiff = None

@@ -228,8 +228,7 @@ class InstanceHandler(BrainiakRequestHandler):
             self.write(response)
         elif isinstance(response, int):  # status code
             self.set_status(response)
-            self.finish()
-
+            # A call to finalize() was removed from here! -- rodsenra 2013/04/25
 
 class CollectionHandler(BrainiakRequestHandler):
 

@@ -56,5 +56,9 @@ def filter_and_build_contexts(contexts_uris):
                 "@id": uri
             }
             contexts.append(context_info)
-    decorate_with_resource_id(contexts)
+
+    # decorate_with_resource_id
+    for dict_item in contexts:
+        dict_item['resource_id'] = dict_item['title']
+
     return contexts

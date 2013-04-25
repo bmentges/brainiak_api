@@ -66,7 +66,7 @@ class VirtuosoConnection(object):
         }
 
         params = {
-            "query": query,
+            "query": unicode(query).encode("utf-8"),
             "format": result_format
         }
 

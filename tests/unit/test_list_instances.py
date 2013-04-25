@@ -1,10 +1,7 @@
 import unittest
 
 from brainiak.instance.list_resource import Query, merge_by_id
-
-
-def strip(query_string):
-    return [item.strip() for item in query_string.split("\n") if item.strip() != '']
+from tests.sparql import strip
 
 
 class MergeByIdTestCase(unittest.TestCase):

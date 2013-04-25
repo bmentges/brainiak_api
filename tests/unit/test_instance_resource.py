@@ -2,21 +2,25 @@
 import unittest
 from mock import Mock
 
+from brainiak import settings, triplestore
 from brainiak.instance import get_resource
 from brainiak.prefixes import MemorizeContext
-from brainiak import settings
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockRequest, MockHandler
+from tests.sparql import strip
 
 
 class TestCaseInstanceResource(unittest.TestCase):
+
     def setUp(self):
         self.original_query_all_properties_and_objects = get_resource.query_all_properties_and_objects
         self.original_assemble_instance_json = get_resource.assemble_instance_json
+        self.original_query_sparql = triplestore.query_sparql
 
     def tearDown(self):
         get_resource.query_all_properties_and_objects = self.original_query_all_properties_and_objects
         get_resource.assemble_instance_json = self.original_assemble_instance_json
+        triplestore.query_sparql = self.original_query_sparql
 
     def test_get_instance_with_result(self):
         db_response = {"results": {"bindings": ["not_empty"]}}
@@ -59,6 +63,28 @@ class TestCaseInstanceResource(unittest.TestCase):
 
         self.assertEqual(response, None)
         self.assertFalse(mock_assemble_instance_json.called)
+
+    def test_query_all_properties_and_objects(self):
+        triplestore.query_sparql = lambda query: query
+        params = {
+            "instance_uri": "instance_uri",
+            "class_uri": "class_uri",
+            "lang": "en"
+
+        }
+        computed = get_resource.query_all_properties_and_objects(params)
+        expected = """
+            DEFINE input:inference <http://semantica.globo.com/ruleset>
+            SELECT ?predicate ?object ?label ?super_property {
+                <instance_uri> a <class_uri>;
+                    rdfs:label ?label;
+                    ?predicate ?object .
+            OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+            FILTER(langMatches(lang(?label), "en") OR langMatches(lang(?label), "")) .
+            FILTER (! (?predicate = rdfs:label))
+            }
+            """
+        self.assertEqual(strip(computed), strip(expected))
 
 
 class AssembleTestCase(unittest.TestCase):
@@ -141,4 +167,46 @@ class BuildItemsDictTestCase(unittest.TestCase):
         ]
         expected = {"key1": ["value1", "value2"], "key2": "value2", 'rdfs:label': 'label1'}
         response = get_resource.build_items_dict(MemorizeContext(), bindings)
+        self.assertEqual(response, expected)
+
+    def test_build_items_dict_with_super_property_and_same_value(self):
+        bindings = [
+            {
+                "predicate": {"value": "birthCity"},
+                "object": {"value": "Rio de Janeiro"},
+                "label": {"value": "birth place"},
+                "super_property": {"value": "birthPlace"}
+            },
+            {
+                "predicate": {"value": "birthPlace"},
+                "object": {"value": "Rio de Janeiro"},
+                "label": {"value": "birth place"}
+            }
+        ]
+        expected = {"birthCity": "Rio de Janeiro", 'rdfs:label': "birth place"}
+        context = MemorizeContext()
+        response = get_resource.build_items_dict(context, bindings)
+        self.assertEqual(response, expected)
+
+    def test_build_items_dict_with_super_property_and_different_values(self):
+        bindings = [
+            {
+                "predicate": {"value": "birthCity"},
+                "object": {"value": "Rio de Janeiro"},
+                "label": {"value": "birth place"},
+                "super_property": {"value": "birthPlace"}
+            },
+            {
+                "predicate": {"value": "birthPlace"},
+                "object": {"value": "Brasil"},
+                "label": {"value": "birth place"}
+            }
+        ]
+        expected = {
+            "birthCity": "Rio de Janeiro",
+            "birthPlace": "Brasil",
+            'rdfs:label': "birth place"
+        }
+        context = MemorizeContext()
+        response = get_resource.build_items_dict(context, bindings)
         self.assertEqual(response, expected)

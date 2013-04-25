@@ -87,7 +87,8 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
         self.assertFalse(delete_instance(query_params))
 
     @patch("brainiak.handlers.log")
-    def test_handler_204(self, log):
+    @patch("brainiak.handlers.notify_bus")
+    def test_handler_204(self, log, notify_bus):
         response = self.fetch(
                     '/anygraph/Species/Platypus?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                     method="DELETE")

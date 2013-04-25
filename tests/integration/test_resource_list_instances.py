@@ -244,7 +244,10 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'title': u'John Jones'
             }
         ]
-        self.assertItemsEqual(sorted(computed_items), sorted(expected_items))
+        sorted_computed_items = sorted(computed_items)
+        sorted_expected_items = sorted(expected_items)
+        self.assertItemsEqual(sorted_computed_items[0], sorted_expected_items[0])
+        self.assertItemsEqual(sorted_computed_items[1], sorted_expected_items[1])
 
     @patch("brainiak.handlers.log")
     def test_json_returns_sortby_per_item(self, log):

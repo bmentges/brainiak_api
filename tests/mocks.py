@@ -15,6 +15,10 @@ class MockSimpleRequest(object):
     def json(self):
         return self._json
 
+    @property
+    def text(self):
+        return self._json
+
 
 class MockRequest(object):
 

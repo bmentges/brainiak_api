@@ -453,3 +453,41 @@ class NormalizeTerm(unittest.TestCase):
         computed = normalize_term(term, "pt")
         expected = "?variable"
         self.assertEqual(computed, expected)
+
+
+class SuperPropertiesTestCase(unittest.TestCase):
+
+    def test_get_super_properties(self):
+        sample_bindings = [
+            {
+                'predicate': 'son',
+                'super_property': {'value': 'father'}
+            },
+            {
+                'predicate': 'father'
+            },
+            {
+                'predicate': 'grandfather'
+            }
+        ]
+        computed = get_super_properties(sample_bindings)
+        expected = ['father']
+        self.assertEqual(computed, expected)
+
+    def test_get_multiple_super_properties(self):
+        sample_bindings = [
+            {
+                'predicate': 'son',
+                'super_property': {'value': 'father'}
+            },
+            {
+                'predicate': 'father',
+                'super_property': {'value': 'grandfather'}
+            },
+            {
+                'predicate': 'grandfather'
+            }
+        ]
+        computed = get_super_properties(sample_bindings)
+        expected = ['father', 'grandfather']
+        self.assertEqual(computed, expected)

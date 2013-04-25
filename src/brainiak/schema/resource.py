@@ -362,7 +362,7 @@ def convert_bindings_dict(context, bindings, cardinalities):
     for binding_row in bindings:
         predicate_uri = binding_row['predicate']['value']
         predicate_key = context.shorten_uri(predicate_uri)
-        if not predicate_uri in super_predicates:
+        if not predicate_uri in super_predicates.keys():
             predicate = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
             existing_predicate = assembled_predicates.get(predicate_key, False)
             if existing_predicate:

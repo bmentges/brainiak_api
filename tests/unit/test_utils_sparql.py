@@ -460,34 +460,34 @@ class SuperPropertiesTestCase(unittest.TestCase):
     def test_get_super_properties(self):
         sample_bindings = [
             {
-                'predicate': 'son',
+                'predicate': {'value': 'son'},
                 'super_property': {'value': 'father'}
             },
             {
-                'predicate': 'father'
+                'predicate': {'value': 'father'}
             },
             {
-                'predicate': 'grandfather'
+                'predicate': {'value': 'grandfather'}
             }
         ]
         computed = get_super_properties(sample_bindings)
-        expected = ['father']
+        expected = {'father': 'son'}
         self.assertEqual(computed, expected)
 
     def test_get_multiple_super_properties(self):
         sample_bindings = [
             {
-                'predicate': 'son',
+                'predicate': {'value': 'son'},
                 'super_property': {'value': 'father'}
             },
             {
-                'predicate': 'father',
+                'predicate': {'value': 'father'},
                 'super_property': {'value': 'grandfather'}
             },
             {
-                'predicate': 'grandfather'
+                'predicate': {'value': 'grandfather'}
             }
         ]
         computed = get_super_properties(sample_bindings)
-        expected = ['father', 'grandfather']
+        expected = {'father': 'son', 'grandfather': 'father'}
         self.assertEqual(computed, expected)

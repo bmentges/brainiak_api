@@ -2,7 +2,7 @@
 
 from brainiak.prefixes import MemorizeContext
 from brainiak.utils.links import add_link, self_link
-from brainiak.utils.sparql import get_one_value, filter_values, add_language_support
+from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties
 from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
 
@@ -352,10 +352,6 @@ def join_predicates(old, new):
     merged_predicate['format'] = get_common_key(merged_ranges, 'format')
 
     return merged_predicate
-
-
-def get_super_properties(bindings):
-    return [item['super_property']['value'] for item in bindings if 'super_property' in item]
 
 
 def convert_bindings_dict(context, bindings, cardinalities):

@@ -4,6 +4,8 @@ import time
 
 import ujson as json
 import stomp
+from stomp.exception import NotConnectedException, ConnectionClosedException, \
+    ProtocolException
 
 from brainiak import server
 from brainiak.event_bus import event_bus_connection
@@ -62,7 +64,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         }
 
         actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
-            method='GET')
+                                     method='GET')
         self.assertEqual(actual_new_york.code, 200)
         actual_new_york_dict = json.loads(actual_new_york.body)
         actual_new_york_dict["rdfs:comment"] = "Some random comment"
@@ -116,6 +118,42 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(modified_new_york.code, 201)
         self.assertDictContainsSubset(part_of_expected_message, json.loads(message_queue_solr[0]))
         self.assertDictContainsSubset(part_of_expected_message, json.loads(message_queue_elastic[0]))
+
+    @patch("brainiak.handlers.log")
+    def test_notify_bus_not_connected_exception(self, log):
+        config = {"side_effect": NotConnectedException}
+        patcher = patch("brainiak.event_bus.event_bus_connection.send", ** config)
+        patcher.start()
+
+        deleted_new_york = self.fetch(
+            '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+            method='DELETE')
+        self.assertEqual(deleted_new_york.code, 500)
+        patcher.stop()
+
+    @patch("brainiak.handlers.log")
+    def test_notify_bus_connection_closed_exception(self, log):
+        config = {"side_effect": ConnectionClosedException}
+        patcher = patch("brainiak.event_bus.event_bus_connection.send", ** config)
+        patcher.start()
+
+        deleted_new_york = self.fetch(
+            '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+            method='DELETE')
+        self.assertEqual(deleted_new_york.code, 500)
+        patcher.stop()
+
+    @patch("brainiak.handlers.log")
+    def test_notify_bus_protocol_exception(self, log):
+        config = {"side_effect": ProtocolException}
+        patcher = patch("brainiak.event_bus.event_bus_connection.send", ** config)
+        patcher.start()
+
+        deleted_new_york = self.fetch(
+            '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+            method='DELETE')
+        self.assertEqual(deleted_new_york.code, 500)
+        patcher.stop()
 
 
 class NotifierListener(object):

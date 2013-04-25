@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import md5
 import urllib
 import ujson as json

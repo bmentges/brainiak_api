@@ -12,6 +12,9 @@ tpedia:Person a owl:Class .
 
 tpedia:Species a owl:Class .
 
+tpedia:SoccerClub a owl:Class ;
+                  rdfs:label "Time de futebol" .
+
 tpedia:john a tpedia:Person ;
             rdfs:label "John Jones" ;
             tpedia:likes tpedia:JiuJitsu ;

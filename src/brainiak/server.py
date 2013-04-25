@@ -6,6 +6,7 @@ from tornado.web import Application as TornadoApplication
 from brainiak import __doc__, log, settings
 from brainiak.greenlet_tornado import greenlet_set_ioloop
 from brainiak.handlers import get_routes
+from brainiak.event_bus import event_bus_connection
 
 server = None
 
@@ -14,6 +15,8 @@ class Application(TornadoApplication):
 
     def __init__(self, debug=False):
         log.initialize()
+        event_bus_connection.start()
+        event_bus_connection.connect()
         super(Application, self).__init__(get_routes(), debug=debug)
 
 application = Application()

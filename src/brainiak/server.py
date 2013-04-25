@@ -15,6 +15,8 @@ class Application(TornadoApplication):
 
     def __init__(self, debug=False):
         log.initialize()
+        event_bus_connection.start()
+        event_bus_connection.connect()
         super(Application, self).__init__(get_routes(), debug=debug)
 
 application = Application()
@@ -26,8 +28,6 @@ def main(args):  # pragma: no cover
     server.listen(settings.SERVER_PORT)
     io_loop = IOLoop.instance()
     greenlet_set_ioloop(io_loop)
-    event_bus_connection.start()
-    event_bus_connection.connect()
     io_loop.start()
 
 

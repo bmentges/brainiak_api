@@ -1,8 +1,11 @@
 # coding: utf-8
 import json
 from urlparse import urlparse
+
 from mock import patch
-from brainiak import __version__, settings, server
+from stomp.exception import NotConnectedException
+
+from brainiak import __version__, event_bus, server, settings
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
@@ -166,3 +169,29 @@ class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
         settings.ENVIRONMENT = "local"
         response = self.fetch('/status/virtuoso', method='GET')
         self.assertEqual(response.code, 200)
+
+
+def raise_exception():
+    raise NotConnectedException
+
+
+class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
+
+    def setUp(self):
+        self.original_abort = event_bus.event_bus_connection.abort
+        TornadoAsyncHTTPTestCase.setUp(self)
+
+    def tearDown(self):
+        event_bus.event_bus_connection.abort = self.original_abort
+
+    def test_activemq_status_on(self):
+        event_bus.event_bus_connection.abort = lambda transaction: ""
+        response = self.fetch('/status/activemq', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, 'Successfully connected to localhost:61613')
+
+    def test_activemq_status_off(self):
+        event_bus.event_bus_connection.abort = lambda transaction: raise_exception()
+        response = self.fetch('/status/activemq', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, "Connection failed to localhost:61613<br>Reason:  'stomp.exception.NotConnectedException'")

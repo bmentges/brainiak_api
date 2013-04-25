@@ -348,21 +348,21 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             }
         ]
         self.assertEqual(sorted(expected), sorted(computed))
@@ -419,7 +419,7 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
                 u'title': {u'type': u'literal', u'value': u'Can flight', u'xml:lang': u'en'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'},
@@ -506,21 +506,26 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
 
         # Mocks
         fake_response_predicates = {"results": {"bindings": [
-            {"predicate": {"type": "uri", "value": "http://test/person/root_gender"},
-             "predicate_graph": {"type": "uri", "value": "http://test/person/"},
-             "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
-             "range": {"type": "uri", "value": "http://test/person/Gender"},
-             "title": {"type": "literal", "xml:lang": "pt", "value": "Root (to be removed from answer)"},
-             "range_graph": {"type": "uri", "value": "http://test/person/"}},
-            {"predicate": {"type": "uri", "value": "http://test/person/gender"},
+            {
+                "predicate": {"type": "uri", "value": "http://test/person/root_gender"},
+                "predicate_graph": {"type": "uri", "value": "http://test/person/"},
+                "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
+                "range": {"type": "uri", "value": "http://test/person/Gender"},
+                "title": {"type": "literal", "xml:lang": "pt", "value": "Root (to be removed from answer)"},
+                "range_graph": {"type": "uri", "value": "http://test/person/"}
+            },
+            {
+                "predicate": {"type": "uri", "value": "http://test/person/gender"},
                 "super_property": {"type": "uri", "value": "http://test/person/root_gender"},
                 "predicate_graph": {"type": "uri", "value": "http://test/person/"},
                 "predicate_comment": {"type": "literal", "xml:lang": "pt", "value": u"G\u00EAnero."},
                 "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
                 "range": {"type": "uri", "value": "http://test/person/Gender"},
                 "title": {"type": "literal", "xml:lang": "pt", "value": "Sexo"},
-                "range_graph": {"type": "uri", "value": "http://test/person/"},
-                "range_label": {"type": "literal", "xml:lang": "pt", "value": u"G\u00EAnero da Pessoa"}}]}}
+                "range_label": {"type": "literal", "xml:lang": "pt", "value": u"G\u00EAnero da Pessoa"},
+                "range_graph": {"type": "uri", "value": "http://test/person/"}
+            }
+        ]}}
 
         fake_response_cardinalities = {"results": {
             "bindings": [

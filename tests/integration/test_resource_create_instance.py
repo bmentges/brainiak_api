@@ -48,7 +48,8 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         query_string = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % {
             "class_uri": class_uri,
             "instance_uri": instance_uri,
-            "lang": "pt"
+            "lang": "pt",
+            "ruleset": "%sruleset" % self.graph_uri
         }
         response = self.query(query_string)
         return response['results']['bindings'] != []

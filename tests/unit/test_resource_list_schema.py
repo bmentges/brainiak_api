@@ -3,7 +3,7 @@ from brainiak.prefixes import MemorizeContext
 
 import brainiak.schema.resource as schema
 from brainiak import prefixes
-from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict, get_super_properties, normalize_predicate_range, merge_ranges, join_predicates, get_common_key, expand_object_properties_links
+from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict, normalize_predicate_range, merge_ranges, join_predicates, get_common_key, expand_object_properties_links
 
 
 class ExpandLinksTestCase(unittest.TestCase):
@@ -110,41 +110,6 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         self.assertEqual(len(context.object_properties), 0)
         self.assertEqual(context.context, {'test': u'http://test/person/', 'xsd': 'http://www.w3.org/2001/XMLSchema#'})
         self.assertEqual(expected_predicate_dict, effective_predicate_dict)
-
-    def test_get_super_properties(self):
-        sample_bindings = [
-            {
-                'predicate': 'son',
-                'super_property': {'value': 'father'}
-            },
-            {
-                'predicate': 'father'
-            },
-            {
-                'predicate': 'grandfather'
-            }
-        ]
-        computed = get_super_properties(sample_bindings)
-        expected = ['father']
-        self.assertEqual(computed, expected)
-
-    def test_get_multiple_super_properties(self):
-        sample_bindings = [
-            {
-                'predicate': 'son',
-                'super_property': {'value': 'father'}
-            },
-            {
-                'predicate': 'father',
-                'super_property': {'value': 'grandfather'}
-            },
-            {
-                'predicate': 'grandfather'
-            }
-        ]
-        computed = get_super_properties(sample_bindings)
-        expected = ['father', 'grandfather']
-        self.assertEqual(computed, expected)
 
     def test_normalize_predicate_range_in_predicate_without_range_without_format(self):
         sample_predicate = {'type': 'some type'}

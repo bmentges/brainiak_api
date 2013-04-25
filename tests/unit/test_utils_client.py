@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from brainiak.utils.client import extract_keys, requests, fetch_page, fetch_all_pages
+from brainiak.utils.client import extract_keys, requests, fetch_page, fetch_all_pages, del_instance, add_instance_with_url
 from brainiak.utils import client
 from tests.mocks import MockSimpleRequest
 
@@ -58,3 +58,37 @@ class AllPagesTestCase(TestCase):
     def test_fetch_all_fails(self):
         client.fetch_page = MockFetchPage(500, 5)
         self.assertRaises(Exception, fetch_all_pages, "http://anyurl.com", "any_key")
+
+
+class DeleteTestCase(TestCase):
+
+    def setUp(self):
+        self.original_delete = requests.delete
+
+    def tearDown(self):
+        requests.delete = self.original_delete
+
+    def test_del_instance(self):
+        def mock_delete(uri):
+            return MockSimpleRequest(204, None)
+        requests.delete = mock_delete
+        status_code, err = del_instance("http://anyurl.com")
+        self.assertEqual(status_code, 204)
+        self.assertEqual(err, None)
+
+
+class AddInstanceTestCase(TestCase):
+
+    def setUp(self):
+        self.original_put = requests.put
+
+    def tearDown(self):
+        requests.put = self.original_put
+
+    def test_add_instance(self):
+        def mock_put(uri, data):
+            return MockSimpleRequest(201, None)
+        requests.put = mock_put
+        status_code, err = add_instance_with_url("http://anyurl.com", {'dummy_field': 'dummy_data'})
+        self.assertEqual(status_code, 201)
+        self.assertEqual(err, None)

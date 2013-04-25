@@ -1,7 +1,10 @@
+
+import re
 import stomp
+import ujson as json
+
 from stomp.exception import ConnectionClosedException, NotConnectedException, \
     ProtocolException
-import ujson as json
 
 from brainiak.settings import EVENT_BUS_HOST, EVENT_BUS_PORT
 from brainiak import log
@@ -25,3 +28,15 @@ def notify_bus(instance, klass, graph, action):
         log.logger.info("BUS NOTIFICATION\n" + message)
     except (ConnectionClosedException, NotConnectedException, ProtocolException) as e:
         raise Exception("Error when notifying event bus. Type: " + str(e.__class__))
+
+
+def status(host=EVENT_BUS_HOST, port=EVENT_BUS_PORT):
+    try:
+        event_bus_connection.abort({'transaction': '<ping_transaction>'})
+    except (ConnectionClosedException, NotConnectedException, ProtocolException) as e:
+        error = re.sub('<class|>', '', str(e.__class__))
+        msg = "Connection failed to %s:%d<br>Reason: %s" % (host, port, error)
+    else:
+        msg = "Successfully connected to %s:%d" % (host, port)
+    log.logger.info(msg)
+    return msg

@@ -5,7 +5,7 @@ from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, PrefixError
 
 
 def get_super_properties(bindings):
-    return [item['super_property']['value'] for item in bindings if 'super_property' in item]
+    return {item['super_property']['value']: item['predicate']['value'] for item in bindings if 'super_property' in item}
 
 
 def calculate_offset(query_params, default_page, default_per_page):

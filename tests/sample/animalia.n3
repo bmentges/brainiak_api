@@ -25,7 +25,7 @@
     rdfs:range :FurLenght .
 
 # http://example.onto/furStyle
-:furStyle rdf:type owl:ObjectProperty ;
+:furStyle rdf:type owl:DatatypeProperty ;
     rdfs:label "Fur or hair style (could be a description, FurLenght or FurColour)" ;
     rdfs:domain :SubAnimal ;
     rdfs:range xsd:string ,
@@ -39,7 +39,7 @@
              rdfs:range :Place .
 
 # http://example.onto/person/canFlight
-:canFlight a owl:ObjectProperty ;
+:canFlight a owl:DatatypeProperty ;
              rdfs:label "Can flight"@en;
              rdfs:comment "Defines if the bird species can flight or not."@en ;
              rdfs:domain :Bird ;
@@ -56,11 +56,13 @@
 # Classes
 ##########################################
 
-# http://example.onto/Gender
-:City a owl:Class .
 
-# http://example.onto/Species
+# http://example.onto/Place
 :Place a owl:Class .
+
+# http://example.onto/City
+:City a owl:Class ;
+  rdfs:subClassOf :Place .
 
 # http://example.onto/Gender
 :Gender a owl:Class .
@@ -146,7 +148,7 @@
 # Instances
 ##########################################
 
-:York a :birthCity .
+:York a :City .
 
 :Male a :Gender .
 :Female a :Gender .
@@ -159,3 +161,7 @@
 :Short a :FurLenght .
 :Medium a :FurLenght .
 :Long a :FurLenght .
+
+:Nina a :Yorkshire_Terrier ;
+     :birthCity :York ;
+     rdfs:label "Nina Fox" .

@@ -39,7 +39,7 @@ from tornado.ioloop import IOLoop
 from tornado.httpclient import AsyncHTTPClient
 
 import tornado.web
-from functools import wraps, partial
+from functools import wraps
 
 # singleton objects
 _io_loop = None
@@ -75,9 +75,6 @@ def greenlet_fetch(request, **kwargs):
 
     def callback(response):
         gr.switch(response)
-        # Make sure we are on the master greenlet before we switch.
-        #IOLoop.instance().add_callback(partial(gr.switch, response))
-        #_io_loop.add_callback(partial(gr.switch, response))
     http_client = tornado.httpclient.AsyncHTTPClient(io_loop=_io_loop)
     http_client.fetch(request, callback, **kwargs)
 

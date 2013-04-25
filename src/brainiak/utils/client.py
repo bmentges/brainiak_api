@@ -1,10 +1,24 @@
 # -*- coding: utf-8 -*-
+import json
 import requests
+
+
+def add_instance_with_url(url, data):
+    """Use this method to add a Python dictionary given in data to the exact url given by ``url``
+    """
+    response = requests.put(url, data=json.dumps(data))
+    return response.status_code, response.json()
+
+
+def del_instance(url):
+    "Delete the insatnce given by the param ``url``"
+    response = requests.delete(url)
+    return response.status_code, response.json()
 
 
 def extract_keys(list_of_dicts, key):
     """Given a list of dictionaries, this function generates a list of values,
-    where each values is the whatever was associated with the given parameter ``key''
+    where each values is the whatever was associated with the given parameter ``key``
     in each dictionary of the input list.
 
     >>> extract_keys([{'a':1}, {'a':2}, {'a':3}], 'a')
@@ -15,7 +29,7 @@ def extract_keys(list_of_dicts, key):
 
 def fetch_page(url, headers={"Content-Type": "application/json"}):
     """
-    Use requests module to fetch a page from the given ``url''.
+    Use requests module to fetch a page from the given ``url`.
     By default it sets parameter headers to {"Content-Type": "application/json"}.
 
     >>> fetch_page("http://localhost:5100")
@@ -30,8 +44,8 @@ def fetch_page(url, headers={"Content-Type": "application/json"}):
 
 def fetch_all_pages(url, update_key):
     """
-    Fetch all pages starting from the given URL and extract the value associated to ``update_key'',
-    using ``update+key'' as a dictionary key in each page response.
+    Fetch all pages starting from the given URL and extract the value associated to ``update_key``,
+    using ``update+key`` as a dictionary key in each page response.
 
     >>> fetch_all_pages("http://localhost:5100", "items")
     [{u'resource_id': u'owl#', u'@id': u'http://www.w3.org/2002/07/owl#', u'title': u'owl'},

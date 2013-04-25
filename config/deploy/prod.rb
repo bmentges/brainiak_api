@@ -5,7 +5,7 @@ role :docs, "riomp40lb14.globoi.com", :no_release => true
 
 set :sparql_endpoint, "http://virtuoso.semantica.globoi.com:80/api-semantica/sparql-auth"
 
-
+set :event_bus_host, "barramento.baas.globoi.com"
 
 
 # Used by puppet module in Capistrano

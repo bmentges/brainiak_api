@@ -6,6 +6,7 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 
+# FIXME: this test is totally broken - it is acessing http://semantica.globo.com/person/Gender
 class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     allow_triplestore_connection = True
@@ -31,7 +32,7 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertIn(u'/person/Gender/Female', body['@id'])
         self.assertEqual(body['@type'], u'person:Gender')
         self.assertEqual(body['rdf:type'], u'person:Gender')
-        self.assertEqual(body['rdfs:label'], u'Feminino')
+        self.assertEqual(body['upper:name'], u'Feminino')
 
     def test_get_instance_with_compressed_instance_prefix_200(self):
         instance_prefix = "http://test.com/other_prefix/"

@@ -5,6 +5,8 @@ role :docs, "cittavld45.globoi.com", :no_release => true
 
 set :sparql_endpoint, "http://qa1.virtuoso.globoi.com:8890/sparql-auth"
 
+set :event_bus_host, "barramento.baas.qa01.globoi.com"
+
 # Lazy...
 set :password, 'busca'
 

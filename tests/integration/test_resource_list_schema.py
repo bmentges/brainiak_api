@@ -348,21 +348,21 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             }
         ]
         self.assertEqual(sorted(expected), sorted(computed))
@@ -419,7 +419,7 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
                 u'title': {u'type': u'literal', u'value': u'Can flight', u'xml:lang': u'en'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'},

@@ -70,11 +70,12 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
-DEFINE input:inference <http://semantica.globo.com/ruleset>
-SELECT ?p ?o ?label {
-<%(instance_uri)s> a <%(class_uri)s>;
-    rdfs:label ?label;
-    ?p ?o .
+DEFINE input:inference <%(ruleset)s>
+SELECT ?p ?o ?label ?super_property {
+    <%(instance_uri)s> a <%(class_uri)s>;
+        rdfs:label ?label;
+        ?p ?o .
+OPTIONAL { ?p rdfs:subPropertyOf ?super_property } .
 FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
 FILTER (! (?p = rdfs:label))
 }
@@ -82,5 +83,6 @@ FILTER (! (?p = rdfs:label))
 
 
 def query_all_properties_and_objects(query_params):
+    query_params["ruleset"] = "http://semantica.globo.com/ruleset"
     query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % query_params
     return triplestore.query_sparql(query)

@@ -14,7 +14,7 @@ class ManageInstance(TestCase):
         url = API_ENDPOINT + '/place/Continent/Eurasia'
 
         # erase any garbage that may be left form incomplete tests
-        del_instance(url)
+        # del_instance(url)
 
         status_code, err = add_instance_with_url(url, data)
         self.assertEqual(status_code, 201)

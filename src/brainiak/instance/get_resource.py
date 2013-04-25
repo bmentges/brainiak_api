@@ -25,18 +25,25 @@ def build_items_dict(context, bindings):
     items_dict = {}
     for item in bindings:
         predicate_uri = context.shorten_uri(item["predicate"]["value"])
-        if not predicate_uri in super_predicates:
-            value = context.shorten_uri(item["object"]["value"])
-            if predicate_uri in items_dict:
-                if not isinstance(items_dict[predicate_uri], list):
-                    value_list = [items_dict[predicate_uri]]
-                else:
-                    value_list = items_dict[predicate_uri]
-                value_list.append(value)
-                items_dict[predicate_uri] = value_list
+        value = context.shorten_uri(item["object"]["value"])
+        if predicate_uri in items_dict:
+            if not isinstance(items_dict[predicate_uri], list):
+                value_list = [items_dict[predicate_uri]]
             else:
-                items_dict[predicate_uri] = value
-            items_dict["rdfs:label"] = context.shorten_uri(item["label"]["value"])
+                value_list = items_dict[predicate_uri]
+            value_list.append(value)
+            items_dict[predicate_uri] = value_list
+        else:
+            items_dict[predicate_uri] = value
+        items_dict["rdfs:label"] = context.shorten_uri(item["label"]["value"])
+
+    for (analyzed_predicate, value) in items_dict.items():
+        if analyzed_predicate in super_predicates.keys():
+            sub_predicate = super_predicates[analyzed_predicate]
+            sub_value = items_dict[sub_predicate]
+            if value == sub_value:
+                items_dict.pop(analyzed_predicate)
+
     return items_dict
 
 

@@ -135,9 +135,9 @@ class BuildItemsDictTestCase(unittest.TestCase):
 
     def test_build_items_dict(self):
         bindings = [
-            {"p": {"value": "key1"}, "o": {"value": "value1"}, "label": {"value": "label1"}},
-            {"p": {"value": "key1"}, "o": {"value": "value2"}, "label": {"value": "label1"}},
-            {"p": {"value": "key2"}, "o": {"value": "value2"}, "label": {"value": "label1"}}
+            {"predicate": {"value": "key1"}, "object": {"value": "value1"}, "label": {"value": "label1"}},
+            {"predicate": {"value": "key1"}, "object": {"value": "value2"}, "label": {"value": "label1"}},
+            {"predicate": {"value": "key2"}, "object": {"value": "value2"}, "label": {"value": "label1"}}
         ]
         expected = {"key1": ["value1", "value2"], "key2": "value2", 'rdfs:label': 'label1'}
         response = get_resource.build_items_dict(MemorizeContext(), bindings)

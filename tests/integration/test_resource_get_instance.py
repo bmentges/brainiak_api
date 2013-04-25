@@ -65,39 +65,39 @@ class InstanceQueryTestCase(QueryTestCase):
         non_blank_expected = [
             {
                 u'label': {u'type': u'literal', u'value': u'Nina Fox'},
-                u'o': {u'type': u'uri', u'value': u'http://example.onto/Yorkshire_Terrier'},
-                u'p': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/Yorkshire_Terrier'},
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Nina Fox'},
-                u'o': {u'type': u'uri', u'value': u'http://example.onto/Canidae'},
-                u'p': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/Canidae'},
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Nina Fox'},
-                u'o': {u'type': u'uri', u'value': u'http://example.onto/Mammalia'},
-                u'p': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/Mammalia'},
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Nina Fox'},
-                u'o': {u'type': u'uri', u'value': u'http://example.onto/Animal'},
-                u'p': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/Animal'},
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Nina Fox'},
-                u'o': {u'type': u'uri', u'value': u'http://example.onto/Species'},
-                u'p': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/Species'},
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Nina Fox'},
-                u'o': {u'type': u'uri', u'value': u'http://example.onto/York'},
-                u'p': {u'type': u'uri', u'value': u'http://example.onto/birthCity'},
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/York'},
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthCity'},
                 u'super_property': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Nina Fox'},
-                u'o': {u'type': u'uri', u'value': u'http://example.onto/York'},
-                u'p': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'}
+                u'object': {u'type': u'uri', u'value': u'http://example.onto/York'},
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'}
             }
         ]
         for item in non_blank_expected:

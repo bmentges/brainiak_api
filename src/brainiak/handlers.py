@@ -137,8 +137,8 @@ class VersionHandler(BrainiakRequestHandler):
 class VirtuosoStatusHandler(BrainiakRequestHandler):
 
     def get(self):
-        if settings.ENVIRONMENT == 'prod':
-            raise HTTPError(404)
+        # if settings.ENVIRONMENT == 'prod':
+        #     raise HTTPError(404)
 
         self.write(triplestore.status())
 

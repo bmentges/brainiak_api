@@ -11,7 +11,7 @@ set :deploy_to, "/mnt/projetos/deploy-be/api_semantica/#{application}/app"
 set :docs_html, "#{deploy_to}/current/docs"
 
 before "deploy:update", "python:filter"
-before "deploy:restart", "deploy:docs"
+##before "deploy:restart", "deploy:docs"
 
 
 set :user, "busca"

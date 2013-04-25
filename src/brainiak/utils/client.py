@@ -11,9 +11,9 @@ def add_instance_with_url(url, data):
 
 
 def del_instance(url):
-    "Delete the insatnce given by the param ``url``"
+    "Delete the instance given by the param ``url``"
     response = requests.delete(url)
-    return response.status_code, response.json()
+    return response.status_code, response.text
 
 
 def extract_keys(list_of_dicts, key):

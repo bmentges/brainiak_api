@@ -21,6 +21,7 @@ from brainiak.prefix.list_resource import list_prefixes
 from brainiak.root.get import list_all_contexts
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
 from brainiak.greenlet_tornado import greenlet_asynchronous
+from brainiak.event_bus import notify_bus
 
 custom_decorator.wrapper = greenlet_asynchronous
 
@@ -197,6 +198,10 @@ class InstanceHandler(BrainiakRequestHandler):
 
         response = get_instance(self.query_params)
 
+        if response:
+            notify_bus(instance=response["@id"], klass=self.query_params["class_uri"],
+                       graph=self.query_params["graph_uri"], action="PUT")
+
         self.finalize(response)
 
     @greenlet_asynchronous
@@ -206,7 +211,12 @@ class InstanceHandler(BrainiakRequestHandler):
 
         deleted = delete_instance(self.query_params)
 
-        response = 204 if deleted else None
+        if deleted:
+            response = 204
+            notify_bus(instance=self.query_params["instance_uri"], klass=self.query_params["class_uri"],
+                       graph=self.query_params["graph_uri"], action="DELETE")
+        else:
+            response = None
 
         self.finalize(response)
 
@@ -249,8 +259,12 @@ class CollectionHandler(BrainiakRequestHandler):
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
 
-        instance_id = create_instance(self.query_params, instance_data)
+        (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
         instance_url = self.build_resource_url(instance_id)
+
+        notify_bus(instance=instance_uri, klass=self.query_params["class_uri"],
+                   graph=self.query_params["graph_uri"], action="POST")
+
         self.set_status(201)
         self.set_header("location", instance_url)
         self.finalize("")

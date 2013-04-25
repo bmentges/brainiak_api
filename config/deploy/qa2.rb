@@ -5,6 +5,8 @@ role :docs, "api-semantica-be01.vb.qa02.globoi.com", :no_release => true
 
 set :sparql_endpoint, "http://qa2.virtuoso.globoi.com:8890/sparql-auth"
 
+set :event_bus_host, "barramento.baas.qa02.globoi.com"
+
 # Lazy...
 set :password, 'busca'
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.utils.sparql import create_explicit_triples, create_instance_uri, create_implicit_triples, \
@@ -23,7 +24,7 @@ def create_instance(query_params, instance_data, instance_uri=None):
         raise HTTPError(500, log_message="Triplestore could not insert triples.")
 
     instance_id = extract_instance_id(instance_uri)
-    return instance_id
+    return (instance_uri, instance_id)
 
 
 QUERY_INSERT_TRIPLES = """

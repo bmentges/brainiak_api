@@ -69,7 +69,7 @@ class GetContextTestCase(unittest.TestCase):
         expected_items = [
             {'@id': 'http://dbpedia.org/ontology/',
              'title': 'dbpedia',
-             'resource_id': 'ontology'}
+             'resource_id': 'dbpedia'}
         ]
         self.assertEqual(computed["items"], expected_items)
         self.assertEqual(computed["item_count"], 1)
@@ -90,7 +90,7 @@ class GetContextTestCase(unittest.TestCase):
         expected = [
             {'@id': 'http://www.w3.org/2006/time#',
              'title': 'time',
-             'resource_id': 'time#'},
+             'resource_id': 'time'},
         ]
         self.assertEqual(computed, expected)
 
@@ -104,6 +104,6 @@ class GetContextTestCase(unittest.TestCase):
         expected = [
             {'@id': 'http://dbpedia.org/ontology/',
              'title': 'dbpedia',
-             'resource_id': 'ontology'}
+             'resource_id': 'dbpedia'}
         ]
         self.assertEqual(computed, expected)

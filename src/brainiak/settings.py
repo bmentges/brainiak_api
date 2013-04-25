@@ -21,3 +21,6 @@ URI_PREFIX = "http://semantica.globo.com/"
 
 DEFAULT_PER_PAGE = "10"
 DEFAULT_PAGE = "0"
+
+EVENT_BUS_HOST = "localhost"
+EVENT_BUS_PORT = 61613

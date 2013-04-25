@@ -1,0 +1,66 @@
+@prefix place: <http://clone.com/place/> .
+@prefix upper: <http://clone.com/upper/> .
+
+@prefix continent: <http://clone.com/place/Continent/> .
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+#@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+
+
+# http://clone.com/upper/name
+upper:name rdf:type owl:DatatypeProperty  ;
+      rdfs:subPropertyOf rdfs:label ;
+      rdfs:domain upper:Entity ;
+      rdfs:range xsd:string .
+
+
+
+# http://clone.com/upper/Entity
+upper:Entity a owl:Class .
+
+# http://clone.com/upper/ConcreteEntity
+upper:ConcreteEntity a owl:Class ;
+                rdfs:subClassOf :Entity .
+
+# http://clone.com/upper/Substance
+upper:Substance a owl:Class ;
+           rdfs:subClassOf upper:ConcreteEntity ,
+                           [ rdf:type owl:Restriction ;
+                             owl:onProperty upper:name ;
+                             owl:allValuesFrom xsd:string ;
+                             owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                           ] .
+
+# http://clone.com/upper/Object
+upper:Object a owl:Class ;
+        rdfs:subClassOf upper:Substance .
+
+# http://clone.com/place/Place
+place:Place a owl:Class ;
+       rdfs:subClassOf upper:Object ;
+       owl:equivalentClass schema:Place ,
+                           dbpedia:Place ,
+                           dct:Location .
+
+# http://clone.com/place/GeopoliticalDivision
+place:GeopoliticalDivision a owl:Class ;
+                      rdfs:subClassOf place:Place ;
+                      owl:equivalentClass schema:AdministrativeArea ,
+                                          dbpedia:GeopoliticalDivision .
+
+# http://clone.com/place/Continent
+place:Continent a owl:Class ;
+           rdfs:subClassOf place:GeopoliticalDivision ;
+           owl:equivalentClass schema:Continent ,
+                               dbpedia:Continent .
+
+# http://clone.com/place/Continent/Asia
+continent:Asia a place:Continent ;
+        upper:name "Ásia"@pt ,
+                   "Asia"@en .

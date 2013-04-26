@@ -24,21 +24,21 @@ We give an example of a link section below:
   {
     "links": [
       {
-        "href": "http://localhost:5100/person/Gender/Male",
+        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
         "rel": "self"
       },
       {
 
-        "href": "http://localhost:5100/person/Gender/_schema",
+        "href": "http://api.semantica.dev.globoi.com/person/Gender/_schema",
         "rel": "describedBy"
       },
       {
-        "href": "http://localhost:5100/person/Gender/Male",
+        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
         "method": "PUT",
         "rel": "replace"
       },
       {
-        "href": "http://localhost:5100/person/Gender/Male",
+        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
         "method": "DELETE",
         "rel": "delete"
       }

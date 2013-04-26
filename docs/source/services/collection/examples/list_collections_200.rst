@@ -44,39 +44,39 @@
         "item_count": 9,
         "links": [
             {
-                "href": "http://api.semantica.dev.globoi.com/v2/place/",
+                "href": "http://api.semantica.dev.globoi.com/place/",
                 "rel": "self"
             },
             {
-                "href": "http://api.semantica.dev.globoi.com/v2/place/",
+                "href": "http://api.semantica.dev.globoi.com/place/",
                 "rel": "list"
             },
             {
-                "href": "http://api.semantica.dev.globoi.com/v2/place/{resource_id}",
+                "href": "http://api.semantica.dev.globoi.com/place/{resource_id}",
                 "rel": "item"
             },
             {
-                "href": "http://api.semantica.dev.globoi.com/v2/place/",
+                "href": "http://api.semantica.dev.globoi.com/place/",
                 "method": "POST",
                 "rel": "create"
             },
             {
-                "href": "http://api.semantica.dev.globoi.com/v2/place/{resource_id}",
+                "href": "http://api.semantica.dev.globoi.com/place/{resource_id}",
                 "method": "DELETE",
                 "rel": "delete"
             },
             {
-                "href": "http://api.semantica.dev.globoi.com/v2/place/{resource_id}",
+                "href": "http://api.semantica.dev.globoi.com/place/{resource_id}",
                 "method": "PUT",
                 "rel": "replace"
             },
             {
-                "href": "http://api.semantica.dev.globoi.com/v2/place/?page=1",
+                "href": "http://api.semantica.dev.globoi.com/place/?page=1",
                 "method": "GET",
                 "rel": "first"
             },
             {
-                "href": "http://api.semantica.dev.globoi.com/v2/place/?page=1",
+                "href": "http://api.semantica.dev.globoi.com/place/?page=1",
                 "method": "GET",
                 "rel": "last"
             }

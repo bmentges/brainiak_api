@@ -16,27 +16,27 @@ For example:
   {
     "links": [
       {
-        "href": "http://localhost:5100/person/Gender/Male",
+        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
         "rel": "self"
       },
       {
 
-        "href": "http://localhost:5100/person/Gender/_schema",
+        "href": "http://api.semantica.dev.globoi.com/person/Gender/_schema",
         "rel": "describedBy"
       },
       {
-        href: "http://localhost:5100/person/Gender",
+        href: "http://api.semantica.dev.globoi.com/person/Gender",
         method: "GET",
         rel: "inCollection"
       },
       {
-        "href": "http://localhost:5100/person/Gender/Male",
+        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
         "method": "PUT",
-        "schema": {"$ref": "http://localhost:5100/person/Gender/_schema"}
+        "schema": {"$ref": "http://api.semantica.dev.globoi.com/person/Gender/_schema"}
         "rel": "replace"
       },
       {
-        "href": "http://localhost:5100/person/Gender/Male",
+        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
         "method": "DELETE",
         "rel": "delete"
       }
@@ -185,12 +185,12 @@ in a class. For example, in a ``links`` section in a schema for Person:
 ::
 
   {
-    "href": "http://localhost:5100/place/Country",
+    "href": "http://api.semantica.dev.globoi.com/place/Country",
     "rel": "upper:nationality"
   }
 
 This link states that Person has an attribute ``upper:nationality``
 and the possible values can be retrieved by using the resource
-in ``http://localhost:5100/place/Country``, which returns a
+in ``http://api.semantica.dev.globoi.com/place/Country``, which returns a
 list of instances of countries. In this case, the country
 represents the nationality of a Person.

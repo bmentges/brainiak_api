@@ -75,7 +75,7 @@ class TestCaseInstanceResource(unittest.TestCase):
         computed = get_resource.query_all_properties_and_objects(params)
         expected = """
             DEFINE input:inference <http://semantica.globo.com/ruleset>
-            SELECT ?predicate ?object ?label ?super_property {
+            SELECT DISTINCT ?predicate ?object ?label ?super_property {
                 <instance_uri> a <class_uri>;
                     rdfs:label ?label;
                     ?predicate ?object .

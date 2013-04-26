@@ -46,11 +46,13 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(body['rdfs:label'], u'Teste')
 
 
-class InstanceQueryTestCase(QueryTestCase):
+class InstanceQueryTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     allow_triplestore_connection = True
-    fixtures = ["tests/sample/animalia.n3"]
-    graph_uri = "http://test.com/"
+    fixtures_by_graph = {
+        "http://test.com/": ["tests/sample/animalia.n3"],
+        "http://test2.com/": ["tests/sample/animalia.n3"]
+    }
 
     maxDiff = None
 
@@ -62,7 +64,7 @@ class InstanceQueryTestCase(QueryTestCase):
             "ruleset": "http://test.com/ruleset"
         }
         query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % params
-        computed = self.query(query)["results"]["bindings"]
+        computed = self.query(query, False)["results"]["bindings"]
         non_blank_expected = [
             {
                 u'label': {u'type': u'literal', u'value': u'Nina Fox'},
@@ -103,3 +105,9 @@ class InstanceQueryTestCase(QueryTestCase):
         ]
         for item in non_blank_expected:
             self.assertIn(item, computed)
+
+    def test_instance_query_doesnt_duplicate_equal_properties_from_different_graphs(self):
+        response = self.fetch('/anything/Yorkshire_Terrier/Nina?class_prefix=http://example.onto/&instance_prefix=http://example.onto/', method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        self.assertEqual(body[u'http://example.onto/birthCity'], u'http://example.onto/York')

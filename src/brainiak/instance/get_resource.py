@@ -87,7 +87,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
 DEFINE input:inference <%(ruleset)s>
-SELECT ?predicate ?object ?label ?super_property {
+SELECT DISTINCT ?predicate ?object ?label ?super_property {
     <%(instance_uri)s> a <%(class_uri)s>;
         rdfs:label ?label;
         ?predicate ?object .

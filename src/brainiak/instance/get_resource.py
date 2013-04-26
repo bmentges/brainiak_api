@@ -2,7 +2,7 @@
 from brainiak import triplestore
 from brainiak.prefixes import MemorizeContext
 from brainiak.utils.links import self_link, crud_links, add_link, remove_last_slash
-from brainiak.utils.sparql import get_super_properties, is_result_empty
+from brainiak.utils.sparql import expand_uri, get_super_properties, is_result_empty
 
 
 def get_instance(query_params):
@@ -35,14 +35,20 @@ def build_items_dict(context, bindings):
             items_dict[predicate_uri] = value_list
         else:
             items_dict[predicate_uri] = value
-        items_dict["rdfs:label"] = context.shorten_uri(item["label"]["value"])
 
+    # remove super properties that have the same value as subproperties
     for (analyzed_predicate, value) in items_dict.items():
         if analyzed_predicate in super_predicates.keys():
             sub_predicate = super_predicates[analyzed_predicate]
             sub_value = items_dict[sub_predicate]
             if value == sub_value:
                 items_dict.pop(analyzed_predicate)
+
+    # overwrite label only with filtered language
+    if expand_uri("rdfs:label") not in super_predicates:
+        items_dict["rdfs:label"] = item["label"]["value"]
+    else:
+        items_dict.pop("rdfs:label")
 
     return items_dict
 
@@ -87,7 +93,6 @@ SELECT ?predicate ?object ?label ?super_property {
         ?predicate ?object .
 OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
 FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
-FILTER (! (?predicate = rdfs:label))
 }
 """
 

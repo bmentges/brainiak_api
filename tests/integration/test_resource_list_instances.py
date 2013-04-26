@@ -736,7 +736,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         list_resource.query_filter_instances = lambda params: {"results": {"bindings": []}}
         list_resource.query_count_filter_instances = lambda params: {"results": {"bindings": []}}
 
-        params = {"o": "", "p": "", "class_uri": "", "sort_by": "", 'offset': '0'}
+        params = {"o": "", "p": "", "class_uri": "", "sort_by": "", 'offset': '0', 'page': '0'}
         response = list_resource.filter_instances(params)
         self.assertEquals(response, None)
 

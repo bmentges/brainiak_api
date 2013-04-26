@@ -9,19 +9,20 @@ from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import custom_decorator
 from tornado_cors import CorsMixin
 
-from brainiak import __version__, log, settings, triplestore
-from brainiak.schema import resource as schema_resource
+from brainiak import __version__, event_bus, log, settings, triplestore
+from brainiak.event_bus import notify_bus
+from brainiak.greenlet_tornado import greenlet_asynchronous
+from brainiak.context.list_resource import list_classes
+from brainiak.instance.create_resource import create_instance
+from brainiak.instance.delete_resource import delete_instance
+from brainiak.instance.edit_resource import edit_instance, instance_exists
 from brainiak.instance.get_resource import get_instance
 from brainiak.instance.list_resource import filter_instances
-from brainiak.instance.delete_resource import delete_instance
-from brainiak.instance.create_resource import create_instance
-from brainiak.instance.edit_resource import edit_instance, instance_exists
-from brainiak.context.list_resource import list_classes
 from brainiak.prefix.list_resource import list_prefixes
 from brainiak.root.get import list_all_contexts
+from brainiak.schema import resource as schema_resource
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
-from brainiak.greenlet_tornado import greenlet_asynchronous
-from brainiak.event_bus import notify_bus
+
 
 custom_decorator.wrapper = greenlet_asynchronous
 
@@ -49,6 +50,7 @@ def get_routes():
         URLSpec(r'/healthcheck/?', HealthcheckHandler),
         URLSpec(r'/version/?', VersionHandler),
         URLSpec(r'/prefixes/?', PrefixHandler),
+        URLSpec(r'/status/activemq/?', EventBusStatusHandler),
         URLSpec(r'/status/virtuoso/?', VirtuosoStatusHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)/?', InstanceHandler),
@@ -135,10 +137,17 @@ class VersionHandler(BrainiakRequestHandler):
 class VirtuosoStatusHandler(BrainiakRequestHandler):
 
     def get(self):
-        if settings.ENVIRONMENT == 'prod':
-            raise HTTPError(404)
+        # if settings.ENVIRONMENT == 'prod':
+        #     raise HTTPError(404)
 
         self.write(triplestore.status())
+
+
+class EventBusStatusHandler(BrainiakRequestHandler):
+
+    def get(self):
+
+        self.write(event_bus.status())
 
 
 class SchemaHandler(BrainiakRequestHandler):

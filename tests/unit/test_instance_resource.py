@@ -81,7 +81,6 @@ class TestCaseInstanceResource(unittest.TestCase):
                     ?predicate ?object .
             OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
             FILTER(langMatches(lang(?label), "en") OR langMatches(lang(?label), "")) .
-            FILTER (! (?predicate = rdfs:label))
             }
             """
         self.assertEqual(strip(computed), strip(expected))

@@ -275,5 +275,5 @@ texinfo_documents = [
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
 
-extlinks = {'brainiak': ('http://api.semantica.dev.globoi.com/v2/%s',
+extlinks = {'brainiak': ('http://api.semantica.dev.globoi.com/%s',
                          None)}

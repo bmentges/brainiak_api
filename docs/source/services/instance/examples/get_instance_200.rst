@@ -8,20 +8,20 @@
         "rdf:type": "place:Country",
         "links": [
             {
-                "href": "http://localhost:5100/place/Country/Brazil",
+                "href": "http://api.semantica.dev.globoi.com/place/Country/Brazil",
                 "rel": "self"
             },
             {
-                "href": "http://localhost:5100/place/Country/_schema",
+                "href": "http://api.semantica.dev.globoi.com/place/Country/_schema",
                 "rel": "describedBy"
             },
             {
-                "href": "http://localhost:5100/place/Country/Brazil",
+                "href": "http://api.semantica.dev.globoi.com/place/Country/Brazil",
                 "method": "PUT",
                 "rel": "replace"
             },
             {
-                "href": "http://localhost:5100/place/Country/Brazil",
+                "href": "http://api.semantica.dev.globoi.com/place/Country/Brazil",
                 "method": "DELETE",
                 "rel": "delete"
             }
@@ -32,8 +32,8 @@
             "place": "http://semantica.globo.com/place/",
             "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
         },
-        "$schema": "http://localhost:5100/place/Country/_schema",
-        "@id": "http://localhost:5100/place/Country/Brazil",
+        "$schema": "http://api.semantica.dev.globoi.com/place/Country/_schema",
+        "@id": "http://api.semantica.dev.globoi.com/place/Country/Brazil",
         "@type": "place:Country"
 
     }

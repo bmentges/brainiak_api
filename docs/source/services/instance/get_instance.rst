@@ -7,9 +7,9 @@ This service retrieves all information about a instance, given its context, clas
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/v2/person/Gender/Female'
+  $ curl -s 'http://api.semantica.dev.globoi.com/person/Gender/Female'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/v2/person/Gender/Female' | python -mjson.tool
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/person/Gender/Female' | python -mjson.tool
   :shell:
 
 Optional parameters
@@ -23,7 +23,7 @@ examples:
 
 .. code-block:: http
 
-  GET 'http://localhost:5100/place/City/Campinas_SP?instance_prefix=http%3A//dbpedia.org/'
+  GET 'http://api.semantica.dev.globoi.com/place/City/Campinas_SP?instance_prefix=http%3A//dbpedia.org/'
 
 If no **instance_prefix** had been provided, the instance URI above would be resolved as: http://semantica.globo.com/place/City/Campinas_SP. As **instance_prefix** was defined, the instance URI will be: http://dbpedia.org/Campinas_SP.
 
@@ -31,7 +31,7 @@ Other example: Instance URI is http://semantica.globo.com/esportes/atleta/80801
 
 .. code-block:: http
 
-  GET 'http://localhost:5100/esportes/Atleta/80801?instance_prefix=http://semantica.globo.com/esportes/atleta/'
+  GET 'http://api.semantica.dev.globoi.com/esportes/Atleta/80801?instance_prefix=http://semantica.globo.com/esportes/atleta/'
 
 
 **graph_uri**: set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
@@ -40,7 +40,7 @@ example: Instance URI is http://semantica.globo.com/base/Pessoa_ImportacaoEleico
 
 .. code-block:: http
 
-  GET 'http://localhost:5100/base/Pessoa/Pessoa_ImportacaoEleicoes2012TSE_10000001494?instance_prefix=base&graph_uri=glb'
+  GET 'http://api.semantica.dev.globoi.com/base/Pessoa/Pessoa_ImportacaoEleicoes2012TSE_10000001494?instance_prefix=base&graph_uri=glb'
 
 
 Possible responses

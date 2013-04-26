@@ -1,5 +1,5 @@
 from brainiak import triplestore, settings
-from brainiak.utils.resources import decorate_with_resource_id
+from brainiak.utils.resources import decorate_with_resource_id, validate_pagination_or_raise_404
 from brainiak.utils.sparql import add_language_support, calculate_offset
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids
@@ -12,6 +12,7 @@ def list_classes(query_params):
     count_query_result_dict = query_count_classes(query_params)
 
     total_items = int(get_one_value(count_query_result_dict, "total_items"))
+    validate_pagination_or_raise_404(query_params, total_items)
 
     if not total_items:
         return None

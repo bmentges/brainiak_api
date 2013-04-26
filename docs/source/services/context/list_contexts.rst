@@ -8,9 +8,9 @@ Contexts that contain no data are not listed.
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/v2/'
+  $ curl -s 'http://api.semantica.dev.globoi.com/'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/v2/' | python -mjson.tool
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/' | python -mjson.tool
   :shell:
 
 
@@ -25,7 +25,7 @@ By default, the first page containing 10 items is returned, and it could also be
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/v2/?page=1&per_page=10'
+  GET 'http://api.semantica.dev.globoi.com/?page=1&per_page=10'
 
 Possible responses
 -------------------

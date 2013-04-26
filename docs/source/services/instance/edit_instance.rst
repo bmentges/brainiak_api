@@ -9,7 +9,7 @@ This service allows the edition of an instance, provided its context, class name
 
 .. code-block:: bash
 
-  $ curl -i -X PUT -T "edit_female.json" http://api.semantica.dev.globoi.com/v2/person/Gender/Female
+  $ curl -i -X PUT -T "edit_female.json" http://api.semantica.dev.globoi.com/person/Gender/Female
 
 .. code-block:: http
 
@@ -28,7 +28,7 @@ Sample JSON "edit_female.json":
 .. include :: examples/edit_instance_payload.rst
 
 Note that prefixes are defined in the "@context" section.
-`Default prefixes  <http://api.semantica.dev.globoi.com/v2/prefixes>`_ are implicit and don't need to be declared.
+`Default prefixes  <http://api.semantica.dev.globoi.com/prefixes>`_ are implicit and don't need to be declared.
 
 Optional query string parameters
 --------------------------------
@@ -37,7 +37,7 @@ Optional query string parameters
 
 .. code-block:: http
 
-  PUT 'http://localhost:5100/place/City?class_prefix=http%3A//dbpedia.org/' new_city.json
+  PUT 'http://api.semantica.dev.globoi.com/place/City?class_prefix=http%3A//dbpedia.org/' new_city.json
 
 If no **class_prefix** had been provided, the class URI above would be resolved as: http://semantica.globo.com/place/City. As **class_prefix** was defined, the class URI will be: http://dbpedia.org/City.
 
@@ -65,7 +65,7 @@ If the class does not exist, the response status code is 404.
 
 .. code-block:: http
 
-  PUT 'http://localhost:5100/place/City/InexistentCity' JSON
+  PUT 'http://api.semantica.dev.globoi.com/place/City/InexistentCity' JSON
 
 .. include :: examples/create_instance_404.rst
 

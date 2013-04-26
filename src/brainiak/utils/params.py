@@ -28,6 +28,11 @@ def normalize_last_slash(url):
     return url if url.endswith("/") else url + "/"
 
 
+def valid_pagination(total, page, per_page):
+    "Verify if the given pagination is valid to the existent total items"
+    return (page * per_page) < total
+
+
 class ParamDict(dict):
     "Utility class to generate default params on demand and memoize results"
     extra_params = {}

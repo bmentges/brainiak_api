@@ -2,7 +2,7 @@ from unittest import TestCase
 from brainiak.handlers import ListServiceParams
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination
+from brainiak.utils.params import assemble_url, ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination
 from tests.mocks import MockHandler
 
 
@@ -147,3 +147,17 @@ class ParamsTestCase(TestCase):
         self.assertTrue(valid_pagination(total=1, page=0, per_page=1))
         self.assertFalse(valid_pagination(total=10, page=1, per_page=10))
         self.assertFalse(valid_pagination(total=1, page=1, per_page=1))
+
+    def test_assemble_url_with_param_as_url(self):
+        url = "http://dot.com"
+        params = {"some_url": "http://some.url"}
+        computed = assemble_url(url, params)
+        expected = "http://dot.com?some_url=http%3A%2F%2Fsome.url"
+        self.assertEqual(computed, expected)
+
+    def test_assemble_url_with_param_as_literal(self):
+        url = "http://dot.com"
+        params = {"key": "value"}
+        computed = assemble_url(url, params)
+        expected = "http://dot.com?key=value"
+        self.assertEqual(computed, expected)

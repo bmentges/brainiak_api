@@ -3,7 +3,7 @@ import inspect
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import collection_links, add_link, remove_last_slash, self_link
-from brainiak.utils.resources import decorate_with_resource_id
+from brainiak.utils.resources import decorate_with_resource_id, validate_pagination_or_raise_404
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value, normalize_term, calculate_offset
 
 
@@ -234,6 +234,7 @@ def filter_instances(query_params):
     result_dict = query_count_filter_instances(query_params)
 
     total_items = int(get_one_value(result_dict, 'total'))
+    validate_pagination_or_raise_404(query_params, total_items)
 
     if not total_items:
         return None

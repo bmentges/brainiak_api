@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from brainiak.prefixes import MemorizeContext
-from brainiak.utils.links import add_link, self_link
+from brainiak.utils.links import assemble_url, add_link, self_link
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties
 from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
@@ -33,8 +33,11 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
 
     query_params.resource_url = query_params.base_url
     links = self_link(query_params)
+
     base_url = query_params.base_url[:-9]  # remove /_schema
-    add_link(links, "instances", base_url)
+
+    href = assemble_url(base_url, {"class_prefix": query_params["class_prefix"]})
+    add_link(links, "instances", href)
 
     expand_object_properties_links(links, context)
 

@@ -41,7 +41,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         u'@id': u'person:Gender',
         u'links': [
             {u'href': u'http://localhost:10023/person/Gender/_schema?lang=pt', u'method': u'GET', u'rel': u'self'},
-            {u'href': u'http://localhost:10023/person/Gender', u'method': u'GET', u'rel': u'instances'}],
+            {u'href': u'http://localhost:10023/person/Gender?class_prefix=http%3A%2F%2Fsemantica.globo.com%2Fperson%2F', u'method': u'GET', u'rel': u'instances'}],
         u'properties': {},
         u'title': u"Gênero da Pessoa",
         u'comment': u"Gênero de uma pessoa.",
@@ -76,7 +76,6 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
 
         json_received['links'] = sorted(json_received['links'])
         self.SAMPLE_SCHEMA_JSON['links'] = sorted(self.SAMPLE_SCHEMA_JSON['links'])
-#        self.assertEqual(sorted(json_received['links']), sorted(self.SAMPLE_SCHEMA_JSON['links']))
         self.assertEqual(json_received['links'], self.SAMPLE_SCHEMA_JSON['links'])
 
     @patch("brainiak.handlers.log")

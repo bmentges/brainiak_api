@@ -234,10 +234,10 @@ def filter_instances(query_params):
     result_dict = query_count_filter_instances(query_params)
 
     total_items = int(get_one_value(result_dict, 'total'))
-    validate_pagination_or_raise_404(query_params, total_items)
-
     if not total_items:
         return None
+
+    validate_pagination_or_raise_404(query_params, total_items)
 
     keymap = {
         "label": "title",

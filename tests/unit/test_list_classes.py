@@ -31,11 +31,12 @@ class GetContextTestCase(unittest.TestCase):
         list_resource.get_one_value = self.original_get_one_value
         list_resource.assemble_list_json = self.original_assemble_list_json
 
-    def test_list_classes_with_no_result_raises_404(self):
+    def test_list_classes_with_no_result(self):
         list_resource.get_one_value = lambda x, y: "0"
         handler = MockHandler(page="1")
         params = ListServiceParams(handler, context_name="context_name", class_name="class_name")
-        self.assertRaises(HTTPError, list_resource.list_classes, params)
+        result = list_resource.list_classes(params)
+        self.assertEqual(result, None)
 
     def test_list_classes_return_result(self):
         list_resource.get_one_value = lambda x, y: "1"

@@ -7,9 +7,9 @@ This service retrieves registered prefixes, used in compact communication with t
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/v2/prefixes'
+  $ curl -s 'http://api.semantica.dev.globoi.com/prefixes'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/v2/prefixes' | python -mjson.tool
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/prefixes' | python -mjson.tool
   :shell:
 
 Possible responses

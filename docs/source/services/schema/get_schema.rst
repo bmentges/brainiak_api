@@ -10,9 +10,9 @@ In this service, we can get a specific schema of a class in some context.
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/v2/place/City/_schema'
+  $ curl -s 'http://api.semantica.dev.globoi.com/place/City/_schema'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/v2/place/City/_schema' | python -mjson.tool
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/City/_schema' | python -mjson.tool
   :shell:
 
 Why _schema? In our data model we have a clear distinction between class schemas

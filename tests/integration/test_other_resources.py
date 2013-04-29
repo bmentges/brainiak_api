@@ -69,10 +69,10 @@ class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
         event_bus.event_bus_connection.abort = lambda transaction: ""
         response = self.fetch('/status/activemq', method='GET')
         self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, 'Successfully connected to localhost:61613')
+        self.assertEqual(response.body, 'ActiveMQ connection | SUCCEED | localhost:61613')
 
     def test_activemq_status_off(self):
         event_bus.event_bus_connection.abort = lambda transaction: raise_exception()
         response = self.fetch('/status/activemq', method='GET')
         self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, "Connection failed to localhost:61613<br>Reason:  'stomp.exception.NotConnectedException'")
+        self.assertEqual(response.body, "ActiveMQ connection | FAILED | localhost:61613 | 'stomp.exception.NotConnectedException'")

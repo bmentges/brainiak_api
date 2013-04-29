@@ -1,4 +1,9 @@
 from math import ceil
+from urllib import urlencode
+
+
+def assemble_url(url, params):
+    return "{0}?{1}".format(url, urlencode(params))
 
 
 def remove_last_slash(url):

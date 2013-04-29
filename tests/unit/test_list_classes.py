@@ -38,7 +38,7 @@ class GetContextTestCase(unittest.TestCase):
         expected = list_resource.list_classes(params)
         self.assertEqual(expected, None)
 
-    def test_list_classes_return_None(self):
+    def test_list_classes_return_something(self):
         list_resource.get_one_value = lambda x, y: "1"
         list_resource.assemble_list_json = lambda x, y, z: "expected result"
 

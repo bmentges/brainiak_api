@@ -83,8 +83,8 @@ class CrudLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler)
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri/{resource_id}', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/invalid_context/invalid_class/_schema'}}]
+            {'href': 'http://any.uri', 'method': 'DELETE', 'rel': 'delete'},
+            {'href': 'http://any.uri', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/invalid_context/invalid_class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_crud_links_without_params_ok_with_slash(self):
@@ -94,8 +94,9 @@ class CrudLinksTestCase(unittest.TestCase):
         self.assertEqual(query_params.resource_url, "http://any.uri/{resource_id}")
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri/{resource_id}', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/invalid_context/invalid_class/_schema'}}]
+            {'href': 'http://any.uri', 'method': 'DELETE', 'rel': 'delete'},
+            {'href': 'http://any.uri', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/invalid_context/invalid_class/_schema'}}]
+
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_crud_links_with_params_ok(self):
@@ -104,8 +105,8 @@ class CrudLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri/{resource_id}', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/{resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/invalid_context/invalid_class/_schema'}}]
+            {'href': 'http://any.uri?per_page=50&page=3', 'method': 'DELETE', 'rel': 'delete'},
+            {'href': 'http://any.uri?per_page=50&page=3', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/invalid_context/invalid_class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
 

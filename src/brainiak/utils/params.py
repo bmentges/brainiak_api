@@ -54,11 +54,11 @@ class ParamDict(dict):
         self._override_with(handler)
         self._post_override()
 
-    def args(self, **kw):
+    def args(self, exclude_keys=[], **kw):
         effective_args = {}
         effective_args.update(kw)
         for key in ParamDict.essential_params:
-            if key in self["request"].arguments:
+            if key in self["request"].arguments and key not in exclude_keys:
                 effective_args[key] = self[key]
         return urlencode(effective_args, doseq=True)
 

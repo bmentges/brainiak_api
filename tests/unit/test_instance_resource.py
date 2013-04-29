@@ -153,7 +153,7 @@ class AssembleTestCase(unittest.TestCase):
         self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
         self.assertEqual(computed["@type"], "schema:klass")
         self.assertIsInstance(computed["@context"], InnerContextMock)
-        self.assertEqual(sorted(computed["links"]), sorted(expected_links))
+        self.assertItemsEqual(computed["links"], expected_links)
 
 
 class BuildItemsDictTestCase(unittest.TestCase):

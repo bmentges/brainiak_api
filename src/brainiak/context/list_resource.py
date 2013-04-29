@@ -12,13 +12,13 @@ def list_classes(query_params):
     count_query_result_dict = query_count_classes(query_params)
 
     total_items = int(get_one_value(count_query_result_dict, "total_items"))
-    validate_pagination_or_raise_404(query_params, total_items)
-
     if not total_items:
         return None
-    else:
-        query_result_dict = query_classes_list(query_params)
-        return assemble_list_json(query_params, query_result_dict, total_items)
+
+    validate_pagination_or_raise_404(query_params, total_items)
+
+    query_result_dict = query_classes_list(query_params)
+    return assemble_list_json(query_params, query_result_dict, total_items)
 
 
 def assemble_list_json(query_params, query_result_dict, total_items):

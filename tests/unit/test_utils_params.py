@@ -2,7 +2,7 @@ from unittest import TestCase
 from brainiak.handlers import ListServiceParams
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination
 from tests.mocks import MockHandler
 
 
@@ -141,3 +141,9 @@ class ParamsTestCase(TestCase):
         handler = MockHandler()
         params = ParamDict(handler, context_name='dbpedia', class_name='klass', instance_id='inst')
         self.assertEquals(params["instance_uri"], "http://dbpedia.org/ontology/klass/inst")
+
+    def test_pagination_validation(self):
+        self.assertTrue(valid_pagination(total=1, page=0, per_page=10))
+        self.assertTrue(valid_pagination(total=1, page=0, per_page=1))
+        self.assertFalse(valid_pagination(total=10, page=1, per_page=10))
+        self.assertFalse(valid_pagination(total=1, page=1, per_page=1))

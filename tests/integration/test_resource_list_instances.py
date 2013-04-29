@@ -1,7 +1,7 @@
 import json
 import urllib
 from mock import patch
-
+from tornado.web import HTTPError
 from brainiak import triplestore, settings
 from brainiak.instance import list_resource
 from brainiak.instance.list_resource import query_filter_instances, Query
@@ -731,14 +731,12 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(len(computed_bindings), 2)
         self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 
-    def test_filter_instances_result_is_empty(self):
+    def test_filter_instances_result_is_empty_raises_404(self):
         # mock
         list_resource.query_filter_instances = lambda params: {"results": {"bindings": []}}
         list_resource.query_count_filter_instances = lambda params: {"results": {"bindings": []}}
-
-        params = {"o": "", "p": "", "class_uri": "", "sort_by": "", 'offset': '0'}
-        response = list_resource.filter_instances(params)
-        self.assertEquals(response, None)
+        params = {"o": "", "p": "", "class_uri": "", "sort_by": "", 'offset': '0', 'page': '1', 'per_page': '10'}
+        self.assertRaises(HTTPError, list_resource.filter_instances, params)
 
     def test_filter_instances_result_is_not_empty(self):
         sample_json = {"results": {"bindings": []}}

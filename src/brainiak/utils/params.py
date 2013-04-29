@@ -4,10 +4,6 @@ from brainiak import settings
 from brainiak.prefixes import safe_slug_to_prefix
 
 
-def assemble_url(url, params):
-    return "{0}?{1}".format(url, urlencode(params))
-
-
 class InvalidParam(Exception):
     pass
 

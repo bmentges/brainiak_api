@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
+from tornado.web import HTTPError
 from brainiak.context import list_resource
-from brainiak.utils.params import ParamDict
+from brainiak.handlers import ListServiceParams
 from tests.mocks import MockHandler
 
 
@@ -30,19 +31,16 @@ class GetContextTestCase(unittest.TestCase):
         list_resource.get_one_value = self.original_get_one_value
         list_resource.assemble_list_json = self.original_assemble_list_json
 
-    def test_list_classes_return_None(self):
+    def test_list_classes_with_no_result_raises_404(self):
         list_resource.get_one_value = lambda x, y: "0"
+        handler = MockHandler(page="1")
+        params = ListServiceParams(handler, context_name="context_name", class_name="class_name")
+        self.assertRaises(HTTPError, list_resource.list_classes, params)
 
-        handler = MockHandler()
-        params = ParamDict(handler, context_name="context_name", class_name="class_name")
-        expected = list_resource.list_classes(params)
-        self.assertEqual(expected, None)
-
-    def test_list_classes_return_something(self):
+    def test_list_classes_return_result(self):
         list_resource.get_one_value = lambda x, y: "1"
         list_resource.assemble_list_json = lambda x, y, z: "expected result"
-
-        handler = MockHandler()
-        params = ParamDict(handler, context_name="context_name", class_name="class_name")
+        handler = MockHandler(page="1")
+        params = ListServiceParams(handler, context_name="context_name", class_name="class_name")
         expected = list_resource.list_classes(params)
         self.assertEqual(expected, "expected result")

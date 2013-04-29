@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
+from tornado.web import HTTPError
 from brainiak.prefixes import expand_uri, ROOT_CONTEXT
+from brainiak.utils.params import valid_pagination
+
+
+def validate_pagination_or_raise_404(params, total_items):
+    "Uniform validation for a page out of range"
+    page_index = int(params["page"])
+    per_page = int(params["per_page"])
+    if not valid_pagination(total_items, page_index, per_page):
+        raise HTTPError(404, log_message="Page {0:d} not found.".format(page_index + 1))
 
 
 def decorate_with_resource_id(list_of_dicts):

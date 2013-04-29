@@ -8,9 +8,9 @@ according a propert/value filter. The results are paginated.
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/v2/person/Gender/'
+  $ curl -s 'http://api.semantica.dev.globoi.com/person/Gender/'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/v2/person/Gender/' | python -mjson.tool
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/person/Gender/' | python -mjson.tool
   :shell:
 
 This will retrieve all instances of ``Gender`` in the graph ``person``
@@ -43,7 +43,7 @@ this property and object values. For exeample:
 
 .. code-block:: http
 
-  GET 'http://localhost:5100/place/Country/?p=place:partOfContinent&?o=http://semantica.globo.com/place/Continent/America'
+  GET 'http://api.semantica.dev.globoi.com/place/Country/?p=place:partOfContinent&o=http://semantica.globo.com/place/Continent/America'
 
 Possible responses
 -------------------

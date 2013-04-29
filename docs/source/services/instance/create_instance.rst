@@ -7,19 +7,19 @@ This service allows the creation of a new instance, provided its context, class 
 
 .. code-block:: bash
 
-  $ curl -i -X POST -T "new_york_city.json" http://api.semantica.dev.globoi.com/v2/place/City/
+  $ curl -i -X POST -T "new_york_city.json" http://api.semantica.dev.globoi.com/place/City/
 
-.. program-output:: curl -i -s -H "Expect:" -X POST -T "services/instance/examples/new_city.json" http://api.semantica.dev.globoi.com/v2/place/City/
+.. program-output:: curl -i -s -H "Expect:" -X POST -T "services/instance/examples/new_city.json" http://api.semantica.dev.globoi.com/place/City/
   :shell:
 
 Sample JSON "new_city.json" for the class City_:
 
-.. _City: http://api.semantica.dev.globoi.com/v2/place/City/_schema
+.. _City: http://api.semantica.dev.globoi.com/place/City/_schema
 
 .. include :: examples/create_instance_payload.rst
 
 Note that prefixes are defined in the "@context" section.
-`Default prefixes  <http://api.semantica.dev.globoi.com/v2/prefixes>`_ are implicit and don't need to be declared.
+`Default prefixes  <http://api.semantica.dev.globoi.com/prefixes>`_ are implicit and don't need to be declared.
 
 Besides using ``POST`` to create new instances, it is also possible to use ``PUT`` (for more information, see :ref:`edit_instance`).
 In this case, the ``instance_id`` should be provided, which must be unique in the specified context.
@@ -34,7 +34,7 @@ Optional query string parameters
 
 .. code-block:: http
 
-  POST 'http://localhost:5100/place/City/?class_prefix=http%3A//dbpedia.org/' new_city.json
+  POST 'http://api.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/' new_city.json
 
 If no **class_prefix** had been provided, the class URI above would be resolved as: http://semantica.globo.com/place/City. As **class_prefix** was defined, the class URI will be: http://dbpedia.org/City.
 
@@ -68,7 +68,7 @@ If the class does not exist, the response status code is 404.
 
 .. code-block:: http
 
-  POST 'http://localhost:5100/place/Person/' JSON
+  POST 'http://api.semantica.dev.globoi.com/place/Person/' JSON
 
 .. include :: examples/create_instance_404.rst
 

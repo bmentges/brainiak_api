@@ -3,7 +3,7 @@ from urllib import urlencode
 from brainiak import settings
 from brainiak.handlers import ListServiceParams
 
-from brainiak.utils.links import crud_links, get_last_page, get_next_page, get_previous_page, split_into_chunks, add_link, collection_links
+from brainiak.utils.links import assemble_url, crud_links, get_last_page, get_next_page, get_previous_page, split_into_chunks, add_link, collection_links
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler
 
@@ -57,6 +57,20 @@ class LinksTestCase(unittest.TestCase):
         computed_chunks = split_into_chunks(items, 3)
         expected_chunks = [['a', 'b', 'c'], ['d', 'e']]
         self.assertEqual(computed_chunks, expected_chunks)
+
+    def test_assemble_url_with_param_as_url(self):
+        url = "http://dot.com"
+        params = {"some_url": "http://some.url"}
+        computed = assemble_url(url, params)
+        expected = "http://dot.com?some_url=http%3A%2F%2Fsome.url"
+        self.assertEqual(computed, expected)
+
+    def test_assemble_url_with_param_as_literal(self):
+        url = "http://dot.com"
+        params = {"key": "value"}
+        computed = assemble_url(url, params)
+        expected = "http://dot.com?key=value"
+        self.assertEqual(computed, expected)
 
 
 class AddLinksTestCase(unittest.TestCase):

@@ -125,7 +125,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(received_response['item_count'], 1)
-        import pdb; pdb.set_trace()
         self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
     def test_filter_with_predicate_as_uri(self):

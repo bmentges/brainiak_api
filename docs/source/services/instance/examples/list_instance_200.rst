@@ -52,40 +52,40 @@
                 "rel": "self"
             },
             {
-                "href": "http://localhost:5100/place/Country",
+                "href": "http://api.semantica.dev.globoi.com/place/Country",
                 "rel": "list"
             },
             {
-                "href": "http://localhost:5100/place/Country/{resource_id}",
+                "href": "http://api.semantica.dev.globoi.com/place/Country/{resource_id}",
                 "rel": "item"
             },
             {
-                "href": "http://localhost:5100/place/Country",
+                "href": "http://api.semantica.dev.globoi.com/place/Country",
                 "method": "POST",
                 "rel": "create"
             },
             {
-                "href": "http://localhost:5100/place/Country/{resource_id}",
+                "href": "http://api.semantica.dev.globoi.com/place/Country/{resource_id}",
                 "method": "DELETE",
                 "rel": "delete"
             },
             {
-                "href": "http://localhost:5100/place/Country/{resource_id}",
+                "href": "http://api.semantica.dev.globoi.com/place/Country/{resource_id}",
                 "method": "PUT",
                 "rel": "replace"
             },
             {
-                "href": "http://localhost:5100/place/Country?page=1",
+                "href": "http://api.semantica.dev.globoi.com/place/Country?page=1",
                 "method": "GET",
                 "rel": "first"
             },
             {
-                "href": "http://localhost:5100/place/Country?page=26",
+                "href": "http://api.semantica.dev.globoi.com/place/Country?page=26",
                 "method": "GET",
                 "rel": "last"
             },
             {
-                "href": "http://localhost:5100/place/Country?page=2",
+                "href": "http://api.semantica.dev.globoi.com/place/Country?page=2",
                 "method": "GET",
                 "rel": "next"
             }

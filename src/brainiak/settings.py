@@ -1,6 +1,6 @@
 import logging
 
-DEBUG = False
+DEBUG = True
 ENVIRONMENT = 'local'
 
 SERVER_PORT = 5100

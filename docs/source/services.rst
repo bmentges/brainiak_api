@@ -66,36 +66,36 @@ Service Examples
 
 .. code-block:: http
 
-    GET 'http://localhost:5100'
+    GET 'http://api.semantica.dev.globoi.com'
 
 **List all collections of a context**
 
 .. code-block:: http
 
-  GET 'http://localhost:5100/place'
+  GET 'http://api.semantica.dev.globoi.com/place'
 
 **List all instances of a collection**
 
 .. code-block:: http
 
-  GET 'http://localhost:5100/place/Country'
+  GET 'http://api.semantica.dev.globoi.com/place/Country'
 
 **Get a schema of a collection**
 
 .. code-block:: http
 
-  GET 'http://localhost:5100/place/Country/_schema'
+  GET 'http://api.semantica.dev.globoi.com/place/Country/_schema'
 
 Try it yourself: `Schema for Country`_
 
-.. _Schema for Country: http://api.semantica.dev.globoi.com/v2/place/Country/_schema
+.. _Schema for Country: http://api.semantica.dev.globoi.com/place/Country/_schema
 
 **Get a instance of a collection**
 
 .. code-block:: http
 
-  GET 'http://localhost:5100/place/Country/Brazil'
+  GET 'http://api.semantica.dev.globoi.com/place/Country/Brazil'
 
 Try it yourself: `Brazil (Country Instance)`_
 
-.. _Brazil (Country Instance): http://api.semantica.dev.globoi.com/v2/place/Country/Brazil
+.. _Brazil (Country Instance): http://api.semantica.dev.globoi.com/place/Country/Brazil

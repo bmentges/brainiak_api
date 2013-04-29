@@ -41,9 +41,9 @@ def status(host=EVENT_BUS_HOST, port=EVENT_BUS_PORT):
         event_bus_connection.abort({'transaction': '<ping_transaction>'})
     except (ConnectionClosedException, NotConnectedException, ProtocolException) as e:
         error = re.sub('<class|>', '', str(e.__class__))
-        msg = "ActiveMQ connection | FAILED | %s:%d |%s" % (host, port, error)
+        msg = "ActiveMQ connection not-authenticated | FAILED | %s:%d |%s" % (host, port, error)
     else:
-        msg = "ActiveMQ connection | SUCCEED | %s:%d" % (host, port)
+        msg = "ActiveMQ connection not-authenticated | SUCCEED | %s:%d" % (host, port)
     log.logger.info(msg)
     return msg
 

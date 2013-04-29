@@ -103,20 +103,34 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
     endpoint.addDefaultGraph("http://semantica.globo.com/person")
     endpoint.setQuery(query)
 
+    failure_msg = "Virtuoso connection %(type)s | FAILED | %(endpoint)s | %(error)s"
+    success_msg = 'Virtuoso connection %(type)s | SUCCEED | %(endpoint)s'
+
+    info = {
+        "type": "not-authenticated",
+        "endpoint": settings.SPARQL_ENDPOINT
+    }
+
     try:
         response = endpoint.query()
-        msg = "accessed without auth"
+        msg = success_msg % info
     except Exception, error:
-        msg = "didn't access without auth because: %s" % error.msg
+        info["error"] = error.msg
+        msg = failure_msg % info
+
+    password_md5 = md5.new(password).digest()
+    info = {
+        "type": "authenticated [%s:%s]" % (user, password_md5),
+        "endpoint": settings.SPARQL_ENDPOINT
+    }
 
     endpoint.setCredentials(user, password, mode=mode, realm=realm)
 
-    password_md5 = md5.new(password).digest()
-
     try:
         response = endpoint.query()
-        msg += "<br>accessed with auth (%s : %s)" % (user, password_md5)
+        msg = msg + "<br>" + success_msg % info
     except Exception as error:
-        msg += "<br>didn't access with auth (%s : %s) because: %s" % (user, password_md5, error.msg)
+        info["error"] = error.msg
+        msg = msg + "<br>" + failure_msg % info
 
     return msg

@@ -4,11 +4,11 @@ from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql
 from brainiak.utils.links import self_link, split_into_chunks, collection_links, add_link
+from brainiak.utils.resources import validate_pagination_or_raise_404
 
 # Note that pagination was done outside the query
 # because we are filtering query results based on prefixes
 # (accessible from the application and not through SPARQL)
-from brainiak.utils.resources import decorate_with_resource_id
 
 QUERY_LIST_CONTEXT = """
 SELECT DISTINCT ?graph
@@ -26,11 +26,12 @@ def list_all_contexts(params):
     if not filtered_contexts:
         raise HTTPError(404, log_message="No contexts were found.")
 
-    contexts_pages = split_into_chunks(filtered_contexts, int(params["per_page"]))
-    try:
-        contexts = contexts_pages[int(params["page"])]
-    except IndexError:
-        raise HTTPError(404, log_message="Page {0:d} not found.".format(int(params["page"]) + 1))
+    validate_pagination_or_raise_404(params, total_items)
+
+    page_index = int(params["page"])
+    per_page = int(params["per_page"])
+    contexts_pages = split_into_chunks(filtered_contexts, per_page)
+    contexts = contexts_pages[page_index]
 
     links = self_link(params) + collection_links(params, total_items)
     add_link(links, "instances", params.base_url + "{resource_id}")

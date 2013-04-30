@@ -259,7 +259,7 @@ def build_json(items_list, total_items, query_params):
     query_string = filter_query_string_by_key_prefix(query_params["request"].query)
     create_url = assemble_url(base_url, query_string)
     schema_url = assemble_url('{0}/_schema'.format(base_url), query_string)
-    
+
     if query_string:
         item_query_string = query_string + "&" + "instance_prefix={instance_prefix}"
     else:

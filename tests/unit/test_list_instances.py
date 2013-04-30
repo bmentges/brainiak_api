@@ -1,6 +1,8 @@
 import unittest
 
-from brainiak.instance.list_resource import Query, merge_by_id
+from brainiak.handlers import ListAndFilterServiceParams
+from brainiak.instance.list_resource import Query, merge_by_id, build_json
+from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip
 
 
@@ -342,3 +344,84 @@ class ListQueryTestCase(unittest.TestCase):
         }
         """
         self.assertEqual(strip(computed), strip(expected))
+
+
+class BuildJSONTestCase(unittest.TestCase):
+
+    default_params = {
+            "class_uri": "http://some.graph/SomeClass",
+            "lang": "",
+            "graph_uri": "http://some.graph/",
+            "per_page": "10",
+            "page": "0",
+            "p": "?predicate",
+            "o": "?object",
+            "sort_by": "",
+            "sort_order": "asc",
+            "sort_include_empty": "1",
+            "base_url": "http://domain.com",
+            "request": MockRequest(),
+    }
+    maxDiff = None
+
+    def test_query_without_extras(self):
+        handler = MockHandler()        
+        params = ListAndFilterServiceParams(handler, context_name="zoo", class_name="Lion")
+        item_count = 0
+        items = []
+
+        something = build_json(items, item_count, params)
+        self.assertEqual(something["@context"], {'@language': 'pt'})
+        self.assertEqual(something["item_count"], 0)
+        self.assertEqual(something["items"], [])
+
+        links = something["links"]
+        expected_links = [
+            {'href': 'http://mock.test.com', 'method': 'GET', 'rel': 'self'},
+            {'href': 'http://mock.test.com?per_page=10&page=1',
+                'method': 'GET',
+                'rel': 'first'},
+            {'href': 'http://mock.test.com?per_page=10&page=0',
+                'method': 'GET',
+                'rel': 'last'},
+            {'href': 'http://mock.test.com/{resource_id}?instance_prefix={instance_prefix}',
+                'method': 'GET',
+                'rel': 'item'},
+            {'href': 'http://mock.test.com',
+                'method': 'POST',
+                'rel': 'create',
+                'schema': {'$ref': 'http://mock.test.com/_schema'}
+            }
+        ]
+        self.assertEquals(sorted(links), sorted(expected_links))
+
+    def test_query_without_extras(self):
+        handler = MockHandler(querystring="class_prefix=Xubiru")      
+        params = ListAndFilterServiceParams(handler, context_name="zoo", class_name="Lion")
+        item_count = 0
+        items = []
+
+        something = build_json(items, item_count, params)
+        self.assertEqual(something["@context"], {'@language': 'pt'})
+        self.assertEqual(something["item_count"], 0)
+        self.assertEqual(something["items"], [])
+
+        links = something["links"]
+        expected_links = [
+            {'href': 'http://mock.test.com', 'method': 'GET', 'rel': 'self'},
+            {'href': 'http://mock.test.com?per_page=10&page=1',
+                'method': 'GET',
+                'rel': 'first'},
+            {'href': 'http://mock.test.com?per_page=10&page=0',
+                'method': 'GET',
+                'rel': 'last'},
+            {'href': 'http://mock.test.com/{resource_id}?class_prefix=Xubiru&instance_prefix={instance_prefix}',
+                'method': 'GET',
+                'rel': 'item'},
+            {'href': 'http://mock.test.com?class_prefix=Xubiru',
+                'method': 'POST',
+                'rel': 'create',
+                'schema': {'$ref': 'http://mock.test.com/_schema?class_prefix=Xubiru'}
+            }
+        ]
+        self.assertEquals(sorted(links), sorted(expected_links))

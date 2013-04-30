@@ -1,9 +1,32 @@
 from math import ceil
 from urllib import urlencode
+import urlparse
 
 
-def assemble_url(url, params):
-    return "{0}?{1}".format(url, urlencode(params))
+def assemble_url(url, params={}):
+    url_parse = urlparse.urlparse(url)
+
+    if url_parse.query:
+        existing_params = urlparse.parse_qs(url_parse.query)
+        params = dict(params, **existing_params)
+        url_size_minus_query_string = len(url_parse.query) + 1
+        url = url[:-url_size_minus_query_string]
+
+    if params:
+        if isinstance(params, str):
+            params = urlparse.parse_qs(params)
+        return "{0}?{1}".format(url, urlencode(params, doseq=True))
+    else:
+        return "{0}".format(url)
+
+
+def filter_query_string_by_key_prefix(query_string, prefixes=["class", "graph"]):
+    query_string_dict = urlparse.parse_qs(query_string)
+    relevant_params = {}
+    for key, value in query_string_dict.items():
+        if any([key.startswith(prefix) for prefix in prefixes]):
+            relevant_params[key] = value
+    return urlencode(relevant_params, doseq=True)
 
 
 def remove_last_slash(url):

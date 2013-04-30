@@ -46,10 +46,11 @@ class MockRequest(object):
 
 class MockHandler():
 
-    def __init__(self, uri=None, **kw):
+    def __init__(self, uri=None, querystring="", **kw):
         self.kw = kw
         if uri is None:
             uri = 'http://mock.test.com/'
+        self._querystring = querystring
 
         _parsed_url = urlparse(uri)
         self._path = _parsed_url.path
@@ -77,6 +78,10 @@ class MockHandler():
             @property
             def path(inner_self):
                 return self._path
+
+            @property
+            def query(inner_self):
+                return self._querystring
 
         d = Dummy()
         return d

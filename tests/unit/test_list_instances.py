@@ -365,7 +365,7 @@ class BuildJSONTestCase(unittest.TestCase):
     maxDiff = None
 
     def test_query_without_extras(self):
-        handler = MockHandler()        
+        handler = MockHandler()
         params = ListAndFilterServiceParams(handler, context_name="zoo", class_name="Lion")
         item_count = 0
         items = []
@@ -378,16 +378,23 @@ class BuildJSONTestCase(unittest.TestCase):
         links = something["links"]
         expected_links = [
             {'href': 'http://mock.test.com', 'method': 'GET', 'rel': 'self'},
-            {'href': 'http://mock.test.com?per_page=10&page=1',
+            {
+                'href': 'http://mock.test.com?per_page=10&page=1',
                 'method': 'GET',
-                'rel': 'first'},
-            {'href': 'http://mock.test.com?per_page=10&page=0',
+                'rel': 'first'
+            },
+            {
+                'href': 'http://mock.test.com?per_page=10&page=0',
                 'method': 'GET',
-                'rel': 'last'},
-            {'href': 'http://mock.test.com/{resource_id}?instance_prefix={instance_prefix}',
+                'rel': 'last'
+            },
+            {
+                'href': 'http://mock.test.com/{resource_id}?instance_prefix={instance_prefix}',
                 'method': 'GET',
-                'rel': 'item'},
-            {'href': 'http://mock.test.com',
+                'rel': 'item'
+            },
+            {
+                'href': 'http://mock.test.com',
                 'method': 'POST',
                 'rel': 'create',
                 'schema': {'$ref': 'http://mock.test.com/_schema'}
@@ -396,7 +403,7 @@ class BuildJSONTestCase(unittest.TestCase):
         self.assertEquals(sorted(links), sorted(expected_links))
 
     def test_query_without_extras(self):
-        handler = MockHandler(querystring="class_prefix=Xubiru")      
+        handler = MockHandler(querystring="class_prefix=Xubiru")
         params = ListAndFilterServiceParams(handler, context_name="zoo", class_name="Lion")
         item_count = 0
         items = []
@@ -409,16 +416,23 @@ class BuildJSONTestCase(unittest.TestCase):
         links = something["links"]
         expected_links = [
             {'href': 'http://mock.test.com', 'method': 'GET', 'rel': 'self'},
-            {'href': 'http://mock.test.com?per_page=10&page=1',
+            {
+                'href': 'http://mock.test.com?per_page=10&page=1',
                 'method': 'GET',
-                'rel': 'first'},
-            {'href': 'http://mock.test.com?per_page=10&page=0',
+                'rel': 'first'
+            },
+            {
+                'href': 'http://mock.test.com?per_page=10&page=0',
                 'method': 'GET',
-                'rel': 'last'},
-            {'href': 'http://mock.test.com/{resource_id}?class_prefix=Xubiru&instance_prefix={instance_prefix}',
+                'rel': 'last'
+            },
+            {
+                'href': 'http://mock.test.com/{resource_id}?class_prefix=Xubiru&instance_prefix={instance_prefix}',
                 'method': 'GET',
-                'rel': 'item'},
-            {'href': 'http://mock.test.com?class_prefix=Xubiru',
+                'rel': 'item'
+            },
+            {
+                'href': 'http://mock.test.com?class_prefix=Xubiru',
                 'method': 'POST',
                 'rel': 'create',
                 'schema': {'$ref': 'http://mock.test.com/_schema?class_prefix=Xubiru'}

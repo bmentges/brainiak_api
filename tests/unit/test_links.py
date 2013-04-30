@@ -3,7 +3,7 @@ from urllib import urlencode
 from brainiak import settings
 from brainiak.handlers import ListServiceParams
 
-from brainiak.utils.links import assemble_url, crud_links, get_last_page, get_next_page, get_previous_page, split_into_chunks, add_link, collection_links
+from brainiak.utils.links import assemble_url, crud_links, get_last_page, get_next_page, get_previous_page, split_into_chunks, add_link, collection_links, filter_query_string_by_key_prefix
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler
 
@@ -58,19 +58,54 @@ class LinksTestCase(unittest.TestCase):
         expected_chunks = [['a', 'b', 'c'], ['d', 'e']]
         self.assertEqual(computed_chunks, expected_chunks)
 
-    def test_assemble_url_with_param_as_url(self):
+    def test_assemble_url_with_dict_and_url_key(self):
         url = "http://dot.com"
         params = {"some_url": "http://some.url"}
         computed = assemble_url(url, params)
         expected = "http://dot.com?some_url=http%3A%2F%2Fsome.url"
         self.assertEqual(computed, expected)
 
-    def test_assemble_url_with_param_as_literal(self):
+    def test_assemble_url_with_dict_and_literal_key(self):
         url = "http://dot.com"
         params = {"key": "value"}
         computed = assemble_url(url, params)
         expected = "http://dot.com?key=value"
         self.assertEqual(computed, expected)
+
+    def test_assemble_url_containing_query_string_with_string(self):
+        url = "http://dot.com?exists=previously"
+        params = {}
+        computed = assemble_url(url, params)
+        expected = "http://dot.com?exists=previously"
+        self.assertEqual(computed, expected)
+
+    def test_filter_query_string_by_key_prefix_return_empty(self):
+        query_string = "age=28&weight=60"
+        computed = filter_query_string_by_key_prefix(query_string, prefixes=[])
+        expected = ""
+        self.assertEqual(computed, expected)
+
+    def test_filter_query_string_by_key_prefix_one_of_two(self):
+        query_string = "age=28&weight=60"
+        computed = filter_query_string_by_key_prefix(query_string, prefixes=["a"])
+        expected = "age=28"
+        self.assertEqual(computed, expected)
+
+    def test_filter_query_string_by_key_prefix_all_two(self):
+        query_string = "age=28&weight=60"
+        computed = filter_query_string_by_key_prefix(query_string, prefixes=["a", "weight"])
+        expected_items = ["age=28", "weight=60"]
+        self.assertEqual(len(computed.split("&")), 2)
+        for item in expected_items:
+            self.assertIn(item, computed)
+
+    def test_filter_query_string_by_key_prefix_all_three(self):
+        query_string = "age_year=28&age_month=10&weight=60"
+        computed = filter_query_string_by_key_prefix(query_string, prefixes=["a", "weight"])
+        expected_items = ["age_year=28", "age_month=10", "weight=60"]
+        self.assertEqual(len(computed.split("&")), 3)
+        for item in expected_items:
+            self.assertIn(item, computed)
 
 
 class AddLinksTestCase(unittest.TestCase):

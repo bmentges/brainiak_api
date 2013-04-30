@@ -736,7 +736,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         list_resource.query_filter_instances = lambda params: {"results": {"bindings": []}}
         list_resource.query_count_filter_instances = lambda params: {"results": {"bindings": []}}
         params = {"o": "", "p": "", "class_uri": "", "sort_by": "", 'offset': '0', 'page': '1', 'per_page': '10'}
-        self.assertRaises(HTTPError, list_resource.filter_instances, params)
+        result = list_resource.filter_instances(params)
+        self.assertEqual(result, None)
 
     def test_filter_instances_result_is_not_empty(self):
         sample_json = {"results": {"bindings": []}}

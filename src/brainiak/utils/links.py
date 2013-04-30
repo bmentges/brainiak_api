@@ -121,8 +121,8 @@ def crud_links(query_params):
 
     link_params = prepare_link_params(query_params)
     links = [
-        {'rel': "delete", 'href': link_params['resource_url'], 'method': "DELETE"},
-        {'rel': "replace", 'href': link_params['resource_url'], 'method': "PUT", 'schema': {'$ref': schema_url}}
+        {'rel': "delete", 'href': link_params['base_url_with_params'], 'method': "DELETE"},
+        {'rel': "replace", 'href': link_params['base_url_with_params'], 'method': "PUT", 'schema': {'$ref': schema_url}}
     ]
     return links
 

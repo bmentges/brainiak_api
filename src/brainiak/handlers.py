@@ -9,7 +9,7 @@ from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import custom_decorator
 from tornado_cors import CorsMixin
 
-from brainiak import __version__, event_bus, log, settings, triplestore
+from brainiak import __version__, event_bus, log, triplestore
 from brainiak.event_bus import notify_bus
 from brainiak.greenlet_tornado import greenlet_asynchronous
 from brainiak.context.list_resource import list_classes

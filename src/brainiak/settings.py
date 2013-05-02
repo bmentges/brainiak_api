@@ -24,3 +24,5 @@ DEFAULT_PAGE = "0"
 
 EVENT_BUS_HOST = "localhost"
 EVENT_BUS_PORT = 61613
+
+CORS_HEADERS = 'Content-Type, Authorization'

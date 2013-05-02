@@ -1,5 +1,5 @@
 from brainiak import triplestore, settings
-from brainiak.utils.resources import decorate_with_resource_id, validate_pagination_or_raise_404
+from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, validate_pagination_or_raise_404
 from brainiak.utils.sparql import add_language_support, calculate_offset
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids
@@ -10,11 +10,9 @@ from brainiak.prefixes import MemorizeContext
 def list_classes(query_params):
     (query_params, language_tag) = add_language_support(query_params, "label")
     count_query_result_dict = query_count_classes(query_params)
-
     total_items = int(get_one_value(count_query_result_dict, "total_items"))
     if not total_items:
         return None
-
     validate_pagination_or_raise_404(query_params, total_items)
 
     query_result_dict = query_classes_list(query_params)
@@ -30,9 +28,10 @@ def assemble_list_json(query_params, query_result_dict, total_items):
     items_list = compress_duplicated_ids(items_list)
 
     decorate_with_resource_id(items_list)
+    decorate_with_class_prefix(items_list)
 
     links = self_link(query_params) + collection_links(query_params, total_items)
-    add_link(links, 'instances', "{0}/{{resource_id}}".format(remove_last_slash(query_params.base_url)))
+    add_link(links, 'instances', "{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(remove_last_slash(query_params.base_url)))
 
     context_section = context.context
     context_section.update({"@language": query_params.get("lang")})

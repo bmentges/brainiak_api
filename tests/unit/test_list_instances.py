@@ -432,10 +432,10 @@ class BuildJSONTestCase(unittest.TestCase):
                 'rel': 'item'
             },
             {
-                'href': 'http://mock.test.com?class_prefix=Xubiru',
+                'href': 'http://mock.test.com/zoo/Lion?class_prefix=Xubiru',
                 'method': 'POST',
                 'rel': 'create',
-                'schema': {'$ref': 'http://mock.test.com/_schema?class_prefix=Xubiru'}
+                'schema': {'$ref': 'http://mock.test.com/zoo/Lion/_schema?class_prefix=Xubiru'}
             }
         ]
         self.assertEquals(sorted(links), sorted(expected_links))

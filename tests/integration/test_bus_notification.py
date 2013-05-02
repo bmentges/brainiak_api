@@ -164,10 +164,11 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         #patcher.stop()
 
 
-    @patch.object(event_bus_connection, "send")
+    #@patch.object(event_bus_connection, "send")
+    @patch("brainiak.event_bus.event_bus_connection.event_bus_connection.send", side_effect=ProtocolException())
     @patch("brainiak.handlers.logger")
-    def test_notify_bus_protocol_exception(self, log, mock_method):
-        mock_method.side_effect = ProtocolException()
+    def test_notify_bus_protocol_exception(self, log): #, mock_method):
+        #mock_method.side_effect = ProtocolException()
         deleted_new_york = self.fetch(
             '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
             method='DELETE')

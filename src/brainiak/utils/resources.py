@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from tornado.web import HTTPError
-from brainiak.prefixes import expand_uri, ROOT_CONTEXT
+from brainiak.prefixes import expand_uri, is_compressed_uri, ROOT_CONTEXT
 from brainiak.utils.params import valid_pagination
 
 
@@ -28,6 +28,17 @@ def decorate_with_resource_id(list_of_dicts):
             dict_item['resource_id'] = resource_id
         except KeyError as ex:
             raise TypeError("dict missing key {0:s} while processing decorate_with_resource_id()".format(ex))
+
+
+def decorate_with_class_prefix(list_of_dicts):
+    for dict_item in list_of_dicts:
+        uri = dict_item["@id"]
+        if is_compressed_uri(uri):
+            class_prefix = uri.rsplit(":")[0]
+        else:
+            pos = uri.rfind("/") + 1
+            class_prefix = uri[:pos]
+        dict_item["class_prefix"] = class_prefix
 
 
 def compress_duplicated_ids(list_of_dicts):

@@ -139,7 +139,6 @@ class AssembleTestCase(unittest.TestCase):
 
         query_result_dict = {'results': {'bindings': []}}
         get_resource.build_items_dict = lambda context, bindings: {}
-
         computed = get_resource.assemble_instance_json(query_params, query_result_dict, context)
         expected_links = [
             {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
@@ -154,6 +153,38 @@ class AssembleTestCase(unittest.TestCase):
         self.assertEqual(computed["@type"], "schema:klass")
         self.assertIsInstance(computed["@context"], InnerContextMock)
         self.assertItemsEqual(computed["links"], expected_links)
+
+    def test_assemble_instance_json_links_with_context_with_class_prefix_and_instance_prefix(self):
+
+        class InnerContextMock():
+            pass
+
+        class ContextMock():
+            context = InnerContextMock()
+            object_properties = {"person": "person:Person"}
+
+        context = ContextMock()
+
+        param_dict = {'context_name': 'schema',
+                      'class_name': 'klass',
+                      'instance_id': 'instance'}
+        handler = MockHandler(uri="http://mock.test.com/schema/klass/instance", querystring="class_prefix=CLASS_PREFIX&instance_prefix=INSTANCE_PREFIX", **param_dict)
+        query_params = ParamDict(handler, **param_dict)
+
+        query_result_dict = {'results': {'bindings': []}}
+        get_resource.build_items_dict = lambda context, bindings: {}
+        computed = get_resource.assemble_instance_json(query_params, query_result_dict, context)
+        expected_links = [
+            {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance?class_prefix=CLASS_PREFIX&instance_prefix=INSTANCE_PREFIX', 'method': 'GET'},
+            {'rel': 'describedBy', 'href': 'http://mock.test.com/schema/klass/_schema?class_prefix=CLASS_PREFIX', 'method': 'GET'},
+            {'rel': 'inCollection', 'href': 'http://mock.test.com/schema/klass?class_prefix=CLASS_PREFIX', 'method': 'GET'},
+            {'rel': 'delete', 'href': 'http://mock.test.com/schema/klass/instance?class_prefix=CLASS_PREFIX&instance_prefix=INSTANCE_PREFIX', 'method': 'DELETE'},
+            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance?class_prefix=CLASS_PREFIX&instance_prefix=INSTANCE_PREFIX', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_schema?class_prefix=CLASS_PREFIX'}},
+            {'rel': 'person', 'href': '/person/Person'}
+        ]
+        self.assertEquals(len(computed["links"]), 6)
+        for link in expected_links:
+            self.assertIn(link, computed["links"])
 
 
 class BuildItemsDictTestCase(unittest.TestCase):

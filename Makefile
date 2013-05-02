@@ -2,6 +2,7 @@ CWD="`pwd`"
 HOME_BRAINIAK ?= $(CWD)
 BRAINIAK_CODE=$(HOME_BRAINIAK)/src
 NEW_PYTHONPATH=$(BRAINIAK_CODE):$(PYTHONPATH)
+EXTRA_NOSE_PARAMS ?= $(NOSE_PARAMS)
 
 clean:
 	@find . -name "*.pyc" -delete
@@ -17,19 +18,19 @@ install:
 
 test: clean pep8 pep8_tests
 	@echo "Running pep8, unit and integration tests..."
-	@nosetests -s  --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests  --exclude-dir=$(HOME_BRAINIAK)/tests/acceptance --exclude=$(HOME_BRAINIAK)/tests/acceptance --with-xunit
+	@nosetests -s  --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests  --exclude-dir=$(HOME_BRAINIAK)/tests/acceptance --exclude=$(HOME_BRAINIAK)/tests/acceptance --with-xunit $(EXTRA_NOSE_PARAMS)
 
 unit: clean
 	@echo "Running unit tests..."
-	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/unit --with-xunit
+	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/unit --with-xunit $(EXTRA_NOSE_PARAMS)
 
 integration: clean
 	@echo "Running integration tests..."
-	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/integration --with-xunit
+	@nosetests -s --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/integration --with-xunit $(EXTRA_NOSE_PARAMS)
 
 acceptance: clean
 	@echo "Running acceptance tests..."
-	@nosetests -s  --tests=$(HOME_BRAINIAK)/tests/acceptance --with-xunit
+	@nosetests -s  --tests=$(HOME_BRAINIAK)/tests/acceptance --with-xunit $(EXTRA_NOSE_PARAMS)
 
 pep8:
 	@echo "Checking source-code PEP8 compliance"

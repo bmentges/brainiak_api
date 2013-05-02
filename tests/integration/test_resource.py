@@ -13,7 +13,7 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
     def get_app(self):
         return server.Application()
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_get_instance_with_nonexistent_uri(self, log):
         response = self.fetch('/person/Gender/Alien')
         self.assertEqual(response.code, 404)
@@ -78,7 +78,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         self.SAMPLE_SCHEMA_JSON['links'] = sorted(self.SAMPLE_SCHEMA_JSON['links'])
         self.assertEqual(json_received['links'], self.SAMPLE_SCHEMA_JSON['links'])
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_schema_handler_with_invalid_params(self, log):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
@@ -116,7 +116,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
     #     json_received = json.loads(response.body)
     #     self.assertEqual(json_received, self.OLD_SCHEMA_JSON)
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_schema_handler_class_undefined(self, log):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)

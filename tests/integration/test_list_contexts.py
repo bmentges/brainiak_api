@@ -1,4 +1,5 @@
 import json
+from mock import patch
 
 from brainiak.root.get import QUERY_LIST_CONTEXT
 from brainiak.prefixes import ROOT_CONTEXT
@@ -21,21 +22,24 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         sparql.filter_values = self.original_filter_values
         super(ListAllContextsTestCase, self).tearDown()
 
-    def test_400(self):
+    @patch("brainiak.handlers.logger")
+    def test_400(self, log):
         sparql.filter_values = lambda a, b: []
         response = self.fetch("/?best_martial_arts=aikido", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
         self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_martial_arts is not supported')
 
-    def test_404(self):
+    @patch("brainiak.handlers.logger")
+    def test_404(self, log):
         sparql.filter_values = lambda a, b: []
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
         self.assertEquals(body["error"], u'HTTP error: 404\nNo contexts were found.')
 
-    def test_500(self):
+    @patch("brainiak.handlers.logger")
+    def test_500(self, log):
         sparql.filter_values = lambda a, b: raise_exception()
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 500)

@@ -6,8 +6,10 @@ import ujson as json
 from stomp.exception import ConnectionClosedException, NotConnectedException, ProtocolException
 
 from brainiak.settings import EVENT_BUS_HOST, EVENT_BUS_PORT
-from brainiak.log import logger
+from brainiak.log import get_logger
+from brainiak.utils.resources import LazyObject
 
+logger = LazyObject(get_logger)
 
 EVENT_BUS_QUEUES = "/queue/solr,elasticsearch"
 

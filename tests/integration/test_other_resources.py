@@ -52,13 +52,15 @@ class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
     def tearDown(self):
         event_bus.event_bus_connection.abort = self.original_abort
 
-    def test_activemq_status_on(self):
+    @patch("brainiak.event_bus.logger")
+    def test_activemq_status_on(self, log):
         event_bus.event_bus_connection.abort = lambda transaction: ""
         response = self.fetch('/status/activemq', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, 'ActiveMQ connection not-authenticated | SUCCEED | localhost:61613')
 
-    def test_activemq_status_off(self):
+    @patch("brainiak.event_bus.logger")
+    def test_activemq_status_off(self, log):
         event_bus.event_bus_connection.abort = lambda transaction: raise_exception()
         response = self.fetch('/status/activemq', method='GET')
         self.assertEqual(response.code, 200)

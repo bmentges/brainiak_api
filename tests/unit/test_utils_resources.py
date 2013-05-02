@@ -1,6 +1,16 @@
 from unittest import TestCase
 from brainiak.prefixes import ROOT_CONTEXT
-from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids
+from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids, LazyObject
+
+
+class TestLazyObject(TestCase):
+
+    def test_lazy_object(self):
+        def factory():
+            return [1]
+        lazy = LazyObject(factory)
+        lazy.append(2)
+        self.assertEqual(1, lazy.pop())
 
 
 class TestCaseListInstanceResource(TestCase):

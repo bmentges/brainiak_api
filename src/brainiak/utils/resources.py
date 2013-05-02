@@ -4,6 +4,15 @@ from brainiak.prefixes import expand_uri, is_compressed_uri, ROOT_CONTEXT
 from brainiak.utils.params import valid_pagination
 
 
+class LazyObject(object):
+    def __init__(self, factory):
+        self.factory = factory
+
+    def __getattr__(self, item):
+        obj = self.factory()
+        return object.__getattribute__(obj, item)
+
+
 def validate_pagination_or_raise_404(params, total_items):
     "Uniform validation for a page out of range"
     page_index = int(params["page"])

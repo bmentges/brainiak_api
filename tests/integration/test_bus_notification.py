@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from mock import patch
 import time
-
 import ujson as json
 import stomp
+from mock import patch
 from stomp.exception import NotConnectedException, ConnectionClosedException, \
     ProtocolException
 
@@ -18,8 +17,6 @@ from tests.sparql import QueryTestCase
 message_queue_solr = []
 message_queue_elastic = []
 
-def raise_exception():
-    raise ProtocolException()
 
 class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
@@ -163,12 +160,9 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             event_bus_connection.send = self.original_send
         #patcher.stop()
 
-
-    #@patch.object(event_bus_connection, "send")
-    @patch("brainiak.event_bus.event_bus_connection.event_bus_connection.send", side_effect=ProtocolException())
+    @patch.object(event_bus_connection, "send", side_effect=ProtocolException())
     @patch("brainiak.handlers.logger")
-    def test_notify_bus_protocol_exception(self, log): #, mock_method):
-        #mock_method.side_effect = ProtocolException()
+    def test_notify_bus_protocol_exception(self, log, mock_method):
         deleted_new_york = self.fetch(
             '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
             method='DELETE')

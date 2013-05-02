@@ -25,7 +25,7 @@ Besides using ``POST`` to create new instances, it is also possible to use ``PUT
 In this case, the ``instance_id`` should be provided, which must be unique in the specified context.
 The recommended policy is to use ``POST``, as it will assure uniqueness of the identifiers.
 
-.. 
+..
 
 Optional query string parameters
 --------------------------------
@@ -37,6 +37,9 @@ Optional query string parameters
   POST 'http://api.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/' new_city.json
 
 If no **class_prefix** had been provided, the class URI above would be resolved as: http://semantica.globo.com/place/City. As **class_prefix** was defined, the class URI will be: http://dbpedia.org/City.
+
+**graph_uri**: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
+
 
 Possible responses
 ------------------

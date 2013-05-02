@@ -35,7 +35,7 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     def tearDown(self):
         pass
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_edit_instance_500(self, log):
         actual_new_york = self.fetch(
             '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
@@ -54,17 +54,17 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 500)
         patcher.stop()
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_edit_instance_400_no_body(self, log):
         response = self.fetch('/anything/Place/new_york?wrong_param=wrong_value', method='PUT')
         self.assertEqual(response.code, 400)
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_edit_instance_400_wrong_params(self, log):
         response = self.fetch('/anything/Place/new_york?wrong_param=wrong_value', method='PUT', body=json.dumps({}))
         self.assertEqual(response.code, 400)
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")
     def test_edit_instance_that_doesnt_exist_201(self, log, notify_bus):  # Bus notification test is in a separated test file
         response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='PUT', body=json.dumps({"rdfs:label": "Inexistent city"}))
@@ -73,7 +73,7 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(location.startswith("http://localhost:"))
         self.assertTrue(location.endswith("/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/"))
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")  # Bus notification test is in a separated test file
     def test_edit_instance_200_adding_predicate(self, log, notify_bus):
         actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',

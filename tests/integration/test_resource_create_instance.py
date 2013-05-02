@@ -60,7 +60,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     def assertInstanceDoesNotExist(self, class_uri, instance_uri):
         return not self.checkInstanceExistance(class_uri, instance_uri)
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_create_instance_500_internal_error(self, log):
         def raise_exception():
             raise Exception()
@@ -72,7 +72,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         body = json.loads(response.body)
         self.assertIn("HTTP error: 500\nException:\n", body["error"])
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_create_instance_400_invalid_json(self, log):
         response = self.fetch('/place/City/',
             method='POST',
@@ -81,7 +81,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         body = json.loads(response.body)
         self.assertEquals(body["error"], 'HTTP error: 400\nNo JSON object could be decoded')
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_create_instance_404_inexistant_class(self, log):
         payload = {}
         response = self.fetch('/xubiru/X/',
@@ -91,7 +91,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         body = json.loads(response.body)
         self.assertEqual(body["error"], u"HTTP error: 404\nClass X doesn't exist in context xubiru.")
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")
     def test_create_instance_201(self, log, notify_bus):
         schema_resource.get_schema = lambda params: True
@@ -107,7 +107,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.body, "")
         self.assertInstanceExist('http://test.graph/sample-place/City', "http://unique-id")
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")
     def test_create_instance_201_without_final_slash(self, log, notify_bus):
         schema_resource.get_schema = lambda params: True

@@ -18,7 +18,7 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_list_classes_two_pages_in_sequence(self, log):
         response_page1 = self.fetch('/test/?page=1&per_page=2&graph_uri={0}'.format(self.graph_uri), method='GET')
         self.assertEqual(response_page1.code, 200)
@@ -30,12 +30,12 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         set2 = {i[u"@id"] for i in response2['items']}
         self.assertFalse(set1.intersection(set2))
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_list_classes_400(self, log):
         response = self.fetch('/test/?wrong_param=1', method='GET')
         self.assertEqual(response.code, 400)
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_list_classes_500(self, log):
         config = {"side_effect": NotImplementedError}
         patcher = patch("brainiak.handlers.list_classes", ** config)
@@ -45,7 +45,7 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 500)
         patcher.stop()
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_list_classes_404(self, log):
         original_graph_uri = self.graph_uri
         self.graph_uri = "http://empty.graph"
@@ -53,7 +53,7 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 404)
         self.graph_uri = original_graph_uri
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_list_classes_200(self, log):
         expected_items = [
             {"@id": "http://example.onto/Place", "title": "Lugar", "resource_id": "Place", "class_prefix": "http://example.onto/"},

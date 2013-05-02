@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import unittest
 from tornado.web import HTTPError
+
 from brainiak.context import list_resource
 from brainiak.handlers import ListServiceParams
-from tests.mocks import MockHandler
+from tests.mocks import MockHandler, MockRequest
 
 
 class GetContextTestCase(unittest.TestCase):
@@ -45,3 +46,44 @@ class GetContextTestCase(unittest.TestCase):
         params = ListServiceParams(handler, context_name="context_name", class_name="class_name")
         expected = list_resource.list_classes(params)
         self.assertEqual(expected, "expected result")
+
+    def test_assemble_list_json_with_class_prefix(self):
+        handler = MockHandler(uri="http://poke.oioi/company/")
+        params = ListServiceParams(handler, context_name="company")
+        item = {
+            u'class': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/Company'},
+            u'label': {u'type': u'literal', u'value': u'Company'}
+        }
+        query_result_dict = {'results': {'bindings': [item]}}
+        total_items = 1
+        computed = list_resource.assemble_list_json(params, query_result_dict, total_items)
+
+        expected_context = {
+            '@language': 'pt',
+            'dbpedia': 'http://dbpedia.org/ontology/'
+        }
+        expected_items = [
+            {
+                '@id': 'dbpedia:Company',
+                'resource_id': 'Company',
+                'title': u'Company',
+                'class_prefix': 'dbpedia'
+            }
+        ]
+
+        self.assertEqual(computed['@context'], expected_context)
+        self.assertEqual(computed['item_count'], 1)
+        self.assertEqual(computed['items'], expected_items)
+
+        self_link = {
+            'href': 'http://poke.oioi/company/',
+            'method': 'GET',
+            'rel': 'self',
+        }
+        instances_link = {
+            'href': 'http://poke.oioi/company/{resource_id}?class_prefix={class_prefix}',
+            'method': 'GET',
+            'rel': 'instances'
+        }
+        self.assertIn(self_link, computed['links'])
+        self.assertIn(instances_link, computed['links'])

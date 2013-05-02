@@ -3,7 +3,7 @@ from urllib import urlencode
 from brainiak import settings
 from brainiak.handlers import ListServiceParams
 
-from brainiak.utils.links import assemble_url, crud_links, get_last_page, get_next_page, get_previous_page, split_into_chunks, add_link, collection_links, filter_query_string_by_key_prefix
+from brainiak.utils.links import *
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler
 
@@ -81,19 +81,19 @@ class LinksTestCase(unittest.TestCase):
 
     def test_filter_query_string_by_key_prefix_return_empty(self):
         query_string = "age=28&weight=60"
-        computed = filter_query_string_by_key_prefix(query_string, prefixes=[])
+        computed = filter_query_string_by_key_prefix(query_string, include_prefixes=[])
         expected = ""
         self.assertEqual(computed, expected)
 
     def test_filter_query_string_by_key_prefix_one_of_two(self):
         query_string = "age=28&weight=60"
-        computed = filter_query_string_by_key_prefix(query_string, prefixes=["a"])
+        computed = filter_query_string_by_key_prefix(query_string, include_prefixes=["a"])
         expected = "age=28"
         self.assertEqual(computed, expected)
 
     def test_filter_query_string_by_key_prefix_all_two(self):
         query_string = "age=28&weight=60"
-        computed = filter_query_string_by_key_prefix(query_string, prefixes=["a", "weight"])
+        computed = filter_query_string_by_key_prefix(query_string, include_prefixes=["a", "weight"])
         expected_items = ["age=28", "weight=60"]
         self.assertEqual(len(computed.split("&")), 2)
         for item in expected_items:
@@ -101,7 +101,7 @@ class LinksTestCase(unittest.TestCase):
 
     def test_filter_query_string_by_key_prefix_all_three(self):
         query_string = "age_year=28&age_month=10&weight=60"
-        computed = filter_query_string_by_key_prefix(query_string, prefixes=["a", "weight"])
+        computed = filter_query_string_by_key_prefix(query_string, include_prefixes=["a", "weight"])
         expected_items = ["age_year=28", "age_month=10", "weight=60"]
         self.assertEqual(len(computed.split("&")), 3)
         for item in expected_items:
@@ -157,6 +157,53 @@ class CrudLinksTestCase(unittest.TestCase):
             {'href': 'http://any.uri?per_page=50&page=3', 'method': 'DELETE', 'rel': 'delete'},
             {'href': 'http://any.uri?per_page=50&page=3', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/invalid_context/invalid_class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_build_class_url_without_querystring(self):
+
+        class MockRequest(object):
+            protocol = "https"
+            host = "dot.net"
+
+        query_params = {
+            "request": MockRequest(),
+            "context_name": "place",
+            "class_name": "City"
+
+        }
+        computed = build_class_url(query_params)
+        expected = "https://dot.net/place/City"
+
+    def test_build_class_url_with_querystring(self):
+
+        class MockRequest(object):
+            protocol = "https"
+            host = "dot.net"
+            query = "?instance_uri=ignore_me&class_prefix=include_me"
+
+        query_params = {
+            "request": MockRequest(),
+            "context_name": "place",
+            "class_name": "City"
+
+        }
+        computed = build_class_url(query_params)
+        expected = "https://dot.net/place/City?class_prefix=include_me"
+
+    def test_build_schema_url(self):
+
+        class MockRequest(object):
+            protocol = "https"
+            host = "dot.net"
+            query = "?instance_uri=ignore_me&class_prefix=include_me"
+
+        query_params = {
+            "request": MockRequest(),
+            "context_name": "place",
+            "class_name": "City"
+
+        }
+        computed = build_schema_url(query_params)
+        expected = "https://dot.net/place/City/_schema?class_prefix=include_me"
 
 
 class CollectionLinksTestCase(unittest.TestCase):

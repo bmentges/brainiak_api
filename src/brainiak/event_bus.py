@@ -3,11 +3,10 @@ import re
 import stomp
 import ujson as json
 
-from stomp.exception import ConnectionClosedException, NotConnectedException, \
-    ProtocolException
+from stomp.exception import ConnectionClosedException, NotConnectedException, ProtocolException
 
 from brainiak.settings import EVENT_BUS_HOST, EVENT_BUS_PORT
-from brainiak import log
+from brainiak.log import logger
 
 
 EVENT_BUS_QUEUES = "/queue/solr,elasticsearch"
@@ -23,11 +22,11 @@ def notify_bus(instance, klass, graph, action):
         "action": action
     }
     message = json.dumps(notifiable_dict)
-    log.logger.info("BUS NOTIFICATION\n%s" % message)
+    logger.info("BUS NOTIFICATION\n%s" % message)
     try:
         event_bus_connection.send(message, destination=EVENT_BUS_QUEUES)
     except (ConnectionClosedException, NotConnectedException, ProtocolException) as e:
-        log.logger.warn("ActiveMQ unavailable due to %s." % str(e.__class__))
+        logger.warn("ActiveMQ unavailable due to %s." % str(e.__class__))
         # try:
         #     reconnect()
         # except (ConnectionClosedException, NotConnectedException) as e:
@@ -44,11 +43,11 @@ def status(host=EVENT_BUS_HOST, port=EVENT_BUS_PORT):
         msg = "ActiveMQ connection not-authenticated | FAILED | %s:%d |%s" % (host, port, error)
     else:
         msg = "ActiveMQ connection not-authenticated | SUCCEED | %s:%d" % (host, port)
-    log.logger.info(msg)
+    logger.info(msg)
     return msg
 
 
 def reconnect(host=EVENT_BUS_HOST, port=EVENT_BUS_PORT):
-    log.logger.info("Trying to reconnect to ActiveMQ at %s:%d..." % (host, port))
+    logger.info("Trying to reconnect to ActiveMQ at %s:%d..." % (host, port))
     global event_bus_connection
     event_bus_connection = stomp.Connection(host_and_ports=[(EVENT_BUS_HOST, EVENT_BUS_PORT)])

@@ -15,7 +15,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     maxDiff = None
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_filter_with_invalid_query_string(self, log):
         response = self.fetch('/person/Gender/?love=u', method='GET')
         self.assertEqual(response.code, 400)
@@ -170,7 +170,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(received_response['item_count'], 1)
         self.assertEqual(received_response['items'], expected_items)
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_filter_with_no_results(self, log):
         response = self.fetch('/person/Gender/?o=Xubiru&lang=pt', method='GET')
         self.assertEqual(response.code, 404)
@@ -223,7 +223,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
     fixtures = ["tests/sample/instances.n3"]
     graph_uri = "http://tatipedia.org/"
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_json_returns_object_per_item(self, log):
         response = self.fetch('/tpedia/Person/?p=http://tatipedia.org/likes&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/', method='GET')
         self.assertEqual(response.code, 200)
@@ -249,7 +249,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertItemsEqual(sorted_computed_items[0], sorted_expected_items[0])
         self.assertItemsEqual(sorted_computed_items[1], sorted_expected_items[1])
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_json_returns_sortby_per_item(self, log):
         response = self.fetch('/tpedia/Person/?sort_by=dbpedia:nickname&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/', method='GET')
         self.assertEqual(response.code, 200)
@@ -272,7 +272,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertEqual(computed_items, expected_items)
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_json_returns_sortby_include_empty_value(self, log):
         response = self.fetch('/tpedia/SoccerClub/?graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&sort_by=http://tatipedia.org/stadium', method='GET')
         self.assertEqual(response.code, 200)
@@ -301,7 +301,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertEqual(computed_items, expected_items)
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_json_returns_sortby_exclude_empty_value(self, log):
         response = self.fetch('/tpedia/SoccerClub/?graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&sort_by=http://tatipedia.org/stadium&sort_include_empty=0', method='GET')
         self.assertEqual(response.code, 200)

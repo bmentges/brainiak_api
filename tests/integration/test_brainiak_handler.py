@@ -24,20 +24,20 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
         return Application([('/', self.Handler)],
                            log_function=lambda x: None)
 
-    @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_request_summary(self, log):
         response = self.fetch('/', method='GET')
         self.assertEqual(response.code, 200)
         self.assertTrue(response.body, "TEST")
 
-    @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_400_error(self, log):
         response = self.fetch('/', method='POST', body="400")
         expected_error_json = {"error": "HTTP error: 400\ntesting"}
         self.assertEqual(response.code, 400)
         self.assertEqual(expected_error_json, json.loads(response.body))
 
-    @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_500_error(self, log):
         response = self.fetch('/', method='POST', body="500")
         expected_error_json = {"error": "HTTP error: 500\nException:\nTraceback"}
@@ -48,27 +48,27 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
 
 class TestUnmatchedHandler(TornadoAsyncHTTPTestCase):
 
-    @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_get(self, log):
         response = self.fetch('/a/b/c/d/e', method='GET')
         self.assertEqual(response.code, 404)
 
-    @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_put(self, log):
         response = self.fetch('/a/b/c/d/e', method='PUT', body='')
         self.assertEqual(response.code, 404)
 
-    @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_post(self, log):
         response = self.fetch('/a/b/c/d/e', method='POST', body='')
         self.assertEqual(response.code, 404)
 
-    @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_patch(self, log):
         response = self.fetch('/a/b/c/d/e', method='PATCH', body='')
         self.assertEqual(response.code, 404)
 
-    @patch_mock("brainiak.handlers.log")  # log is None and breaks test otherwise
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_delete(self, log):
         response = self.fetch('/a/b/c/d/e', method='DELETE')
         self.assertEqual(response.code, 404)

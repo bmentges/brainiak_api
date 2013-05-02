@@ -41,7 +41,7 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         body = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertIn(instance_prefix + u'Test', body['@id'])
-        self.assertEqual(body['@type'], u'person:Gender')
+        self.assertEqual(body['@type'], u'http://test.com/person/Gender')
         self.assertEqual(body['rdf:type'], u'http://test.com/person/Gender')
         self.assertEqual(body['rdfs:label'], u'Teste')
 

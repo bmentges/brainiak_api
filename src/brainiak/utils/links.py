@@ -136,18 +136,29 @@ def crud_links(query_params, schema_url=None):
     if schema_url is None:
         schema_url = build_schema_url(query_params)
 
-    link_params = prepare_link_params(query_params)
+    class_url = build_class_url(query_params)
+    querystring = query_params["request"].query
+    if querystring:
+        instance_url = "{0}/{1}?{2}".format(class_url, query_params["instance_id"], querystring)
+    else:
+        instance_url = "{0}/{1}".format(class_url, query_params["instance_id"])
+
     links = [
-        {'rel': "delete", 'href': link_params['base_url_with_params'], 'method': "DELETE"},
-        {'rel': "replace", 'href': link_params['base_url_with_params'], 'method': "PUT", 'schema': {'$ref': schema_url}}
+        {'rel': "delete", 'href': instance_url, 'method': "DELETE"},
+        {'rel': "replace", 'href': instance_url, 'method': "PUT", 'schema': {'$ref': schema_url}}
     ]
     return links
 
 
 def self_link(query_params):
     "Produce a list with a single 'self' link entry"
-    link_params = prepare_link_params(query_params)
-    return [{'rel': "self", 'href': link_params['base_url_with_params'], 'method': "GET"}]
+    protocol = query_params['request'].protocol
+    host = query_params['request'].host
+    url = query_params["request"].uri
+    if not host in url:
+        url = "{0}://{1}{2}".format(protocol, host, url)
+
+    return [{'rel': "self", 'href': url, 'method': "GET"}]
 
 
 def add_link(link_list, rel, href, method='GET', **kw):

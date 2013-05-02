@@ -3,7 +3,7 @@ from copy import copy
 
 from brainiak import triplestore
 from brainiak.prefixes import MemorizeContext
-from brainiak.utils.links import self_link, crud_links, add_link
+from brainiak.utils.links import assemble_url, build_class_url, build_schema_url, self_link, crud_links, add_link, filter_query_string_by_key_prefix, remove_last_slash
 from brainiak.utils.sparql import expand_uri, get_super_properties, is_result_empty
 
 
@@ -63,23 +63,15 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     links = [{"rel": property_name,
              "href": "/{0}/{1}".format(*(uri.split(':')))}
              for property_name, uri in context.object_properties.items()]
-    class_url = "{0}://{1}/{2}/{3}".format(
-        query_params['request'].protocol,
-        query_params['request'].host,
-        query_params['context_name'],
-        query_params['class_name'])
-    class_args = query_params.args(exclude_keys=["instance_prefix", "instance_uri"])
-    if class_args:
-        class_url_with_args = "{0}?{1:s}".format(class_url, class_args)
-        href_schema_url = "{0}/_schema?{1:s}".format(class_url, class_args)
-    else:
-        class_url_with_args = class_url
-        href_schema_url = "{0}/_schema".format(class_url)
+
+    class_url = build_class_url(query_params)
+    class_url_with_query_string = build_class_url(query_params, include_query_string=True)
+    schema_url = build_schema_url(query_params)
 
     query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
     action_links = self_link(query_params) + crud_links(query_params)
-    add_link(links, 'describedBy', href_schema_url)
-    add_link(links, 'inCollection', class_url_with_args)
+    add_link(links, 'describedBy', schema_url)
+    add_link(links, 'inCollection', class_url_with_query_string)
 
     links.extend(action_links)
 

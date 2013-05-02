@@ -755,7 +755,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "o": ""
         }
 
-        handler = MockHandler(uri="http://localhost:5100/ctx/klass", **params)
+        handler = MockHandler(uri="http://localhost:5100/ctx/klass", querystring="per_page=3&page=2", **params)
         query_params = ParamDict(handler, **params)
         response = list_resource.filter_instances(query_params)  # page based on virtuoso (begins with 0)
 
@@ -798,4 +798,6 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             }
         ]
         self.assertEquals(response["item_count"], 12)
-        self.assertEquals(sorted(response["links"]), sorted(expected_links))
+        self.assertEquals(len(response["links"]), 7)
+        for link in expected_links:
+            self.assertIn(link, response["links"])

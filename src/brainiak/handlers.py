@@ -9,8 +9,8 @@ from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import custom_decorator
 from tornado_cors import CorsMixin
 
-from brainiak import __version__, event_bus, triplestore
-from brainiak.log import logger
+from brainiak import __version__, event_bus, triplestore, settings
+from brainiak.log import get_logger
 from brainiak.event_bus import notify_bus
 from brainiak.greenlet_tornado import greenlet_asynchronous
 from brainiak.context.list_resource import list_classes
@@ -23,7 +23,10 @@ from brainiak.prefix.list_resource import list_prefixes
 from brainiak.root.get import list_all_contexts
 from brainiak.schema import resource as schema_resource
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
+from brainiak.utils.resources import LazyObject
 
+
+logger = LazyObject(get_logger)
 
 custom_decorator.wrapper = greenlet_asynchronous
 
@@ -65,7 +68,7 @@ def get_routes():
 class BrainiakRequestHandler(CorsMixin, RequestHandler):
 
     CORS_ORIGIN = '*'
-    CORS_HEADERS = 'Content-Type'
+    CORS_HEADERS = settings.CORS_HEADERS
 
     def __init__(self, *args, **kwargs):
         super(BrainiakRequestHandler, self).__init__(*args, **kwargs)

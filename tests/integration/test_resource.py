@@ -30,7 +30,7 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         response = self.fetch('/person/Gender/Female', method='OPTIONS')
         self.assertEqual(response.code, 204)
         self.assertEqual(response.headers['Access-Control-Allow-Origin'], '*')
-        self.assertEqual(response.headers['Access-Control-Allow-Headers'], 'Content-Type')
+        self.assertEqual(response.headers['Access-Control-Allow-Headers'], settings.CORS_HEADERS)
 
 
 class TestSchemaResource(TornadoAsyncHTTPTestCase):
@@ -55,7 +55,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 204)
         self.assertEqual(response.headers['Access-Control-Allow-Methods'], 'GET, OPTIONS')
         self.assertEqual(response.headers['Access-Control-Allow-Origin'], '*')
-        self.assertEqual(response.headers['Access-Control-Allow-Headers'], 'Content-Type')
+        self.assertEqual(response.headers['Access-Control-Allow-Headers'], settings.CORS_HEADERS)
 
     def test_schema_has_options(self):
         response = self.fetch('/person/Gender/_schema', method='OPTIONS')
@@ -145,4 +145,4 @@ class OptionsTestCase(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 204)
         self.assertEqual(response.headers['Access-Control-Allow-Methods'], 'GET, POST, OPTIONS')
         self.assertEqual(response.headers['Access-Control-Allow-Origin'], '*')
-        self.assertEqual(response.headers['Access-Control-Allow-Headers'], 'Content-Type')
+        self.assertEqual(response.headers['Access-Control-Allow-Headers'], settings.CORS_HEADERS)

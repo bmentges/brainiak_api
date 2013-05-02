@@ -377,7 +377,7 @@ class BuildJSONTestCase(unittest.TestCase):
 
         links = something["links"]
         expected_links = [
-            {'href': 'http://mock.test.com', 'method': 'GET', 'rel': 'self'},
+            {'href': 'http://mock.test.com/', 'method': 'GET', 'rel': 'self'},
             {
                 'href': 'http://mock.test.com?per_page=10&page=1',
                 'method': 'GET',
@@ -394,15 +394,15 @@ class BuildJSONTestCase(unittest.TestCase):
                 'rel': 'item'
             },
             {
-                'href': 'http://mock.test.com',
+                'href': 'http://mock.test.com/zoo/Lion',
                 'method': 'POST',
                 'rel': 'create',
-                'schema': {'$ref': 'http://mock.test.com/_schema'}
+                'schema': {'$ref': 'http://mock.test.com/zoo/Lion/_schema'}
             }
         ]
         self.assertEquals(sorted(links), sorted(expected_links))
 
-    def test_query_without_extras(self):
+    def test_query_with_extras(self):
         handler = MockHandler(querystring="class_prefix=Xubiru")
         params = ListAndFilterServiceParams(handler, context_name="zoo", class_name="Lion")
         item_count = 0
@@ -415,7 +415,7 @@ class BuildJSONTestCase(unittest.TestCase):
 
         links = something["links"]
         expected_links = [
-            {'href': 'http://mock.test.com', 'method': 'GET', 'rel': 'self'},
+            {'href': 'http://mock.test.com/?class_prefix=Xubiru', 'method': 'GET', 'rel': 'self'},
             {
                 'href': 'http://mock.test.com?per_page=10&page=1',
                 'method': 'GET',

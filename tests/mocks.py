@@ -56,6 +56,9 @@ class MockHandler():
         self._path = _parsed_url.path
         self._protocol = _parsed_url.scheme
         self._host = _parsed_url.netloc
+        self._uri = uri
+        if not querystring in uri:
+            self._uri = "{0}?{1}".format(uri, querystring)
 
     def get_argument(self, key):
         return self.kw.get(key)
@@ -82,6 +85,10 @@ class MockHandler():
             @property
             def query(inner_self):
                 return self._querystring
+
+            @property
+            def uri(inner_self):
+                return self._uri
 
         d = Dummy()
         return d

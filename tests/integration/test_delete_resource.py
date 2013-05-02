@@ -27,7 +27,7 @@ EXPECTED_DELETE_JSON = {
 
 class DeleteNonExistentTestCase(TornadoAsyncHTTPTestCase):
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_handler_404(self, log):
         response = self.fetch('/person/Person/NonExistentURI', method="DELETE")
         self.assertEqual(response.code, 404)
@@ -86,7 +86,7 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
         }
         self.assertFalse(delete_instance(query_params))
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")
     def test_handler_204(self, log, notify_bus):
         response = self.fetch(
@@ -94,7 +94,7 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
                     method="DELETE")
         self.assertEqual(response.code, 204)
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_handler_409(self, log):
         response = self.fetch('/anygraph/Place/Australia?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method="DELETE")
         self.assertEqual(response.code, 409)

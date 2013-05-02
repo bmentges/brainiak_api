@@ -9,7 +9,8 @@ from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import custom_decorator
 from tornado_cors import CorsMixin
 
-from brainiak import __version__, event_bus, log, triplestore
+from brainiak import __version__, event_bus, triplestore
+from brainiak.log import logger
 from brainiak.event_bus import notify_bus
 from brainiak.greenlet_tornado import greenlet_asynchronous
 from brainiak.context.list_resource import list_classes
@@ -83,14 +84,14 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             if e.log_message:
                 error_message += "\n  {0}".format(e.log_message)
             if status_code == 500:
-                log.logger.error("Unknown HTTP error [{0}]:\n  {1}\n".format(e.status_code, error_message))
+                logger.error("Unknown HTTP error [{0}]:\n  {1}\n".format(e.status_code, error_message))
                 self.send_error(status_code, exc_info=sys.exc_info(), message=e.log_message)
             else:
-                log.logger.error("HTTP error: {0}\n".format(error_message))
+                logger.error("HTTP error: {0}\n".format(error_message))
                 self.send_error(status_code, message=e.log_message)
 
         else:
-            log.logger.error("Uncaught exception: {0}\n".format(error_message), exc_info=True)
+            logger.error("Uncaught exception: {0}\n".format(error_message), exc_info=True)
             self.send_error(status_code, exc_info=sys.exc_info())
 
     def write_error(self, status_code, **kwargs):

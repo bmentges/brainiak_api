@@ -66,7 +66,8 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         handlers.logger = self.original_log
 
     @patch("brainiak.handlers.logger")
-    def test_notify_event_bus_on_put(self, log):
+    @patch("brainiak.event_bus.logger")
+    def test_notify_event_bus_on_put(self, log, log2):
         expected_message = {
             "instance": "http://tatipedia.org/new_york",
             "class": "http://tatipedia.org/Place",
@@ -88,8 +89,9 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(message_queue_solr[0], json.dumps(expected_message))
         self.assertEqual(message_queue_elastic[0], json.dumps(expected_message))
 
+    @patch("brainiak.event_bus.logger")
     @patch("brainiak.handlers.logger")
-    def test_notify_event_bus_on_delete(self, log):
+    def test_notify_event_bus_on_delete(self, log, log2):
         expected_message = {
             "instance": "http://tatipedia.org/new_york",
             "class": "http://tatipedia.org/Place",
@@ -105,8 +107,9 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(message_queue_solr[0], json.dumps(expected_message))
         self.assertEqual(message_queue_elastic[0], json.dumps(expected_message))
 
+    @patch("brainiak.event_bus.logger")
     @patch("brainiak.handlers.logger")
-    def test_notify_event_bus_on_post(self, log):
+    def test_notify_event_bus_on_post(self, log, log2):
         CSA_FOOTBALL_TEAM = {
             "@context": {
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
@@ -131,7 +134,8 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertDictContainsSubset(part_of_expected_message, json.loads(message_queue_elastic[0]))
 
     @patch("brainiak.handlers.logger")
-    def test_notify_bus_not_connected_exception(self, log):
+    @patch("brainiak.event_bus.logger")
+    def test_notify_bus_not_connected_exception(self, log, log2):
         config = {"side_effect": NotConnectedException}
         patcher = patch("brainiak.event_bus.event_bus_connection.send", **config)
         patcher.start()
@@ -142,8 +146,9 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(deleted_new_york.code, 500)
         patcher.stop()
 
+    @patch("brainiak.event_bus.logger")
     @patch("brainiak.handlers.logger")
-    def test_notify_bus_connection_closed_exception(self, log):
+    def test_notify_bus_connection_closed_exception(self, log, log2):
         #config = {"side_effect": ConnectionClosedException}
         #patcher = patch("brainiak.event_bus.event_bus_connection.send", **config)
         #patcher.start()
@@ -161,8 +166,9 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         #patcher.stop()
 
     @patch.object(event_bus_connection, "send", side_effect=ProtocolException())
+    @patch("brainiak.event_bus.logger")
     @patch("brainiak.handlers.logger")
-    def test_notify_bus_protocol_exception(self, log, mock_method):
+    def test_notify_bus_protocol_exception(self, log, log2, mock_method):
         deleted_new_york = self.fetch(
             '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
             method='DELETE')

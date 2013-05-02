@@ -15,12 +15,12 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_get_instance_400(self, log):
         response = self.fetch('/person/Gender/Female?eh=bigoletinha', method='GET')
         self.assertEqual(response.code, 400)
 
-    @patch("brainiak.handlers.log")
+    @patch("brainiak.handlers.logger")
     def test_get_instance_404(self, log):
         response = self.fetch('/person/Gender/Anysexual', method='GET')
         self.assertEqual(response.code, 404)

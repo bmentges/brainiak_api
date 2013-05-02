@@ -2,7 +2,7 @@ import inspect
 
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import assemble_url, collection_links, add_link, filter_query_string_by_key_prefix, remove_last_slash, self_link
+from brainiak.utils.links import assemble_url, build_class_url, build_schema_url, collection_links, add_link, filter_query_string_by_key_prefix, remove_last_slash, self_link
 from brainiak.utils.resources import decorate_with_resource_id, validate_pagination_or_raise_404
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value, normalize_term, calculate_offset
 
@@ -256,9 +256,9 @@ def filter_instances(query_params):
 def build_json(items_list, total_items, query_params):
     base_url = remove_last_slash(query_params.base_url)
     links = self_link(query_params) + collection_links(query_params, total_items)
-    query_string = filter_query_string_by_key_prefix(query_params["request"].query)
-    create_url = assemble_url(base_url, query_string)
-    schema_url = assemble_url('{0}/_schema'.format(base_url), query_string)
+    query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
+    create_url = build_class_url(query_params, include_query_string=True)
+    schema_url = build_schema_url(query_params)
 
     if query_string:
         item_query_string = query_string + "&" + "instance_prefix={instance_prefix}"

@@ -43,6 +43,10 @@ brainiak.settings must define:
 """
 
 
+def get_logger():
+    return logger
+
+
 def _create_handlers(filename=LOG_FILEPATH, level=LOG_LEVEL):
     formatter = logging.Formatter(format)
 

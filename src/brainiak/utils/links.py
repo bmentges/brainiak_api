@@ -6,6 +6,9 @@ import urlparse
 def assemble_url(url, params={}):
     url_parse = urlparse.urlparse(url)
 
+    if isinstance(params, str):
+        params = urlparse.parse_qs(params)
+
     if url_parse.query:
         existing_params = urlparse.parse_qs(url_parse.query)
         params = dict(params, **existing_params)
@@ -13,18 +16,16 @@ def assemble_url(url, params={}):
         url = url[:-url_size_minus_query_string]
 
     if params:
-        if isinstance(params, str):
-            params = urlparse.parse_qs(params)
         return "{0}?{1}".format(url, urlencode(params, doseq=True))
     else:
         return "{0}".format(url)
 
 
-def filter_query_string_by_key_prefix(query_string, prefixes=["class", "graph"]):
+def filter_query_string_by_key_prefix(query_string, include_prefixes=[]):
     query_string_dict = urlparse.parse_qs(query_string)
     relevant_params = {}
     for key, value in query_string_dict.items():
-        if any([key.startswith(prefix) for prefix in prefixes]):
+        if any([key.startswith(prefix) for prefix in include_prefixes]):
             relevant_params[key] = value
     return urlencode(relevant_params, doseq=True)
 
@@ -111,13 +112,29 @@ def collection_links(query_params, total_items):
     return links
 
 
-def crud_links(query_params):
-    """Build crud links."""
-    schema_url = "{0}://{1}/{2}/{3}/_schema".format(
+def build_class_url(query_params, include_query_string=False):
+    class_url = "{0}://{1}/{2}/{3}".format(
         query_params['request'].protocol,
         query_params['request'].host,
         query_params['context_name'],
         query_params['class_name'])
+    if include_query_string:
+        query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
+        class_url = assemble_url(class_url, query_string)
+    return class_url
+
+
+def build_schema_url(query_params):
+    class_url = build_class_url(query_params)
+    query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
+    schema_url = assemble_url('{0}/_schema'.format(class_url), query_string)
+    return schema_url
+
+
+def crud_links(query_params, schema_url=None):
+    """Build crud links."""
+    if schema_url is None:
+        schema_url = build_schema_url(query_params)
 
     link_params = prepare_link_params(query_params)
     links = [

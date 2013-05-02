@@ -1,6 +1,6 @@
 from unittest import TestCase
 from brainiak.prefixes import ROOT_CONTEXT
-from brainiak.utils.resources import decorate_with_resource_id, compress_duplicated_ids
+from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids
 
 
 class TestCaseListInstanceResource(TestCase):
@@ -60,3 +60,27 @@ class ResourceUtilsTestCase(TestCase):
             {"title": "This is missing @id, should raise TypeError"}
         ]
         self.assertRaises(TypeError, compress_duplicated_ids, input_dict)
+
+    def test_decorate_with_class_prefix(self):
+        list_of_dicts = [
+            {"@id": "dbpedia:AnyClass"}
+        ]
+        decorate_with_class_prefix(list_of_dicts)
+        expected = [
+            {
+                "@id": "dbpedia:AnyClass",
+                "class_prefix": "dbpedia"}
+        ]
+        self.assertEqual(list_of_dicts, expected)
+
+    def test_decorate_with_class_prefix_full_url(self):
+        list_of_dicts = [
+            {"@id": "http://xubiru/AnyClass"}
+        ]
+        decorate_with_class_prefix(list_of_dicts)
+        expected = [
+            {
+                "@id": "http://xubiru/AnyClass",
+                "class_prefix": "http://xubiru/"}
+        ]
+        self.assertEqual(list_of_dicts, expected)

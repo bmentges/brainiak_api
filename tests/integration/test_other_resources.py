@@ -28,7 +28,7 @@ class OptionsTestCase(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 204)
         self.assertEqual(response.headers['Access-Control-Allow-Methods'], 'GET, POST, OPTIONS')
         self.assertEqual(response.headers['Access-Control-Allow-Origin'], '*')
-        self.assertEqual(response.headers['Access-Control-Allow-Headers'], 'Content-Type')
+        self.assertEqual(response.headers['Access-Control-Allow-Headers'], settings.CORS_HEADERS)
 
 
 class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):

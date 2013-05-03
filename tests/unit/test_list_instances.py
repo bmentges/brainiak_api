@@ -1,7 +1,7 @@
 import unittest
 
-from brainiak.handlers import ListAndFilterServiceParams
 from brainiak.instance.list_resource import Query, merge_by_id, build_json
+from brainiak.utils.params import FILTER_PARAMS, LIST_PARAMS, ParamDict
 from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip
 
@@ -366,7 +366,10 @@ class BuildJSONTestCase(unittest.TestCase):
 
     def test_query_without_extras(self):
         handler = MockHandler()
-        params = ListAndFilterServiceParams(handler, context_name="zoo", class_name="Lion")
+        params = ParamDict(handler,
+                           context_name="zoo",
+                           class_name="Lion",
+                           **(LIST_PARAMS + FILTER_PARAMS))
         item_count = 0
         items = []
 
@@ -404,7 +407,10 @@ class BuildJSONTestCase(unittest.TestCase):
 
     def test_query_with_extras(self):
         handler = MockHandler(querystring="class_prefix=Xubiru")
-        params = ListAndFilterServiceParams(handler, context_name="zoo", class_name="Lion")
+        params = ParamDict(handler,
+                           context_name="zoo",
+                           class_name="Lion",
+                           **(LIST_PARAMS + FILTER_PARAMS))
         item_count = 0
         items = []
 

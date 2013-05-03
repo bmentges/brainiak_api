@@ -33,12 +33,7 @@ custom_decorator.wrapper = greenlet_asynchronous
 
 class ListServiceParams(ParamDict):
     "Customize parameters for services with pagination"
-    extra_params = LIST_PARAMS
-
-
-class ListAndFilterServiceParams(ParamDict):
-    "Customize parameters for services with pagination and filtering by ?p and ?o"
-    extra_params = LIST_PARAMS + FILTER_PARAMS
+    optionals = LIST_PARAMS
 
 
 @contextmanager
@@ -252,7 +247,11 @@ class CollectionHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name, class_name):
         with safe_params():
-            self.query_params = ListAndFilterServiceParams(self, context_name=context_name, class_name=class_name)
+
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          **(LIST_PARAMS + FILTER_PARAMS))
 
         response = filter_instances(self.query_params)
 
@@ -302,7 +301,7 @@ class RootHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self):
         with safe_params():
-            self.query_params = ListServiceParams(self)
+            self.query_params = ParamDict(self, **LIST_PARAMS)
 
         response = list_all_contexts(self.query_params)
 
@@ -314,7 +313,7 @@ class ContextHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name):
         with safe_params():
-            self.query_params = ListServiceParams(self, context_name=context_name)
+            self.query_params = ParamDict(self, context_name=context_name, **LIST_PARAMS)
 
         response = list_classes(self.query_params)
 
@@ -333,7 +332,7 @@ class PrefixHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self):
         with safe_params():
-            self.query_params = ListServiceParams(self)
+            self.query_params = ParamDict(self, **LIST_PARAMS)
 
         response = list_prefixes()
 

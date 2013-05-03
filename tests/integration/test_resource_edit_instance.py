@@ -98,7 +98,7 @@ class EditInstanceResourceTestCase(QueryTestCase):
     maxDiff = None
     allow_triplestore_connection = True
     graph_uri = 'http://test.edit.instance/'
-    fixtures = []
+    fixtures = ['tests/sample/instances.n3']
 
     def test_query_modify(self):
         instance_data = {"triples": '<fulano> a <criatura>; <gosta-de> <ciclano>',
@@ -117,3 +117,12 @@ class EditInstanceResourceTestCase(QueryTestCase):
         modify_response = self.query(edit_resource.MODIFY_QUERY % params)
 
         self.assertTrue(is_modify_response_successful(modify_response, n_deleted=2, n_inserted=1))
+
+    def test_query_exists(self):
+        params = {
+            "instance_uri": "http://tatipedia.org/Platypus"
+        }
+        query = edit_resource.QUERY_INSTANCE_EXISTS_TEMPLATE % params
+        computed = self.query(query)["boolean"]
+        expected = True
+        self.assertEqual(computed, expected)

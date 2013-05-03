@@ -97,32 +97,47 @@ class EditInstanceResourceTestCase(QueryTestCase):
 
     maxDiff = None
     allow_triplestore_connection = True
-    graph_uri = 'http://test.edit.instance/'
-    fixtures = ['tests/sample/instances.n3']
+    fixtures_by_graph = {
+        'http://any.graph/': ['tests/sample/instances.n3'],
+        'http://empty.graph/': [],
+        'http://test.edit.instance/': []
+    }
 
     def test_query_modify(self):
         instance_data = {"triples": '<fulano> a <criatura>; <gosta-de> <ciclano>',
                          "prefix": "",
-                         "graph_uri": self.graph_uri}
+                         "graph_uri": 'http://test.edit.instance/'}
         query = create_resource.QUERY_INSERT_TRIPLES % instance_data
-        self.query(query)
 
-        existing_triple = self.query("SELECT ?s ?o from <%s> { ?s <gosta-de> ?o }" % self.graph_uri)
+        self.query(query, 'http://test.edit.instance/')
+
+        existing_triple = self.query("SELECT ?s ?o from <http://test.edit.instance/> { ?s <gosta-de> ?o }")
         self.assertEqual(existing_triple["results"]["bindings"][0]["s"]["value"], "fulano")
         self.assertEqual(existing_triple["results"]["bindings"][0]["o"]["value"], "ciclano")
         params = {"instance_uri": "fulano",
                   "graph_uri": self.graph_uri,
                   "triples": "<fulano> <gosta-de> <beltrano>",
                   "prefix": ""}
-        modify_response = self.query(edit_resource.MODIFY_QUERY % params)
+        modify_response = self.query(edit_resource.MODIFY_QUERY % params, 'http://test.edit.instance/')
 
         self.assertTrue(is_modify_response_successful(modify_response, n_deleted=2, n_inserted=1))
 
-    def test_query_exists(self):
+    def test_query_exists_in_graph(self):
         params = {
-            "instance_uri": "http://tatipedia.org/Platypus"
+            "instance_uri": "http://tatipedia.org/Platypus",
+            "graph_uri": 'http://any.graph/'
         }
         query = edit_resource.QUERY_INSTANCE_EXISTS_TEMPLATE % params
-        computed = self.query(query)["boolean"]
+        computed = self.query(query, False)["boolean"]
         expected = True
+        self.assertEqual(computed, expected)
+
+    def test_query_doesnt_exist_in_empty_graph(self):
+        params = {
+            "instance_uri": "http://tatipedia.org/Platypus",
+            "graph_uri": 'http://empty.graph/'
+        }
+        query = edit_resource.QUERY_INSTANCE_EXISTS_TEMPLATE % params
+        computed = self.query(query, False)["boolean"]
+        expected = False
         self.assertEqual(computed, expected)

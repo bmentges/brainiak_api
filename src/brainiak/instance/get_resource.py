@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from brainiak import triplestore
-from brainiak.prefixes import MemorizeContext
 from brainiak.utils.links import build_class_url, build_schema_url, self_link, crud_links, add_link
+from brainiak.prefixes import MemorizeContext, shorten_uri
 from brainiak.utils.sparql import expand_uri, get_super_properties, is_result_empty
 
 
@@ -20,7 +20,7 @@ def get_instance(query_params):
                                       query_result_dict)
 
 
-def build_items_dict(context, bindings):
+def build_items_dict(context, bindings, class_uri):
     super_predicates = get_super_properties(bindings)
 
     items_dict = {}
@@ -45,6 +45,9 @@ def build_items_dict(context, bindings):
             if value == sub_value:
                 items_dict.pop(analyzed_predicate)
 
+    if not class_uri is None:
+        items_dict["rdf:type"] = context.shorten_uri(class_uri)
+
     # overwrite label only with filtered language
     if expand_uri("rdfs:label") not in super_predicates:
         items_dict["rdfs:label"] = item["label"]["value"]
@@ -58,7 +61,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     if context is None:
         context = MemorizeContext()
 
-    items = build_items_dict(context, query_result_dict['results']['bindings'])
+    items = build_items_dict(context, query_result_dict['results']['bindings'], query_params["class_uri"])
     links = [{"rel": property_name,
              "href": "/{0}/{1}".format(*(uri.split(':')))}
              for property_name, uri in context.object_properties.items()]
@@ -76,7 +79,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
     instance = {
         "@id": query_params['instance_uri'],
-        "@type": "{0}:{1}".format(query_params['context_name'], query_params['class_name']),
+        "@type": shorten_uri(query_params["class_uri"]),
         "@context": context.context,
         "links": links,
     }

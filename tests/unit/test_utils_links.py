@@ -1,10 +1,8 @@
 import unittest
 from urllib import urlencode
 from brainiak import settings
-from brainiak.handlers import ListServiceParams
-
 from brainiak.utils.links import *
-from brainiak.utils.params import ParamDict
+from brainiak.utils.params import ParamDict, LIST_PARAMS, DefaultParamsDict
 from tests.mocks import MockHandler
 
 
@@ -239,14 +237,16 @@ class CollectionLinksTestCase(unittest.TestCase):
 
     def test_build_links_with_param_instance_prefix(self):
         total_items = 3
-        params = {'instance_prefix': 'http://semantica.globo.com/base/'}
-        handler = MockHandler(uri="http://class.uri", **params)
-        query_params = ListServiceParams(handler, **params)
+        url_params = DefaultParamsDict(instance_prefix='http://semantica.globo.com/base/')
+        params = DefaultParamsDict(context_name='dbpedia',
+                                   class_name='People',
+                                   instance_id='inst')
+        handler = MockHandler(uri="http://class.uri", **url_params)
+        query_params = ParamDict(handler, **(LIST_PARAMS + url_params + params))
         computed = collection_links(query_params, total_items)
         all_args = {'per_page': settings.DEFAULT_PER_PAGE,
                     'page': '1'}
-        all_args.update(params)
-        inst_arg_str = urlencode(params, doseq=True)
+        all_args.update(url_params)
         all_args_str = urlencode(all_args, doseq=True)
         expected = [
             {'href': 'http://class.uri?{0}'.format(all_args_str), 'method': 'GET', 'rel': 'first'},

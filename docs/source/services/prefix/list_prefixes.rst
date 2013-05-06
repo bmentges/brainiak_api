@@ -12,6 +12,13 @@ This service retrieves registered prefixes, used in compact communication with t
 .. program-output:: curl -s 'http://api.semantica.dev.globoi.com/prefixes' | python -mjson.tool
   :shell:
 
+
+Optional parameters
+-------------------
+
+.. include :: ../params/pages.rst
+
+
 Possible responses
 -------------------
 
@@ -21,7 +28,7 @@ The response body is a JSON containing the prefixes in a "@context" section
 and the root context, which is a context whose name is not in the prefix URI.
 
 .. include :: examples/list_prefixes_200.rst
-    
+
 **Status 400**
 
 If there are unknown parameters in the request query string, the response status code is 400.

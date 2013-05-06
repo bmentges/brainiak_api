@@ -126,7 +126,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         }
 
         modified_new_york = self.fetch(
-            '/tpedia/SoccerClub/?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/&instance_prefix=http://tatipedia.org/',
+            '/tpedia/SoccerClub/?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
             method='POST',
             body=json.dumps(CSA_FOOTBALL_TEAM))
         self.assertEqual(modified_new_york.code, 201)

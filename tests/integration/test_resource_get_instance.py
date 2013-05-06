@@ -34,6 +34,14 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(body['rdf:type'], u'person:Gender')
         self.assertEqual(body['upper:name'], u'Feminino')
 
+    def test_get_instance_returns_schema_in_content_type(self):
+        response = self.fetch('/person/Gender/Female', method='GET')
+        body = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+        content_type = response.headers["Content-type"]
+        self.assertTrue(content_type.startswith('application/json; profile=http://localhost:'))
+        self.assertTrue(content_type.endswith('/person/Gender/_schema'))
+
     def test_get_instance_with_compressed_instance_prefix_200(self):
         instance_prefix = "http://test.com/other_prefix/"
         response = self.fetch('/person/Gender/Test?instance_prefix={0}&class_uri=http://test.com/person/Gender&lang=en'.format(instance_prefix),
@@ -41,7 +49,7 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         body = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertIn(instance_prefix + u'Test', body['@id'])
-        self.assertEqual(body['@type'], u'person:Gender')
+        self.assertEqual(body['@type'], u'http://test.com/person/Gender')
         self.assertEqual(body['rdf:type'], u'http://test.com/person/Gender')
         self.assertEqual(body['rdfs:label'], u'Teste')
 

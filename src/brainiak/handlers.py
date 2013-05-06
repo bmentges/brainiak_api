@@ -136,7 +136,7 @@ class HealthcheckHandler(BrainiakRequestHandler):
 class VersionHandler(BrainiakRequestHandler):
 
     def get(self):
-        self.write(__version__)
+        self.write(settings.VERSION)
 
 
 class VirtuosoStatusHandler(BrainiakRequestHandler):

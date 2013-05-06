@@ -3,10 +3,9 @@ import unittest
 import SPARQLWrapper
 from mock import patch
 from brainiak import triplestore
-from tests.tornado_cases import TornadoAsyncTestCase
 
 
-class TriplestoreInitTestCase(TornadoAsyncTestCase):
+class TriplestoreInitTestCase(unittest.TestCase):
 
     @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT_HOST="http://myhost", SPARQL_ENDPOINT_PORT=8080)
     def tests_init_connection_endpoint_host_and_port_defined_in_settings(self, settings):
@@ -25,7 +24,7 @@ class TriplestoreInitTestCase(TornadoAsyncTestCase):
         self.assertEqual(expected, result)
 
 
-class TriplestoreSetCredentialsTestCase(TornadoAsyncTestCase):
+class TriplestoreSetCredentialsTestCase(unittest.TestCase):
 
     @patch('brainiak.triplestore.settings')
     def test_set_credentials_no_auth_settings_at_all(self, settings):

@@ -22,7 +22,7 @@ from brainiak.instance.list_resource import filter_instances
 from brainiak.prefix.list_resource import list_prefixes
 from brainiak.root.get import list_all_contexts
 from brainiak.schema import resource as schema_resource
-from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS
+from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
 from brainiak.utils.resources import LazyObject
 
 
@@ -157,7 +157,10 @@ class SchemaHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name, class_name):
         with safe_params():
-            self.query_params = ParamDict(self, context_name=context_name, class_name=class_name)
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          **optionals('graph_uri'))
         response = schema_resource.get_schema(self.query_params)
         self.finalize(response)
 
@@ -177,7 +180,11 @@ class InstanceHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
         with safe_params():
-            self.query_params = ParamDict(self, context_name=context_name, class_name=class_name, instance_id=instance_id)
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          instance_id=instance_id,
+                                          **INSTANCE_PARAMS)
 
         response = get_instance(self.query_params)
 
@@ -186,7 +193,11 @@ class InstanceHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def put(self, context_name, class_name, instance_id):
         with safe_params():
-            self.query_params = ParamDict(self, context_name=context_name, class_name=class_name, instance_id=instance_id)
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          instance_id=instance_id,
+                                          **INSTANCE_PARAMS)
 
         try:
             instance_data = json.loads(self.request.body)
@@ -215,7 +226,11 @@ class InstanceHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def delete(self, context_name, class_name, instance_id):
         with safe_params():
-            self.query_params = ParamDict(self, context_name=context_name, class_name=class_name, instance_id=instance_id)
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          instance_id=instance_id,
+                                          **INSTANCE_PARAMS)
 
         deleted = delete_instance(self.query_params)
 
@@ -247,11 +262,10 @@ class CollectionHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name, class_name):
         with safe_params():
-
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
-                                          **(LIST_PARAMS + FILTER_PARAMS))
+                                          **(LIST_PARAMS + FILTER_PARAMS + CLASS_PARAMS))
 
         response = filter_instances(self.query_params)
 
@@ -260,7 +274,10 @@ class CollectionHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def post(self, context_name, class_name):
         with safe_params():
-            self.query_params = ParamDict(self, context_name=context_name, class_name=class_name)
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          **CLASS_PARAMS)
 
         schema = schema_resource.get_schema(self.query_params)
         if schema is None:
@@ -313,7 +330,7 @@ class ContextHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, context_name):
         with safe_params():
-            self.query_params = ParamDict(self, context_name=context_name, **LIST_PARAMS)
+            self.query_params = ParamDict(self, context_name=context_name, **(LIST_PARAMS + GRAPH_PARAMS))
 
         response = list_classes(self.query_params)
 

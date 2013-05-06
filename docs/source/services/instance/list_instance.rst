@@ -15,22 +15,15 @@ according a propert/value filter. The results are paginated.
 
 This will retrieve all instances of ``Gender`` in the graph ``person``
 
+
 Optional parameters
 -------------------
 
-**lang**: Specify language of labels. Options: pt, en, undefined (do not filter labels)
-
-**graph_uri**: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
-
-**class_uri**: Set the class URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME``
-
-**page**: The page you want to retrieve. The default value is ``1``, i.e. the first page
-
-**per_page**: Defines how many items you want to retrieve per page. The default value is ``10``
-
-**p**: Filters the instances that have the (**p**)redicate specified used in a triple.
-
-**o**: Filters the instances that have the (**o**)bject specified used in a triple.
+.. include :: ../params/lang.rst
+.. include :: ../params/pages.rst
+.. include :: ../params/graph_uri.rst
+.. include :: ../params/class.rst
+.. include :: ../params/po.rst
 
 **sort_by**: Defines predicate used to order instances. The sorting can also behave as a **p** filter, read **sort_include_empty**. Usage: ``sort_by=rdfs:label`` or ``sort_by=dbprop:stadium``.
 
@@ -38,12 +31,6 @@ Optional parameters
 
 **sort_include_empty**: By default, items that don't define **sort_by** property are also listed (``sort_include_empty=1``). If it is desired to exclude such items, set ``sort_include_empty=0``.
 
-By combining ``p`` and ``o`` parameters you can specify a filter for instances that have
-this property and object values. For exeample:
-
-.. code-block:: http
-
-  GET 'http://api.semantica.dev.globoi.com/place/Country/?p=place:partOfContinent&o=http://semantica.globo.com/place/Continent/America'
 
 Possible responses
 -------------------

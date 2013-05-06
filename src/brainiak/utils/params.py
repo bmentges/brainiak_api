@@ -16,6 +16,16 @@ class DefaultParamsDict(dict):
         new_dict.update(other)
         return new_dict
 
+
+def optionals(*args):
+    """Build an instance of DefaultParamsDict from a list of parameter names"""
+    result = {key: None for key in args}
+    return DefaultParamsDict(**result)
+
+# The parameters below as given to ParamDict with other keyword arguments,
+# but they are not URL arguments because they are part of the URL path
+NON_ARGUMENT_PARAMS = ('context_name', 'class_name', 'instance_id')
+
 FILTER_PARAMS = DefaultParamsDict(p="?predicate", o="?object")
 
 LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
@@ -24,7 +34,11 @@ LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
                                 sort_order="ASC",
                                 sort_include_empty="1")
 
-INSTANCE_PARAMS = DefaultParamsDict(instance_prefix='')
+INSTANCE_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri', 'instance_prefix', 'instance_uri')
+
+CLASS_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri')
+
+GRAPH_PARAMS = optionals('graph_uri')
 
 
 def normalize_last_slash(url):
@@ -39,8 +53,8 @@ def valid_pagination(total, page, per_page):
 # Define possible params and their processing order
 VALID_PARAMS = ('lang',
                 'graph_uri',
-                'context_name', 'class_name', 'class_prefix', 'class_uri',
-                'instance_id', 'instance_prefix', 'instance_uri',
+                'class_prefix', 'context_name', 'class_name', 'class_uri',
+                'instance_prefix', 'instance_id', 'instance_uri',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
                 'p', 'o')
@@ -78,11 +92,19 @@ class ParamDict(dict):
         self._override_with(handler)
         self._post_override()
 
-    def args(self, exclude_keys=[], **kw):
+    def args(self, exclude_keys=None, **kw):
+        if exclude_keys is None:
+            exclude_keys = NON_ARGUMENT_PARAMS
+        else:
+            exclude_keys = []
+            exclude_keys.extends(NON_ARGUMENT_PARAMS)
+
         effective_args = {}
         for key in VALID_PARAMS:
             if key in self["request"].arguments and key not in exclude_keys:
-                effective_args[key] = self[key]
+                value = self[key]
+                if value:
+                    effective_args[key] = value
 
         effective_args.update(kw)
         return urlencode(effective_args, doseq=True)

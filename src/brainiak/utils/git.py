@@ -26,6 +26,7 @@ def stash():
 
 def apply_stash():
     run("git stash apply stash^{/xubiru123}")
+    run("git stash clear")
 
 
 def get_version_label():

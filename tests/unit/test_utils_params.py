@@ -1,7 +1,7 @@
 from unittest import TestCase
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination, INSTANCE_PARAMS
 from tests.mocks import MockHandler
 
 
@@ -142,3 +142,42 @@ class ParamsTestCase(TestCase):
         self.assertTrue(valid_pagination(total=1, page=0, per_page=1))
         self.assertFalse(valid_pagination(total=10, page=1, per_page=10))
         self.assertFalse(valid_pagination(total=1, page=1, per_page=1))
+
+
+class OrderingTestCase(TestCase):
+
+    def test_ctx_class_inst_id(self):
+        handler = MockHandler()
+        params = ParamDict(handler,
+                           context_name='person', class_name='Gender', instance_id="Male",
+                           **INSTANCE_PARAMS)
+        self.assertEquals(params["instance_uri"], "http://semantica.globo.com/person/Gender/Male")
+
+    def test_class_prefix(self):
+        handler = MockHandler()
+        params = ParamDict(handler,
+                           context_name='dbpedia', class_name='klass', class_prefix="http://this/should/be/used/")
+        self.assertEquals(params["class_uri"], "http://this/should/be/used/klass")
+
+    def test_class_uri_and_prefix(self):
+        handler = MockHandler()
+        params = ParamDict(handler,
+                           context_name='dbpedia', class_name='klass',
+                           class_uri="http://this/should/be/used",
+                           class_prefix="http://this/is/less/important/than/class_uri")
+        self.assertEquals(params["class_uri"], "http://this/should/be/used")
+
+    def test_instance_prefix(self):
+        handler = MockHandler()
+        params = ParamDict(handler,
+                           context_name='dbpedia', class_name='klass', instance_id='inst',
+                           instance_prefix="http://this/should/be/used/")
+        self.assertEquals(params["instance_uri"], "http://this/should/be/used/inst")
+
+    def test_instance_uri_and_prefix(self):
+        handler = MockHandler()
+        params = ParamDict(handler,
+                           context_name='dbpedia', class_name='klass', instance_id='inst',
+                           instance_uri="http://this/should/be/used",
+                           instance_prefix="http://this/is/less/important/than/instance_uri")
+        self.assertEquals(params["instance_uri"], "http://this/should/be/used")

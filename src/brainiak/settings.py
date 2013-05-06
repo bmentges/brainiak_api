@@ -1,5 +1,7 @@
 import logging
+from brainiak.__init__ import __version__
 
+VERSION = __version__
 DEBUG = True
 ENVIRONMENT = 'local'
 

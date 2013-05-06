@@ -53,8 +53,8 @@ def valid_pagination(total, page, per_page):
 # Define possible params and their processing order
 VALID_PARAMS = ('lang',
                 'graph_uri',
-                'class_prefix', 'context_name', 'class_name', 'class_uri',
-                'instance_prefix', 'instance_id', 'instance_uri',
+                'context_name', 'class_name', 'class_prefix', 'class_uri',
+                'instance_id', 'instance_prefix', 'instance_uri',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
                 'p', 'o')
@@ -74,6 +74,10 @@ class ParamDict(dict):
         self.base_url = "{0}://{1}{2}".format(request.protocol, request.host, normalize_last_slash(request.path))
         self.resource_url = self.base_url + "{resource_id}"
 
+        # Set params with value None first, just to mark them as valid parameters
+        for key in [k for k, v in self.optionals.items() if v is None]:
+            dict.__setitem__(self, key, None)
+
         self._set_defaults()
 
         # Update optionals in the appropriate order
@@ -81,7 +85,7 @@ class ParamDict(dict):
         for key in VALID_PARAMS:
             if key in self.optionals:
                 value = self.optionals[key]
-                if (key not in self) or (value is not None):
+                if value is not None:
                     # the value None is used as a flag to avoid override the default value
                     self[key] = self.optionals[key]
                 del kw[key]  # I have consumed this item, remove it to check for invalid params

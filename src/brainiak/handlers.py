@@ -135,7 +135,7 @@ class HealthcheckHandler(BrainiakRequestHandler):
 class VersionHandler(BrainiakRequestHandler):
 
     def get(self):
-        self.write(__version__)
+        self.write(settings.VERSION)
 
 
 class VirtuosoStatusHandler(BrainiakRequestHandler):
@@ -185,13 +185,13 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
-        valid_params = INSTANCE_PARAMS
-        with safe_params(valid_params):
+        optional_params = INSTANCE_PARAMS
+        with safe_params(optional_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
                                           instance_id=instance_id,
-                                          **valid_params)
+                                          **optional_params)
 
         response = get_instance(self.query_params)
 

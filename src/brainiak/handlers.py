@@ -23,6 +23,7 @@ from brainiak.prefix.list_resource import list_prefixes
 from brainiak.root.get import list_all_contexts
 from brainiak.schema import resource as schema_resource
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
+from brainiak.utils.links import build_schema_url
 from brainiak.utils.resources import LazyObject
 
 
@@ -249,6 +250,9 @@ class InstanceHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         elif isinstance(response, dict):
             self.write(response)
+            schema_url = build_schema_url(self.query_params)
+            content_type = "application/json; profile={0}".format(schema_url)
+            self.set_header("Content-Type", content_type)
         elif isinstance(response, int):  # status code
             self.set_status(response)
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25

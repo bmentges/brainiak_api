@@ -49,7 +49,11 @@ def modify_instance(triples, instance_uri, graph_uri, string_prefixes):
 
 
 QUERY_INSTANCE_EXISTS_TEMPLATE = """
-ASK {<%(instance_uri)s> ?p ?o}
+ASK
+FROM <%(graph_uri)s>
+WHERE {
+   <%(instance_uri)s> ?p ?o
+}
 """
 
 

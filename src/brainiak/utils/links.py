@@ -21,6 +21,7 @@ def assemble_url(url, params={}):
         return "{0}".format(url)
 
 
+# TODO: refactor and add to a method similar to utils.params.args
 def filter_query_string_by_key_prefix(query_string, include_prefixes=[]):
     query_string_dict = urlparse.parse_qs(query_string)
     relevant_params = {}

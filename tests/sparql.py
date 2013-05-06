@@ -241,8 +241,8 @@ class QueryTestCase(SimpleTestCase):
             if self.allow_inference:
                 enable_inference_at_graph(self.graph_uri)
         else:
-            for graph in self.fixtures_by_graph.keys():
-                enable_inference_at_graph(graph)
+            for graph_ in self.fixtures_by_graph.keys():
+                enable_inference_at_graph(graph_)
 
         endpoint = Wrapper.SPARQLWrapper(endpoint)
         endpoint.setCredentials(user, password, mode=mode, realm=realm)

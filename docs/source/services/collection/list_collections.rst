@@ -19,13 +19,10 @@ This will retrieve all classes in the ``place`` graph.
 Optional parameters
 -------------------
 
-**lang**: Specify language of labels. Options: pt, en, undefined (do not filter labels)
+.. include :: ../params/lang.rst
+.. include :: ../params/graph_uri.rst
+.. include :: ../params/pages.rst
 
-**graph_uri**: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
-
-**page**: The page you want to retrieve. The default value is ``1``, i.e. the first page
-
-**per_page**: Defines how many items you want to retrieve per page. The default value is ``10``
 
 Possible responses
 -------------------

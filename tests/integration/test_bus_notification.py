@@ -8,7 +8,7 @@ from stomp.exception import NotConnectedException, ConnectionClosedException, \
 
 from brainiak import server
 from brainiak import handlers
-from brainiak.event_bus import event_bus_connection
+from brainiak.event_bus import event_bus_connection, reconnect
 from brainiak.settings import EVENT_BUS_HOST, EVENT_BUS_PORT
 
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
@@ -31,6 +31,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     def setUp(self):
         super(BusNotificationTestCase, self).setUp()
+        #if not event_bus_connection.connected:
         event_bus_connection.start()
         event_bus_connection.connect()
         event_bus_connection.set_listener("listener", NotifierListener())
@@ -49,21 +50,13 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.connection_message_queue_elastic.set_listener("listener", ElasticQueueListener())
         self.connection_message_queue_elastic.subscribe(destination="/queue/elasticsearch", ack='auto')
 
-        self.original_send = event_bus_connection.send
         self.original_log = handlers.logger
 
-        class MockLogger(object):
-            @staticmethod
-            def error(*args, **kw):
-                pass
-        handlers.log = MockLogger()
-
     def tearDown(self):
-        event_bus_connection.stop()
+        if event_bus_connection.is_connected():
+            event_bus_connection.stop()
         self.connection_message_queue_solr.stop()
         self.connection_message_queue_elastic.stop()
-        event_bus_connection.send = self.original_send
-        handlers.logger = self.original_log
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.event_bus.logger")
@@ -103,7 +96,6 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
             method='DELETE')
         self.assertEqual(deleted_new_york.code, 204)
-
         self.assertEqual(message_queue_solr[0], json.dumps(expected_message))
         self.assertEqual(message_queue_elastic[0], json.dumps(expected_message))
 
@@ -135,44 +127,38 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.event_bus.logger")
-    def test_notify_bus_not_connected_exception(self, log, log2):
-        config = {"side_effect": NotConnectedException}
-        patcher = patch("brainiak.event_bus.event_bus_connection.send", **config)
-        patcher.start()
-
+    @patch("brainiak.event_bus.event_bus_connection.send", side_effect=NotConnectedException)
+    def test_notify_bus_not_connected_exception(self, fake_send, log, log2):
         deleted_new_york = self.fetch(
             '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
             method='DELETE')
         self.assertEqual(deleted_new_york.code, 500)
-        patcher.stop()
 
     @patch("brainiak.event_bus.logger")
     @patch("brainiak.handlers.logger")
-    def test_notify_bus_connection_closed_exception(self, log, log2):
-        #config = {"side_effect": ConnectionClosedException}
-        #patcher = patch("brainiak.event_bus.event_bus_connection.send", **config)
-        #patcher.start()
-        def mock_send(*args, **kw):
-            raise ConnectionClosedException()
-        event_bus_connection.send = mock_send
-        try:
-            deleted_new_york = self.fetch(
-                '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
-                method='DELETE')
-            self.assertEqual(deleted_new_york.code, 500)
+    @patch("brainiak.event_bus.event_bus_connection.send", side_effect=ConnectionClosedException)
+    def test_notify_bus_connection_closed_exception(self, fake_send, log, log2):
+        deleted_new_york = self.fetch(
+            '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+            method='DELETE')
+        self.assertEqual(deleted_new_york.code, 500)
 
-        finally:
-            event_bus_connection.send = self.original_send
-        #patcher.stop()
-
+    @patch("brainiak.event_bus.logger")
+    @patch("brainiak.handlers.logger")
     @patch.object(event_bus_connection, "send", side_effect=ProtocolException())
-    @patch("brainiak.event_bus.logger")
-    @patch("brainiak.handlers.logger")
-    def test_notify_bus_protocol_exception(self, log, log2, mock_method):
+    def test_notify_bus_protocol_exception(self, fake_send, log, log2):
         deleted_new_york = self.fetch(
             '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
             method='DELETE')
         self.assertEqual(deleted_new_york.code, 500)
+
+    @patch("brainiak.event_bus.logger")
+    @patch("brainiak.handlers.logger")
+    def test_notify_bus_reconnect(self, log, log2):
+        event_bus_connection.stop()
+        self.assertFalse(event_bus_connection.is_connected())
+        reconnect()
+        self.assertTrue(event_bus_connection.is_connected())
 
 
 class NotifierListener(object):

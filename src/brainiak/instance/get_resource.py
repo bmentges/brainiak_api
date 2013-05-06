@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from copy import copy
 
 from brainiak import triplestore
 from brainiak.prefixes import MemorizeContext
-from brainiak.utils.links import assemble_url, build_class_url, build_schema_url, self_link, crud_links, add_link, filter_query_string_by_key_prefix, remove_last_slash
+from brainiak.utils.links import build_class_url, build_schema_url, self_link, crud_links, add_link
 from brainiak.utils.sparql import expand_uri, get_super_properties, is_result_empty
 
 

@@ -1,1 +1,1 @@
-RELEASE = '1.0.0 | 311fe129a9a00dd8ecee1b31c2cbf96c1227ab8b'
+RELEASE = '1.0.0 | bfef0438c8bf04f698523896bc7f1f3d62aaa3ef'

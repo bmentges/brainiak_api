@@ -38,11 +38,15 @@ class ListServiceParams(ParamDict):
 
 
 @contextmanager
-def safe_params():
+def safe_params(valid_params=None):
     try:
         yield
     except InvalidParam as ex:
-        raise HTTPError(400, log_message="Argument {0:s} is not supported".format(ex))
+        msg = "Argument {0:s} is not supported. ".format(ex)
+        if valid_params is not None:
+            params_msg = ", ".join(valid_params.keys())
+            msg += "The supported arguments are: {0}.".format(params_msg)
+        raise HTTPError(400, log_message=msg)
 
 
 def get_routes():
@@ -157,11 +161,12 @@ class SchemaHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-        with safe_params():
+        valid_params = optionals('graph_uri')
+        with safe_params(valid_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
-                                          **optionals('graph_uri'))
+                                          **valid_params)
         response = schema_resource.get_schema(self.query_params)
         self.finalize(response)
 
@@ -180,12 +185,13 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
-        with safe_params():
+        valid_params = INSTANCE_PARAMS
+        with safe_params(valid_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
                                           instance_id=instance_id,
-                                          **INSTANCE_PARAMS)
+                                          **valid_params)
 
         response = get_instance(self.query_params)
 
@@ -193,12 +199,13 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def put(self, context_name, class_name, instance_id):
-        with safe_params():
+        valid_params = INSTANCE_PARAMS
+        with safe_params(valid_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
                                           instance_id=instance_id,
-                                          **INSTANCE_PARAMS)
+                                          **valid_params)
 
         try:
             instance_data = json.loads(self.request.body)
@@ -226,12 +233,13 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def delete(self, context_name, class_name, instance_id):
-        with safe_params():
+        valid_params = INSTANCE_PARAMS
+        with safe_params(valid_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
                                           instance_id=instance_id,
-                                          **INSTANCE_PARAMS)
+                                          **valid_params)
 
         deleted = delete_instance(self.query_params)
 
@@ -265,11 +273,12 @@ class CollectionHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-        with safe_params():
+        valid_params = LIST_PARAMS + FILTER_PARAMS + CLASS_PARAMS
+        with safe_params(valid_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
-                                          **(LIST_PARAMS + FILTER_PARAMS + CLASS_PARAMS))
+                                          **valid_params)
 
         response = filter_instances(self.query_params)
 
@@ -277,11 +286,12 @@ class CollectionHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def post(self, context_name, class_name):
-        with safe_params():
+        valid_params = CLASS_PARAMS
+        with safe_params(valid_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
-                                          **CLASS_PARAMS)
+                                          **valid_params)
 
         schema = schema_resource.get_schema(self.query_params)
         if schema is None:
@@ -321,8 +331,9 @@ class RootHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self):
-        with safe_params():
-            self.query_params = ParamDict(self, **LIST_PARAMS)
+        valid_params = LIST_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, **valid_params)
 
         response = list_all_contexts(self.query_params)
 
@@ -333,8 +344,9 @@ class ContextHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name):
-        with safe_params():
-            self.query_params = ParamDict(self, context_name=context_name, **(LIST_PARAMS + GRAPH_PARAMS))
+        valid_params = LIST_PARAMS + GRAPH_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, context_name=context_name, **valid_params)
 
         response = list_classes(self.query_params)
 
@@ -352,8 +364,9 @@ class PrefixHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self):
-        with safe_params():
-            self.query_params = ParamDict(self, **LIST_PARAMS)
+        valid_params = LIST_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, **valid_params)
 
         response = list_prefixes()
 

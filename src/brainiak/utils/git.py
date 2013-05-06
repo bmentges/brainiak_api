@@ -1,14 +1,19 @@
+import re
 import subprocess
 
 
 GET_BRANCH = 'git rev-parse --abbrev-ref HEAD'
 GET_TAG = 'git describe --exact-match --tags HEAD'
-GET_COMMIT = 'git  rev-parse --verify HEAD'
+GET_COMMIT = 'git rev-parse --verify HEAD'
 
 
 def run(cmd):
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return process.stdout.readline().split('\n')[0]
+
+
+def is_available():
+    return run('git version')
 
 
 def checkout(state):
@@ -45,3 +50,25 @@ def get_code_version():
     commit = get_version_hash()
     version = "%s | %s" % (label, commit)
     return version
+
+
+def get_last_git_tag():
+    last_tag = run("git describe")
+    version = [major, minor, micro] = re.search(r"(\d+)\.(\d+)\.(\d+)+", last_tag).groups()
+    return [int(version_digit) for version_digit in version]
+
+
+def compute_next_git_tag(release_type="micro"):
+    digits = {"major": 0, "minor": 1, "micro": 2}
+    release_digit = digits[release_type]
+    version = get_last_git_tag()
+
+    version[release_digit] += 1
+    for smaller_digit in range(release_digit + 1, 3):
+        version[smaller_digit] = 0
+
+    return "%d.%d.%d" % tuple(version)
+
+
+def build_release_string():
+    return "RELEASE = '%s'" % get_code_version()

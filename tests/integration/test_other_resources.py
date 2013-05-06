@@ -19,6 +19,8 @@ class TestVersionResource(TornadoAsyncHTTPTestCase):
         response = self.fetch('/version', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, __version__)
+        version_pieces = __version__.split("|")
+        self.assertEqual(len(version_pieces), 3)
 
 
 class OptionsTestCase(TornadoAsyncHTTPTestCase):

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import unittest
 from tornado.web import HTTPError
+from brainiak import settings
 
 from brainiak.context import list_resource
-from brainiak.handlers import ListServiceParams
-from tests.mocks import MockHandler, MockRequest
+from brainiak.utils.params import ParamDict, LIST_PARAMS
+from tests.mocks import MockHandler
 
 
 class GetContextTestCase(unittest.TestCase):
@@ -35,7 +36,7 @@ class GetContextTestCase(unittest.TestCase):
     def test_list_classes_with_no_result(self):
         list_resource.get_one_value = lambda x, y: "0"
         handler = MockHandler(page="1")
-        params = ListServiceParams(handler, context_name="context_name", class_name="class_name")
+        params = ParamDict(handler, context_name="context_name", class_name="class_name", **LIST_PARAMS)
         result = list_resource.list_classes(params)
         self.assertEqual(result, None)
 
@@ -43,13 +44,13 @@ class GetContextTestCase(unittest.TestCase):
         list_resource.get_one_value = lambda x, y: "1"
         list_resource.assemble_list_json = lambda x, y, z: "expected result"
         handler = MockHandler(page="1")
-        params = ListServiceParams(handler, context_name="context_name", class_name="class_name")
+        params = ParamDict(handler, context_name="context_name", class_name="class_name", **LIST_PARAMS)
         expected = list_resource.list_classes(params)
         self.assertEqual(expected, "expected result")
 
     def test_assemble_list_json_with_class_prefix(self):
         handler = MockHandler(uri="http://poke.oioi/company/")
-        params = ListServiceParams(handler, context_name="company")
+        params = ParamDict(handler, context_name="company", **LIST_PARAMS)
         item = {
             u'class': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/Company'},
             u'label': {u'type': u'literal', u'value': u'Company'}
@@ -59,7 +60,7 @@ class GetContextTestCase(unittest.TestCase):
         computed = list_resource.assemble_list_json(params, query_result_dict, total_items)
 
         expected_context = {
-            '@language': 'pt',
+            '@language': settings.DEFAULT_LANG,
             'dbpedia': 'http://dbpedia.org/ontology/'
         }
         expected_items = [

@@ -1,6 +1,8 @@
 import logging
 import os
+from brainiak.__init__ import __version__
 
+VERSION = __version__
 DEBUG = False
 ENVIRONMENT = '<%= puppetmaster_env %>'
 

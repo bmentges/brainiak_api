@@ -106,7 +106,7 @@ class AssembleTestCase(unittest.TestCase):
 
         query_result_dict = {'results': {'bindings': []}}
 
-        get_resource.build_items_dict = lambda context, bindings: {}
+        get_resource.build_items_dict = lambda context, bindings, class_uri: {}
         computed = get_resource.assemble_instance_json(query_params, query_result_dict)
         expected_links = [
             {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
@@ -138,7 +138,7 @@ class AssembleTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **param_dict)
 
         query_result_dict = {'results': {'bindings': []}}
-        get_resource.build_items_dict = lambda context, bindings: {}
+        get_resource.build_items_dict = lambda context, bindings, class_uri: {}
         computed = get_resource.assemble_instance_json(query_params, query_result_dict, context)
         expected_links = [
             {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
@@ -172,7 +172,7 @@ class AssembleTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **param_dict)
 
         query_result_dict = {'results': {'bindings': []}}
-        get_resource.build_items_dict = lambda context, bindings: {}
+        get_resource.build_items_dict = lambda context, bindings, class_uri: {}
         computed = get_resource.assemble_instance_json(query_params, query_result_dict, context)
         expected_links = [
             {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance?class_prefix=CLASS_PREFIX&instance_prefix=INSTANCE_PREFIX', 'method': 'GET'},
@@ -195,8 +195,12 @@ class BuildItemsDictTestCase(unittest.TestCase):
             {"predicate": {"value": "key1"}, "object": {"value": "value2"}, "label": {"value": "label1"}},
             {"predicate": {"value": "key2"}, "object": {"value": "value2"}, "label": {"value": "label1"}}
         ]
-        expected = {"key1": ["value1", "value2"], "key2": "value2", 'rdfs:label': 'label1'}
-        response = get_resource.build_items_dict(MemorizeContext(), bindings)
+        expected = {
+            "key1": ["value1", "value2"],
+            "key2": "value2",
+            'rdfs:label': 'label1',
+            "rdf:type": "some:Class"}
+        response = get_resource.build_items_dict(MemorizeContext(), bindings, "some:Class")
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_same_value(self):
@@ -213,9 +217,9 @@ class BuildItemsDictTestCase(unittest.TestCase):
                 "label": {"value": "birth place"}
             }
         ]
-        expected = {"birthCity": "Rio de Janeiro", 'rdfs:label': "birth place"}
+        expected = {"birthCity": "Rio de Janeiro", 'rdfs:label': "birth place", 'rdf:type': 'http://class.uri'}
         context = MemorizeContext()
-        response = get_resource.build_items_dict(context, bindings)
+        response = get_resource.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_different_values(self):
@@ -235,8 +239,9 @@ class BuildItemsDictTestCase(unittest.TestCase):
         expected = {
             "birthCity": "Rio de Janeiro",
             "birthPlace": "Brasil",
-            'rdfs:label': "birth place"
+            'rdfs:label': "birth place",
+            'rdf:type': 'http://class.uri'
         }
         context = MemorizeContext()
-        response = get_resource.build_items_dict(context, bindings)
+        response = get_resource.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)

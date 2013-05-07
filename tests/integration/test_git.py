@@ -13,6 +13,7 @@ class GitTestCase(unittest.TestCase):
         self.original_get_last_git_tag = git.get_last_git_tag
         self.orginal_get_code_version = git.get_code_version
         self.original_run = git.run
+        self.original_compute_next_git_tag = git.compute_next_git_tag
 
     def tearDown(self):
         git.checkout(self.head)
@@ -21,6 +22,7 @@ class GitTestCase(unittest.TestCase):
         git.get_last_git_tag = self.original_get_last_git_tag
         git.get_code_version = self.orginal_get_code_version
         git.run = self.original_run
+        git.compute_next_git_tag = self.original_compute_next_git_tag
 
     def test_git_version_is_tag(self):
         checkout_tag = git.checkout("1.0.0")
@@ -115,6 +117,11 @@ class GitTestCase(unittest.TestCase):
         expected = [10, 200, 3000]
         self.assertEquals(computed, expected)
 
+    def test_build_next_release_string(self):
+        git.compute_next_git_tag = lambda: "10.10.1"
+        computed = git.build_next_release_string()
+        expected = "RELEASE = '10.10.1'"
+        self.assertEquals(computed, expected)
 
 if __name__ == '__main__':
     unittest.main()

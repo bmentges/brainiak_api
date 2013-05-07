@@ -35,13 +35,3 @@ namespace :python do
         end
     end
 end
-
-namespace :deploy do
-  task :restart, :roles => :web do
-    run "touch #{ current_path }/tmp/restart.txt"
-  end
-
-  task :restart_daemons, :roles => :app do
-    sudo "monit restart all -g daemons"
-  end
-end

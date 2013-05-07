@@ -44,8 +44,7 @@ release:
 	@# Usage: make release type=major message="Integration to ActiveMQ" (other options: minor or micros)
 	@echo "Tagging new release..."
 	@git fetch --tags
-	TODO: ordem desses dois comandos! - possivelmente o comportamento de um deles será mudado
-	@cd $(BRAINIAK_CODE); python -c "from brainiak.utils.git import build_release_string; print build_release_string()" > brainiak/version.py
+	@cd $(BRAINIAK_CODE); python -c "from brainiak.utils.git import build_next_release_string; print build_next_release_string()" > brainiak/version.py
 	@cd $(BRAINIAK_CODE); git tag `python -c "from brainiak.utils.git import compute_next_git_tag; print compute_next_git_tag('$(type)')"` -m "$(message)"
 
 run:

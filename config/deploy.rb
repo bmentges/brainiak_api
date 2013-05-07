@@ -13,7 +13,6 @@ set :docs_html, "#{deploy_to}/current/docs"
 before "deploy:update", "python:filter"
 ##before "deploy:restart", "deploy:docs"
 
-
 set :user, "busca"
 set :use_sudo, false
 set :via, :scp

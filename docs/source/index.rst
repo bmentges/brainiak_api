@@ -18,9 +18,14 @@ The Brainiak API provides a configurable way to access RDF data using simple RES
 
 
 .. toctree::
+   :maxdepth: 1
+
+   releases.rst
+
+
+.. toctree::
    :maxdepth: 3
 
    concepts.rst
    services.rst
    tutorials.rst
-

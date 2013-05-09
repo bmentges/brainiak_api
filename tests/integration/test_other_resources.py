@@ -48,22 +48,28 @@ def raise_exception():
 class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
 
     def setUp(self):
-        self.original_abort = event_bus.event_bus_connection.abort
+        self.original_not_connected = event_bus.middleware.not_connected
         TornadoAsyncHTTPTestCase.setUp(self)
+        self.original_notify_bus = settings.NOTIFY_BUS
+        settings.NOTIFY_BUS = True
 
     def tearDown(self):
-        event_bus.event_bus_connection.abort = self.original_abort
+        event_bus.middleware.not_connected = self.original_not_connected
+        settings.NOTIFY_BUS = self.original_notify_bus
 
     @patch("brainiak.event_bus.logger")
     def test_activemq_status_on(self, log):
-        event_bus.event_bus_connection.abort = lambda transaction: ""
+        msg = 'ActiveMQ connection not-authenticated | SUCCEED | localhost:61613'
+        event_bus.middleware.not_connected = lambda: ""
         response = self.fetch('/status/activemq', method='GET')
         self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, 'ActiveMQ connection not-authenticated | SUCCEED | localhost:61613')
+        self.assertEqual(response.body, msg)
 
     @patch("brainiak.event_bus.logger")
     def test_activemq_status_off(self, log):
-        event_bus.event_bus_connection.abort = lambda transaction: raise_exception()
+        msg = "Failed inside middleware"
+        body = "ActiveMQ connection not-authenticated | FAILED | localhost:61613 | {0}".format(msg)
+        event_bus.middleware.not_connected = lambda: msg
         response = self.fetch('/status/activemq', method='GET')
         self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, "ActiveMQ connection not-authenticated | FAILED | localhost:61613 | 'stomp.exception.NotConnectedException'")
+        self.assertEqual(response.body, body)

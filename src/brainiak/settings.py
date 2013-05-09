@@ -23,7 +23,7 @@ URI_PREFIX = "http://semantica.globo.com/"
 
 EVENT_BUS_HOST = "localhost"
 EVENT_BUS_PORT = 61613
-NOTIFY_BUS = False
+NOTIFY_BUS = True
 
 CORS_HEADERS = 'Content-Type, Authorization'
 

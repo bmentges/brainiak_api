@@ -127,7 +127,9 @@ def _extract_cardinalities(bindings):
             if int(min_value) > 1:
                 current_property[range_].update({"minItems": min_value})
         elif "max" in binding:
-            current_property[range_].update({"maxItems": binding["max"]["value"]})
+            max_value = binding["max"]["value"]
+            if int(max_value) > 1:
+                current_property[range_].update({"maxItems": max_value})
 
     return cardinalities
 

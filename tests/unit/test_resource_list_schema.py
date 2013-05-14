@@ -31,7 +31,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         del prefixes._MAP_SLUG_TO_PREFIX['test']
         del prefixes._MAP_PREFIX_TO_SLUG['http://test/person/']
 
-    def test_extract_min(self):
+    def test_extract_min_1_required_true(self):
         binding = [{
             u'predicate': {u'type': u'uri',
                            u'value': u'http://test/person/gender'},

@@ -44,7 +44,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'required': True}}}
         self.assertEqual(extracted, expected)
 
-    def test_extract_max(self):
+    def test_extract_max_1_show_omit(self):
         binding = [{
             u'predicate': {u'type': u'uri',
                            u'value': u'http://test/person/gender'},
@@ -54,7 +54,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'type': u'typed-literal', u'value': u'1'}
         }]
         extracted = _extract_cardinalities(binding)
-        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'maxItems': u'1'}}}
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {}}}
         self.assertEqual(extracted, expected)
 
     def test_assemble_predicate_with_object_property(self):

@@ -560,7 +560,6 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                 'title': 'Sexo',
                 'graph': 'http://test/person/',
                 'format': 'uri',
-                'maxItems': '1',
                 'required': True,
                 'type': 'string',
                 'range': {'graph': 'http://test/person/',

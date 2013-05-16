@@ -31,7 +31,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         del prefixes._MAP_SLUG_TO_PREFIX['test']
         del prefixes._MAP_PREFIX_TO_SLUG['http://test/person/']
 
-    def test_extract_min(self):
+    def test_extract_min_1_required_true(self):
         binding = [{
             u'predicate': {u'type': u'uri',
                            u'value': u'http://test/person/gender'},
@@ -41,10 +41,10 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'type': u'typed-literal', u'value': u'1'}
         }]
         extracted = _extract_cardinalities(binding)
-        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': u'1'}}}
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'required': True}}}
         self.assertEqual(extracted, expected)
 
-    def test_extract_max(self):
+    def test_extract_max_1_show_omit(self):
         binding = [{
             u'predicate': {u'type': u'uri',
                            u'value': u'http://test/person/gender'},
@@ -54,7 +54,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'type': u'typed-literal', u'value': u'1'}
         }]
         extracted = _extract_cardinalities(binding)
-        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'maxItems': u'1'}}}
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {}}}
         self.assertEqual(extracted, expected)
 
     def test_assemble_predicate_with_object_property(self):

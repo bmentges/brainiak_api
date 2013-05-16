@@ -1,7 +1,7 @@
 require 'capistrano'
 require 'capistrano/ext/multistage'
 
-set :stages, %w(dev qa1 qa2 staging prod)
+set :stages, %w(dev qa1 qa2 qa staging prod)
 set :default_stage, "dev"
 
 set :application, "brainiak"

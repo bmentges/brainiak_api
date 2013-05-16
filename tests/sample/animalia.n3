@@ -32,25 +32,30 @@
         :FurLenght ,
         :FurColour .
 
-# http://example.onto/person/birthPlace
+# http://example.onto/birthPlace
 :birthPlace a owl:ObjectProperty ;
              rdfs:label "Birth place of first known member of Species";
              rdfs:domain :Animal ;
              rdfs:range :Place .
 
-# http://example.onto/person/canFlight
+# http://example.onto/canFlight
 :canFlight a owl:DatatypeProperty ;
              rdfs:label "Can flight"@en;
              rdfs:comment "Defines if the bird species can flight or not."@en ;
              rdfs:domain :Bird ;
              rdfs:range xsd:string .
 
-# http://example.onto/person/cityOfBirth
+# http://example.onto/cityOfBirth
 :birthCity a owl:ObjectProperty ;
              rdfs:subPropertyOf :birthPlace ;
              rdfs:label "Birth city of first known member of Species" ;
              rdfs:domain :Yorkshire_Terrier ;
              rdfs:range :City .
+
+# http://example.onto/child
+:child a owl:ObjectProperty ;
+             rdfs:domain :Human ;
+             rdfs:range :Human .
 
 ##########################################
 # Classes
@@ -143,6 +148,15 @@
 # http://example.onto/Yorkshire_Terrier
 :Yorkshire_Terrier a owl:Class ;
     rdfs:subClassOf :Canidae .
+
+# http://example.onto/Human
+:Human a owl:Class ;
+     rdfs:subClassOf :Mammalia ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :child ;
+          owl:maxQualifiedCardinality "888"^^xsd:nonNegativeInteger ;
+          owl:allValuesFrom :Human
+        ] .
 
 ##########################################
 # Instances

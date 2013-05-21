@@ -52,6 +52,7 @@ def safe_params(valid_params=None):
 def get_routes():
     return [
         URLSpec(r'/healthcheck/?', HealthcheckHandler),
+        URLSpec(r'/lifecheck/$', LifecheckHandler),
         URLSpec(r'/version/?', VersionHandler),
         URLSpec(r'/prefixes/?', PrefixHandler),
         URLSpec(r'/status/activemq/?', EventBusStatusHandler),
@@ -141,17 +142,30 @@ class VersionHandler(BrainiakRequestHandler):
 class VirtuosoStatusHandler(BrainiakRequestHandler):
 
     def get(self):
-        # if settings.ENVIRONMENT == 'prod':
-        #     raise HTTPError(404)
-
         self.write(triplestore.status())
 
 
 class EventBusStatusHandler(BrainiakRequestHandler):
 
     def get(self):
-
         self.write(event_bus.status())
+
+
+class LifecheckHandler(BrainiakRequestHandler):
+
+    def get(self):
+        triplestore_status = triplestore.status()
+        event_bus_status = event_bus.status()
+        output = []
+        if "SUCCEED" not in triplestore_status:
+            output.append(triplestore_status)
+        if "FAILED" in event_bus_status:
+            output.append(event_bus_status)
+        if output:
+            response = "\n".join(output)
+        else:
+            response = "WORKING"
+        self.write(response)
 
 
 class SchemaHandler(BrainiakRequestHandler):

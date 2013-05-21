@@ -1,8 +1,8 @@
 # coding: utf-8
-from mock import patch
+from mock import patch, MagicMock
 from stomp.exception import NotConnectedException
 
-from brainiak import __version__, event_bus, settings
+from brainiak import __version__, event_bus, handlers, settings
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
@@ -76,3 +76,37 @@ class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch('/status/activemq', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, body)
+
+class LifecheckTestCase(TornadoAsyncHTTPTestCase):
+
+    @patch("brainiak.event_bus.logger")
+    def test_lifecheck_working(self, log):
+        handlers.triplestore.status = MagicMock(return_value="Virtuoso SUCCEED")
+        handlers.event_bus.status = MagicMock(return_value="ActiveMQ SUCCEED")
+        response = self.fetch('/lifecheck/', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, "WORKING")
+
+    @patch("brainiak.event_bus.logger")
+    def test_lifecheck_failed_due_to_virtuoso(self, log):
+        handlers.triplestore.status = MagicMock(return_value="Virtuoso FAILED")
+        handlers.event_bus.status = MagicMock(return_value="ActiveMQ SUCCEED")
+        response = self.fetch('/lifecheck/', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, "Virtuoso FAILED")
+
+    @patch("brainiak.event_bus.logger")
+    def test_lifecheck_failed_due_to_activemq(self, log):
+        handlers.triplestore.status = MagicMock(return_value="Virtuoso SUCCEED")
+        handlers.event_bus.status = MagicMock(return_value="ActiveMQ FAILED")
+        response = self.fetch('/lifecheck/', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, "ActiveMQ FAILED")
+
+    @patch("brainiak.event_bus.logger")
+    def test_lifecheck_failed_due_to_activemq(self, log):
+        handlers.triplestore.status = MagicMock(return_value="Virtuoso FAILED")
+        handlers.event_bus.status = MagicMock(return_value="ActiveMQ FAILED")
+        response = self.fetch('/lifecheck/', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, "Virtuoso FAILED\nActiveMQ FAILED")

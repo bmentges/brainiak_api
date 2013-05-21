@@ -52,7 +52,7 @@ class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
         TornadoAsyncHTTPTestCase.setUp(self)
         self.original_notify_bus = settings.NOTIFY_BUS
         settings.NOTIFY_BUS = True
-        self.original_connect = event_bus.middleware.connect 
+        self.original_connect = event_bus.middleware.connect
 
     def tearDown(self):
         event_bus.middleware.not_connected = self.original_not_connected

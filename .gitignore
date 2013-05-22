@@ -39,6 +39,3 @@ nosetests.xml
 
 # PyVharm
 .idea
-
-# Configuracao automática de versão
-src/brainiak/version.py

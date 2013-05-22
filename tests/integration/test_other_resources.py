@@ -80,34 +80,43 @@ class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
 
 class LifecheckTestCase(TornadoAsyncHTTPTestCase):
 
+    def setUp(self):
+        TornadoAsyncHTTPTestCase.setUp(self)
+        self.original_eb_status = handlers.event_bus.status
+        self.original_ts_status = handlers.triplestore.status
+
+    def tearDown(self):
+        handlers.event_bus.status = self.original_eb_status
+        handlers.triplestore.status = self.original_ts_status
+
     @patch("brainiak.event_bus.logger")
     def test_lifecheck_working(self, log):
-        handlers.triplestore.status = MagicMock(return_value="Virtuoso SUCCEED")
-        handlers.event_bus.status = MagicMock(return_value="ActiveMQ SUCCEED")
+        handlers.triplestore.status = lambda: "Virtuoso SUCCEED"
+        handlers.event_bus.status = lambda: "ActiveMQ SUCCEED"
         response = self.fetch('/lifecheck/', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "WORKING")
 
     @patch("brainiak.event_bus.logger")
     def test_lifecheck_failed_due_to_virtuoso(self, log):
-        handlers.triplestore.status = MagicMock(return_value="Virtuoso FAILED")
-        handlers.event_bus.status = MagicMock(return_value="ActiveMQ SUCCEED")
+        handlers.triplestore.status = lambda: "Virtuoso FAILED"
+        handlers.event_bus.status = lambda: "ActiveMQ SUCCEED"
         response = self.fetch('/lifecheck/', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "Virtuoso FAILED")
 
     @patch("brainiak.event_bus.logger")
     def test_lifecheck_failed_due_to_activemq(self, log):
-        handlers.triplestore.status = MagicMock(return_value="Virtuoso SUCCEED")
-        handlers.event_bus.status = MagicMock(return_value="ActiveMQ FAILED")
+        handlers.triplestore.status = lambda: "Virtuoso SUCCEED"
+        handlers.event_bus.status = lambda: "ActiveMQ FAILED"
         response = self.fetch('/lifecheck/', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "ActiveMQ FAILED")
 
     @patch("brainiak.event_bus.logger")
     def test_lifecheck_failed_due_to_activemq(self, log):
-        handlers.triplestore.status = MagicMock(return_value="Virtuoso FAILED")
-        handlers.event_bus.status = MagicMock(return_value="ActiveMQ FAILED")
+        handlers.triplestore.status = lambda: "Virtuoso FAILED"
+        handlers.event_bus.status = lambda: "ActiveMQ FAILED"
         response = self.fetch('/lifecheck/', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "Virtuoso FAILED\nActiveMQ FAILED")

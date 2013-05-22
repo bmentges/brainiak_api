@@ -77,6 +77,7 @@ class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, body)
 
+
 class LifecheckTestCase(TornadoAsyncHTTPTestCase):
 
     @patch("brainiak.event_bus.logger")

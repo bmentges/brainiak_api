@@ -64,33 +64,15 @@ def get_next_page(page, last_page):
         return False
 
 
-def prepare_link_params(query_params):
-    "Utility function shared amongst assemble link functions that sets some reused params"
-    link_params = {}
-    link_params['base_url'] = remove_last_slash(query_params.base_url)
-    try:
-        link_params['page'] = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
-        link_params['per_page'] = int(query_params["per_page"])
-    except KeyError:
-        pass
-    link_params['resource_url'] = remove_last_slash(query_params.resource_url)
-
-    if 'page' in query_params['request'].arguments:
-        link_params['args'] = query_params.args(page=link_params['page'], per_page=link_params['per_page'])
-    else:
-        link_params['args'] = query_params.args()
-
-    if link_params['args']:
-        link_params['base_url_with_params'] = "{0}?{1:s}".format(link_params['base_url'], link_params['args'])
-    else:
-        link_params['base_url_with_params'] = remove_last_slash(link_params['base_url'])
-
-    return link_params
-
-
 def collection_links(query_params, total_items):
 
-    link_params = prepare_link_params(query_params)
+    link_params = {}
+    link_params['base_url'] = remove_last_slash(query_params.base_url)
+    link_params['page'] = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
+    link_params['per_page'] = int(query_params["per_page"])
+
+    link_params['resource_url'] = remove_last_slash(query_params.resource_url)
+
     base_url = link_params['base_url']
     per_page = link_params['per_page']
 
@@ -99,8 +81,12 @@ def collection_links(query_params, total_items):
     next_page = get_next_page(link_params['page'], last_page)
 
     links = [
-        {'rel': "first", 'href': "%s?%s" % (base_url, query_params.args(page=1, per_page=per_page)), 'method': "GET"},
-        {'rel': "last", 'href': "%s?%s" % (base_url, query_params.args(page=last_page, per_page=per_page)), 'method': "GET"}
+        {'rel': "first", 'href': "%s?%s" % (base_url,
+                                            query_params.args(page=1, per_page=per_page)),
+                                            'method': "GET"},
+        {'rel': "last", 'href': "%s?%s" % (base_url,
+                                           query_params.args(page=last_page, per_page=per_page)),
+                                           'method': "GET"}
     ]
     if previous_page:
         links.append({'rel': "previous",

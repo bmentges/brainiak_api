@@ -6,9 +6,6 @@ from brainiak.type_mapper import OBJECT_PROPERTY, items_from_type, DATATYPE_PROP
 
 class PrefixesTestCase(unittest.TestCase):
 
-    def test_items_from_type(self):
-        self.assertEqual(items_from_type(OBJECT_PROPERTY), {"type": "string", "format": "uri"})
-
     def test_items_from_range_date(self):
         self.assertEqual(items_from_range("http://www.w3.org/2001/XMLSchema#date"),
                           {"type": "string", "format": "date"})

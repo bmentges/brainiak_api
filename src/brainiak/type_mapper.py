@@ -29,11 +29,6 @@ _MAP_XSD_TO_JSON_TYPE = {
 }
 
 
-def items_from_type(predicate_type):
-    if predicate_type == OBJECT_PROPERTY:
-        return {"type": "string", "format": "uri"}
-
-
 def items_from_range(range_uri):
     short_range = shorten_uri(range_uri)
     if short_range == 'xsd:date' or short_range == 'xsd:dateTime':

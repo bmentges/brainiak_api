@@ -1,3 +1,4 @@
+import json
 import brainiak.schema.resource as schema
 
 from brainiak import prefixes
@@ -9,7 +10,7 @@ from brainiak.schema.resource import build_class_schema_query, \
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler
 
-from tests.tornado_cases import TornadoAsyncTestCase
+from tests.tornado_cases import TornadoAsyncTestCase, TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 
@@ -143,25 +144,6 @@ class CardinalitiesQueryTestCase(QueryTestCase):
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'}
             },
-            # {
-            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Male'},
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # },
-            # {
-            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Female'},
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # },
-            # {
-            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Transgender'},
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # },
-            # {
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # }
         ]
         for expected_item in expected:
             self.assertIn(expected_item, computed)
@@ -216,26 +198,7 @@ class CardinalitiesQueryTestCase(QueryTestCase):
                 },
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furColour'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'}
-            },
-            # {
-            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Male'},
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # },
-            # {
-            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Female'},
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # },
-            # {
-            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Transgender'},
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # },
-            # {
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # }
+            }
         ]
         for expected_item in expected:
             self.assertIn(expected_item, computed)
@@ -289,25 +252,6 @@ class CardinalitiesQueryTestCase(QueryTestCase):
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'}
             },
-            # {
-            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Male'},
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # },
-            # {
-            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Female'},
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # },
-            # {
-            #     u'enumerated_value': {u'type': u'uri', u'value': u'http://example.onto/Transgender'},
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # },
-            # {
-            #     u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-            #     u'range': {u'type': u'bnode', u'value': u'nodeID://b12726'}
-            # }
         ]
         for expected_item in expected:
             self.assertIn(expected_item, computed)
@@ -485,6 +429,92 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         self.assertEqual(schema_response["properties"], "property_dict")
         # FIXME: enhance the structure of the response
         self.stop()
+
+
+class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+    maxDiff = None
+    allow_triplestore_connection = True
+    fixtures = ["tests/sample/animalia.n3"]
+    graph_uri = "http://tati.pedia/"
+
+    def test_schema_json(self):
+        response = self.fetch('/any/Human/_schema?graph_uri=http://tati.pedia/&class_prefix=http://example.onto/', method='GET')
+
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        self.assertEqual(body['title'], 'Humano')
+        self.assertEqual(body['type'], 'object')
+        self.assertEqual(body['@context'], {u'@language': u'pt'})
+        self.assertEqual(body['$schema'], 'http://json-schema.org/draft-03/schema#')
+        properties = body['properties']
+        expected_properties = {
+            u'http://example.onto/birthPlace': {
+                u'graph': u'http://tati.pedia/',
+                u'range': {
+                    u'@id': u'http://example.onto/Place',
+                    u'format': u'uri',
+                    u'graph': u'',
+                    u'title': u'',
+                    u'type': u'string'
+                },
+                u'title': u'Birth place of first known member of Species',
+                u'type': u'array'
+            },
+            u'http://example.onto/hasChild': {
+                u'graph': u'http://tati.pedia/',
+                u'range': {
+                    u'@id': u'http://example.onto/Human',
+                    u'format': u'uri',
+                    u'graph': u'http://tati.pedia/',
+                    u'title': u'Humano',
+                    u'type': u'string'
+                },
+                u'maxItems': 888,
+                u'title': u"Has child (son or daughter)",
+                u'type': u'array'
+            },
+            u'http://example.onto/furColour': {
+                u'graph': u'http://tati.pedia/',
+                u'minItems': 1,
+                u'range': {
+                    u'@id': u'http://example.onto/FurColour',
+                    u'format': u'uri',
+                    u'graph': u'',
+                    u'title': u'',
+                    u'type': u'string'
+                },
+                u'required': True,
+                u'title': u'Fur or hair colour',
+                u'type': u'array'
+            },
+            u'http://example.onto/gender': {
+                u'format': u'uri',
+                u'graph': u'http://tati.pedia/',
+                u'range': {u'@id': u'http://example.onto/Gender',
+                        u'format': u'uri',
+                        u'graph': u'',
+                        u'title': u'',
+                        u'type': u'string'},
+                u'required': True,
+                u'title': u'Gender',
+                u'type': u'string'
+            },
+            u'http://example.onto/hasParent': {
+                u'graph': u'http://tati.pedia/',
+                u'maxItems': 2,
+                u'minItems': 2,
+                u'range': {u'@id': u'http://example.onto/Human',
+                          u'format': u'uri',
+                          u'graph': u'http://tati.pedia/',
+                          u'title': u'Humano',
+                          u'type': u'string'},
+                u'required': True,
+                u'title': u'Has parent (mother or father)',
+                u'type': u'array'
+            }
+
+        }
+        self.assertEqual(properties, expected_properties)
 
 
 class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):

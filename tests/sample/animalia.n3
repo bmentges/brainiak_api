@@ -52,10 +52,17 @@
              rdfs:domain :Yorkshire_Terrier ;
              rdfs:range :City .
 
-# http://example.onto/child
-:child a owl:ObjectProperty ;
-             rdfs:domain :Human ;
-             rdfs:range :Human .
+# http://example.onto/hasChild
+:hasChild a owl:ObjectProperty ;
+       rdfs:label "Has child (son or daughter)" ;
+       rdfs:domain :Human ;
+       rdfs:range :Human .
+
+# http://example.onto/hasParent
+:hasParent a owl:ObjectProperty ;
+       rdfs:label "Has parent (mother or father)" ;
+       rdfs:domain :Human ;
+       rdfs:range :Human .
 
 ##########################################
 # Classes
@@ -153,10 +160,21 @@
 :Human a owl:Class ;
      rdfs:subClassOf :Mammalia ,
         [ rdf:type owl:Restriction ;
-          owl:onProperty :child ;
+          owl:onProperty :hasChild ;
           owl:maxQualifiedCardinality "888"^^xsd:nonNegativeInteger ;
           owl:allValuesFrom :Human
-        ] .
+        ] ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :hasParent ;
+          owl:minQualifiedCardinality "2"^^xsd:nonNegativeInteger ;
+          owl:allValuesFrom :Human
+        ],
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :hasParent ;
+          owl:maxQualifiedCardinality "2"^^xsd:nonNegativeInteger ;
+          owl:allValuesFrom :Human
+        ] ;
+     rdfs:label "Humano"@pt .
 
 ##########################################
 # Instances

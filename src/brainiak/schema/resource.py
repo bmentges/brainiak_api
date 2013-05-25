@@ -123,13 +123,13 @@ def _extract_cardinalities(bindings):
 
         if "min" in binding:
             min_value = binding["min"]["value"]
-            current_property[range_].update({"required": True})
-            if int(min_value) > 1:
-                current_property[range_].update({"minItems": min_value})
+            if int(min_value):
+                current_property[range_].update({"minItems": int(min_value)})
+                current_property[range_].update({"required": True})
         elif "max" in binding:
             max_value = binding["max"]["value"]
-            if int(max_value) > 1:
-                current_property[range_].update({"maxItems": max_value})
+            if int(max_value):
+                current_property[range_].update({"maxItems": int(max_value)})
 
     return cardinalities
 
@@ -290,6 +290,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     predicate["title"] = binding_row["title"]['value']
     predicate["graph"] = compressed_graph
 
+
     if "predicate_comment" in binding_row:
         predicate["comment"] = binding_row["predicate_comment"]['value']
 
@@ -300,16 +301,29 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
                               'title': range_label,
                               'type': 'string',
                               'format': 'uri'}
-        predicate["type"] = "string"
-        predicate["format"] = "uri"
+
+        # todo: unittest
+        max_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('maxItems', 2)
+        min_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('minItems', 2)
+
+        if (min_items > 1) or (max_items > 1) or (not min_items and not max_items):
+            predicate["type"] = "array"
+        else:
+            predicate["type"] = "string"
+            predicate["format"] = "uri"
 
     elif predicate_type == DATATYPE_PROPERTY:
         # add predicate['type'] and (optional) predicate['format']
         predicate.update(items_from_range(range_uri))
 
-    if (predicate_uri in cardinalities) and (range_uri in cardinalities[predicate_uri]):
-        predicate_restriction = cardinalities[predicate_uri]
-        predicate.update(predicate_restriction[range_uri])
+    if predicate["type"] == "array":
+        if (predicate_uri in cardinalities) and (range_uri in cardinalities[predicate_uri]):
+            predicate_restriction = cardinalities[predicate_uri]
+            predicate.update(predicate_restriction[range_uri])
+    else:
+        required = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('required', False)
+        if required:
+            predicate['required'] = True
 
     return predicate
 

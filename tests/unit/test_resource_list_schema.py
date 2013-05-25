@@ -41,7 +41,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'type': u'typed-literal', u'value': u'1'}
         }]
         extracted = _extract_cardinalities(binding)
-        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'required': True}}}
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'required': True, 'minItems': 1}}}
         self.assertEqual(extracted, expected)
 
     def test_extract_max_1_show_omit(self):
@@ -54,7 +54,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'type': u'typed-literal', u'value': u'1'}
         }]
         extracted = _extract_cardinalities(binding)
-        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {}}}
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'maxItems': 1}}}
         self.assertEqual(extracted, expected)
 
     def test_assemble_predicate_with_object_property(self):
@@ -65,9 +65,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                              'type': 'string',
                                              'format': 'uri'},
                                    'graph': 'test',
-                                   'maxItems': u'1',
                                    'format': 'uri',
-                                   'minItems': u'1',
                                    'title': u'Sexo',
                                    'type': 'string'}
         name = u'http://test/person/gender'
@@ -76,10 +74,10 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'range_graph': {u'type': u'uri', u'value': u'http://test/person/'},
                      u'range_label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero da Pessoa'},
                      u'title': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Sexo'},
-                     u'predicate_graph': {u'type': u'uri', u'value': u'http://test/person/'},
+                     u'predicate_graph': {u'typce': u'uri', u'value': u'http://test/person/'},
                      u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero.'},
                      u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}}
-        cardinalities = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': u'1', 'maxItems': u'1'}}}
+        cardinalities = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': 1, 'maxItems': 1}}}
         context = prefixes.MemorizeContext()
         context.prefix_to_slug('http://test/person')
         # test call
@@ -293,8 +291,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     'format': 'uri',
                     'type': 'string'},
                 'title': u'Has parent',
-                'type': 'string',
-                'format': 'uri'
+                'type': 'array'
             }
         }
 
@@ -335,8 +332,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     'type': 'string',
                     'format': 'uri'},
                 'title': u'Entidades',
-                'type': 'string',
-                'format': 'uri'
+                'type': 'array'
             },
             'G1:trata_do_assunto': {
                 'graph': 'G1',
@@ -347,8 +343,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     'type': 'string',
                     'format': 'uri'},
                 'title': u'Assuntos',
-                'type': 'string',
-                'format': 'uri'
+                'type': 'array'
             }
         }
 

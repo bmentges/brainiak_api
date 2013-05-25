@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from brainiak.type_mapper import OBJECT_PROPERTY, items_from_type, DATATYPE_PROPERTY, items_from_range
+from brainiak.type_mapper import OBJECT_PROPERTY, DATATYPE_PROPERTY, items_from_range
 
 
 class PrefixesTestCase(unittest.TestCase):

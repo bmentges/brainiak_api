@@ -77,11 +77,14 @@ def _retrieve_loggers():
     # General-purpose logging from Tornado itself
     gen_logger = logging.getLogger("tornado.general")
 
+    # Stomp logger imported by dad library
+    stomp_logger = logging.getLogger("stomp.py")
+
     # Brainiak application logger
     global logger
     logger = logging.getLogger(LOG_NAME)
 
-    return [access_logger, app_logger, gen_logger, logger]
+    return [access_logger, app_logger, gen_logger, stomp_logger, logger]
 
 
 def initialize(level=LOG_LEVEL):

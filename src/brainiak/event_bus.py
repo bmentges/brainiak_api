@@ -7,9 +7,15 @@ from brainiak.log import get_logger
 from brainiak.utils.resources import LazyObject
 
 logger = LazyObject(get_logger)
+middleware = None
 
-middleware = Middleware(host=EVENT_BUS_HOST, port=EVENT_BUS_PORT)
-
+def initialize():
+    global middleware
+    try:
+        middleware = Middleware(host=EVENT_BUS_HOST, port=EVENT_BUS_PORT)
+    except MiddlewareError as e:
+        logger.error(e)
+        raise
 
 def notify_bus(**kw):
     event = SemanticEvent(**kw)
@@ -18,7 +24,7 @@ def notify_bus(**kw):
         logger.info("BUS NOTIFICATION\n%s" % event)
     except MiddlewareError as e:
         logger.error(e)
-
+        raise
 
 def status():
     msg = middleware.status()

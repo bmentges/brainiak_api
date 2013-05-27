@@ -4,6 +4,7 @@ import ujson as json
 import sys
 import traceback
 from contextlib import contextmanager
+from tornado.curl_httpclient import CurlError
 
 from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import custom_decorator
@@ -25,6 +26,7 @@ from brainiak.schema import resource as schema_resource
 from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
 from brainiak.utils.links import build_schema_url
 from brainiak.utils.resources import LazyObject
+from brainiak.utils.resources import check_messages_when_port_is_mentioned
 
 
 logger = LazyObject(get_logger)
@@ -84,6 +86,17 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         else:
             status_code = 500
         error_message = "[{0}] on {1}".format(status_code, self._request_summary())
+
+        if isinstance(e, CurlError):
+            message = "Access to backend service failed.  {0:s}.".format(e)
+            extra_messages = check_messages_when_port_is_mentioned(str(e))
+            if extra_messages:
+                for msg in extra_messages:
+                    message += msg
+
+            logger.error(message)
+            self.send_error(status_code, message=message)
+
         if isinstance(e, HTTPError):
             if e.log_message:
                 error_message += "\n  {0}".format(e.log_message)

@@ -6,6 +6,7 @@ import traceback
 from contextlib import contextmanager
 from tornado.curl_httpclient import CurlError
 
+from tornado.httpclient import HTTPError as ClientHTTPError
 from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import custom_decorator
 from tornado_cors import CorsMixin
@@ -27,6 +28,7 @@ from brainiak.utils.params import ParamDict, InvalidParam, LIST_PARAMS, FILTER_P
 from brainiak.utils.links import build_schema_url
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.resources import check_messages_when_port_is_mentioned
+from brainiak.event_bus import NotificationFailure
 
 
 logger = LazyObject(get_logger)
@@ -85,9 +87,15 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             status_code = e.status_code
         else:
             status_code = 500
+
         error_message = "[{0}] on {1}".format(status_code, self._request_summary())
 
-        if isinstance(e, CurlError):
+        if isinstance(e, NotificationFailure):
+            message = str(e)
+            logger.error(message)
+            self.send_error(status_code, message=message)
+
+        elif isinstance(e, CurlError):
             message = "Access to backend service failed.  {0:s}.".format(e)
             extra_messages = check_messages_when_port_is_mentioned(str(e))
             if extra_messages:
@@ -97,7 +105,13 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             logger.error(message)
             self.send_error(status_code, message=message)
 
-        if isinstance(e, HTTPError):
+        if isinstance(e, ClientHTTPError):
+            if e.code == 401:
+                message = str(e)
+                logger.error(message)
+                self.send_error(status_code, message=message)
+
+        elif isinstance(e, HTTPError):
             if e.log_message:
                 error_message += "\n  {0}".format(e.log_message)
             if status_code == 500:
@@ -262,7 +276,8 @@ class InstanceHandler(BrainiakRequestHandler):
 
         self.finalize(response)
 
-    def direct_delete(self, context_name, class_name, instance_id):
+    @greenlet_asynchronous
+    def delete(self, context_name, class_name, instance_id):
         valid_params = INSTANCE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self,
@@ -272,7 +287,6 @@ class InstanceHandler(BrainiakRequestHandler):
                                           **valid_params)
 
         deleted = delete_instance(self.query_params)
-
         if deleted:
             response = 204
             if settings.NOTIFY_BUS:
@@ -280,11 +294,6 @@ class InstanceHandler(BrainiakRequestHandler):
                            graph=self.query_params["graph_uri"], action="DELETE")
         else:
             response = None
-        return response
-
-    @greenlet_asynchronous
-    def delete(self, context_name, class_name, instance_id):
-        response = self.direct_delete(context_name, class_name, instance_id)
         self.finalize(response)
 
     def finalize(self, response):
@@ -340,12 +349,23 @@ class CollectionHandler(BrainiakRequestHandler):
         (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
         instance_url = self.build_resource_url(instance_id)
 
-        if settings.NOTIFY_BUS:
-            notify_bus(instance=instance_uri, klass=self.query_params["class_uri"],
-                       graph=self.query_params["graph_uri"], action="POST")
-
         self.set_status(201)
         self.set_header("location", instance_url)
+
+        if settings.NOTIFY_BUS:
+            try:
+                notify_bus(instance=instance_uri, klass=self.query_params["class_uri"],
+                           graph=self.query_params["graph_uri"], action="POST")
+            except MiddlewareError as e:
+                # rollback data insertion
+                self.query_params['instance_id'] = instance_id
+                response = delete_instance(self.query_params)
+                if not response:
+                    msg = "Could not notify bus and failed to rollback insertion of {0}. ALERT: Search engines are not in sync anymore!"
+                else:
+                    msg = "Could not notify bus about insertion of {0}, rollback was successful."
+                raise NotificationFailure(msg.format(self.query_params['instance_uri']))
+
         self.finalize("")
 
     def finalize(self, response):

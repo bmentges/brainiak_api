@@ -6,6 +6,11 @@ from brainiak.settings import EVENT_BUS_HOST, EVENT_BUS_PORT, NOTIFY_BUS
 from brainiak.log import get_logger
 from brainiak.utils.resources import LazyObject
 
+
+class NotificationFailure(Exception):
+    pass
+
+
 logger = LazyObject(get_logger)
 middleware = None
 

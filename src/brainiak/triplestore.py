@@ -4,7 +4,7 @@ import urllib
 import ujson as json
 
 import SPARQLWrapper
-from tornado.httpclient import HTTPRequest
+from tornado.httpclient import HTTPRequest, HTTPError
 from tornado.httputil import url_concat
 
 from brainiak import settings, log
@@ -20,7 +20,15 @@ def query_sparql(query, *args, **kw):
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
     connection = VirtuosoConnection()
-    query_response = connection.query(query, *args, **kw)
+    try:
+        query_response = connection.query(query, *args, **kw)
+    except HTTPError as e:
+        if e.code == 401:
+            message = 'Check triplestore user and password.'
+            raise HTTPError(e.code, message=message)
+        else:
+            raise
+
     result_dict = json.loads(query_response.body)
     return result_dict
 

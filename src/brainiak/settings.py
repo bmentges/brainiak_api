@@ -4,7 +4,8 @@ import logging
 DEBUG = True
 ENVIRONMENT = 'local'
 
-SPARQL_ENDPOINT = 'http://localhost:8890/sparql-auth'
+SPARQL_PORT = 8890
+SPARQL_ENDPOINT = 'http://localhost:%d/sparql-auth' % SPARQL_PORT
 SPARQL_ENDPOINT_USER = "api-semantica"
 SPARQL_ENDPOINT_PASSWORD = "api-semantica"
 SPARQL_ENDPOINT_AUTH_MODE = "digest"

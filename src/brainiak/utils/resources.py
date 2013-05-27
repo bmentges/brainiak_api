@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import re
 from tornado.web import HTTPError
 from brainiak.prefixes import expand_uri, is_compressed_uri, ROOT_CONTEXT
 from brainiak.utils.params import valid_pagination
+from brainiak.settings import SPARQL_PORT, EVENT_BUS_PORT
 
 
 class LazyObject(object):
@@ -11,6 +13,17 @@ class LazyObject(object):
     def __getattr__(self, item):
         obj = self.factory()
         return object.__getattribute__(obj, item)
+
+
+def check_messages_when_port_is_mentioned(source_message):
+    backends = {int(EVENT_BUS_PORT): 'ActiveMQ', int(SPARQL_PORT): 'Virtuoso'}
+    port_pattern = re.compile('(\d+)')
+    result = []
+    for i in port_pattern.findall(source_message):
+        port = int(i)
+        if port in backends:
+            result.append(" Check {0}".format(backends[port]))
+    return result
 
 
 def validate_pagination_or_raise_404(params, total_items):

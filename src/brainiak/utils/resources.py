@@ -16,7 +16,7 @@ class LazyObject(object):
 
 
 def check_messages_when_port_is_mentioned(source_message):
-    backends = {int(EVENT_BUS_PORT): 'ActiveMQ', int(SPARQL_PORT): 'Virtuoso'}
+    backends = {EVENT_BUS_PORT: 'ActiveMQ', SPARQL_PORT: 'Virtuoso'}
     port_pattern = re.compile('(\d+)')
     result = []
     for i in port_pattern.findall(source_message):

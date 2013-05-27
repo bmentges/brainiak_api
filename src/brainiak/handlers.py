@@ -12,7 +12,7 @@ from tornado_cors import CorsMixin
 
 from brainiak import __version__, event_bus, triplestore, settings
 from brainiak.log import get_logger
-from brainiak.event_bus import notify_bus
+from brainiak.event_bus import notify_bus, MiddlewareError
 from brainiak.greenlet_tornado import greenlet_asynchronous
 from brainiak.context.list_resource import list_classes
 from brainiak.instance.create_resource import create_instance
@@ -243,7 +243,7 @@ class InstanceHandler(BrainiakRequestHandler):
             schema = schema_resource.get_schema(self.query_params)
             if schema is None:
                 raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
-            create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
+            instance_uri, instance_id = create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
             resource_url = self.request.full_url()
             self.set_status(201)
             self.set_header("location", resource_url)
@@ -253,13 +253,16 @@ class InstanceHandler(BrainiakRequestHandler):
         response = get_instance(self.query_params)
 
         if response and settings.NOTIFY_BUS:
-            notify_bus(instance=response["@id"], klass=self.query_params["class_uri"],
-                       graph=self.query_params["graph_uri"], action="PUT")
+            try:
+                notify_bus(instance=response["@id"], klass=self.query_params["class_uri"],
+                           graph=self.query_params["graph_uri"], action="PUT")
+            except MiddlewareError as e:
+                #rollback
+                pass
 
         self.finalize(response)
 
-    @greenlet_asynchronous
-    def delete(self, context_name, class_name, instance_id):
+    def direct_delete(self, context_name, class_name, instance_id):
         valid_params = INSTANCE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self,
@@ -277,7 +280,11 @@ class InstanceHandler(BrainiakRequestHandler):
                            graph=self.query_params["graph_uri"], action="DELETE")
         else:
             response = None
+        return response
 
+    @greenlet_asynchronous
+    def delete(self, context_name, class_name, instance_id):
+        response = self.direct_delete(context_name, class_name, instance_id)
         self.finalize(response)
 
     def finalize(self, response):

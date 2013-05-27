@@ -9,6 +9,7 @@ from brainiak.utils.resources import LazyObject
 logger = LazyObject(get_logger)
 middleware = None
 
+
 def initialize():
     global middleware
     try:
@@ -17,6 +18,7 @@ def initialize():
         logger.error(e)
         if NOTIFY_BUS:
             raise
+
 
 def notify_bus(**kw):
     event = SemanticEvent(**kw)
@@ -27,6 +29,7 @@ def notify_bus(**kw):
         logger.error(e)
         if NOTIFY_BUS:
             raise
+
 
 def status():
     msg = middleware.status()

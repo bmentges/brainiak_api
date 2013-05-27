@@ -458,7 +458,8 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                     u'type': u'string'
                 },
                 u'title': u'Birth place of first known member of Species',
-                u'type': u'array'
+                u'type': u'array',
+                u'items': {u'type': 'string', u'format': 'uri'}
             },
             u'http://example.onto/hasChild': {
                 u'graph': u'http://tati.pedia/',
@@ -471,7 +472,8 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 },
                 u'maxItems': 888,
                 u'title': u"Has child (son or daughter)",
-                u'type': u'array'
+                u'type': u'array',
+                u'items': {u'type': 'string', u'format': 'uri'}
             },
             u'http://example.onto/furColour': {
                 u'graph': u'http://tati.pedia/',
@@ -485,7 +487,9 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 },
                 u'required': True,
                 u'title': u'Fur or hair colour',
-                u'type': u'array'
+                u'type': u'array',
+                u'items': {u'type': 'string', u'format': 'uri'}
+
             },
             u'http://example.onto/gender': {
                 u'format': u'uri',
@@ -510,7 +514,9 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                           u'type': u'string'},
                 u'required': True,
                 u'title': u'Has parent (mother or father)',
-                u'type': u'array'
+                u'type': u'array',
+                u'items': {u'type': 'string', u'format': 'uri'}
+
             }
 
         }

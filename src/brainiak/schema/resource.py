@@ -307,6 +307,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
         if (min_items > 1) or (max_items > 1) or (not min_items and not max_items):
             predicate["type"] = "array"
+            predicate["items"] = {"type": "string", "format": "uri"}
         else:
             predicate["type"] = "string"
             predicate["format"] = "uri"

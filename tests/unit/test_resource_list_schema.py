@@ -291,7 +291,9 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     'format': 'uri',
                     'type': 'string'},
                 'title': u'Has parent',
-                'type': 'array'
+                'type': 'array',
+                'items': {'type': 'string', 'format': 'uri'}
+
             }
         }
 
@@ -332,7 +334,9 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     'type': 'string',
                     'format': 'uri'},
                 'title': u'Entidades',
-                'type': 'array'
+                'type': 'array',
+                'items': {'type': 'string', 'format': 'uri'}
+
             },
             'G1:trata_do_assunto': {
                 'graph': 'G1',
@@ -343,7 +347,8 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     'type': 'string',
                     'format': 'uri'},
                 'title': u'Assuntos',
-                'type': 'array'
+                'type': 'array',
+                'items': {'type': 'string', 'format': 'uri'}
             }
         }
 

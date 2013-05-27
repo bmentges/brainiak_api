@@ -290,7 +290,6 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     predicate["title"] = binding_row["title"]['value']
     predicate["graph"] = compressed_graph
 
-
     if "predicate_comment" in binding_row:
         predicate["comment"] = binding_row["predicate_comment"]['value']
 

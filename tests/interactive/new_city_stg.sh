@@ -1,0 +1,1 @@
+curl -i -X POST -T "new_city.json" -proxy1.0 proxy.staging.globoi.com:3128 -H "Content-Type: application/json" http://api.semantica.globoi.com/place/City

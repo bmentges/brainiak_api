@@ -267,12 +267,8 @@ class InstanceHandler(BrainiakRequestHandler):
         response = get_instance(self.query_params)
 
         if response and settings.NOTIFY_BUS:
-            try:
-                notify_bus(instance=response["@id"], klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"], action="PUT")
-            except MiddlewareError as e:
-                #rollback
-                pass
+            notify_bus(instance=response["@id"], klass=self.query_params["class_uri"],
+                       graph=self.query_params["graph_uri"], action="PUT")
 
         self.finalize(response)
 

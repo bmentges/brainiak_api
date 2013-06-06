@@ -19,6 +19,7 @@ class EventBusTestCase(TestCase):
     @patch("brainiak.event_bus.logger")
     @patch("dad.mom.Middleware.notify")
     def test_notify_bus(self, mocked_middleware_notify, mocked_logger, mocked_settings):
+        event_bus.initialize()
         event_bus.notify_bus(action="1", klass="2", graph="3", instance="4")
         self.assertTrue(mocked_middleware_notify.called)
 
@@ -26,4 +27,5 @@ class EventBusTestCase(TestCase):
     @patch("dad.mom.Middleware.notify", side_effect=MiddlewareError("mocked failure"))
     @patch("brainiak.event_bus.settings", NOTIFY_BUS=True)
     def test_notify_raises_exception(self, mocked_middleware_notify, mocked_notify_bus, mocked_logger):
+        event_bus.initialize()
         self.assertRaises(MiddlewareError, event_bus.notify_bus, action="1", klass="2", graph="3", instance="4")

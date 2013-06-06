@@ -21,7 +21,44 @@ This service allows the edition of an instance, provided its context, class name
     Connection: keep-alive
     Access-Control-Allow-Origin: *
 
-    {"rdfs:label": ["Feminino", "Feminino", "Feminino 2", "Feminino 2"], "rdf:type": ["person:Gender", "person:Gender", "person:Gender", "person:Gender"], "links": [{"href": "http://api.semantica.dev.globoi.com/person/Gender/Female", "rel": "self"}, {"href": "http://api.semantica.dev.globoi.com/person/Gender/_schema", "rel": "describedBy"}, {"href": "http://api.semantica.dev.globoi.com/person/Gender/Female", "method": "DELETE", "rel": "delete"}, {"href": "http://api.semantica.dev.globoi.com/person/Gender/Female", "method": "PUT", "rel": "replace"}], "@context": {"person": "http://semantica.globo.com/person/", "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdfs": "http://www.w3.org/2000/01/rdf-schema#"}, "$schema": "http://api.semantica.dev.globoi.com/person/Gender/_schema", "@id": "http://semantica.globo.com/person/Gender/Female", "@type": "person:Gender"}
+    {
+        "$schema": "http://api.semantica.dev.globoi.com/person/Gender/_schema",
+        "@context": {
+            "person": "http://semantica.globo.com/person/",
+            "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+        },
+        "@id": "http://semantica.globo.com/person/Gender/Female",
+        "@type": "person:Gender",
+        "links": [
+            {
+                "href": "http://api.semantica.dev.globoi.com/person/Gender/Female",
+                "rel": "self"
+            },
+            {
+                "href": "http://api.semantica.dev.globoi.com/person/Gender/_schema",
+                "rel": "describedBy"
+            },
+            {
+                "href": "http://api.semantica.dev.globoi.com/person/Gender/Female",
+                "method": "DELETE",
+                "rel": "delete"
+            },
+            {
+                "href": "http://api.semantica.dev.globoi.com/person/Gender/Female",
+                "method": "PUT",
+                "rel": "replace"
+            }
+        ],
+        "rdf:type": "person:Gender",
+        "upper:name":"Feminino",
+    }
+
+.. warning::
+
+   When using curl, the "-T" param will append the filename to the actual URL, if the URL parameter ends with a "/".
+   In order to avoid that, either remove the last "/" or use '-d @new_york_city.json' to expand the file contents.
+
 
 Sample JSON "edit_female.json":
 

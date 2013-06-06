@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 import md5
+import time
 import urllib
-import ujson as json
 
 import SPARQLWrapper
 from tornado.httpclient import HTTPRequest, HTTPError
 from tornado.httputil import url_concat
+import ujson as json
 
 from brainiak import settings, log
 from brainiak.greenlet_tornado import greenlet_fetch
+
+
+# This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works
+format = "POST - %(url)s - %(user_ip)s - %(user_name)s [tempo: %(time_diff)s] - QUERY - %(query)s"
 
 
 # TODO: compute runtime
@@ -94,8 +99,21 @@ class VirtuosoConnection(object):
                               auth_username=self.user,
                               auth_password=self.password,
                               auth_mode=self.auth_mode)
-        log.logger.info("SPARQL query\n" + query)
+
+        time_i = time.time()
         response = greenlet_fetch(request)
+        time_f = time.time()
+
+        time_diff = time_f - time_i
+        log_msg = format % {
+            'url': url,
+            'user_ip': str(None),
+            'user_name': self.user,
+            'time_diff': time_diff,
+            'query': query
+        }
+        log.logger.info(log_msg)
+
         return response
 
 

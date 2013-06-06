@@ -14,7 +14,6 @@ class EventBusTestCase(TestCase):
     def test_initialize_raises_exception(self, mocked_init, mocked_logger, mocked_settings):
         self.assertRaises(MiddlewareError, event_bus.initialize)
 
-
     @patch("brainiak.event_bus.settings", NOTIFY_BUS=True)
     @patch("brainiak.event_bus.logger")
     @patch("dad.mom.Middleware.notify")

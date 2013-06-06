@@ -33,6 +33,9 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
             else:
                 raise CurlError(500, "Virtuoso Down on port 8890")
 
+        def delete(self):
+            self.finalize(None)
+
     def get_app(self):
         return Application([('/', self.Handler)],
                            log_function=lambda x: None)
@@ -72,6 +75,11 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
     def test_500_http_error_500(self, log):
         response = self.fetch('/', method='PUT', body="500")
         self.assertEqual(response.code, 500)
+
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
+    def test_delete_finalize_None(self, log):
+        response = self.fetch('/', method='DELETE')
+        self.assertEqual(response.code, 404)
 
 
 class TestUnmatchedHandler(TornadoAsyncHTTPTestCase):

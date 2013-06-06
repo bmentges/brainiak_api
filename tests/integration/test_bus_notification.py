@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import ujson as json
 from mock import patch
+
+from dad.mom import MiddlewareError
+
 from brainiak import server, settings
 from brainiak import handlers
-from dad.mom import MiddlewareError
+from brainiak.event_bus import NotificationFailure
 
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
@@ -114,7 +117,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     @patch("brainiak.event_bus.logger")
     @patch("brainiak.handlers.logger")
-    @patch("brainiak.handlers.notify_bus", side_effect=MiddlewareError('Mocked failure'))
+    @patch("brainiak.handlers.notify_bus", side_effect=NotificationFailure('Mocked failure'))
     def test_notify_bus_connection_closed_exception(self, fake_send, log, log2):
         deleted_new_york = self.fetch(
             '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',

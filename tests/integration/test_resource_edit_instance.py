@@ -56,7 +56,7 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     @patch("brainiak.handlers.logger")
     def test_edit_instance_400_no_body(self, log):
-        response = self.fetch('/anything/Place/new_york?wrong_param=wrong_value', method='PUT')
+        response = self.fetch('/anything/Place/new_york', method='PUT')
         self.assertEqual(response.code, 400)
 
     @patch("brainiak.handlers.logger")

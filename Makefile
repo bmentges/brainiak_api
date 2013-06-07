@@ -54,7 +54,7 @@ run:
 gunicorn:
 	@echo "Running with gunicorn..."
 	@pip install gunicorn
-	cd $(BRAINIAK_CODE); PYTHONPATH="$(NEW_PYTHONPATH)" gunicorn -k egg:gunicorn#tornado brainiak.server:application -w 1
+	cd $(BRAINIAK_CODE); PYTHONPATH="$(NEW_PYTHONPATH)" gunicorn -k egg:gunicorn#tornado brainiak.server:application -w 10
 
 nginx:
 	sudo nginx -c /home/tati/CodeGlobo/brainiak/config/local/nginx.conf # run on 0.0.0.0:80

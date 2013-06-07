@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-
 import unittest
+from mock import patch
+
 from brainiak import prefixes
 from brainiak.prefixes import expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri, prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix, uri_to_slug
 
@@ -38,6 +39,10 @@ class PrefixesTestCase(unittest.TestCase):
         self.assertEqual(shorten_uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), "rdf:type")
 
     def test_shorten_uri_fails(self):
+        self.assertEqual(shorten_uri("http://some/invalid/uri"), "http://some/invalid/uri")
+
+    @patch("brainiak.prefixes.extract_prefix", return_value="http://some/")
+    def test_shorten_with_slash_in_item(self, mocked_extract_prefix):
         self.assertEqual(shorten_uri("http://some/invalid/uri"), "http://some/invalid/uri")
 
     def test_prefix_from_uri(self):

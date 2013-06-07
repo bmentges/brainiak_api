@@ -56,6 +56,12 @@ gunicorn:
 	@pip install gunicorn
 	cd $(BRAINIAK_CODE); PYTHONPATH="$(NEW_PYTHONPATH)" gunicorn -k egg:gunicorn#tornado brainiak.server:application -w 1
 
+nginx:
+	sudo nginx -c config/local/nginx.conf
+
+test-nginx:
+	sudo nginx -t -c config/local/nginx.conf
+
 supervisor:
 	PYTHONPATH="$(NEW_PYTHONPATH)" supervisord -c config/local/supervisord.conf -n -edebug
 

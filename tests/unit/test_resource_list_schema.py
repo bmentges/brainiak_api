@@ -135,13 +135,13 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_merge_ranges_first_is_list(self):
-        r1 = [{'r0': 0}, {'r1', 1}]
+        r1 = [{'r0': 0}, {'r1': 1}]
         r2 = {'r2': 2}
         expected = [{'r0': 0}, {'r1': 1}, {'r2': 2}]
         computed = merge_ranges(r1, r2)
         self.assertEqual(sorted(computed), sorted(expected))
 
-    def test_merge_ranges_first_is_list(self):
+    def test_merge_ranges_first_is_not_list(self):
         r1 = {'r1': 1}
         r2 = [{'r2': 2}, {'r3': 3}]
         expected = [{'r2': 2}, {'r3': 3}, {'r1': 1}]

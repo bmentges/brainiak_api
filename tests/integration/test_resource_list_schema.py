@@ -1,15 +1,17 @@
+from mock import patch
 import json
+
 import brainiak.schema.resource as schema
 
 from brainiak import prefixes
 from brainiak import triplestore
 from brainiak.schema.resource import build_class_schema_query, \
-        _query_superclasses, query_superclasses, QUERY_CARDINALITIES, \
-        QUERY_PREDICATE_WITHOUT_LANG, QUERY_PREDICATE_WITH_LANG, \
-        QUERY_SUPERCLASS
+    _query_superclasses, query_superclasses, QUERY_CARDINALITIES, \
+    QUERY_PREDICATE_WITHOUT_LANG, QUERY_PREDICATE_WITH_LANG, \
+    QUERY_SUPERCLASS
 from brainiak.utils.params import ParamDict
-from tests.mocks import MockHandler
 
+from tests.mocks import MockHandler
 from tests.tornado_cases import TornadoAsyncTestCase, TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -39,7 +41,7 @@ class ClassSchemaQueryTestCase(QueryTestCase):
         params = {"class_uri": "http://example.onto/City"}
 
         expected_list = [u'http://example.onto/City',
-                             u'http://example.onto/Place']
+                         u'http://example.onto/Place']
 
         response = query_superclasses(params)
         self.assertEqual(response, expected_list)
@@ -385,28 +387,10 @@ class PredicatesQueryTestCase(QueryTestCase):
 
 class GetSchemaTestCase(TornadoAsyncTestCase):
 
-    def setUp(self):
-        super(TornadoAsyncTestCase, self).setUp()
-        self.original_query_class_schema = schema.query_class_schema
-        self.original_get_predicates_and_cardinalities = schema.get_predicates_and_cardinalities
-        self.original_query_superclasses = schema.query_superclasses
-
-    def tearDown(self):
-        schema.query_class_schema = self.original_query_class_schema
-        schema.get_predicates_and_cardinalities = self.original_get_predicates_and_cardinalities
-        schema.query_superclasses = self.original_query_superclasses
-        super(TornadoAsyncTestCase, self).tearDown()
-
-    def test_query_get_schema(self):
-        class_schema = {"results": {"bindings": [{"dummy_key": "dummy_value"}]}}
-
-        schema.query_class_schema = lambda query: class_schema
-        schema.query_superclasses = lambda query: ["classeA", "classeB"]
-
-        def mock_get_predicates_and_cardinalities(context, params):
-            return "property_dict"
-
-        schema.get_predicates_and_cardinalities = mock_get_predicates_and_cardinalities
+    @patch("brainiak.schema.resource.query_class_schema", return_value={"results": {"bindings": [{"dummy_key": "dummy_value"}]}})
+    @patch("brainiak.schema.resource.query_superclasses", return_value=["classeA", "classeB"])
+    @patch("brainiak.schema.resource.get_predicates_and_cardinalities", return_value="property_dict")
+    def test_query_get_schema(self, mocked_get_preds_and_cards, mocked_query_superclasses, mocked_query_class_schema):
 
         params = {
             "context_name": "ctx",
@@ -429,6 +413,24 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
         self.assertEqual(schema_response["properties"], "property_dict")
         # FIXME: enhance the structure of the response
         self.stop()
+
+    @patch("brainiak.schema.resource.query_class_schema", return_value={"results": {"bindings": []}})
+    @patch("brainiak.schema.resource.query_superclasses", return_value=["classeA", "classeB"])
+    @patch("brainiak.schema.resource.get_predicates_and_cardinalities", return_value="property_dict")
+    def test_query_get_schema_empty_response(self, mocked_get_preds_and_cards, mocked_query_superclasses, mocked_query_class_schema):
+
+        params = {
+            "context_name": "ctx",
+            "class_name": "klass",
+            "class_uri": "test_class",
+            "graph_uri": "test_graph",
+            "lang": "en"
+        }
+        handler = MockHandler(uri="http://class.uri")
+        query_params = ParamDict(handler, **params)
+
+        response = schema.get_schema(query_params)
+        self.assertIsNone(response)
 
 
 class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
@@ -495,10 +497,10 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'format': u'uri',
                 u'graph': u'http://tati.pedia/',
                 u'range': {u'@id': u'http://example.onto/Gender',
-                        u'format': u'uri',
-                        u'graph': u'',
-                        u'title': u'',
-                        u'type': u'string'},
+                           u'format': u'uri',
+                           u'graph': u'',
+                           u'title': u'',
+                           u'type': u'string'},
                 u'required': True,
                 u'title': u'Gender',
                 u'type': u'string'

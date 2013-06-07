@@ -22,7 +22,7 @@ def initialize():
     except MiddlewareError as e:
         logger.error(e)
         if settings.NOTIFY_BUS:
-            raise
+            raise NotificationFailure("Initialization failed")
 
 
 def notify_bus(**kw):
@@ -33,7 +33,7 @@ def notify_bus(**kw):
     except MiddlewareError as e:
         logger.error(e)
         if settings.NOTIFY_BUS:
-            raise
+            raise NotificationFailure("Notification failed")
 
 
 def status():

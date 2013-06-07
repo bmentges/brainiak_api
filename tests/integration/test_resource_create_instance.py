@@ -93,9 +93,9 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")
-    def test_create_instance_201(self, log, notify_bus):
-        schema_resource.get_schema = lambda params: True
-        create_resource.create_instance_uri = lambda class_uri: "http://unique-id"
+    @patch("brainiak.handlers.schema_resource.get_schema", return_value=True)
+    @patch("brainiak.instance.create_resource.create_instance_uri", return_value="http://unique-id")
+    def test_create_instance_201(self, mocked_logger, mocked_notify_bus, mocked_get_schema, mocked_create_instance_uri):
         payload = JSON_CITY_GLOBOLAND
         response = self.fetch('/sample-place/City/',
             method='POST',
@@ -109,9 +109,9 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")
-    def test_create_instance_201_without_final_slash(self, log, notify_bus):
-        schema_resource.get_schema = lambda params: True
-        create_resource.create_instance_uri = lambda class_uri: "http://unique-id"
+    @patch("brainiak.handlers.schema_resource.get_schema", return_value=True)
+    @patch("brainiak.instance.create_resource.create_instance_uri", return_value="http://unique-id")
+    def test_create_instance_201_without_final_slash(self, mocked_logger, mocked_notify_bus, mocked_get_schema, mocked_create_instance_uri):
         payload = JSON_CITY_GLOBOLAND
         response = self.fetch('/sample-place/City',  # <--- this makes this test diff from above
             method='POST',

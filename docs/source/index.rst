@@ -29,3 +29,4 @@ The Brainiak API provides a configurable way to access RDF data using simple RES
    concepts.rst
    services.rst
    tutorials.rst
+   troubleshoot.rst

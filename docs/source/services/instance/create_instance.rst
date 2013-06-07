@@ -7,10 +7,15 @@ This service allows the creation of a new instance, provided its context, class 
 
 .. code-block:: bash
 
-  $ curl -i -X POST -T "new_york_city.json" http://api.semantica.dev.globoi.com/place/City/
+  $ curl -i -X POST -T "new_york_city.json" http://api.semantica.dev.globoi.com/place/City
 
-.. program-output:: curl -i -s -H "Expect:" -X POST -T "services/instance/examples/new_city.json" http://api.semantica.dev.globoi.com/place/City/
+.. program-output:: curl -i -s -H "Expect:" -X POST -T "services/instance/examples/new_city.json" http://api.semantica.dev.globoi.com/place/City
   :shell:
+
+.. warning::
+
+   When using curl, the "-T" param will append the filename to the actual URL, if the URL parameter ends with a "/".
+   In order to avoid that, either remove the last "/" or use '-d @new_york_city.json' to expand the file contents.
 
 Sample JSON "new_city.json" for the class City_:
 

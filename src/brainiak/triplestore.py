@@ -140,8 +140,8 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
     try:
         response = endpoint.query()
         msg = success_msg % info
-    except Exception, error:
-        info["error"] = error.msg
+    except Exception as error:
+        info["error"] = str(error)
         msg = failure_msg % info
 
     password_md5 = md5.new(password).digest()
@@ -156,7 +156,7 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
         response = endpoint.query()
         msg = msg + "<br>" + success_msg % info
     except Exception as error:
-        info["error"] = error.msg
+        info["error"] = str(error)
         msg = msg + "<br>" + failure_msg % info
 
     return msg

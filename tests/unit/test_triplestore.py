@@ -127,6 +127,6 @@ class TriplestoreExceptionTestCase(unittest.TestCase):
         try:
             triplestore.query_sparql("aa")
         except HTTPError as e:
-            self.assertEquals(e.message, 'Check triplestore user and password.')
+            self.assertEquals(e.message, 'HTTP 401: Check triplestore user and password.')
         else:
             self.fail()

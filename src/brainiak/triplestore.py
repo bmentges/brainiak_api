@@ -141,7 +141,14 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
         response = endpoint.query()
         msg = success_msg % info
     except Exception as error:
-        info["error"] = str(error)
+        if hasattr(error, 'msg'):
+            # note that msg is used due to SPARQLWrapper.SPARQLExceptions.py
+            # implementation of error messages
+            message = error.msg
+        else:
+            message = str(error)
+
+        info["error"] = message
         msg = failure_msg % info
 
     password_md5 = md5.new(password).digest()
@@ -156,7 +163,12 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
         response = endpoint.query()
         msg = msg + "<br>" + success_msg % info
     except Exception as error:
-        info["error"] = str(error)
+        if hasattr(error, 'msg'):
+            message = error.msg
+        else:
+            message = str(error)
+
+        info["error"] = message
         msg = msg + "<br>" + failure_msg % info
 
     return msg

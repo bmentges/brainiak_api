@@ -142,6 +142,8 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
         msg = success_msg % info
     except Exception as error:
         if hasattr(error, 'msg'):
+            # note that msg is used due to SPARQLWrapper.SPARQLExceptions.py
+            # implementation of error messages
             message = error.msg
         else:
             message = str(error)

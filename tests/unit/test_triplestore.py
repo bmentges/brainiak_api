@@ -1,8 +1,11 @@
 # coding: utf-8
 import unittest
-import SPARQLWrapper
 from mock import patch
+
+from tornado.httpclient import HTTPError
+
 from brainiak import triplestore
+import SPARQLWrapper
 
 
 class TriplestoreInitTestCase(unittest.TestCase):
@@ -115,3 +118,15 @@ class TestCaseStatus(unittest.TestCase):
         msg2 = "Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | FAILED | http://localhost:8890/sparql-auth | ERROR 1"
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
+
+
+class TriplestoreExceptionTestCase(unittest.TestCase):
+
+    @patch("brainiak.triplestore.VirtuosoConnection.query", side_effect=HTTPError(401))
+    def test_query_returns_401(self, mocked_query):
+        try:
+            triplestore.query_sparql("aa")
+        except HTTPError as e:
+            self.assertEquals(e.message, 'Check triplestore user and password.')
+        else:
+            self.fail()

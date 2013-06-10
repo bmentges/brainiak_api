@@ -57,14 +57,13 @@ gunicorn:
 	cd $(BRAINIAK_CODE); PYTHONPATH="$(NEW_PYTHONPATH)" gunicorn -k egg:gunicorn#tornado brainiak.server:application -w 10
 
 nginx:
-	sudo nginx -c /home/tati/CodeGlobo/brainiak/config/local/nginx.conf # run on 0.0.0.0:80
+	sudo nginx -c $(HOME_BRAINIAK)/config/local/nginx.conf # run on 0.0.0.0:80
 
 test-nginx:
-	sudo nginx -t -c /home/tati/CodeGlobo/brainiak/config/local/nginx.conf
+	sudo nginx -t -c $(HOME_BRAINIAK)/config/local/nginx.conf
 
 supervisor:
 	PYTHONPATH="$(NEW_PYTHONPATH)" supervisord -c config/local/supervisord.conf -n -edebug
-
 
 docs:
 	@echo "Compiling and opening documentation..."

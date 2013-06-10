@@ -59,6 +59,8 @@ class MockSPARQLWrapper():
     def query(self):
         self.iteration += 1
         if (self.iteration - 1) in self.exception_iterations:
+            # note that msg is used due to SPARQLWrapper.SPARQLExceptions.py
+            # implementation of error messages
             e = Exception()
             e.msg = "ERROR %d" % (self.iteration - 1)
             raise e
@@ -127,6 +129,6 @@ class TriplestoreExceptionTestCase(unittest.TestCase):
         try:
             triplestore.query_sparql("aa")
         except HTTPError as e:
-            self.assertEquals(e.message, 'Check triplestore user and password.')
+            self.assertEquals(e.message, 'HTTP 401: Check triplestore user and password.')
         else:
             self.fail()

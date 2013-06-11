@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import traceback
 
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -26,6 +27,7 @@ class Application(TornadoApplication):
             super(Application, self).__init__(get_routes(), debug=debug)
         except Exception as e:
             sys.stdout.write("Failed to initialize application. {0}".format(str(e)))
+            traceback.print_exc(file=sys.stdout)
             sys.exit(1)
 
 application = Application()

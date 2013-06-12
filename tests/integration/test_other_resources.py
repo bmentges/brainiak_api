@@ -37,7 +37,7 @@ class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
 
     def test_virtuoso_status_in_non_prod(self):
         settings.ENVIRONMENT = "local"
-        response = self.fetch('/status/virtuoso', method='GET')
+        response = self.fetch('/_status/virtuoso', method='GET')
         self.assertEqual(response.code, 200)
 
 
@@ -63,7 +63,7 @@ class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
     def test_activemq_status_on(self, log):
         msg = 'ActiveMQ connection not-authenticated | SUCCEED | localhost:61613'
         event_bus.middleware.not_connected = lambda: ""
-        response = self.fetch('/status/activemq', method='GET')
+        response = self.fetch('/_status/activemq', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, msg)
 
@@ -73,7 +73,7 @@ class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
         body = "ActiveMQ connection not-authenticated | FAILED | localhost:61613 | {0}".format(msg)
         event_bus.middleware.not_connected = lambda: msg
         event_bus.middleware.connect = lambda: raise_exception()
-        response = self.fetch('/status/activemq', method='GET')
+        response = self.fetch('/_status/activemq', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, body)
 
@@ -93,7 +93,7 @@ class LifecheckTestCase(TornadoAsyncHTTPTestCase):
     def test_lifecheck_working(self, log):
         handlers.triplestore.status = lambda: "Virtuoso SUCCEED"
         handlers.event_bus.status = lambda: "ActiveMQ SUCCEED"
-        response = self.fetch('/lifecheck/', method='GET')
+        response = self.fetch('/_status/', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "WORKING")
 
@@ -101,7 +101,7 @@ class LifecheckTestCase(TornadoAsyncHTTPTestCase):
     def test_lifecheck_failed_due_to_virtuoso(self, log):
         handlers.triplestore.status = lambda: "Virtuoso FAILED"
         handlers.event_bus.status = lambda: "ActiveMQ SUCCEED"
-        response = self.fetch('/lifecheck/', method='GET')
+        response = self.fetch('/_status/', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "Virtuoso FAILED")
 
@@ -109,7 +109,7 @@ class LifecheckTestCase(TornadoAsyncHTTPTestCase):
     def test_lifecheck_failed_due_to_activemq(self, log):
         handlers.triplestore.status = lambda: "Virtuoso SUCCEED"
         handlers.event_bus.status = lambda: "ActiveMQ FAILED"
-        response = self.fetch('/lifecheck/', method='GET')
+        response = self.fetch('/_status/', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "ActiveMQ FAILED")
 
@@ -117,6 +117,6 @@ class LifecheckTestCase(TornadoAsyncHTTPTestCase):
     def test_lifecheck_failed_due_to_activemq(self, log):
         handlers.triplestore.status = lambda: "Virtuoso FAILED"
         handlers.event_bus.status = lambda: "ActiveMQ FAILED"
-        response = self.fetch('/lifecheck/', method='GET')
+        response = self.fetch('/_status/', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "Virtuoso FAILED\nActiveMQ FAILED")

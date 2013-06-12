@@ -4,7 +4,9 @@ Releases
 Version 1.1.1 - 2013-06-??
 --------------------------
 
- - in the schemas, besides the type, the format field describes the actual type used inside Virtuoso.
+ - in the schemas:
+     - besides the type, the format field describes the actual type used inside Virtuoso.
+     - the field comment was renamed to description to better comply wiht json-schema specification.
 
 
 Version 1.1.0 - 2013-05-28

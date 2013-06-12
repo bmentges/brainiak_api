@@ -594,7 +594,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(context, params)
         expected_predicates_and_cardinalities = {
             'http://test/person/gender': {
-                'comment': u'G\xeanero.',
+                'description': u'G\xeanero.',
                 'title': 'Sexo',
                 'graph': 'http://test/person/',
                 'format': 'uri',

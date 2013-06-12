@@ -90,7 +90,8 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         expected_predicate_dict = {'comment': u'Nome completo da pessoa',
                                    'graph': 'test',
                                    'title': u'Nome',
-                                   'type': 'string'}
+                                   'type': 'string',
+                                   'format': 'xsd:string'}
         name = u'http://test/person/gender'
         predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/name'},
                      u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},

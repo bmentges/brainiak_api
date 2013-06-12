@@ -12,12 +12,16 @@ class PrefixesTestCase(unittest.TestCase):
 
     def test_items_from_range_integer(self):
         self.assertEqual(items_from_range("http://www.w3.org/2001/XMLSchema#integer"),
-                          {"type": "integer"})
+                          {'format': 'xsd:integer', 'type': 'integer'})
 
     def test_items_from_range_float(self):
         self.assertEqual(items_from_range("http://www.w3.org/2001/XMLSchema#float"),
-                          {"type": "number"})
+                          {'format': 'xsd:float', 'type': 'number'})
 
     def test_items_from_range_string(self):
         self.assertEqual(items_from_range("http://www.w3.org/2001/XMLSchema#string"),
-                          {"type": "string"})
+                          {'format': 'xsd:string', 'type': 'string'})
+
+    def test_items_from_range_unmapped(self):
+        self.assertEqual(items_from_range("http://some/strange/type/uri"),
+                          {'format': 'http://some/strange/type/uri', 'type': 'object'})

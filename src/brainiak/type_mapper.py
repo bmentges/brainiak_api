@@ -35,6 +35,6 @@ def items_from_range(range_uri):
     if short_range == 'xsd:date' or short_range == 'xsd:dateTime':
         return {"type": "string", "format": "date"}
     else:
-        return {"type": _MAP_XSD_TO_JSON_TYPE.get(short_range, "any")}
+        return {"type": _MAP_XSD_TO_JSON_TYPE.get(short_range, 'object'), "format": short_range}
 
 # TODO: support other JSON types: "boolean", "object", "array"

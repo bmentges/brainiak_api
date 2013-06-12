@@ -19,7 +19,7 @@ class RouteTestCase(TestCase):
 
     def test_status_virtuoso(self):
         regex = self._regex_for(VirtuosoStatusHandler)
-        VIRTUOSO_STATUS = '/status/virtuoso'
+        VIRTUOSO_STATUS = '/_status/virtuoso'
         self.assertTrue(regex.match(VIRTUOSO_STATUS))
 
     def test_schema_resource(self):

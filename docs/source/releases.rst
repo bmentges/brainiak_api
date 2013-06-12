@@ -1,7 +1,13 @@
 Releases
 ========
 
-Version 1.0.1 - 2013-05-??
+Version 1.1.1 - 2013-06-??
+--------------------------
+
+ - in the schemas, besides the type, the format field describes the actual type used inside Virtuoso.
+
+
+Version 1.1.0 - 2013-05-28
 --------------------------
 
  - notification of instance creation ,removal and update to external event bus through stomp protocol. Using package DAD for notifications to MOM bus.

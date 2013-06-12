@@ -21,3 +21,7 @@ class PrefixesTestCase(unittest.TestCase):
     def test_items_from_range_string(self):
         self.assertEqual(items_from_range("http://www.w3.org/2001/XMLSchema#string"),
                           {'format': 'xsd:string', 'type': 'string'})
+
+    def test_items_from_range_unmapped(self):
+        self.assertEqual(items_from_range("http://some/strange/type/uri"),
+                          {'format': 'http://some/strange/type/uri', 'type': 'object'})

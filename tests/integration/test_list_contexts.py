@@ -83,7 +83,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
 class QueryTestCase(QueryTestCase):
     allow_triplestore_connection = True
     graph_uri = "http://whatever.com"
-    fixtures = ["tests/sample/demo.n3"]
+    fixtures = ["tests/sample/instances.n3"]
 
     def test_query_pre_defined_graphs(self):
         query = QUERY_LIST_CONTEXT

@@ -58,7 +58,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         self.assertEqual(extracted, expected)
 
     def test_assemble_predicate_with_object_property(self):
-        expected_predicate_dict = {'comment': u'G\xeanero.',
+        expected_predicate_dict = {'description': u'G\xeanero.',
                                    'range': {'graph': 'test',
                                              '@id': 'test:Gender',
                                              'title': u'G\xeanero da Pessoa',
@@ -87,7 +87,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         self.assertEqual(expected_predicate_dict, effective_predicate_dict)
 
     def test_assemble_predicate_with_datatype_property(self):
-        expected_predicate_dict = {'comment': u'Nome completo da pessoa',
+        expected_predicate_dict = {'description': u'Nome completo da pessoa',
                                    'graph': 'test',
                                    'title': u'Nome',
                                    'type': 'string',

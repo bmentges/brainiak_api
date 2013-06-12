@@ -56,11 +56,11 @@ def safe_params(valid_params=None):
 def get_routes():
     return [
         URLSpec(r'/healthcheck/?', HealthcheckHandler),
-        URLSpec(r'/lifecheck/$', LifecheckHandler),
         URLSpec(r'/version/?', VersionHandler),
         URLSpec(r'/prefixes/?', PrefixHandler),
-        URLSpec(r'/status/activemq/?', EventBusStatusHandler),
-        URLSpec(r'/status/virtuoso/?', VirtuosoStatusHandler),
+        URLSpec(r'/_status/$', StatusHandler),
+        URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
+        URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)/?', InstanceHandler),
@@ -178,7 +178,7 @@ class EventBusStatusHandler(BrainiakRequestHandler):
         self.write(event_bus.status())
 
 
-class LifecheckHandler(BrainiakRequestHandler):
+class StatusHandler(BrainiakRequestHandler):
 
     def get(self):
         triplestore_status = triplestore.status()

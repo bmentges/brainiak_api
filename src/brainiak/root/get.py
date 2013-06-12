@@ -12,7 +12,7 @@ from brainiak.utils.resources import validate_pagination_or_raise_404
 
 QUERY_LIST_CONTEXT = """
 SELECT DISTINCT ?graph
-WHERE {GRAPH ?graph { ?s ?p ?o }}
+WHERE {GRAPH ?graph { ?s a ?o }}
 """
 
 

@@ -52,7 +52,7 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     }
     comment = kw.get("comment", None)
     if comment:
-        schema["comment"] = comment
+        schema["description"] = comment
 
     return schema
 
@@ -291,7 +291,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     predicate["graph"] = compressed_graph
 
     if "predicate_comment" in binding_row:
-        predicate["comment"] = binding_row["predicate_comment"]['value']
+        predicate["description"] = binding_row["predicate_comment"]['value']
 
     if predicate_type == OBJECT_PROPERTY:
         context.add_object_property(predicate_uri, compressed_range_uri)

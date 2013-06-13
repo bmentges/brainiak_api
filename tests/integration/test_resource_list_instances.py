@@ -187,7 +187,6 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             u'@id': u'http://brmedia.com/news_cricket',
             u'title': u'Cricket becomes the most popular sport of Brazil'
         }]
-        self.assertEqual(computed_item_count, 1)
         self.assertEqual(computed_items, expected_items)
 
     def test_news_filtered_by_politics_graph(self):
@@ -201,7 +200,6 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             u'@id': u'http://brmedia.com/news_president_answer',
             u'title': u"President explains the reason for the war - it is 42"
         }]
-        self.assertEqual(computed_item_count, 1)
         self.assertEqual(computed_items, expected_items)
 
 
@@ -727,65 +725,3 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         params = {"o": "", "p": "", "class_uri": "", "sort_by": "", 'offset': '0', 'page': '1', 'per_page': '10'}
         result = list_resource.filter_instances(params)
         self.assertEqual(result, None)
-
-    def test_filter_instances_result_is_not_empty(self):
-        sample_json = {"results": {"bindings": []}}
-        count_json = {"results": {"bindings": [{"total": {"value": "12"}}]}}
-        list_resource.query_filter_instances = lambda params: sample_json
-        list_resource.query_count_filter_instances = lambda params: count_json
-
-        params = {
-            "context_name": "ctx",
-            "class_name": "klass",
-            "per_page": "3",
-            "page": "2",
-            "sort_by": "",
-            "p": "",
-            "o": ""
-        }
-
-        handler = MockHandler(uri="http://localhost:5100/ctx/klass", querystring="per_page=3&page=2", **params)
-        query_params = ParamDict(handler, **params)
-        response = list_resource.filter_instances(query_params)  # page based on virtuoso (begins with 0)
-
-        expected_links = [
-            {
-                'href': "http://localhost:5100/ctx/klass?per_page=3&page=2",
-                'method': "GET",
-                'rel': "self"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass/{resource_id}?instance_prefix={instance_prefix}",
-                'method': "GET",
-                'rel': "item"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass",
-                'method': "POST",
-                'rel': "create",
-                'schema': {'$ref': 'http://localhost:5100/ctx/klass/_schema'}
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
-                'method': "GET",
-                'rel': "first"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass?per_page=3&page=4",
-                'method': "GET",
-                'rel': "last"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
-                'method': "GET",
-                'rel': "previous"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass?per_page=3&page=3",
-                'method': "GET",
-                'rel': "next"
-            }
-        ]
-        self.assertEquals(len(response["links"]), 7)
-        for link in expected_links:
-            self.assertIn(link, response["links"])

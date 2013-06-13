@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import unittest
-from tornado.web import HTTPError
 from brainiak import settings
 
 from brainiak.context import list_resource
@@ -23,15 +22,14 @@ class GetContextTestCase(unittest.TestCase):
         list_resource.query_classes_list = lambda x: None
 
         self.original_assemble_list_json = list_resource.assemble_list_json
-
-        self.original_get_one_value = list_resource.get_one_value
+        self.original_query_classes_list = list_resource.query_classes_list
 
     def tearDown(self):
         list_resource.add_language_support = self.original_add_language_support
         list_resource.query_count_classes = self.original_query_count_classes
         list_resource.query_classes_list = self.original_query_classes_list
-        list_resource.get_one_value = self.original_get_one_value
         list_resource.assemble_list_json = self.original_assemble_list_json
+        list_resource.query_classes_list = self.original_query_classes_list
 
     def test_list_classes_with_no_result(self):
         list_resource.get_one_value = lambda x, y: "0"
@@ -42,7 +40,8 @@ class GetContextTestCase(unittest.TestCase):
 
     def test_list_classes_return_result(self):
         list_resource.get_one_value = lambda x, y: "1"
-        list_resource.assemble_list_json = lambda x, y, z: "expected result"
+        list_resource.assemble_list_json = lambda x, y: "expected result"
+        list_resource.query_classes_list = lambda x: {'results': {'bindings': 'do not remove this'}}
         handler = MockHandler(page="1")
         params = ParamDict(handler, context_name="context_name", class_name="class_name", **LIST_PARAMS)
         expected = list_resource.list_classes(params)
@@ -56,8 +55,7 @@ class GetContextTestCase(unittest.TestCase):
             u'label': {u'type': u'literal', u'value': u'Company'}
         }
         query_result_dict = {'results': {'bindings': [item]}}
-        total_items = 1
-        computed = list_resource.assemble_list_json(params, query_result_dict, total_items)
+        computed = list_resource.assemble_list_json(params, query_result_dict)
 
         expected_context = {
             '@language': settings.DEFAULT_LANG,
@@ -73,7 +71,6 @@ class GetContextTestCase(unittest.TestCase):
         ]
 
         self.assertEqual(computed['@context'], expected_context)
-        self.assertEqual(computed['item_count'], 1)
         self.assertEqual(computed['items'], expected_items)
 
         self_link = {

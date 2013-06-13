@@ -222,7 +222,6 @@ class CollectionLinksTestCase(unittest.TestCase):
         first_all_args.update(url_params)
         first_all_args_str = urlencode(first_all_args, doseq=True)
 
-
         next_all_args = {'per_page': settings.DEFAULT_PER_PAGE,
                           'page': '2'}
         next_all_args.update(url_params)

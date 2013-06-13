@@ -58,9 +58,6 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertIn("items", body.keys())
         self.assertIn(default_graph, body['items'])
 
-        self.assertIn("item_count", body.keys())
-        self.assertTrue(isinstance(body['item_count'], int))
-
     def test_root_context(self):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
@@ -76,8 +73,6 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         body = json.loads(response.body)
         self.assertIn("links", body.keys())
         self.assertIn("items", body.keys())
-        self.assertIn("item_count", body.keys())
-        self.assertTrue(body['item_count'] > 2)
 
 
 class QueryTestCase(QueryTestCase):

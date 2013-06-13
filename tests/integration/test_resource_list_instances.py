@@ -1,7 +1,6 @@
 import json
 import urllib
 from mock import patch
-from tornado.web import HTTPError
 from brainiak import triplestore, settings
 from brainiak.instance import list_resource
 from brainiak.instance.list_resource import query_filter_instances, Query
@@ -44,14 +43,12 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
     def test_list_by_page(self):
         response = self.fetch('/person/Gender/?page=1&per_page=2', method='GET')
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(len(received_response['items']), 2)
 
     def test_list_by_page_sort_first_page(self):
@@ -72,7 +69,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'title': u'Masculino'
             }
         ]
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(received_response['items'], expected_items)
 
     def test_list_by_page_sort_second_page(self):
@@ -87,7 +83,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'title': u'Transg\xeanero'
             }
         ]
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(received_response['items'], expected_items)
 
     def test_list_by_page_sort_first_page_desc(self):
@@ -108,7 +103,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'title': u'Masculino'
             }
         ]
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(received_response['items'], expected_items)
 
     def test_filter_with_object_as_string(self):
@@ -124,7 +118,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['item_count'], 1)
         self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
     def test_filter_with_predicate_as_uri(self):
@@ -152,7 +145,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
@@ -167,7 +159,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['item_count'], 1)
         self.assertEqual(received_response['items'], expected_items)
 
     @patch("brainiak.handlers.logger")
@@ -189,7 +180,6 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/sports', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        computed_item_count = body["item_count"]
         computed_items = body["items"]
         expected_items = [{
             u'resource_id': u'news_cricket',
@@ -204,7 +194,6 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/politics', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        computed_item_count = body["item_count"]
         computed_items = body["items"]
         expected_items = [{
             u'resource_id': u'news_president_answer',
@@ -797,7 +786,6 @@ class FilterInstancesQueryTestCase(QueryTestCase):
                 'rel': "next"
             }
         ]
-        self.assertEquals(response["item_count"], 12)
         self.assertEquals(len(response["links"]), 7)
         for link in expected_links:
             self.assertIn(link, response["links"])

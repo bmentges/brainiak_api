@@ -10,7 +10,7 @@ from brainiak.prefixes import MemorizeContext
 def list_classes(query_params):
     (query_params, language_tag) = add_language_support(query_params, "label")
     query_result_dict = query_classes_list(query_params)
-    if not query_result_dict:
+    if not query_result_dict or not query_result_dict['results']['bindings']:
         return None
     return assemble_list_json(query_params, query_result_dict)
 

@@ -41,7 +41,7 @@ class GetContextTestCase(unittest.TestCase):
     def test_list_classes_return_result(self):
         list_resource.get_one_value = lambda x, y: "1"
         list_resource.assemble_list_json = lambda x, y: "expected result"
-        list_resource.query_classes_list = lambda x: 1
+        list_resource.query_classes_list = lambda x: {'results': {'bindings': 'do not remove this'}}
         handler = MockHandler(page="1")
         params = ParamDict(handler, context_name="context_name", class_name="class_name", **LIST_PARAMS)
         expected = list_resource.list_classes(params)

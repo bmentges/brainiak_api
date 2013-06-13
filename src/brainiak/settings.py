@@ -22,7 +22,8 @@ LOG_NAME = "brainiak"
 
 URI_PREFIX = "http://semantica.globo.com/"
 
-EVENT_BUS_HOST = "localhost"
+EVENT_BUS_HOST = "10.2.180.43"
+#EVENT_BUS_HOST = "localhost"
 EVENT_BUS_PORT = 61613
 NOTIFY_BUS = True
 

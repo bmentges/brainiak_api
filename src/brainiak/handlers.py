@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import httplib
-import ujson as json
 import sys
 import traceback
 from contextlib import contextmanager
-from tornado.curl_httpclient import CurlError
+from copy import copy
 
+import ujson as json
+
+from tornado.curl_httpclient import CurlError
 from tornado.httpclient import HTTPError as ClientHTTPError
 from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import custom_decorator
@@ -267,8 +269,10 @@ class InstanceHandler(BrainiakRequestHandler):
         response = get_instance(self.query_params)
 
         if response and settings.NOTIFY_BUS:
-            notify_bus(instance=response["@id"], klass=self.query_params["class_uri"],
-                       graph=self.query_params["graph_uri"], action="PUT")
+            instance_dict = copy(response)
+            instance_dict.pop("links", None)
+            notify_bus(instance=instance_dict["@id"], klass=self.query_params["class_uri"],
+                       graph=self.query_params["graph_uri"], action="PUT", instance_data=instance_dict)
 
         self.finalize(response)
 
@@ -348,11 +352,15 @@ class CollectionHandler(BrainiakRequestHandler):
         self.set_status(201)
         self.set_header("location", instance_url)
 
+        self.query_params["instance_uri"] = instance_uri
+        self.query_params["instance_id"] = instance_id
+        instance_data = get_instance(self.query_params)
+
         if settings.NOTIFY_BUS:
             try:
                 notify_bus(instance=instance_uri, klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"], action="POST")
-            except MiddlewareError as e:
+                           graph=self.query_params["graph_uri"], action="POST", instance_data=instance_data)
+            except MiddlewareError:
                 # rollback data insertion
                 self.query_params['instance_id'] = instance_id
                 response = delete_instance(self.query_params)
@@ -362,7 +370,7 @@ class CollectionHandler(BrainiakRequestHandler):
                     msg = "Could not notify bus about insertion of {0}, rollback was successful."
                 raise NotificationFailure(msg.format(self.query_params['instance_uri']))
 
-        self.finalize("")
+        self.finalize(instance_data)
 
     def finalize(self, response):
         if response is None:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import ujson as json
-from mock import patch
+from mock import patch, ANY
 
 from dad.mom import MiddlewareError
 
@@ -43,7 +43,8 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             "instance": "http://tatipedia.org/new_york",
             "klass": "http://tatipedia.org/Place",
             "graph": u"http://somegraph.org/",
-            "action": "PUT"
+            "action": "PUT",
+            "instance_data": ANY
         }
 
         actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
@@ -68,7 +69,8 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             "instance": "http://tatipedia.org/new_york",
             "klass": "http://tatipedia.org/Place",
             "graph": "http://somegraph.org/",
-            "action": "DELETE"
+            "action": "DELETE",
+            "instance_data": ANY
         }
 
         deleted_new_york = self.fetch(

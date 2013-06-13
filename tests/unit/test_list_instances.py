@@ -370,12 +370,10 @@ class BuildJSONTestCase(unittest.TestCase):
                            context_name="zoo",
                            class_name="Lion",
                            **(LIST_PARAMS + FILTER_PARAMS))
-        item_count = 0
         items = []
 
-        something = build_json(items, item_count, params)
+        something = build_json(items, params)
         self.assertEqual(something["@context"], {'@language': 'pt'})
-        self.assertEqual(something["item_count"], 0)
         self.assertEqual(something["items"], [])
 
         links = something["links"]
@@ -387,9 +385,9 @@ class BuildJSONTestCase(unittest.TestCase):
                 'rel': 'first'
             },
             {
-                'href': 'http://mock.test.com?per_page=10&page=0',
+                'href': 'http://mock.test.com?per_page=10&page=2',
                 'method': 'GET',
-                'rel': 'last'
+                'rel': 'next'
             },
             {
                 'href': 'http://mock.test.com/{resource_id}?instance_prefix={instance_prefix}',
@@ -411,37 +409,20 @@ class BuildJSONTestCase(unittest.TestCase):
                            context_name="zoo",
                            class_name="Lion",
                            **(LIST_PARAMS + FILTER_PARAMS))
-        item_count = 0
         items = []
 
-        something = build_json(items, item_count, params)
+        something = build_json(items, params)
         self.assertEqual(something["@context"], {'@language': 'pt'})
-        self.assertEqual(something["item_count"], 0)
         self.assertEqual(something["items"], [])
 
         links = something["links"]
         expected_links = [
             {'href': 'http://mock.test.com/?class_prefix=Xubiru', 'method': 'GET', 'rel': 'self'},
-            {
-                'href': 'http://mock.test.com?per_page=10&page=1',
-                'method': 'GET',
-                'rel': 'first'
-            },
-            {
-                'href': 'http://mock.test.com?per_page=10&page=0',
-                'method': 'GET',
-                'rel': 'last'
-            },
-            {
-                'href': 'http://mock.test.com/{resource_id}?class_prefix=Xubiru&instance_prefix={instance_prefix}',
-                'method': 'GET',
-                'rel': 'item'
-            },
-            {
-                'href': 'http://mock.test.com/zoo/Lion?class_prefix=Xubiru',
-                'method': 'POST',
-                'rel': 'create',
-                'schema': {'$ref': 'http://mock.test.com/zoo/Lion/_schema?class_prefix=Xubiru'}
-            }
+            {'href': 'http://mock.test.com?per_page=10&page=1', 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://mock.test.com?per_page=10&page=2', 'method': 'GET', 'rel': 'next'},
+            {'href': 'http://mock.test.com/{resource_id}?class_prefix=Xubiru&instance_prefix={instance_prefix}',
+             'method': 'GET', 'rel': 'item'},
+            {'href': 'http://mock.test.com/zoo/Lion?class_prefix=Xubiru', 'method': 'POST', 'rel': 'create',
+             'schema': {'$ref': 'http://mock.test.com/zoo/Lion/_schema?class_prefix=Xubiru'}}
         ]
         self.assertEquals(sorted(links), sorted(expected_links))

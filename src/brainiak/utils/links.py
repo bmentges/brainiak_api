@@ -57,14 +57,27 @@ def get_previous_page(page):
         return False
 
 
-def get_next_page(page, last_page):
-    if page < last_page:
-        return page + 1
-    else:
-        return False
+def get_next_page(page):
+    return page + 1
 
 
-def collection_links(query_params, total_items):
+def last_link(query_params, total_items):
+    link_params = {}
+    link_params['base_url'] = remove_last_slash(query_params.base_url)
+    link_params['page'] = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
+    link_params['per_page'] = int(query_params["per_page"])
+    base_url = link_params['base_url']
+    per_page = link_params['per_page']
+    last_page = get_last_page(total_items, link_params['per_page'])
+    links = [
+        {'rel': "last", 'href': "%s?%s" % (base_url,
+                                           query_params.args(page=last_page, per_page=per_page)),
+                                           'method': "GET"}
+    ]
+    return links
+
+
+def collection_links(query_params):
 
     link_params = {}
     link_params['base_url'] = remove_last_slash(query_params.base_url)
@@ -76,17 +89,13 @@ def collection_links(query_params, total_items):
     base_url = link_params['base_url']
     per_page = link_params['per_page']
 
-    last_page = get_last_page(total_items, link_params['per_page'])
     previous_page = get_previous_page(link_params['page'])
-    next_page = get_next_page(link_params['page'], last_page)
+    next_page = get_next_page(link_params['page'])
 
     links = [
         {'rel': "first", 'href': "%s?%s" % (base_url,
                                             query_params.args(page=1, per_page=per_page)),
                                             'method': "GET"},
-        {'rel': "last", 'href': "%s?%s" % (base_url,
-                                           query_params.args(page=last_page, per_page=per_page)),
-                                           'method': "GET"}
     ]
     if previous_page:
         links.append({'rel': "previous",

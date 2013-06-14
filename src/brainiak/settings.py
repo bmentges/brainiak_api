@@ -26,6 +26,8 @@ EVENT_BUS_HOST = "localhost"
 EVENT_BUS_PORT = 61613
 NOTIFY_BUS = True
 
+DEFAULT_RULESET_URI = "http://semantica.globo.com/ruleset"
+
 CORS_HEADERS = 'Content-Type, Authorization'
 
 SERVER_PORT = 5100

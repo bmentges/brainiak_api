@@ -4,9 +4,7 @@ from mock import patch
 from brainiak import triplestore, settings
 from brainiak.instance import list_resource
 from brainiak.instance.list_resource import query_filter_instances, Query
-from brainiak.utils.params import ParamDict
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
-from tests.mocks import MockHandler
 from tests.sparql import QueryTestCase
 
 
@@ -50,6 +48,14 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(len(received_response['items']), 2)
+        self.assertFalse('item_count' in received_response)
+
+    def test_list_by_page_with_count(self):
+        response = self.fetch('/person/Gender/?page=1&per_page=2&do_item_count=1', method='GET')
+        received_response = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+        self.assertEqual(len(received_response['items']), 2)
+        self.assertEqual(received_response['item_count'], 3)
 
     def test_list_by_page_sort_first_page(self):
         response = self.fetch('/person/Gender/?page=1&per_page=2&sort_by=rdfs:label', method='GET')
@@ -190,7 +196,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(computed_items, expected_items)
 
     def test_news_filtered_by_politics_graph(self):
-        response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/politics', method='GET')
+        response = self.fetch('/dbpedia/News/?do_item_count=1&graph_uri=http://brmedia.com/politics', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         computed_items = body["items"]
@@ -201,6 +207,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             u'title': u"President explains the reason for the war - it is 42"
         }]
         self.assertEqual(computed_items, expected_items)
+        self.assertEqual(body['item_count'], 1)
 
 
 class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):

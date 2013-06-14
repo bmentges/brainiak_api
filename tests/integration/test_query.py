@@ -35,7 +35,6 @@ class DummyQueryTestCase(QueryTestCase):
     def test_dummy_query(self):
         response_bindings = self.query(DUMMY_QUERY)["results"]["bindings"]
         expected_binding = EXPECTED_JSON["results"]["bindings"]
-
         self.assertEqual(len(response_bindings), len(expected_binding))
         for item in expected_binding:
             self.assertIn(item, response_bindings)

@@ -14,7 +14,7 @@ from brainiak import event_bus
 
 
 server = None
-define("port", default=settings.SERVER_PORT, help="Run app on the given port", type=int)
+
 define("debug", default=settings.DEBUG, help="Debug mode", type=bool)
 
 
@@ -34,6 +34,7 @@ application = Application()
 
 
 def main():  # pragma: no cover
+    define("port", default=settings.SERVER_PORT, help="Run app on the given port", type=int)
     parse_command_line()
     application = Application(debug=options.debug)
     server = HTTPServer(application)

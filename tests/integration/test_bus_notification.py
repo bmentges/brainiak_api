@@ -69,8 +69,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             "instance": "http://tatipedia.org/new_york",
             "klass": "http://tatipedia.org/Place",
             "graph": "http://somegraph.org/",
-            "action": "DELETE",
-            "instance_data": ANY
+            "action": "DELETE"
         }
 
         deleted_new_york = self.fetch(
@@ -92,10 +91,12 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             u"tpedia:stadium": u"Estádio Rei Pelé"
         }
 
-        part_of_expected_message = {  # there is no "instance" because POST generates it
+        expected_message = {
             "klass": "http://tatipedia.org/SoccerClub",
             "graph": "http://somegraph.org/",
-            "action": "POST"
+            "action": "POST",
+            "instance": ANY,
+            "instance_data": ANY
         }
 
         modified_new_york = self.fetch(
@@ -103,10 +104,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             method='POST',
             body=json.dumps(CSA_FOOTBALL_TEAM))
         self.assertEqual(modified_new_york.code, 201)
-        self.assertTrue(mock_notify_bus.called)
-        kw = mock_notify_bus.call_args[1]
-        del kw['instance']
-        self.assertEqual(kw, part_of_expected_message)
+        mock_notify_bus.assert_called_with(**expected_message)
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.event_bus.logger")

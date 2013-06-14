@@ -38,13 +38,6 @@
              rdfs:domain :Animal ;
              rdfs:range :Place .
 
-# http://example.onto/canFlight
-:canFlight a owl:DatatypeProperty ;
-             rdfs:label "Can flight"@en;
-             rdfs:comment "Defines if the bird species can flight or not."@en ;
-             rdfs:domain :Bird ;
-             rdfs:range xsd:string .
-
 # http://example.onto/cityOfBirth
 :birthCity a owl:ObjectProperty ;
              rdfs:subPropertyOf :birthPlace ;
@@ -54,15 +47,35 @@
 
 # http://example.onto/hasChild
 :hasChild a owl:ObjectProperty ;
-       rdfs:label "Has child (son or daughter)" ;
-       rdfs:domain :Human ;
-       rdfs:range :Human .
+          rdfs:label "Has child (son or daughter)" ;
+          rdfs:domain :Human ;
+          rdfs:range :Human .
 
 # http://example.onto/hasParent
 :hasParent a owl:ObjectProperty ;
-       rdfs:label "Has parent (mother or father)" ;
-       rdfs:domain :Human ;
-       rdfs:range :Human .
+           rdfs:label "Has parent (mother or father)" ;
+           rdfs:domain :Human ;
+           rdfs:range :Human .
+
+##########################################
+# DatatypeProperties
+##########################################
+
+
+# http://example.onto/canFlight
+:canFlight a owl:DatatypeProperty ;
+           rdfs:label "Can flight"@en;
+           rdfs:comment "Defines if the bird species can flight or not."@en ;
+           rdfs:domain :Bird ;
+           rdfs:range xsd:string .
+
+# http://example.onto/canFlight
+:name a owl:DatatypeProperty ;
+           rdfs:subPropertyOf  rdfs:label ;
+           rdfs:label "Upper name"@en;
+           rdfs:comment "Name of the instance."@en ;
+           rdfs:domain owl:Thing ;
+           rdfs:range xsd:string .
 
 ##########################################
 # Classes

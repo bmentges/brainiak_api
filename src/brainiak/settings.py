@@ -29,3 +29,7 @@ NOTIFY_BUS = True
 CORS_HEADERS = 'Content-Type, Authorization'
 
 SERVER_PORT = 5100
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+ENABLE_CACHE = False

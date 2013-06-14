@@ -40,8 +40,6 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
         u'@id': u'person:Gender',
         u'links': [
-            {u'href': u'/upper/Entity', u'method': u'GET', u'rel': u'upper:hasPart'},
-            {u'href': u'/upper/Entity', u'method': u'GET', u'rel': u'upper:isPartOf'},
             {u'href': u'http://localhost:10023/person/Gender/_schema?lang=pt', u'method': u'GET', u'rel': u'self'},
             {u'href': u'http://localhost:10023/person/Gender?class_prefix=http%3A%2F%2Fsemantica.globo.com%2Fperson%2F', u'method': u'GET', u'rel': u'instances'}],
         u'properties': {},

@@ -1,7 +1,6 @@
 import json
 import urllib
 from mock import patch
-from tornado.web import HTTPError
 from brainiak import triplestore, settings
 from brainiak.instance import list_resource
 from brainiak.instance.list_resource import query_filter_instances, Query
@@ -44,14 +43,12 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
     def test_list_by_page(self):
         response = self.fetch('/person/Gender/?page=1&per_page=2', method='GET')
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(len(received_response['items']), 2)
 
     def test_list_by_page_sort_first_page(self):
@@ -72,7 +69,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'title': u'Masculino'
             }
         ]
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(received_response['items'], expected_items)
 
     def test_list_by_page_sort_second_page(self):
@@ -87,7 +83,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'title': u'Transg\xeanero'
             }
         ]
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(received_response['items'], expected_items)
 
     def test_list_by_page_sort_first_page_desc(self):
@@ -108,7 +103,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'title': u'Masculino'
             }
         ]
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(received_response['items'], expected_items)
 
     def test_filter_with_object_as_string(self):
@@ -124,7 +118,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['item_count'], 1)
         self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
     def test_filter_with_predicate_as_uri(self):
@@ -152,7 +145,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['item_count'], 3)
         self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
     def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
@@ -167,7 +159,6 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['item_count'], 1)
         self.assertEqual(received_response['items'], expected_items)
 
     @patch("brainiak.handlers.logger")
@@ -189,7 +180,6 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/sports', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        computed_item_count = body["item_count"]
         computed_items = body["items"]
         expected_items = [{
             u'resource_id': u'news_cricket',
@@ -197,14 +187,12 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             u'@id': u'http://brmedia.com/news_cricket',
             u'title': u'Cricket becomes the most popular sport of Brazil'
         }]
-        self.assertEqual(computed_item_count, 1)
         self.assertEqual(computed_items, expected_items)
 
     def test_news_filtered_by_politics_graph(self):
         response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/politics', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        computed_item_count = body["item_count"]
         computed_items = body["items"]
         expected_items = [{
             u'resource_id': u'news_president_answer',
@@ -212,7 +200,6 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             u'@id': u'http://brmedia.com/news_president_answer',
             u'title': u"President explains the reason for the war - it is 42"
         }]
-        self.assertEqual(computed_item_count, 1)
         self.assertEqual(computed_items, expected_items)
 
 
@@ -738,66 +725,3 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         params = {"o": "", "p": "", "class_uri": "", "sort_by": "", 'offset': '0', 'page': '1', 'per_page': '10'}
         result = list_resource.filter_instances(params)
         self.assertEqual(result, None)
-
-    def test_filter_instances_result_is_not_empty(self):
-        sample_json = {"results": {"bindings": []}}
-        count_json = {"results": {"bindings": [{"total": {"value": "12"}}]}}
-        list_resource.query_filter_instances = lambda params: sample_json
-        list_resource.query_count_filter_instances = lambda params: count_json
-
-        params = {
-            "context_name": "ctx",
-            "class_name": "klass",
-            "per_page": "3",
-            "page": "2",
-            "sort_by": "",
-            "p": "",
-            "o": ""
-        }
-
-        handler = MockHandler(uri="http://localhost:5100/ctx/klass", querystring="per_page=3&page=2", **params)
-        query_params = ParamDict(handler, **params)
-        response = list_resource.filter_instances(query_params)  # page based on virtuoso (begins with 0)
-
-        expected_links = [
-            {
-                'href': "http://localhost:5100/ctx/klass?per_page=3&page=2",
-                'method': "GET",
-                'rel': "self"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass/{resource_id}?instance_prefix={instance_prefix}",
-                'method': "GET",
-                'rel': "item"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass",
-                'method': "POST",
-                'rel': "create",
-                'schema': {'$ref': 'http://localhost:5100/ctx/klass/_schema'}
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
-                'method': "GET",
-                'rel': "first"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass?per_page=3&page=4",
-                'method': "GET",
-                'rel': "last"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass?per_page=3&page=1",
-                'method': "GET",
-                'rel': "previous"
-            },
-            {
-                'href': "http://localhost:5100/ctx/klass?per_page=3&page=3",
-                'method': "GET",
-                'rel': "next"
-            }
-        ]
-        self.assertEquals(response["item_count"], 12)
-        self.assertEquals(len(response["links"]), 7)
-        for link in expected_links:
-            self.assertIn(link, response["links"])

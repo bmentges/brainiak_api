@@ -2,9 +2,9 @@ import inspect
 
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import assemble_url, build_class_url, build_schema_url, collection_links, add_link, filter_query_string_by_key_prefix, remove_last_slash, self_link
-from brainiak.utils.resources import decorate_with_resource_id, validate_pagination_or_raise_404
-from brainiak.utils.sparql import compress_keys_and_values, get_one_value, normalize_term, calculate_offset
+from brainiak.utils.links import build_class_url, build_schema_url, collection_links, add_link, filter_query_string_by_key_prefix, remove_last_slash, self_link
+from brainiak.utils.resources import decorate_with_resource_id
+from brainiak.utils.sparql import compress_keys_and_values, normalize_term, calculate_offset
 
 
 class Query(object):
@@ -231,14 +231,6 @@ def add_instance_prefix(items_list):
 
 
 def filter_instances(query_params):
-    result_dict = query_count_filter_instances(query_params)
-
-    total_items = int(get_one_value(result_dict, 'total'))
-    if not total_items:
-        return None
-
-    validate_pagination_or_raise_404(query_params, total_items)
-
     keymap = {
         "label": "title",
         "subject": "@id",
@@ -246,16 +238,18 @@ def filter_instances(query_params):
         "object": shorten_uri(query_params["p"]),
     }
     result_dict = query_filter_instances(query_params)
+    if not result_dict or not result_dict['results']['bindings']:
+        return None
     items_list = compress_keys_and_values(result_dict, keymap=keymap, ignore_keys=["total"])
     items_list = merge_by_id(items_list)
     add_instance_prefix(items_list)
     decorate_with_resource_id(items_list)
-    return build_json(items_list, total_items, query_params)
+    return build_json(items_list, query_params)
 
 
-def build_json(items_list, total_items, query_params):
+def build_json(items_list, query_params):
     base_url = remove_last_slash(query_params.base_url)
-    links = self_link(query_params) + collection_links(query_params, total_items)
+    links = self_link(query_params) + collection_links(query_params)
     query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
     create_url = build_class_url(query_params, include_query_string=True)
     schema_url = build_schema_url(query_params)
@@ -270,7 +264,6 @@ def build_json(items_list, total_items, query_params):
     add_link(links, "create", create_url, method='POST', schema={'$ref': schema_url})
     json = {
         'items': items_list,
-        'item_count': total_items,
         'links': links,
         "@context": {"@language": query_params.get("lang")}
     }

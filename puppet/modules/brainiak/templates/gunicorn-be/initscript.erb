@@ -84,6 +84,21 @@ status()
     InfraStatusDaemon --title="$title" --pidfile="$pidfile" --check="$check"
 }
 
+checkconfig()
+{
+    PreFlight
+    echo -n "Testing $title: "
+    if output=$(InfraStartDaemon --title="$title" --user=$user "$startcmd --check-config 2>&1")
+     then
+        success
+        return 0
+    else
+        failure
+        echo -e "$output" | sed -e '/.*FAILED.*]$/d'
+        return 1
+    fi
+}
+
 case "$1" in
     start)
         start
@@ -95,13 +110,21 @@ case "$1" in
         status
         ;;
     restart)
-        stop && start
+        if checkconfig
+         then
+          stop && start
+         else
+            echo "Aborting restart due to configuration errors."
+        fi
+        ;;
+    checkconfig)
+        checkconfig
         ;;
     graceful|reload)
         reload
         ;;
     *)
-        echo "Uso: ${0#./} {start|stop|status|reload|restart}"
+        echo "Uso: ${0#./} {start|stop|status|reload|restart|checkconfig}"
         exit 1
         ;;
 esac

@@ -72,12 +72,11 @@ class GetContextTestCase(unittest.TestCase):
              'resource_id': 'dbpedia'}
         ]
         self.assertEqual(computed["items"], expected_items)
-        self.assertEqual(computed["item_count"], 1)
         expected_links = [
             {'rel': 'self', 'href': base_url, 'method': 'GET'},
             {'rel': 'instances', 'href': base_url + '/{resource_id}', 'method': 'GET'},
+            {'rel': 'next', 'href': 'http://api.semantica.dev.globoi.com/ctx?per_page=30&page=2', 'method': 'GET'},
             {'rel': 'first', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
-            {'rel': 'last', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
         ]
         self.assertEqual(sorted(computed["links"]), sorted(expected_links))
 

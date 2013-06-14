@@ -94,7 +94,7 @@ checkconfig()
         return 0
     else
         failure
-        echo -e "Error:\n$output"
+        echo -e "$output" | sed -e '/.*FAILED.*]$/d'
         return 1
     fi
 }
@@ -110,7 +110,12 @@ case "$1" in
         status
         ;;
     restart)
-        stop && start
+        if checkconfig
+         then
+          stop && start
+         else
+            echo "Aborting restart due to configuration errors."
+        fi
         ;;
     checkconfig)
         checkconfig

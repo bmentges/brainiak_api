@@ -34,4 +34,5 @@ SERVER_PORT = 5100
 
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
-ENABLE_CACHE = False
+REDIS_PASSWORD = None
+ENABLE_CACHE = False  # Locally, keep this == False, so tests won't be affected

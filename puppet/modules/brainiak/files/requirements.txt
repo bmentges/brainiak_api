@@ -3,6 +3,7 @@ greenlet==0.4.0
 gunicorn==0.14.6
 pycurl==7.19.0
 rdflib==3.2.3
+redis==2.7.6
 requests==1.2.0
 SPARQLWrapper==1.5.0-authdigest
 Sphinx==1.1.3

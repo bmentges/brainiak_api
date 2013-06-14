@@ -126,7 +126,6 @@ class CardinalitiesQueryTestCase(QueryTestCase):
     def test_query_cardinalities(self):
         params = {"class_uri": "http://example.onto/Animal"}
         query = QUERY_CARDINALITIES % params
-        #import pdb; pdb.set_trace()
         computed = self.query(query)['results']['bindings']
         expected = [
             {

@@ -14,4 +14,6 @@ set :password, 'busca'
 # Used by puppet module in Capistrano
 set :puppetmaster_env, "qa"
 
-# EOF
+set :redis_endpoint, "redis.api.semantica.qa.globoi.com"
+set :redis_port, 20015
+set :redis_password, "a8pdifs2e2m9afn7tcifcea99674aad2"

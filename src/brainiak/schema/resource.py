@@ -39,7 +39,7 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     href = assemble_url(base_url, {"class_prefix": query_params["class_prefix"]})
     add_link(links, "instances", href)
 
-    expand_object_properties_links(links, context)
+    #expand_object_properties_links(links, context)
 
     schema = {
         "type": "object",

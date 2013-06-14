@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from brainiak import triplestore
+from brainiak import triplestore, settings
 from brainiak.utils.links import build_class_url, build_schema_url, self_link, crud_links, add_link
 from brainiak.prefixes import MemorizeContext, shorten_uri
 from brainiak.utils.sparql import expand_uri, get_super_properties, is_result_empty
@@ -100,6 +100,6 @@ FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
 
 
 def query_all_properties_and_objects(query_params):
-    query_params["ruleset"] = "http://semantica.globo.com/ruleset"
+    query_params["ruleset"] = settings.DEFAULT_RULESET_URI
     query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % query_params
     return triplestore.query_sparql(query)

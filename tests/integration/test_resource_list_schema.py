@@ -102,7 +102,7 @@ class SuperClassQueryTestCase(QueryTestCase):
 
     allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
-    graph_uri = "http://schema.test/"
+    graph_uri = "http://example.onto/"
 
     def test_query_superclass(self):
         params = {"class_uri": "http://example.onto/Yorkshire_Terrier"}
@@ -121,11 +121,12 @@ class CardinalitiesQueryTestCase(QueryTestCase):
 
     allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
-    graph_uri = "http://schema2.test/"
+    graph_uri = "http://example.onto/"
 
     def test_query_cardinalities(self):
         params = {"class_uri": "http://example.onto/Animal"}
         query = QUERY_CARDINALITIES % params
+        #import pdb; pdb.set_trace()
         computed = self.query(query)['results']['bindings']
         expected = [
             {
@@ -264,7 +265,7 @@ class PredicatesQueryTestCase(QueryTestCase):
     maxDiff = None
     allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
-    graph_uri = "http://schema3.test/"
+    graph_uri = "http://example.onto/"
 
     def test_query_predicates(self):
         filter_ = "FILTER (?domain_class IN (<http://example.onto/Mammalia>))"
@@ -274,7 +275,7 @@ class PredicatesQueryTestCase(QueryTestCase):
         expected = [
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furColour'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair colour'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
@@ -291,21 +292,21 @@ class PredicatesQueryTestCase(QueryTestCase):
         expected = [
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
@@ -321,14 +322,14 @@ class PredicatesQueryTestCase(QueryTestCase):
         expected = [
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furLenght'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair lenght'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furColour'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
                 u'title': {u'type': u'literal', u'value': u'Fur or hair colour'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
@@ -344,7 +345,7 @@ class PredicatesQueryTestCase(QueryTestCase):
         expected = [
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthCity'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/City'},
                 u'super_property': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'},
                 u'title': {u'type': u'literal', u'value': u'Birth city of first known member of Species'},
@@ -362,21 +363,21 @@ class PredicatesQueryTestCase(QueryTestCase):
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/canFlight'},
                 u'predicate_comment': {u'type': u'literal', u'value': u'Defines if the bird species can flight or not.', u'xml:lang': u'en'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
                 u'title': {u'type': u'literal', u'value': u'Can flight', u'xml:lang': u'en'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/Place'},
                 u'title': {u'type': u'literal', u'value': u'Birth place of first known member of Species'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://schema3.test/'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'},
                 u'title': {u'type': u'literal', u'value': u'Gender'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
@@ -437,10 +438,10 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     maxDiff = None
     allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
-    graph_uri = "http://tati.pedia/"
+    graph_uri = "http://example.onto/"
 
     def test_schema_json(self):
-        response = self.fetch('/any/Human/_schema?graph_uri=http://tati.pedia/&class_prefix=http://example.onto/', method='GET')
+        response = self.fetch('/any/Human/_schema?graph_uri=http://example.onto/&class_prefix=http://example.onto/', method='GET')
 
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
@@ -451,7 +452,7 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         properties = body['properties']
         expected_properties = {
             u'http://example.onto/birthPlace': {
-                u'graph': u'http://tati.pedia/',
+                u'graph': u'http://example.onto/',
                 u'range': {
                     u'@id': u'http://example.onto/Place',
                     u'format': u'uri',
@@ -464,11 +465,11 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'items': {u'type': 'string', u'format': 'uri'}
             },
             u'http://example.onto/hasChild': {
-                u'graph': u'http://tati.pedia/',
+                u'graph': u'http://example.onto/',
                 u'range': {
                     u'@id': u'http://example.onto/Human',
                     u'format': u'uri',
-                    u'graph': u'http://tati.pedia/',
+                    u'graph': u'http://example.onto/',
                     u'title': u'Humano',
                     u'type': u'string'
                 },
@@ -478,7 +479,7 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'items': {u'type': 'string', u'format': 'uri'}
             },
             u'http://example.onto/furColour': {
-                u'graph': u'http://tati.pedia/',
+                u'graph': u'http://example.onto/',
                 u'minItems': 1,
                 u'range': {
                     u'@id': u'http://example.onto/FurColour',
@@ -495,7 +496,7 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             },
             u'http://example.onto/gender': {
                 u'format': u'uri',
-                u'graph': u'http://tati.pedia/',
+                u'graph': u'http://example.onto/',
                 u'range': {u'@id': u'http://example.onto/Gender',
                            u'format': u'uri',
                            u'graph': u'',
@@ -506,12 +507,12 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'type': u'string'
             },
             u'http://example.onto/hasParent': {
-                u'graph': u'http://tati.pedia/',
+                u'graph': u'http://example.onto/',
                 u'maxItems': 2,
                 u'minItems': 2,
                 u'range': {u'@id': u'http://example.onto/Human',
                           u'format': u'uri',
-                          u'graph': u'http://tati.pedia/',
+                          u'graph': u'http://example.onto/',
                           u'title': u'Humano',
                           u'type': u'string'},
                 u'required': True,

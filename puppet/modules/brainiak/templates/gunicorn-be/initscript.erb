@@ -84,10 +84,19 @@ status()
     InfraStatusDaemon --title="$title" --pidfile="$pidfile" --check="$check"
 }
 
-checkconfig ()
+checkconfig()
 {
     PreFlight
-    InfraStartDaemon --title="$title" --user=$user --wait --pidfile="$pidfile" --check="$check" "$startcmd --check-config"
+    echo -n "Testing $title: "
+    if output=$(InfraStartDaemon --title="$title" --user=$user "$startcmd --check-config 2>&1")
+     then
+        success
+        return 0
+    else
+        failure
+        echo -e "Error:\n$output"
+        return 1
+    fi
 }
 
 case "$1" in

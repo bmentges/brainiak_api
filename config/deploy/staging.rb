@@ -11,3 +11,7 @@ set :event_bus_host, "barramento.baas.globoi.com"
 
 # Used by puppet module in Capistrano
 set :puppetmaster_env, "staging"
+
+set :redis_endpoint, "redis.api.semantica.globoi.com"
+set :redis_port, 20015
+set :redis_password, "a8pdifs2e2m9afn7tcifcea99674aad2"

@@ -48,11 +48,6 @@ class GetContextTestCase(unittest.TestCase):
 
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql
-
-    def tearDown(self):
-        triplestore.query_sparql = self.original_query_sparql
-
-    def test_list_contexts(self):
         response = {
             "results":
                 {"bindings": [
@@ -61,6 +56,11 @@ class GetContextTestCase(unittest.TestCase):
                 ]}
         }
         triplestore.query_sparql = lambda query: response
+
+    def tearDown(self):
+        triplestore.query_sparql = self.original_query_sparql
+
+    def test_list_contexts(self):
         param_dict = {"per_page": "30", "page": "0"}
         base_url = "http://api.semantica.dev.globoi.com/ctx"
         handler = MockHandler(uri=base_url)
@@ -73,12 +73,29 @@ class GetContextTestCase(unittest.TestCase):
         ]
         self.assertEqual(computed["items"], expected_items)
         expected_links = [
+            {'href': 'http://api.semantica.dev.globoi.com/_status', 'method': 'GET', 'rel': 'status'},
             {'rel': 'self', 'href': base_url, 'method': 'GET'},
             {'rel': 'instances', 'href': base_url + '/{resource_id}', 'method': 'GET'},
             {'rel': 'next', 'href': 'http://api.semantica.dev.globoi.com/ctx?per_page=30&page=2', 'method': 'GET'},
             {'rel': 'first', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
         ]
         self.assertEqual(sorted(computed["links"]), sorted(expected_links))
+
+    def test_with_item_count(self):
+        base_url = "http://api.semantica.dev.globoi.com/ctx"
+        param_dict = {"do_item_count": "1", "per_page": "30", "page": "0"}
+        handler = MockHandler(uri=base_url)
+        params = ParamDict(handler, **param_dict)
+        computed = list_all_contexts(params)
+        self.assertEqual(int(computed["item_count"]), 1)
+
+    def test_without_item_count(self):
+        base_url = "http://api.semantica.dev.globoi.com/ctx"
+        param_dict = {"do_item_count": "0", "per_page": "30", "page": "0"}
+        handler = MockHandler(uri=base_url)
+        params = ParamDict(handler, **param_dict)
+        computed = list_all_contexts(params)
+        self.assertTrue("item_count" not in computed)
 
     def test_build_contexts_that_exist_in_prefixes(self):
         contexts_uris = [

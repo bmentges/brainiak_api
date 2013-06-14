@@ -2,9 +2,9 @@ import inspect
 
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import build_class_url, build_schema_url, collection_links, add_link, filter_query_string_by_key_prefix, remove_last_slash, self_link
-from brainiak.utils.resources import decorate_with_resource_id
-from brainiak.utils.sparql import compress_keys_and_values, normalize_term, calculate_offset
+from brainiak.utils.links import build_class_url, build_schema_url, collection_links, add_link, filter_query_string_by_key_prefix, remove_last_slash, self_link, last_link
+from brainiak.utils.resources import decorate_with_resource_id, validate_pagination_or_raise_404
+from brainiak.utils.sparql import compress_keys_and_values, normalize_term, calculate_offset, get_one_value
 
 
 class Query(object):
@@ -264,7 +264,15 @@ def build_json(items_list, query_params):
     add_link(links, "create", create_url, method='POST', schema={'$ref': schema_url})
     json = {
         'items': items_list,
-        'links': links,
         "@context": {"@language": query_params.get("lang")}
     }
+
+    if query_params.get("do_item_count", None) == "1":
+        result_dict = query_count_filter_instances(query_params)
+        total_items = int(get_one_value(result_dict, 'total'))
+        validate_pagination_or_raise_404(query_params, total_items)
+        links += last_link(query_params, total_items)
+        json['item_count'] = total_items
+
+    json['links'] = links
     return json

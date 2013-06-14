@@ -84,6 +84,12 @@ status()
     InfraStatusDaemon --title="$title" --pidfile="$pidfile" --check="$check"
 }
 
+checkconfig ()
+{
+    PreFlight
+    InfraStartDaemon --title="$title" --user=$user --wait --pidfile="$pidfile" --check="$check" "$startcmd --check-config"
+}
+
 case "$1" in
     start)
         start
@@ -97,11 +103,14 @@ case "$1" in
     restart)
         stop && start
         ;;
+    checkconfig)
+        checkconfig
+        ;;
     graceful|reload)
         reload
         ;;
     *)
-        echo "Uso: ${0#./} {start|stop|status|reload|restart}"
+        echo "Uso: ${0#./} {start|stop|status|reload|restart|checkconfig}"
         exit 1
         ;;
 esac

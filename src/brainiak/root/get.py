@@ -4,7 +4,8 @@ from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql
 from brainiak.utils.decorator import memoize
-from brainiak.utils.links import self_link, split_into_chunks, collection_links, add_link
+from brainiak.utils.links import self_link, split_into_chunks, collection_links,\
+    add_link, status_link
 
 # Note that pagination was done outside the query
 # because we are filtering query results based on prefixes
@@ -31,7 +32,7 @@ def list_all_contexts(params):
     contexts_pages = split_into_chunks(filtered_contexts, per_page)
     contexts = contexts_pages[page_index]
 
-    links = self_link(params) + collection_links(params)
+    links = self_link(params) + collection_links(params) + status_link(params)
     add_link(links, "instances", params.base_url + "{resource_id}")
 
     json = {

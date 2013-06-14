@@ -26,7 +26,7 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 404)
 
     def test_get_instance_200(self):
-        response = self.fetch('/person/Gender/Female', method='GET')
+        response = self.fetch('/person/Gender/Female?lang=pt', method='GET')
         body = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertIn(u'/person/Gender/Female', body['@id'])

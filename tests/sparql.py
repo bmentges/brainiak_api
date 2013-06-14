@@ -195,6 +195,7 @@ class QueryTestCase(SimpleTestCase):
         run_isql(isql_up)
 
     def _pre_setup(self):
+        self._drop_graph_from_triplestore(self.graph_uri)
         if self.allow_triplestore_connection:
             setup = self._setup_triplestore
             load = self._load_fixture_to_triplestore
@@ -250,12 +251,6 @@ class QueryTestCase(SimpleTestCase):
 
         endpoint = Wrapper.SPARQLWrapper(endpoint)
         endpoint.setCredentials(user, password, mode=mode, realm=realm)
-        if graph is None:
-            endpoint.addDefaultGraph(self.graph_uri)
-        elif not graph:
-            pass
-        else:
-            endpoint.addDefaultGraph(graph)
         endpoint.setReturnFormat(JSON)
         endpoint.setQuery(query_string)
 

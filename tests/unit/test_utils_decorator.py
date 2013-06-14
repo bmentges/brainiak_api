@@ -6,12 +6,19 @@ from brainiak.utils.decorator import memoize
 from tests.mocks import MockRequest
 
 
+class StrictRedisMock(object):
+
+    def __init__(host=None, port=None, db=None):
+        pass
+
+
 class MemoizeDecoratorTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.decorator.settings", ENABLE_CACHE=False)
     @patch("brainiak.utils.decorator.redis_server.set")
     @patch("brainiak.utils.decorator.redis_server.get")
-    def test_memoize_cache_disabled(self, redis_get, redis_set, settings):
+    @patch("brainiak.utils.decorator.redis", StrictRedisMock=StrictRedisMock)
+    def test_memoize_cache_disabled(self, strict_redis, redis_get, redis_set, settings):
 
         @memoize
         def clean_up(params):
@@ -27,7 +34,8 @@ class MemoizeDecoratorTestCase(unittest.TestCase):
     @patch("brainiak.utils.decorator.settings", ENABLE_CACHE=True)
     @patch("brainiak.utils.decorator.redis_server.set", return_value=True)
     @patch("brainiak.utils.decorator.redis_server.get", return_value=None)
-    def test_memoize_cache_enabled_but_without_cache(self, redis_get, redis_set, settings):
+    @patch("brainiak.utils.decorator.redis", StrictRedisMock=StrictRedisMock)
+    def test_memoize_cache_enabled_but_without_cache(self, strict_redis, redis_get, redis_set, settings):
 
         @memoize
         def clean_up(params):
@@ -43,7 +51,8 @@ class MemoizeDecoratorTestCase(unittest.TestCase):
     @patch("brainiak.utils.decorator.settings", ENABLE_CACHE=True)
     @patch("brainiak.utils.decorator.redis_server.set", return_value=True)
     @patch("brainiak.utils.decorator.redis_server.get", return_value='{"status": "Dishes cleaned up"}')
-    def test_memoize_cache_enabled_but_with_cache(self, redis_get, redis_set, settings):
+    @patch("brainiak.utils.decorator.redis", StrictRedisMock=StrictRedisMock)
+    def test_memoize_cache_enabled_but_with_cache(self, strict_redis, redis_get, redis_set, settings):
 
         @memoize
         def clean_up(params):

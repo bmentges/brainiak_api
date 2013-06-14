@@ -8,7 +8,6 @@ redis_server = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_P
 
 
 def memoize(function):
-    memo = {}
 
     def wrapper(params):
         if settings.ENABLE_CACHE:

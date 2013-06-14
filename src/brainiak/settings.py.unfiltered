@@ -29,3 +29,8 @@ NOTIFY_BUS = True
 DEFAULT_RULESET_URI = "http://semantica.globo.com/ruleset"
 
 CORS_HEADERS = 'Content-Type, Authorization'
+
+REDIS_ENDPOINT = '<%= redis_endpoint %>'
+REDIS_PORT = <%= redis_port %>
+REDIS_PASSWORD = '<%= redis_password %>'
+ENABLE_CACHE = True

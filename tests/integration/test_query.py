@@ -24,18 +24,17 @@ EXPECTED_JSON = {
 }
 
 
-DUMMY_QUERY = "SELECT * WHERE {?s ?p ?o}"
+DUMMY_QUERY = "SELECT * FROM <http://example.onto/> WHERE {?s ?p ?o}"
 
 
 class DummyQueryTestCase(QueryTestCase):
     allow_triplestore_connection = True
-    #graph_uri = "http://graph.sample"
+    graph_uri = "http://example.onto/"
     fixtures = ["tests/sample/demo.n3"]
 
     def test_dummy_query(self):
         response_bindings = self.query(DUMMY_QUERY)["results"]["bindings"]
         expected_binding = EXPECTED_JSON["results"]["bindings"]
-
         self.assertEqual(len(response_bindings), len(expected_binding))
         for item in expected_binding:
             self.assertIn(item, response_bindings)

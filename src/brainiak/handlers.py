@@ -60,7 +60,7 @@ def get_routes():
         URLSpec(r'/healthcheck/?', HealthcheckHandler),
         URLSpec(r'/version/?', VersionHandler),
         URLSpec(r'/prefixes/?', PrefixHandler),
-        URLSpec(r'/_status/$', StatusHandler),
+        URLSpec(r'/_status/?$', StatusHandler),
         URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', SchemaHandler),

@@ -195,9 +195,11 @@ class QueryTestCase(SimpleTestCase):
         run_isql(isql_up)
 
     def _pre_setup(self):
+        self._drop_graph_from_triplestore(self.graph_uri)
         if self.allow_triplestore_connection:
             setup = self._setup_triplestore
             load = self._load_fixture_to_triplestore
+            self.process_inference_options()
         else:
             setup = self._setup_mocked_triplestore
             load = self._load_fixture_to_memory
@@ -230,13 +232,7 @@ class QueryTestCase(SimpleTestCase):
             for graph in self.fixtures_by_graph.keys():
                 self._drop_graph_from_triplestore(graph)
 
-    def query(self, query_string, graph=None):
-        endpoint = settings.SPARQL_ENDPOINT
-        user = settings.SPARQL_ENDPOINT_USER
-        password = settings.SPARQL_ENDPOINT_PASSWORD
-        mode = settings.SPARQL_ENDPOINT_AUTH_MODE
-        realm = settings.SPARQL_ENDPOINT_REALM
-
+    def process_inference_options(self):
         if not self.fixtures_by_graph:
             if self.allow_inference:
                 enable_inference_at_graph(self.graph_uri)
@@ -244,14 +240,17 @@ class QueryTestCase(SimpleTestCase):
             for graph_ in self.fixtures_by_graph.keys():
                 enable_inference_at_graph(graph_)
 
+    def query(self, query_string, graph=None):
+        endpoint = settings.SPARQL_ENDPOINT
+        user = settings.SPARQL_ENDPOINT_USER
+        password = settings.SPARQL_ENDPOINT_PASSWORD
+        mode = settings.SPARQL_ENDPOINT_AUTH_MODE
+        realm = settings.SPARQL_ENDPOINT_REALM
+
+        self.process_inference_options()
+
         endpoint = Wrapper.SPARQLWrapper(endpoint)
         endpoint.setCredentials(user, password, mode=mode, realm=realm)
-        if graph is None:
-            endpoint.addDefaultGraph(self.graph_uri)
-        elif not graph:
-            pass
-        else:
-            endpoint.addDefaultGraph(graph)
         endpoint.setReturnFormat(JSON)
         endpoint.setQuery(query_string)
 

@@ -151,11 +151,39 @@ Conceptual contract
 
 The ``Conceptual contract`` is a group of links that represent the specific concepts provided by the Brainiak API.
 
+root
+....
 
-inCollection
+The ``root`` link refers to the starting point of hypernavigation in the Brainiak API.
+The current implementation has chosen to represent a list of contexts in the ``root``.
+
+
+context
 ................
 
-Refers to the list of resources of the same type as the target.
+The ``context`` link refers to some context.
+This concept is explained in :ref:`concept-context`.
+Each context is a namespace that holds a list of collections.
+
+collection
+................
+
+The ``collection`` link refers to some collection.
+This concept is explained in :ref:`concept-collection`.
+The collection is a list of instances that share the same type.
+
+instance
+................
+
+The ``instance`` link refers to the properties and values of an instance.
+This concept is explained in :ref:`concept-instance`.
+
+
+class
+................
+
+The ``class`` link refers to the type of an instance, defining its properties.
+This concept is explained in :ref:`concept-schema`.
 
 
 -----

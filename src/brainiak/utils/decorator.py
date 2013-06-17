@@ -28,4 +28,3 @@ def memoize(function):
 def purge(pattern):
     keys_with_pattern = redis_server.keys(pattern)
     redis_server.delete(keys_with_pattern)
-

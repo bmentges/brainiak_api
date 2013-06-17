@@ -28,7 +28,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/?best_martial_arts=aikido", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
-        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_martial_arts is not supported. The supported arguments are: purge, per_page, sort_order, sort_by, sort_include_empty, page.')
+        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_martial_arts is not supported. The supported arguments are: purge, sort_order, per_page, sort_by, sort_include_empty, page.')
 
     @patch("brainiak.handlers.logger")
     def test_404(self, log):

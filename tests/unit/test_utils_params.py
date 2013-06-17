@@ -186,4 +186,4 @@ class OrderingTestCase(TestCase):
 class SpecificParamsDictTestCase(TestCase):
 
     def test_cache_params_definitions(self):
-        self.assertEqual(CACHE_PARAMS.get("purge"), "1")
+        self.assertEqual(CACHE_PARAMS.get("purge"), "0")

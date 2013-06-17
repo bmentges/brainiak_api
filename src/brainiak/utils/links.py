@@ -70,9 +70,11 @@ def last_link(query_params, total_items):
     per_page = link_params['per_page']
     last_page = get_last_page(total_items, link_params['per_page'])
     links = [
-        {'rel': "last", 'href': "%s?%s" % (base_url,
-                                           query_params.args(page=last_page, per_page=per_page)),
-                                           'method': "GET"}
+        {
+            'rel': "last",
+            'href': "%s?%s" % (base_url, query_params.args(page=last_page, per_page=per_page)),
+            'method': "GET"
+        }
     ]
     return links
 
@@ -93,9 +95,11 @@ def collection_links(query_params):
     next_page = get_next_page(link_params['page'])
 
     links = [
-        {'rel': "first", 'href': "%s?%s" % (base_url,
-                                            query_params.args(page=1, per_page=per_page)),
-                                            'method': "GET"},
+        {
+            'rel': "first",
+            'href': "%s?%s" % (base_url, query_params.args(page=1, per_page=per_page)),
+            'method': "GET"
+        },
     ]
     if previous_page:
         links.append({'rel': "previous",
@@ -162,3 +166,12 @@ def add_link(link_list, rel, href, method='GET', **kw):
     link = {'rel': rel, 'method': method, 'href': href}
     link.update(kw)
     link_list.append(link)
+
+
+def status_link(query_params):
+    """Build _status links"""
+    protocol = query_params['request'].protocol
+    host = query_params['request'].host
+    url = "{0}://{1}/{2}".format(protocol, host, "_status")
+
+    return [{"rel": "status", "href": url, "method": "GET"}]

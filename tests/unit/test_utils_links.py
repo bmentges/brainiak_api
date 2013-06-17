@@ -231,3 +231,16 @@ class CollectionLinksTestCase(unittest.TestCase):
             {'href': 'http://class.uri?{0}'.format(next_all_args_str), 'method': 'GET', 'rel': 'next'}]
 
         self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_status_link(self):
+        class MockRequest(object):
+            protocol = "http"
+            host = "localhost"
+
+        query_params = {
+            "request": MockRequest(),
+        }
+
+        computed = status_link(query_params)
+        expected = [{"rel": "status", "href": "http://localhost/_status", "method": "GET"}]
+        self.assertEqual(computed, expected)

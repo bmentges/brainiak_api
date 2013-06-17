@@ -18,6 +18,7 @@ Optional parameters
 -------------------
 
 .. include :: ../params/pages.rst
+.. include :: ../params/item_count.rst
 
 
 Possible responses

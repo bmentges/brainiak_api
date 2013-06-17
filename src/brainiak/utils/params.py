@@ -34,7 +34,8 @@ LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
                                 per_page=settings.DEFAULT_PER_PAGE,
                                 sort_by="",
                                 sort_order="ASC",
-                                sort_include_empty="1")
+                                sort_include_empty="1",
+                                do_item_count="0")
 
 INSTANCE_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri', 'instance_prefix', 'instance_uri')
 
@@ -60,7 +61,8 @@ VALID_PARAMS = ('lang',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
                 'p', 'o',
-                'purge')
+                'purge',
+                'do_item_count')
 
 
 class ParamDict(dict):

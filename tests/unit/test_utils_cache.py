@@ -1,8 +1,10 @@
 import unittest
 
+import redis
+
 from mock import MagicMock, patch
 
-from brainiak.utils.cache import CacheError, create, delete, keys, memoize, purge, retrieve, status
+from brainiak.utils.cache import CacheError, connect, create, delete, keys, memoize, ping, purge, retrieve, safe_redis, status
 from tests.mocks import MockRequest
 
 
@@ -147,6 +149,14 @@ class GeneralFunctionsTestCase(unittest.TestCase):
         response = keys("key_xubiru")
         self.assertEqual(sorted(response), ["key_xubiru", "key_xubiru2"])
 
+    def test_connect(self):
+        response = connect()
+        self.assertIsInstance(response, redis.client.StrictRedis)
+
+    @patch("brainiak.utils.cache.redis_client.ping", return_value=True)
+    def test_ping(self, ping_):
+        self.assertEqual(ping(), True)
+
     @patch("brainiak.utils.cache.ping", return_value=True)
     def test_status_success(self, ping):
         response = status()
@@ -164,3 +174,21 @@ class GeneralFunctionsTestCase(unittest.TestCase):
         response = status()
         expected = "Redis connection authenticated [:j\xdf\x97\xf8:\xcfdS\xd4\xa6\xa4\xb1\x07\x0f7T] | FAILED | localhost:6379 | Traceback (most recent call last)"
         self.assertIn(expected, response)
+
+
+class SafeRedisTestCase(unittest.TestCase):
+
+    @patch("brainiak.utils.cache.redis_client.ping", return_value=True)
+    def test_safe_redis_fails_first_time_passes_second(self):
+
+        ncalls = 0
+        @safe_redis
+        def some_function(self):
+            if not ncalls:
+                ncalls += 1
+                raise CacheError
+            else:
+                return "xubi"
+
+        response = some_function()
+        assert False

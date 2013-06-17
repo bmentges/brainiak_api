@@ -2,8 +2,12 @@ import unittest
 
 from mock import MagicMock, patch
 
-from brainiak.utils.cache import create, delete, keys, memoize, purge, retrieve
+from brainiak.utils.cache import CacheError, create, delete, keys, memoize, purge, retrieve, status
 from tests.mocks import MockRequest
+
+
+def raise_exception():
+    raise CacheError
 
 
 class StrictRedisMock(object):
@@ -142,3 +146,15 @@ class GeneralFunctionsTestCase(unittest.TestCase):
     def test_keys(self):
         response = keys("key_xubiru")
         self.assertEqual(sorted(response), ["key_xubiru", "key_xubiru2"])
+
+    @patch("brainiak.utils.cache.ping", return_value=True)
+    def test_status_success(self):
+        response = status()
+
+    @patch("brainiak.utils.cache.ping", return_value=False)
+    def test_status_fail(self):
+        response = status()
+
+    @patch("brainiak.utils.cache.ping", side_effect=raise_exception)
+    def test_status_exception(self):
+        response = status()

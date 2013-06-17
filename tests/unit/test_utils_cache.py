@@ -140,5 +140,5 @@ class GeneralFunctionsTestCase(unittest.TestCase):
         self.assertTrue(response)
 
     def test_keys(self):
-        response = keys("key_xubiru2")
+        response = keys("key_xubiru")
         self.assertEqual(sorted(response), ["key_xubiru", "key_xubiru2"])

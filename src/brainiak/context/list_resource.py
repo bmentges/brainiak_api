@@ -1,12 +1,14 @@
 from brainiak import triplestore, settings
-from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id
+from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, validate_pagination_or_raise_404
 from brainiak.utils.sparql import add_language_support, calculate_offset
-from brainiak.utils.sparql import compress_keys_and_values
+from brainiak.utils.sparql import compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids
-from brainiak.utils.links import add_link, collection_links, remove_last_slash, self_link
+from brainiak.utils.links import add_link, collection_links, remove_last_slash, self_link, last_link
 from brainiak.prefixes import MemorizeContext
+from brainiak.utils.cache import memoize
 
 
+@memoize
 def list_classes(query_params):
     (query_params, language_tag) = add_language_support(query_params, "label")
     query_result_dict = query_classes_list(query_params)
@@ -34,9 +36,17 @@ def assemble_list_json(query_params, query_result_dict):
 
     json_dict = {
         'items': items_list,
-        'links': links,
         '@context': context_section
     }
+
+    if query_params.get("do_item_count", None) == "1":
+        count_query_result_dict = query_count_classes(query_params)
+        total_items = int(get_one_value(count_query_result_dict, "total_items"))
+        validate_pagination_or_raise_404(query_params, total_items)
+        links += last_link(query_params, total_items)
+        json_dict['item_count'] = total_items
+
+    json_dict['links'] = links
 
     return json_dict
 

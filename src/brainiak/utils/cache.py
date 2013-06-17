@@ -47,7 +47,7 @@ def create(key, value):
 
 
 def retrieve(key):
-    return redis_server.get(url)
+    return redis_server.get(key)
 
 
 def delete(keys):

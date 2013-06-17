@@ -2,7 +2,7 @@ import unittest
 
 from mock import MagicMock, patch
 
-from brainiak.utils.cache import create, delete, keys, memoize, purge
+from brainiak.utils.cache import create, delete, keys, memoize, purge, retrieve
 from tests.mocks import MockRequest
 
 
@@ -115,3 +115,30 @@ class PurgeTestCase(unittest.TestCase):
         info.assert_called_with("Cache: failed purging 1 key(s), matching the pattern: problematic_key")
         self.assertEqual(debug.call_count, 1)
         debug.assert_called_with("Cache: key(s) to be deleted: ['problematic_key']")
+
+
+class GeneralFunctionsTestCase(unittest.TestCase):
+
+    def setUp(self):
+        create("key_xubiru", "value")
+        create("key_xubiru2", "value")
+
+    def tearDown(self):
+        delete("key_xubiru")
+        delete("new_key")
+
+    def test_create(self):
+        response = create("new_key", "some value")
+        self.assertTrue(response)
+
+    def test_retrieve(self):
+        response = retrieve("key_xubiru")
+        self.assertEqual(response, "value")
+
+    def test_delete(self):
+        response = delete("key_xubiru")
+        self.assertTrue(response)
+
+    def test_keys(self):
+        response = keys("key_xubiru2")
+        self.assertEqual(sorted(response), ["key_xubiru", "key_xubiru2"])

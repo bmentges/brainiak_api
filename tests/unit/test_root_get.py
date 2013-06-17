@@ -1,5 +1,5 @@
 from brainiak.root.get import list_all_contexts
-from brainiak.utils.decorator import memoize
+from brainiak.utils.cache import memoize
 
 
 def test_usage_of_memoize():

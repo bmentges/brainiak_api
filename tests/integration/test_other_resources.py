@@ -38,7 +38,16 @@ class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
     def test_virtuoso_status_in_non_prod(self):
         settings.ENVIRONMENT = "local"
         response = self.fetch('/_status/virtuoso', method='GET')
+        self.assertEqual(response.status, 200)
+
+
+class TestCacheStatusResource(TornadoAsyncHTTPTestCase):
+
+    def test_cache_status_in_non_prod(self):
+        response = self.fetch('/_status/cache', method='GET')
         self.assertEqual(response.code, 200)
+        expected = 'Redis connection authenticated [:j\xdf\x97\xf8:\xcfdS\xd4\xa6\xa4\xb1\x07\x0f7T] | SUCCEED | localhost:6379'
+        self.assertEqual(response.body, expected)
 
 
 def raise_exception():

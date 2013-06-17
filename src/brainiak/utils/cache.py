@@ -14,7 +14,7 @@ def memoize(function):
         if settings.ENABLE_CACHE:
             url = params['request'].uri
             cached_json = retrieve(url)
-            if (cached_json is None):
+            if (cached_json is None) or (params.get('purge') == '1'):
                 json = function(params)
                 create(url, ujson.dumps(json))
                 return json

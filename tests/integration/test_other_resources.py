@@ -38,7 +38,7 @@ class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
     def test_virtuoso_status_in_non_prod(self):
         settings.ENVIRONMENT = "local"
         response = self.fetch('/_status/virtuoso', method='GET')
-        self.assertEqual(response.status, 200)
+        self.assertEqual(response.code, 200)
 
 
 class TestCacheStatusResource(TornadoAsyncHTTPTestCase):

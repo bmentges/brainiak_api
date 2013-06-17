@@ -178,17 +178,43 @@ class GeneralFunctionsTestCase(unittest.TestCase):
 
 class SafeRedisTestCase(unittest.TestCase):
 
-    @patch("brainiak.utils.cache.redis_client.ping", return_value=True)
-    def test_safe_redis_fails_first_time_passes_second(self):
+    def setUp(self):
+        self.ncalls = 0
 
-        ncalls = 0
+    @patch("brainiak.utils.cache.connect")
+    @patch("brainiak.utils.cache.redis_client.ping", return_value=True)
+    def test_safe_redis_fails_first_time_passes_second(self, ping, connect):
+
         @safe_redis
         def some_function(self):
-            if not ncalls:
-                ncalls += 1
+            if not self.ncalls:
+                self.ncalls += 1
                 raise CacheError
             else:
                 return "xubi"
 
-        response = some_function()
-        assert False
+        response = some_function(self)
+        self.assertEqual(response, "xubi")
+
+    @patch("brainiak.utils.cache.connect")
+    @patch("brainiak.utils.cache.redis_client.ping", return_value=True)
+    def test_safe_redis_passes_first_time(self, ping, connect):
+
+        @safe_redis
+        def some_function(self):
+            return "ru"
+
+        response = some_function(self)
+        self.assertEqual(response, "ru")
+
+    @patch("brainiak.utils.cache.log.logger.error")
+    @patch("brainiak.utils.cache.connect")
+    @patch("brainiak.utils.cache.redis_client.ping", return_value=True)
+    def test_safe_redis_fails_all_times(self, ping, connect, error):
+
+        @safe_redis
+        def some_function(self):
+            raise CacheError
+
+        response = some_function(self)
+        self.assertIn('CacheError: Second try returned Traceback', str(error.call_args))

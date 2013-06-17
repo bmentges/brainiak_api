@@ -50,6 +50,7 @@ def safe_redis(function):
                 response = function(*params)
             except CacheError:
                 log.logger.error("CacheError: Second try returned {0}".format(traceback.format_exc()))
+                response = -1
         return response
 
     return wrapper

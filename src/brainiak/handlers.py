@@ -393,7 +393,7 @@ class RootHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self):
-        valid_params = LIST_PARAMS  # + CACHE_PARAMS
+        valid_params = LIST_PARAMS + CACHE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
 

@@ -62,6 +62,7 @@ class GetContextTestCase(unittest.TestCase):
 
     def test_list_contexts(self):
         param_dict = {"per_page": "30", "page": "0"}
+        root_url = "http://api.semantica.dev.globoi.com"
         base_url = "http://api.semantica.dev.globoi.com/ctx"
         handler = MockHandler(uri=base_url)
         params = ParamDict(handler, **param_dict)

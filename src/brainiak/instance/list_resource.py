@@ -5,6 +5,7 @@ from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import build_class_url, build_schema_url, collection_links, add_link, filter_query_string_by_key_prefix, remove_last_slash, self_link, last_link
 from brainiak.utils.resources import decorate_with_resource_id, validate_pagination_or_raise_404
 from brainiak.utils.sparql import compress_keys_and_values, normalize_term, calculate_offset, get_one_value
+from brainiak.utils.cache import memoize
 
 
 class Query(object):
@@ -230,6 +231,7 @@ def add_instance_prefix(items_list):
         item["instance_prefix"] = extract_prefix(uri)
 
 
+@memoize
 def filter_instances(query_params):
     keymap = {
         "label": "title",

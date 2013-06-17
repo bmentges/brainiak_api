@@ -23,3 +23,8 @@ def memoize(function):
             return function(params)
 
     return wrapper
+
+
+def purge(pattern):
+    keys_with_pattern = redis_server.keys(pattern)
+    redis_server.delete(keys_with_pattern)

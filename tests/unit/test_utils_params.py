@@ -1,7 +1,7 @@
 from unittest import TestCase
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination, INSTANCE_PARAMS
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination, INSTANCE_PARAMS, CACHE_PARAMS
 from tests.mocks import MockHandler
 
 
@@ -181,3 +181,9 @@ class OrderingTestCase(TestCase):
                            instance_uri="http://this/should/be/used",
                            instance_prefix="http://this/is/less/important/than/instance_uri")
         self.assertEquals(params["instance_uri"], "http://this/should/be/used")
+
+
+class SpecificParamsDictTestCase(TestCase):
+
+    def test_cache_params_definitions(self):
+        self.assertEqual(CACHE_PARAMS.get("purge"), "1")

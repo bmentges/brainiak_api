@@ -1,42 +1,33 @@
 import unittest
 from tornado.web import HTTPError
+from mock import patch
 
 from brainiak import triplestore
 from brainiak.root.get import filter_and_build_contexts, list_all_contexts
-from brainiak.root import get
-from brainiak.utils import sparql
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler
 
 
 class MockedTestCase(unittest.TestCase):
 
-    def setUp(self):
-        self.original_filter_and_build_contexts = get.filter_and_build_contexts
-        self.original_filter_values = sparql.filter_values
-        self.original_query_sparql = triplestore.query_sparql
-
-    def tearDown(self):
-        get.filter_and_build_contexts = self.original_filter_and_build_contexts
-        sparql.filter_values = self.original_filter_values
-        triplestore.query_sparql = self.original_query_sparql
-
-    def test_raises_http_error(self):
-        triplestore.query_sparql = lambda query: None
-        sparql.filter_values = lambda a, b: []
-
-        def mock_filter_and_build_contexts(contexts_uris):
-            return []
-        get.filter_and_build_contexts = mock_filter_and_build_contexts
+    @patch('brainiak.triplestore.query_sparql')
+    @patch('brainiak.utils.sparql.filter_values', return_value=[])
+    @patch('brainiak.root.get.filter_and_build_contexts', return_value=[])
+    def test_raises_http_error(self, mock1, mock2, mock3):
         self.assertRaises(HTTPError, list_all_contexts, 'irrelevant_params')
 
-    def test_raises_http_error_invalid_page(self):
-        triplestore.query_sparql = lambda query: None
-        sparql.filter_values = lambda a, b: []
+    @patch('brainiak.triplestore.query_sparql')
+    @patch('brainiak.utils.sparql.filter_values', return_value=[])
+    @patch('brainiak.root.get.filter_and_build_contexts', return_value=[])
+    def test_raises_http_error_empty_page(self, mock1, mock2, mock3):
+        handler = MockHandler()
+        params = ParamDict(handler, page='100')
+        self.assertRaises(HTTPError, list_all_contexts, params)
 
-        def mock_filter_and_build_contexts(contexts_uris):
-            return []
-        get.filter_and_build_contexts = mock_filter_and_build_contexts
+    @patch('brainiak.triplestore.query_sparql')
+    @patch('brainiak.utils.sparql.filter_values')
+    @patch('brainiak.root.get.filter_and_build_contexts', return_value=[])
+    def test_raises_http_error_invalid_page(self, mock1, mock2, mock3):
         handler = MockHandler()
         params = ParamDict(handler, page='100')
         self.assertRaises(HTTPError, list_all_contexts, params)

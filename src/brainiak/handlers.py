@@ -60,7 +60,7 @@ def get_routes():
         URLSpec(r'/healthcheck/?', HealthcheckHandler),
         URLSpec(r'/version/?', VersionHandler),
         URLSpec(r'/prefixes/?', PrefixHandler),
-        URLSpec(r'/_status/$', StatusHandler),
+        URLSpec(r'/_status/?$', StatusHandler),
         URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', SchemaHandler),
@@ -358,8 +358,10 @@ class CollectionHandler(BrainiakRequestHandler):
 
         if settings.NOTIFY_BUS:
             try:
+                instance_data_without_links = copy(instance_data)
+                instance_data_without_links.pop("links", None)
                 notify_bus(instance=instance_uri, klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"], action="POST", instance_data=instance_data)
+                           graph=self.query_params["graph_uri"], action="POST", instance_data=instance_data_without_links)
             except MiddlewareError:
                 # rollback data insertion
                 self.query_params['instance_id'] = instance_id

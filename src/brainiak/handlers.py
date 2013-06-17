@@ -26,6 +26,7 @@ from brainiak.instance.list_resource import filter_instances
 from brainiak.prefix.list_resource import list_prefixes
 from brainiak.root.get import list_all_contexts
 from brainiak.schema import resource as schema_resource
+from brainiak.utils import cache
 from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
 from brainiak.utils.links import build_schema_url
 from brainiak.utils.resources import LazyObject
@@ -62,6 +63,7 @@ def get_routes():
         URLSpec(r'/prefixes/?', PrefixHandler),
         URLSpec(r'/_status/?$', StatusHandler),
         URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
+        URLSpec(r'/_status/cache/?', CacheStatusHandler),
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', SchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
@@ -172,6 +174,12 @@ class VirtuosoStatusHandler(BrainiakRequestHandler):
 
     def get(self):
         self.write(triplestore.status())
+
+
+class CacheStatusHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.write(cache.status())
 
 
 class EventBusStatusHandler(BrainiakRequestHandler):

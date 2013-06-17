@@ -25,10 +25,10 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     @patch("brainiak.handlers.logger")
     def test_400(self, log):
         sparql.filter_values = lambda a, b: []
-        response = self.fetch("/?best_martial_arts=aikido", method='GET')
+        response = self.fetch("/?best_aikido_move=ki_projection", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
-        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_martial_arts is not supported. The supported arguments are: purge, sort_order, per_page, page, sort_include_empty, do_item_count, sort_by.')
+        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_aikido_move is not supported. The supported arguments are: purge, sort_order, per_page, sort_by, page, do_item_count, sort_include_empty.')
 
     @patch("brainiak.handlers.logger")
     def test_404(self, log):

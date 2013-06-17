@@ -59,7 +59,8 @@ VALID_PARAMS = ('lang',
                 'instance_id', 'instance_prefix', 'instance_uri',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
-                'p', 'o')
+                'p', 'o',
+                'purge')
 
 
 class ParamDict(dict):

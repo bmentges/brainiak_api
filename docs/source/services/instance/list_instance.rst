@@ -21,6 +21,7 @@ Optional parameters
 
 .. include :: ../params/lang.rst
 .. include :: ../params/pages.rst
+.. include :: ../params/item_count.rst
 .. include :: ../params/graph_uri.rst
 .. include :: ../params/class.rst
 .. include :: ../params/po.rst

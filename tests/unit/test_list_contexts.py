@@ -62,6 +62,7 @@ class GetContextTestCase(unittest.TestCase):
         }
         triplestore.query_sparql = lambda query: response
         param_dict = {"per_page": "30", "page": "0"}
+        root_url = "http://api.semantica.dev.globoi.com"
         base_url = "http://api.semantica.dev.globoi.com/ctx"
         handler = MockHandler(uri=base_url)
         params = ParamDict(handler, **param_dict)
@@ -73,6 +74,7 @@ class GetContextTestCase(unittest.TestCase):
         ]
         self.assertEqual(computed["items"], expected_items)
         expected_links = [
+            {'rel': 'status', 'href': root_url + '/_status', 'method': 'GET'},
             {'rel': 'self', 'href': base_url, 'method': 'GET'},
             {'rel': 'instances', 'href': base_url + '/{resource_id}', 'method': 'GET'},
             {'rel': 'next', 'href': 'http://api.semantica.dev.globoi.com/ctx?per_page=30&page=2', 'method': 'GET'},

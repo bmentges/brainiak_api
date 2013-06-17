@@ -28,7 +28,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/?best_martial_arts=aikido", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
-        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_martial_arts is not supported. The supported arguments are: per_page, sort_order, sort_by, sort_include_empty, page.')
+        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_martial_arts is not supported. The supported arguments are: purge, per_page, sort_order, sort_by, sort_include_empty, page.')
 
     @patch("brainiak.handlers.logger")
     def test_404(self, log):
@@ -92,7 +92,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
 
     @patch("brainiak.utils.cache.retrieve", return_value='{"cached": true}')
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
-    def test_200_without_cache(self, enable_cache, retrieve):
+    def test_200_with_cache_but_with_purge(self, enable_cache, retrieve):
         response = self.fetch("/?purge=1", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)

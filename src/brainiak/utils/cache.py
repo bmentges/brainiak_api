@@ -98,7 +98,7 @@ def ping():
 
 def status():
     params = {
-        "password": md5.new(settings.REDIS_PASSWORD).digest(),
+        "password": md5.new(str(settings.REDIS_PASSWORD)).digest(),
         "endpoint": "{0}:{1}".format(settings.REDIS_ENDPOINT, settings.REDIS_PORT),
     }
     failure_msg = "Redis connection authenticated [:%(password)s] | FAILED | %(endpoint)s | %(error)s"

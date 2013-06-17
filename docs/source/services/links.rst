@@ -150,24 +150,31 @@ Moreover, these resources are guaranteed to be also lists.
 first
 .........
 
-Refers to the first item of a list.
+Refers to the first page of a list.
 
 
 last
 ........
 
-Refers to the last item of a list.
+Refers to the last page of a list.
+This link is only present if the respective resource URL receives the ``do_item_count`` parameter set to 1.
 
 
 next
 ........
 
-Refers to the next item in a list (e.g. the next page)
+Refers to the next page in a list.
+
+.. warning::
+
+   By default, the ``item_count`` attribute of a list is not computed.
+   As a result, the URL given by the ``next`` link may not contain data beyond the last page.
+
 
 previous
 ............
 
-Refers to the previous item in a list (e.g. the previous page)
+Refers to the previous page in a list.
 
 
 Ontology relations links

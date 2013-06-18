@@ -22,24 +22,20 @@ def connect():
 redis_client = connect()
 
 
-def memoize(function):
-    # TODO: log:
-    def wrapper(params):
-        if settings.ENABLE_CACHE:
-            url = params['request'].uri
-            cached_json = retrieve(url)
-            if (cached_json is None) or (params.get('purge') == '1'):
-                # TODO:
-                # purge based on request.path
-                json = function(params)
-                create(url, ujson.dumps(json))
-                return json
-            else:
-                return ujson.loads(cached_json)
+def memoize(function, params):
+    if settings.ENABLE_CACHE:
+        url = params['request'].uri
+        cached_json = retrieve(url)
+        if (cached_json is None) or (params.get('purge') == '1'):
+            # TODO:
+            # purge based on request.path
+            json = function(params)
+            create(url, ujson.dumps(json))
+            return json
         else:
-            return function(params)
-
-    return wrapper
+            return ujson.loads(cached_json)
+    else:
+        return function(params)
 
 
 def safe_redis(function):

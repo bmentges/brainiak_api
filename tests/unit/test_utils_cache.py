@@ -217,4 +217,5 @@ class SafeRedisTestCase(unittest.TestCase):
             raise CacheError
 
         response = some_function(self)
+        self.assertIsNone(response)
         self.assertIn('CacheError: Second try returned Traceback', str(error.call_args))

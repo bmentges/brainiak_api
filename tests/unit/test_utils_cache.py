@@ -4,7 +4,7 @@ import redis
 
 from mock import MagicMock, patch
 
-from brainiak.utils.cache import CacheError, connect, create, delete, keys, memoize, ping, purge, retrieve, safe_redis, status
+from brainiak.utils.cache import CacheError, connect, memoize, safe_redis, status
 from tests.mocks import MockRequest
 
 

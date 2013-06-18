@@ -14,6 +14,7 @@ from tornado_cors import custom_decorator
 from tornado_cors import CorsMixin
 
 from brainiak import __version__, event_bus, triplestore, settings
+from brainiak.utils.cache import memoize
 from brainiak.log import get_logger
 from brainiak.event_bus import notify_bus, MiddlewareError
 from brainiak.greenlet_tornado import greenlet_asynchronous
@@ -409,7 +410,7 @@ class RootHandler(BrainiakRequestHandler):
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
 
-        response = list_all_contexts(self.query_params)
+        response = memoize(list_all_contexts, self.query_params)
 
         self.finalize(response)
 

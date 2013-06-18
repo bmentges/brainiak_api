@@ -399,6 +399,10 @@ class CollectionHandler(BrainiakRequestHandler):
 
 class RootHandler(BrainiakRequestHandler):
 
+    #SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
+    #def purge(self):
+    #    self.finalize({"oi": "xubiru"})
+
     @greenlet_asynchronous
     def get(self):
         valid_params = LIST_PARAMS + CACHE_PARAMS

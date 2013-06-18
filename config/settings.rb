@@ -29,7 +29,7 @@ namespace :deploy do
         put File.read("docs.tar.gz"), "/tmp/docs.tar.gz", :via => :scp
         run "cd /tmp && tar xzf docs.tar.gz"
         run 'cd /tmp/docs && export PATH="/opt/api_semantica/brainiak/virtualenv/bin:$PATH" && export PYTHONPATH="' + deploy_to + '/current:$PYTHONPATH" && make html'
-        run "mv /tmp/docs/build/html #{docs_html}"
+        run "rsync -ac --delay-updates --stats /tmp/docs/build/html/ #{docs_html}/"
         run 'cd /tmp && rm -rf docs && rm docs.tar.gz'
         system "rm docs.tar.gz"
     end

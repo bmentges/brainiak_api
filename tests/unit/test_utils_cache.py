@@ -12,6 +12,10 @@ def raise_exception():
     raise CacheError
 
 
+def raise_connection_exception():
+    raise redis.connection.ConnectionError
+
+
 class StrictRedisMock(object):
 
     def __init__(host=None, port=None, db=None):
@@ -171,6 +175,12 @@ class GeneralFunctionsTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.cache.ping", side_effect=raise_exception)
     def test_status_exception(self, ping):
+        response = status()
+        expected = "Redis connection authenticated [:j\xdf\x97\xf8:\xcfdS\xd4\xa6\xa4\xb1\x07\x0f7T] | FAILED | localhost:6379 | Traceback (most recent call last)"
+        self.assertIn(expected, response)
+
+    @patch("brainiak.utils.cache.ping", side_effect=raise_connection_exception)
+    def test_status_exception_connection(self, ping):
         response = status()
         expected = "Redis connection authenticated [:j\xdf\x97\xf8:\xcfdS\xd4\xa6\xa4\xb1\x07\x0f7T] | FAILED | localhost:6379 | Traceback (most recent call last)"
         self.assertIn(expected, response)

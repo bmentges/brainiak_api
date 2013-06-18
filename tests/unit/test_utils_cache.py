@@ -36,10 +36,11 @@ class MemoizeTestCase(unittest.TestCase):
         params = {'request': MockRequest(uri="/home")}
         answer = memoize(clean_up, params)
 
-        self.assertEquals(answer, {"status": "Laundry done"})
-        self.assertEquals(redis_get.call_count, 0)
-        self.assertEquals(redis_set.call_count, 0)
+        self.assertEqual(answer, {"status": "Laundry done"})
+        self.assertEqual(redis_get.call_count, 0)
+        self.assertEqual(redis_set.call_count, 0)
 
+    @patch("brainiak.utils.cache.datetime.isoformat", return_value="2013-06-18T18:26:07.113035")
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     @patch("brainiak.utils.cache.create", return_value=True)
     @patch("brainiak.utils.cache.retrieve", return_value=None)
@@ -52,9 +53,15 @@ class MemoizeTestCase(unittest.TestCase):
         params = {'request': MockRequest(uri="/home")}
         answer = memoize(clean_up, params)
 
-        self.assertEquals(answer, {"status": "Laundry done"})
-        self.assertEquals(redis_get.call_count, 1)
-        self.assertEquals(redis_set.call_count, 1)
+        expected = {
+            'body': 'Laundry done',
+            'cache': {
+                'last_modified': '2013-06-18T18:26:07.113035'
+            }
+        }
+        self.assertEqual(answer, expected)
+        self.assertEqual(redis_get.call_count, 1)
+        self.assertEqual(redis_set.call_count, 1)
 
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     @patch("brainiak.utils.cache.create", return_value=True)
@@ -68,9 +75,9 @@ class MemoizeTestCase(unittest.TestCase):
         params = {'request': MockRequest(uri="/home")}
         answer = memoize(clean_up, params)
 
-        self.assertEquals(answer, {"status": "Dishes cleaned up"})
-        self.assertEquals(redis_get.call_count, 1)
-        self.assertEquals(redis_set.call_count, 0)
+        self.assertEqual(answer, {"status": "Dishes cleaned up"})
+        self.assertEqual(redis_get.call_count, 1)
+        self.assertEqual(redis_set.call_count, 0)
 
 
 class GeneralFunctionsTestCase(unittest.TestCase):

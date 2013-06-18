@@ -4,7 +4,7 @@ import redis
 
 from mock import MagicMock, patch
 
-from brainiak.utils.cache import CacheError, connect, memoize, safe_redis, status
+from brainiak.utils.cache import CacheError, connect, memoize, ping, safe_redis, status
 from tests.mocks import MockRequest
 
 
@@ -22,7 +22,7 @@ class StrictRedisMock(object):
         pass
 
 
-class MemoizeDecoratorTestCase(unittest.TestCase):
+class MemoizeTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=False)
     @patch("brainiak.utils.cache.create")
@@ -30,12 +30,11 @@ class MemoizeDecoratorTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
     def test_memoize_cache_disabled(self, strict_redis, redis_get, redis_set, settings):
 
-        @memoize
         def clean_up(params):
             return {"status": "Laundry done"}
 
         params = {'request': MockRequest(uri="/home")}
-        answer = clean_up(params)
+        answer = memoize(clean_up, params)
 
         self.assertEquals(answer, {"status": "Laundry done"})
         self.assertEquals(redis_get.call_count, 0)
@@ -47,12 +46,11 @@ class MemoizeDecoratorTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
     def test_memoize_cache_enabled_but_without_cache(self, strict_redis, redis_get, redis_set, settings):
 
-        @memoize
         def clean_up(params):
             return {"status": "Laundry done"}
 
         params = {'request': MockRequest(uri="/home")}
-        answer = clean_up(params)
+        answer = memoize(clean_up, params)
 
         self.assertEquals(answer, {"status": "Laundry done"})
         self.assertEquals(redis_get.call_count, 1)
@@ -64,12 +62,11 @@ class MemoizeDecoratorTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
     def test_memoize_cache_enabled_but_with_cache(self, strict_redis, redis_get, redis_set, settings):
 
-        @memoize
         def clean_up(params):
             return {"status": "Laundry done"}
 
         params = {'request': MockRequest(uri="/home")}
-        answer = clean_up(params)
+        answer = memoize(clean_up, params)
 
         self.assertEquals(answer, {"status": "Dishes cleaned up"})
         self.assertEquals(redis_get.call_count, 1)

@@ -1,5 +1,7 @@
 import unittest
 
+from mock import patch
+
 from brainiak.utils.cache import CacheError, connect, create, delete, keys, memoize, ping, purge, retrieve, safe_redis, status
 
 
@@ -75,7 +77,7 @@ class PurgeTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.log.logger.info")
     def test_cleanup_fails(self, info, debug, delete):
         purge("problematic_key")
-        self.assertEqual(info.call_count, 1s)
+        self.assertEqual(info.call_count, 1)
         info.assert_called_with("Cache: failed purging 1 key(s), matching the pattern: problematic_key")
         self.assertEqual(debug.call_count, 1)
         debug.assert_called_with("Cache: key(s) to be deleted: ['problematic_key']")

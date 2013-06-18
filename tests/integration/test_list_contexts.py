@@ -74,13 +74,13 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertIn("links", body.keys())
         self.assertIn("items", body.keys())
 
-    @patch("brainiak.utils.cache.retrieve", return_value='{"cached": true}')
-    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
-    def test_200_with_cache(self, enable_cache, retrieve):
-        response = self.fetch("/", method='GET')
-        self.assertEqual(response.code, 200)
-        body = json.loads(response.body)
-        self.assertEqual(body, {u'cached': True})
+    # @patch("brainiak.utils.cache.retrieve", return_value='{"cached": true}')
+    # @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    # def test_200_with_cache(self, enable_cache, retrieve):
+    #     response = self.fetch("/", method='GET')
+    #     self.assertEqual(response.code, 200)
+    #     body = json.loads(response.body)
+    #     self.assertEqual(body, {u'cached': True})
 
     @patch("brainiak.utils.cache.retrieve", return_value='{"cached": false}')
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=False)

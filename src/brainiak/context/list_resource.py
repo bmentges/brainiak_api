@@ -5,10 +5,8 @@ from brainiak.utils.sparql import compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids
 from brainiak.utils.links import add_link, collection_links, remove_last_slash, self_link, last_link
 from brainiak.prefixes import MemorizeContext
-from brainiak.utils.cache import memoize
 
 
-@memoize
 def list_classes(query_params):
     (query_params, language_tag) = add_language_support(query_params, "label")
     query_result_dict = query_classes_list(query_params)

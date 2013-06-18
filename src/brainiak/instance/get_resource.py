@@ -94,6 +94,7 @@ SELECT DISTINCT ?predicate ?object ?label ?super_property {
         rdfs:label ?label;
         ?predicate ?object .
 OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
 FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
 }
 """

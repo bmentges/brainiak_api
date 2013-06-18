@@ -26,6 +26,8 @@ def memoize(function):
             url = params['request'].uri
             cached_json = retrieve(url)
             if (cached_json is None) or (params.get('purge') == '1'):
+                # TODO:
+                # purge based on request.path
                 json = function(params)
                 create(url, ujson.dumps(json))
                 return json
@@ -50,7 +52,7 @@ def safe_redis(function):
                 response = function(*params)
             except CacheError:
                 log.logger.error("CacheError: Second try returned {0}".format(traceback.format_exc()))
-                response = -1
+                response = None
         return response
 
     return wrapper

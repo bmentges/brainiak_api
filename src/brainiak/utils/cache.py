@@ -1,3 +1,4 @@
+import datetime
 import md5
 import traceback
 
@@ -25,15 +26,23 @@ redis_client = connect()
 def memoize(function, params):
     if settings.ENABLE_CACHE:
         url = params['request'].uri
-        cached_json = retrieve(url)
-        if (cached_json is None) or (params.get('purge') == '1'):
-            # TODO:
-            # purge based on request.path
-            json = function(params)
-            create(url, ujson.dumps(json))
-            return json
+        cache_json = retrieve(url)
+        if (cache_json is None) or (params.get('purge') == '1'):
+            # TODO: purge based on request.path
+            fresh_json = function(params)
+            now = datetime.datetime.now().isoformat()  # ISO 8601
+
+            cache_json = {
+                "body": fresh_json,
+                "cache": {
+                    "last_modified": now
+                }
+            }
+
+            create(url, ujson.dumps(cache_json))
+            return cache_json
         else:
-            return ujson.loads(cached_json)
+            return ujson.loads(cache_json)
     else:
         return function(params)
 

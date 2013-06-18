@@ -2,7 +2,7 @@ import unittest
 
 from mock import patch
 
-from brainiak.utils.cache import CacheError, connect, create, delete, keys, memoize, ping, purge, retrieve, safe_redis, status
+from brainiak.utils.cache import create, delete, keys, ping, purge, retrieve
 
 
 class GeneralFunctionsTestCase(unittest.TestCase):

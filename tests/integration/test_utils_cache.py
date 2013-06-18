@@ -8,6 +8,7 @@ from brainiak.utils.cache import CacheError, connect, create, delete, keys, memo
 class GeneralFunctionsTestCase(unittest.TestCase):
 
     def setUp(self):
+        self.assertTrue(ping())  # assert Redis is up
         create("key_xubiru", "value")
         create("key_xubiru2", "value")
 
@@ -35,6 +36,7 @@ class GeneralFunctionsTestCase(unittest.TestCase):
 class PurgeTestCase(unittest.TestCase):
 
     def setUp(self):
+        self.assertTrue(ping())  # assert Redis is up
         delete("inexistent_url")
         create("some_url", "any value")
         create("some_other_url", "another value")

@@ -80,6 +80,7 @@ class TestCaseInstanceResource(unittest.TestCase):
                     rdfs:label ?label;
                     ?predicate ?object .
             OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+            FILTER((langMatches(lang(?object), "en") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
             FILTER(langMatches(lang(?label), "en") OR langMatches(lang(?label), "")) .
             }
             """

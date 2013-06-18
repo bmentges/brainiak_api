@@ -12,6 +12,9 @@ class CacheError(redis.exceptions.RedisError):
     pass
 
 
+exceptions = (CacheError, redis.connection.ConnectionError)
+
+
 def connect():
     return redis.StrictRedis(host=settings.REDIS_ENDPOINT, port=settings.REDIS_PORT, password=settings.REDIS_PASSWORD, db=0)
 
@@ -20,7 +23,7 @@ redis_client = connect()
 
 
 def memoize(function):
-
+    # TODO: log:q
     def wrapper(params):
         if settings.ENABLE_CACHE:
             url = params['request'].uri
@@ -44,13 +47,13 @@ def safe_redis(function):
     def wrapper(*params):
         try:
             response = function(*params)
-        except CacheError:
+        except exceptions as e:
             log.logger.error("CacheError: First try returned {0}".format(traceback.format_exc()))
             try:
                 global redis_client
                 redis_client = connect()
                 response = function(*params)
-            except CacheError:
+            except exceptions as e:
                 log.logger.error("CacheError: Second try returned {0}".format(traceback.format_exc()))
                 response = None
         return response
@@ -109,7 +112,7 @@ def status():
 
     try:
         response = ping()
-    except CacheError:
+    except exceptions as e:
         params["error"] = traceback.format_exc()
         msg = failure_msg
     else:

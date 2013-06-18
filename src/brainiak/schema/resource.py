@@ -5,10 +5,8 @@ from brainiak.utils.links import assemble_url, add_link, self_link
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties
 from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
-from brainiak.utils.cache import memoize
 
 
-@memoize
 def get_schema(query_params):
 
     context = MemorizeContext()

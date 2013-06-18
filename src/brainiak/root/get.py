@@ -3,7 +3,6 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql
-from brainiak.utils.cache import memoize
 from brainiak.utils.links import self_link, split_into_chunks, collection_links,\
     add_link, status_link, last_link
 from brainiak.utils.resources import validate_pagination_or_raise_404
@@ -18,7 +17,6 @@ WHERE {GRAPH ?graph { ?s a ?o }}
 """
 
 
-@memoize
 def list_all_contexts(params):
     sparql_response = triplestore.query_sparql(QUERY_LIST_CONTEXT)
     all_contexts_uris = sparql.filter_values(sparql_response, "graph")

@@ -23,7 +23,7 @@ redis_client = connect()
 
 
 def memoize(function):
-    # TODO: log:q
+    # TODO: log:
     def wrapper(params):
         if settings.ENABLE_CACHE:
             url = params['request'].uri

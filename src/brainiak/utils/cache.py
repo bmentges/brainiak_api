@@ -1,6 +1,6 @@
-import datetime
 import md5
 import traceback
+from email.utils import formatdate
 
 import redis
 import ujson
@@ -23,6 +23,14 @@ def connect():
 redis_client = connect()
 
 
+def current_time():
+    """
+    Return current time in RFC 1123, according to:
+    http://tools.ietf.org/html/rfc2822.html#section-3.3
+    """
+    return formatdate(timeval=None, localtime=True)
+
+
 def memoize(function, params):
     if settings.ENABLE_CACHE:
         url = params['request'].uri
@@ -30,12 +38,10 @@ def memoize(function, params):
         if (cache_json is None) or (params.get('purge') == '1'):
             # TODO: purge based on request.path
             fresh_json = function(params)
-            now = datetime.datetime.now().isoformat()  # ISO 8601
-
             cache_json = {
                 "body": fresh_json,
                 "cache": {
-                    "last_modified": now
+                    "last_modified": current_time()
                 }
             }
 
@@ -44,7 +50,7 @@ def memoize(function, params):
         else:
             return ujson.loads(cache_json)
     else:
-        return function(params)
+        return {"body": function(params)}
 
 
 def safe_redis(function):

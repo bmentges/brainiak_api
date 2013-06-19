@@ -31,26 +31,29 @@ def current_time():
     return formatdate(timeval=None, localtime=True)
 
 
+def fresh_retrieve(function, params):
+    body = function(params)
+    fresh_json = {
+        "body": body,
+        "meta": {
+            "last_modified": current_time()
+        }
+    }
+    return fresh_json
+
+
 def memoize(function, params):
     if settings.ENABLE_CACHE:
         url = params['request'].uri
-        cache_json = retrieve(url)
-        if (cache_json is None) or (params.get('purge') == '1'):
-            # TODO: purge based on request.path
-            fresh_json = function(params)
-            cache_json = {
-                "body": fresh_json,
-                "cache": {
-                    "last_modified": current_time()
-                }
-            }
-
-            create(url, ujson.dumps(cache_json))
-            return cache_json
+        cached_json = retrieve(url)
+        if (cached_json is None) or (params.get('purge') == '1'):
+            fresh_json = fresh_retrieve(function, params)
+            create(url, ujson.dumps(fresh_json))
+            return fresh_json
         else:
-            return ujson.loads(cache_json)
+            return ujson.loads(cached_json)
     else:
-        return {"body": function(params)}
+        return fresh_retrieve(function, params)
 
 
 def safe_redis(function):

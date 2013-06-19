@@ -74,29 +74,32 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertIn("links", body.keys())
         self.assertIn("items", body.keys())
 
-    @patch("brainiak.utils.cache.retrieve", return_value='{"body": {"status": "cached"}}')
+    @patch("brainiak.utils.cache.retrieve", return_value='{"body": {"status": "cached"}, "meta": {"last_modified": "Fri, 11 May 1984 20:00:00 -0300"}}')
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     def test_200_with_cache(self, enable_cache, retrieve):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         self.assertEqual(body, {'status': "cached"})
+        self.assertEqual(response.headers['Last-Modified'], 'Fri, 11 May 1984 20:00:00 -0300')
 
-    @patch("brainiak.utils.cache.retrieve", return_value='{"cached": false}')
+    @patch("brainiak.utils.cache.retrieve", return_value='{"cache": false}')
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=False)
     def test_200_without_cache(self, enable_cache, retrieve):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         self.assertIn("items", body.keys())
+        self.assertTrue(response.headers.get('Last-Modified'))
 
-    @patch("brainiak.utils.cache.retrieve", return_value='{"cached": true}')
+    @patch("brainiak.utils.cache.retrieve", return_value='{"cache": "dismissed"')
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     def test_200_with_cache_but_with_purge(self, enable_cache, retrieve):
         response = self.fetch("/?purge=1", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         self.assertIn("items", body.keys())
+        self.assertTrue(response.headers.get('Last-Modified'))
 
 
 class QueryTestCase(QueryTestCase):

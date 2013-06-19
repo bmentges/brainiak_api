@@ -130,6 +130,12 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             logger.error("Uncaught exception: {0}\n".format(error_message), exc_info=True)
             self.send_error(status_code, exc_info=sys.exc_info())
 
+    def add_cache_headers(self, meta):
+        cache_verb = meta['cache']
+        cache_msg = "{0} from {1}".format(cache_verb, self.request.host)
+        self.set_header("X-Cache", cache_msg)
+        self.set_header("Last-Modified", meta['last_modified'])
+
     def write_error(self, status_code, **kwargs):
         error_message = "HTTP error: %d" % status_code
         if "message" in kwargs and kwargs.get("message") is not None:
@@ -409,14 +415,8 @@ class RootHandler(BrainiakRequestHandler):
         valid_params = LIST_PARAMS + CACHE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
-
         response = memoize(list_all_contexts, self.query_params)
-        self.set_header("Last-Modified", response['meta']['last_modified'])
-
-        cache_verb = response['meta']['cache']
-        host = self.query_params['request'].host
-        cache_msg = "{0} from {1}".format(cache_verb, host)
-        self.set_header("X-Cache", cache_msg)
+        self.add_cache_headers(response['meta'])
         self.finalize(response['body'])
 
 

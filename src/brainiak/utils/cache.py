@@ -1,5 +1,6 @@
 import md5
 import traceback
+from email.utils import formatdate
 
 import redis
 import ujson
@@ -22,24 +23,39 @@ def connect():
 redis_client = connect()
 
 
-def memoize(function):
-    # TODO: log:q
-    def wrapper(params):
-        if settings.ENABLE_CACHE:
-            url = params['request'].uri
-            cached_json = retrieve(url)
-            if (cached_json is None) or (params.get('purge') == '1'):
-                # TODO:
-                # purge based on request.path
-                json = function(params)
-                create(url, ujson.dumps(json))
-                return json
-            else:
-                return ujson.loads(cached_json)
-        else:
-            return function(params)
+def current_time():
+    """
+    Return current time in RFC 1123, according to:
+    http://tools.ietf.org/html/rfc2822.html#section-3.3
+    """
+    return formatdate(timeval=None, localtime=True)
 
-    return wrapper
+
+def fresh_retrieve(function, params):
+    body = function(params)
+    fresh_json = {
+        "body": body,
+        "meta": {
+            "last_modified": current_time(),
+            "cache": "MISS"
+        }
+    }
+    return fresh_json
+
+
+def memoize(function, params):
+    if settings.ENABLE_CACHE:
+        url = params['request'].uri
+        cached_json = retrieve(url)
+        if (cached_json is None) or (params.get('purge') == '1'):
+            fresh_json = fresh_retrieve(function, params)
+            create(url, ujson.dumps(fresh_json))
+            return fresh_json
+        else:
+            cached_json["meta"]["cache"] = "HIT"
+            return cached_json
+    else:
+        return fresh_retrieve(function, params)
 
 
 def safe_redis(function):
@@ -84,7 +100,10 @@ def create(key, value):
 
 @safe_redis
 def retrieve(key):
-    return redis_client.get(key)
+    response = redis_client.get(key)
+    if response:
+        response = ujson.loads(response)
+    return response
 
 
 @safe_redis

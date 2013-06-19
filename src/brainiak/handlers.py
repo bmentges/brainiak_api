@@ -412,6 +412,11 @@ class RootHandler(BrainiakRequestHandler):
 
         response = memoize(list_all_contexts, self.query_params)
         self.set_header("Last-Modified", response['meta']['last_modified'])
+
+        cache_verb = response['meta']['cache']
+        host = self.query_params['request'].host
+        cache_msg = "{0} from {1}".format(cache_verb, host)
+        self.set_header("X-Cache", cache_msg)
         self.finalize(response['body'])
 
 

@@ -9,8 +9,8 @@ class GeneralFunctionsTestCase(unittest.TestCase):
 
     def setUp(self):
         self.assertTrue(ping())  # assert Redis is up
-        create("key_xubiru", "value")
-        create("key_xubiru2", "value")
+        create("key_xubiru", '{"key": "value"}')
+        create("key_xubiru2", '{"key": "value"}')
 
     def tearDown(self):
         delete("key_xubiru")
@@ -20,9 +20,13 @@ class GeneralFunctionsTestCase(unittest.TestCase):
         response = create("new_key", "some value")
         self.assertTrue(response)
 
+    def test_retrieve_inexistent(self):
+        response = retrieve("inexistent_key")
+        self.assertEqual(response, None)
+
     def test_retrieve(self):
         response = retrieve("key_xubiru")
-        self.assertEqual(response, "value")
+        self.assertEqual(response, {"key": "value"})
 
     def test_delete(self):
         response = delete("key_xubiru")

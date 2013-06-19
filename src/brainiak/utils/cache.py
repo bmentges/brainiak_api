@@ -36,7 +36,8 @@ def fresh_retrieve(function, params):
     fresh_json = {
         "body": body,
         "meta": {
-            "last_modified": current_time()
+            "last_modified": current_time(),
+            "cache": "MISS"
         }
     }
     return fresh_json
@@ -51,7 +52,8 @@ def memoize(function, params):
             create(url, ujson.dumps(fresh_json))
             return fresh_json
         else:
-            return ujson.loads(cached_json)
+            cached_json["meta"]["cache"] = "HIT"
+            return cached_json
     else:
         return fresh_retrieve(function, params)
 
@@ -98,7 +100,10 @@ def create(key, value):
 
 @safe_redis
 def retrieve(key):
-    return redis_client.get(key)
+    response = redis_client.get(key)
+    if response:
+        response = ujson.loads(response)
+    return response
 
 
 @safe_redis

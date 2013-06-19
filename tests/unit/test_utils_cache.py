@@ -57,7 +57,8 @@ class MemoizeTestCase(unittest.TestCase):
         expected = {
             'body': {"status": "Laundry done"},
             'meta': {
-                'last_modified': 'Fri, 11 May 1984 20:00:00 -0300'
+                'last_modified': 'Fri, 11 May 1984 20:00:00 -0300',
+                'cache': 'MISS'
             }
         }
         self.assertEqual(answer, expected)
@@ -66,9 +67,9 @@ class MemoizeTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     @patch("brainiak.utils.cache.create", return_value=True)
-    @patch("brainiak.utils.cache.retrieve", return_value='{"status": "Dishes cleaned up"}')
+    @patch("brainiak.utils.cache.retrieve", return_value={"status": "Dishes cleaned up", "meta": {}})
     @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
-    def test_memoize_cache_enabled_butest_500t_with_cache(self, strict_redis, redis_get, redis_set, settings):
+    def test_memoize_cache_enabled_but_miss(self, strict_redis, redis_get, redis_set, settings):
 
         def clean_up(params):
             return {"status": "Laundry done"}
@@ -76,7 +77,7 @@ class MemoizeTestCase(unittest.TestCase):
         params = {'request': MockRequest(uri="/home")}
         answer = memoize(clean_up, params)
 
-        self.assertEqual(answer, {"status": "Dishes cleaned up"})
+        self.assertEqual(answer, {"status": "Dishes cleaned up", "meta": {"cache": "HIT"}})
         self.assertEqual(redis_get.call_count, 1)
         self.assertEqual(redis_set.call_count, 0)
 

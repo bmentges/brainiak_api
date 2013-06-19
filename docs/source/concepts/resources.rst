@@ -4,6 +4,7 @@ Ubiquitous Language
 Here we explain the main concepts of the API, i.e. this is
 our `ubiquitous language <http://martinfowler.com/bliki/UbiquitousLanguage.html>`_.
 
+
 .. _concept-context:
 
 
@@ -29,21 +30,21 @@ The default prefix can be overridden if necessary using the parameter ``graph_ur
 
 .. _concept-schema:
 
-Schema
+Class
 ------
 
-Usually database models work with a clear distinction between instances (data) and schema (metadata).
+Usually database models work with a clear distinction between instances (data) and classes (metadata).
 We also make this distinction on the API interface.
 
-A *Schema* is a priviledged instance that defines the structure of the data (non-schema instances) being stored.
-To avoid confusion, we avoid referring to schemas calling them *instances*, a term we reserve for *non-schema* instances.
-Although we prefer ``schema``, sometimes we use the term ``class`` as a synonym.
+A *Class* is a priviledged instance that defines the structure of the data (non-class instances) being stored.
+To avoid confusion, we avoid referring to classes calling them *instances*, a term we reserve for *non-class* instances.
+Although we prefer ``class``, sometimes we use the term ``schema`` as a synonym.
+``Class`` is preferable to ``chema`` in order to avoid the confusion with the listings schemas rendered in json-schema format.
 
-Schemas are defined in the RDF/OWL Model, given its high expressivity and flexibility.
-Therefore, it will be possible to represent schemas in different database models or even translations between them
-in a common language.
+Classes are defined in the RDF/OWL Model, given its high expressivity and flexibility.
+Therefore, it will be possible to represent classes in different database models or even translations between them in a common language.
 
-Likewise, we expect a schema to be easily written, by using the `Turtle <http://en.wikipedia.org/wiki/Turtle_(syntax)>`_
+Likewise, we expect a class to be easily written, by using the `Turtle <http://en.wikipedia.org/wiki/Turtle_(syntax)>`_
 format, the most compact serialization for ontologies developed in the RDF/OWL model.
 
 .. code-block:: guess
@@ -51,21 +52,21 @@ format, the most compact serialization for ontologies developed in the RDF/OWL m
     :City a owl:Class ;
           rdfs:subClassOf :Place .
 
-The schema is associated with a ``schema_id`` that is unique in the particular ``context`` where it was declared.
-Therefore, the schema definition belongs to a graph in the triplestore, where it is identified by an URI.
-By convention, the schema URI is composed by the context's graph URI and the schema_id.
-For example, consider the schema for ``Person`` declared in the context ``person`` whose graph_uri is ``http://semantica.globo.com/person``.
-The default URI for this schema would be generated as ``http://semantica.globo.com/person/Person``.
-The schema's URI can be overriden if necessary using the parameter ``class_uri``, see more details in :ref:`parametrization`.
+The class is associated with a ``class_id`` that is unique in the particular ``context`` where it was declared.
+Therefore, the class definition belongs to a graph in the triplestore, where it is identified by an URI.
+By convention, the class URI is composed by the context's graph URI and the class_id.
+For example, consider the class for ``Person`` declared in the context ``person`` whose graph_uri is ``http://semantica.globo.com/person``.
+The default URI for this class would be generated as ``http://semantica.globo.com/person/Person``.
+The class' URI can be overriden if necessary using the parameter ``class_uri``, see more details in :ref:`parametrization`.
 
 .. _concept-collection:
 
 Collection
 ----------
 
-We need to distinguish the structure of an instance (schema) from a group of instances with the same structure (collection).
-Therefore, for each schema corresponds a unique collection.
-The collection name and the schema name are the same.
+We need to distinguish the structure of an instance (class) from a group of instances with the same structure (collection).
+Therefore, for each class corresponds a unique collection.
+The collection name and the class name are the same.
 
 
 .. _concept-instance:
@@ -73,12 +74,12 @@ The collection name and the schema name are the same.
 Instance
 --------
 
-An instance is a set of data that is treated as a unit, whose structure is described by a schema.
-The group of instances that share the same schema form a collection.
+An instance is a set of data that is treated as a unit, whose structure is described by a class.
+The group of instances that share the same class form a collection.
 A collection subset or the whole collection is stored in a context.
 
 Instances must be easily retrieved.
-Morevoer, "instance queries" must be really simple for developers to understand as they will do way more requests on instances than on schemas.
+Morevoer, "instance queries" must be really simple for developers to understand as they will do way more requests on instances than on classes.
 As such, the interface for manipulating instances accepts JSON content_type as most of the RESTful APIs do.
 
 

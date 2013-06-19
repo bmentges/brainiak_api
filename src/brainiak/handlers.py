@@ -411,8 +411,7 @@ class RootHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, **valid_params)
 
         response = memoize(list_all_contexts, self.query_params)
-        if 'cache' in response:
-            self.set_header("Last-Modified", response['cache']['last_modified'])
+        self.set_header("Last-Modified", response['meta']['last_modified'])
         self.finalize(response['body'])
 
 

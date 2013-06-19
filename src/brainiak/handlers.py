@@ -14,6 +14,7 @@ from tornado_cors import custom_decorator
 from tornado_cors import CorsMixin
 
 from brainiak import __version__, event_bus, triplestore, settings
+from brainiak.utils.cache import memoize
 from brainiak.log import get_logger
 from brainiak.event_bus import notify_bus, MiddlewareError
 from brainiak.greenlet_tornado import greenlet_asynchronous
@@ -128,6 +129,12 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         else:
             logger.error("Uncaught exception: {0}\n".format(error_message), exc_info=True)
             self.send_error(status_code, exc_info=sys.exc_info())
+
+    def add_cache_headers(self, meta):
+        cache_verb = meta['cache']
+        cache_msg = "{0} from {1}".format(cache_verb, self.request.host)
+        self.set_header("X-Cache", cache_msg)
+        self.set_header("Last-Modified", meta['last_modified'])
 
     def write_error(self, status_code, **kwargs):
         error_message = "HTTP error: %d" % status_code
@@ -399,15 +406,18 @@ class CollectionHandler(BrainiakRequestHandler):
 
 class RootHandler(BrainiakRequestHandler):
 
+    #SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
+    #def purge(self):
+    #    self.finalize({"oi": "xubiru"})
+
     @greenlet_asynchronous
     def get(self):
         valid_params = LIST_PARAMS + CACHE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
-
-        response = list_all_contexts(self.query_params)
-
-        self.finalize(response)
+        response = memoize(list_all_contexts, self.query_params)
+        self.add_cache_headers(response['meta'])
+        self.finalize(response['body'])
 
 
 class ContextHandler(BrainiakRequestHandler):

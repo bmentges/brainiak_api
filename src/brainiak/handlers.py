@@ -412,7 +412,7 @@ class RootHandler(BrainiakRequestHandler):
 
         response = memoize(list_all_contexts, self.query_params)
 
-        self.finalize(response)
+        self.finalize(response['body'])
 
 
 class ContextHandler(BrainiakRequestHandler):

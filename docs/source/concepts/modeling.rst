@@ -20,14 +20,14 @@ Even the properties inherited from ancestor classes are rendered.
 However, if a direct property is derived from another property declared in an ancestor class, only the most specific property will be rendered in the class definition.
 This is done to avoid duplicated properties in a class definiton.
 
-For example, in the example below ``subRegionOf`` of is a subproperty of ``isPartOf``, but only ``subRegionOf`` will appear when retrieving the schema for class ``Region``.
+For example, in the example below ``subRegionOf`` of is a sub-property of ``isPartOf``, but only ``subRegionOf`` will appear when retrieving the schema for class ``Region``.
 
 .. code-block:: guess
 
-    subRegionOf a owl:ObjectProperty ;
-                rdfs:subPropertyOf upper:isPartOf ;
+    :subRegionOf a owl:ObjectProperty ;
+                rdfs:subPropertyOf other:isPartOf ;
                 rdfs:domain :Region .
 
 Moreover, if the class ``Region`` had two properties ``prop1`` and ``prop2`` where ``prop2`` is a subproperty of ``prop1``, only ``prop2`` will show up in the class ``Region`` definiton.
-So, if the original intention was to show ``prop1`` and ``prop2`` as direct properties in class ``Region``, then both should be sub-properties of a more generic property in some ancestor class.
+So, if the original intention was to show ``prop1`` and ``prop2`` as direct properties in class ``Region``, then both should be sub-properties of a more generic property with domain and ranges pointing to some ancestor classes of the ones defined in the sub-property.
 

@@ -83,6 +83,18 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     def __init__(self, *args, **kwargs):
         super(BrainiakRequestHandler, self).__init__(*args, **kwargs)
 
+    @greenlet_asynchronous
+    def purge(self):
+        if settings.ENABLE_CACHE:
+            path = self.request.path
+            recursive = int(self.request.headers.get('X-Cache-recursive', '0'))
+            if recursive:
+                response = cache.purge(path)
+            else:
+                response = cache.delete(path)
+        else:
+            raise HTTPError(405, log_message="Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)")
+
     def _request_summary(self):
         return "{0} {1} ({2})".format(
             self.request.method, self.request.host, self.request.remote_ip)
@@ -406,9 +418,7 @@ class CollectionHandler(BrainiakRequestHandler):
 
 class RootHandler(BrainiakRequestHandler):
 
-    #SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
-    #def purge(self):
-    #    self.finalize({"oi": "xubiru"})
+    SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
 
     @greenlet_asynchronous
     def get(self):

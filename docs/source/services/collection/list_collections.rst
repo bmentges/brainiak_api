@@ -33,7 +33,13 @@ Possible responses
 If there are classes in this graph, the response body is a JSON containing classes' titles and @ids (URIs).
 By default, the first page containing 10 items is returned (``?page=1&per_page=10``).
 
-.. include :: examples/list_collections_200.rst
+.. code-block:: bash
+
+  $ curl -s 'http://api.semantica.dev.globoi.com/place/?page=1&per_page=10'
+
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/?page=1&per_page=10' | python -mjson.tool
+  :shell:
+
 
 **Status 400**
 

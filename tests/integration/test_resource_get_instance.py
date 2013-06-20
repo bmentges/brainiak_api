@@ -39,7 +39,7 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 200)
         content_type = response.headers["Content-type"]
         self.assertTrue(content_type.startswith('application/json; profile=http://localhost:'))
-        self.assertTrue(content_type.endswith('/person/Gender/_schema'))
+        self.assertTrue(content_type.endswith('/person/Gender/_class'))
 
     def test_get_instance_with_compressed_instance_prefix_200(self):
         instance_prefix = "http://test.com/other_prefix/"

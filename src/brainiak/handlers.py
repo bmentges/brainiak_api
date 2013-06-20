@@ -83,6 +83,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     def __init__(self, *args, **kwargs):
         super(BrainiakRequestHandler, self).__init__(*args, **kwargs)
 
+    @greenlet_asynchronous
     def purge(self):
         if settings.ENABLE_CACHE:
             path = self.request.path

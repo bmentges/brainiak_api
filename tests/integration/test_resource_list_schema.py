@@ -440,7 +440,7 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     graph_uri = "http://example.onto/"
 
     def test_schema_json(self):
-        response = self.fetch('/any/Human/_schema?graph_uri=http://example.onto/&class_prefix=http://example.onto/', method='GET')
+        response = self.fetch('/any/Human/_class?graph_uri=http://example.onto/&class_prefix=http://example.onto/', method='GET')
 
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)

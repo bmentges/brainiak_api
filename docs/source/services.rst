@@ -36,13 +36,13 @@ We use the following convention for resources:
 +---------------------------------------------------------+-----------------------------------------------------------------------+
 | http://<domain>/<context_id>                            | Some context                                                          |
 +---------------------------------------------------------+-----------------------------------------------------------------------+
-| http://<domain>/<context_id>/<schema_id>                | A collection of instances having the same schema in the same context  |
+| http://<domain>/<context_id>/<class_id>                 | A collection of instances having the same class in the same context   |
 +---------------------------------------------------------+-----------------------------------------------------------------------+
-| http://<domain>/<context_id>/<schema_id>/_schema        | The definition of a schema given by schema_id                         |
+| http://<domain>/<context_id>/<class_id>/_class          | The definition of a class given by class_id                           |
 |                                                         | in the context given by context_id                                    |
 +---------------------------------------------------------+-----------------------------------------------------------------------+
-| http://<domain>/<context_id>/<schema_id>/<instance_id>  | A instance identified by instance_id having the schema given by       |
-|                                                         | schema_id and belonging to the context given by context_id            |
+| http://<domain>/<context_id>/<class_id>/<instance_id>   | A instance identified by instance_id having the schema given by       |
+|                                                         | class_id and belonging to the context given by context_id             |
 +---------------------------------------------------------+-----------------------------------------------------------------------+
 
 For each resource there is an URI associated with it, by default we adopt the following rules:
@@ -51,8 +51,8 @@ For each resource there is an URI associated with it, by default we adopt the fo
  Resources               URI
 ============  ===================================================
  context       <URI_PREFIX><context_id>/
- schema        <URI_PREFIX><context_id>/<schema_id>
- instance      <URI_PREFIX><context_id>/<schema_id>/<instance_id>
+ class         <URI_PREFIX><context_id>/<class_id>
+ instance      <URI_PREFIX><context_id>/<class_id>/<instance_id>
 ============  ===================================================
 
 URI_PREFIX is a global Brainiak configuration option, and inside Globo.com we define it with ``http://semantica.globo.com/``.
@@ -80,15 +80,15 @@ Service Examples
 
   GET 'http://api.semantica.dev.globoi.com/place/Country'
 
-**Get a schema of a collection**
+**Get a class associated with a collection**
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/place/Country/_schema'
+  GET 'http://api.semantica.dev.globoi.com/place/Country/_class'
 
-Try it yourself: `Schema for Country`_
+Try it yourself: `Class for Country`_
 
-.. _Schema for Country: http://api.semantica.dev.globoi.com/place/Country/_schema
+.. _Class for Country: for Country: http://api.semantica.dev.globoi.com/place/Country/_class
 
 **Get a instance of a collection**
 

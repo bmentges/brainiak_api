@@ -131,7 +131,7 @@ class CrudLinksTestCase(unittest.TestCase):
         computed = crud_links(query_params)
         expected = [
             {'href': 'http://any.uri/context/Class/instance', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/context/Class/instance', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
+            {'href': 'http://any.uri/context/Class/instance', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_class'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_class_url_without_querystring(self):
@@ -181,7 +181,7 @@ class CrudLinksTestCase(unittest.TestCase):
 
         }
         computed = build_schema_url(query_params)
-        expected = "https://dot.net/place/City/_schema?class_prefix=include_me"
+        expected = "https://dot.net/place/City/_class?class_prefix=include_me"
         self.assertEqual(computed, expected)
 
 

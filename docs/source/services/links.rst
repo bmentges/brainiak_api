@@ -7,7 +7,7 @@ The image below depicts the map of hypermedia resources supported by Brainiak AP
 
 .. image:: resource_graph.png
 
-Fonte: https://docs.google.com/a/corp.globo.com/drawings/d/1qmmk31PFlyrl-GVminwuAatT6ofr5IvykyfjlVwjb-4/edit?usp=sharing
+.. the image source is https://docs.google.com/a/corp.globo.com/drawings/d/1qmmk31PFlyrl-GVminwuAatT6ofr5IvykyfjlVwjb-4/edit?usp=sharing
 
 Links Specification
 -------------------

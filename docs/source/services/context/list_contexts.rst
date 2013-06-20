@@ -1,7 +1,7 @@
 List of Contexts
 ================
 
-This primitive retrieves contexts which define classes and/or instances.
+This primitive retrieves a list of contexts where one can define classes and/or instances.
 Contexts that contain no data are not listed.
 
 **Basic usage**
@@ -10,8 +10,6 @@ Contexts that contain no data are not listed.
 
   $ curl -s 'http://api.semantica.dev.globoi.com/'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/' | python -mjson.tool
-  :shell:
 
 
 Optional parameters
@@ -29,14 +27,16 @@ Possible responses
 
 If there are contexts, the response body is a JSON containing contexts' titles, resources_id and @ids (URIs).
 
-.. include :: examples/list_context_200.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/' | python -mjson.tool
+  :shell:
 
 **Status 400**
 
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. include :: examples/list_context_400.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/?invalid_param=1' | python -mjson.tool
+  :shell:
 
 **Status 404**
 

@@ -112,11 +112,23 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         expected = {u'error': u"HTTP error: 405\nCache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"}
         self.assertEqual(received, expected)
 
+    @patch("brainiak.utils.cache.delete")
+    @patch("brainiak.utils.cache.purge")
     @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
-    def test_purge_returns_200_when_cache_is_enabled(self, enable_cache):
+    def test_purge_returns_200_when_cache_is_enabled(self, enable_cache, delete_all, delete):
         response = self.fetch("/", method='PURGE')
         self.assertEqual(response.code, 200)
+        delete.assert_called_once_with("/")
         self.assertFalse(response.body)
+
+    @patch("brainiak.utils.cache.delete")
+    @patch("brainiak.utils.cache.purge")
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
+    def test_purge_returns_200_recursive(self, enable_cache, delete_all, delete):
+        response = self.fetch("/", method='PURGE', headers={'X-Cache-Recursive': '1'})
+        self.assertEqual(response.code, 200)
+        self.assertFalse(response.body)
+        delete_all.assert_called_once_with("/")
 
 
 class QueryTestCase(QueryTestCase):

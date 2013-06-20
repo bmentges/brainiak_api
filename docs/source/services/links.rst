@@ -1,5 +1,14 @@
 .. _links_spec:
 
+Hypermap of Resources
+----------------------
+
+The image below depicts the map of hypermedia resources supported by Brainiak API.
+
+.. image:: resource_graph.png
+
+.. the image source is https://docs.google.com/a/corp.globo.com/drawings/d/1qmmk31PFlyrl-GVminwuAatT6ofr5IvykyfjlVwjb-4/edit?usp=sharing
+
 Links Specification
 -------------------
 

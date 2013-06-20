@@ -100,7 +100,7 @@ class TestHealthcheckResource(TornadoAsyncHTTPTestCase):
 
 class TestVersionResource(TornadoAsyncHTTPTestCase):
     def test_healthcheck(self):
-        response = self.fetch('/version', method='GET')
+        response = self.fetch('/_version', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, __version__)
 

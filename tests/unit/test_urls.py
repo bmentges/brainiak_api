@@ -14,7 +14,7 @@ class RouteTestCase(TestCase):
 
     def test_version(self):
         regex = self._regex_for(VersionHandler)
-        VERSION_SUFFIX = '/version'
+        VERSION_SUFFIX = '/_version'
         self.assertTrue(regex.match(VERSION_SUFFIX))
 
     def test_status_virtuoso(self):

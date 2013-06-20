@@ -66,7 +66,7 @@ def get_routes():
         URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
         URLSpec(r'/_status/cache/?', CacheStatusHandler),
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', SchemaHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', ClassHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)/?', InstanceHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/?', ContextHandler),
@@ -224,10 +224,10 @@ class StatusHandler(BrainiakRequestHandler):
         self.write(response)
 
 
-class SchemaHandler(BrainiakRequestHandler):
+class ClassHandler(BrainiakRequestHandler):
 
     def __init__(self, *args, **kwargs):
-        super(SchemaHandler, self).__init__(*args, **kwargs)
+        super(ClassHandler, self).__init__(*args, **kwargs)
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):

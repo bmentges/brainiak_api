@@ -8,6 +8,9 @@ clean:
 	@find . -name "*.pyc" -delete
 	@find . -name "__pycache__" -delete
 
+clean_redis:
+	@redis-cli FLUSHDB
+
 install:
 	@echo "Installing dependencies..."
 	@pip install -r $(HOME_BRAINIAK)/requirements.txt

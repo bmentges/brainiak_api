@@ -4,6 +4,7 @@ from mock import patch
 from brainiak.root.get import QUERY_LIST_CONTEXT
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.utils import sparql
+from brainiak.handlers import RootHandler
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -21,6 +22,9 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     def tearDown(self):
         sparql.filter_values = self.original_filter_values
         super(ListAllContextsTestCase, self).tearDown()
+
+    def test_root_handler_allows_purge(self):
+        self.assertIn("PURGE", RootHandler.SUPPORTED_METHODS)
 
     @patch("brainiak.handlers.logger")
     def test_400(self, log):

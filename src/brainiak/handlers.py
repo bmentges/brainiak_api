@@ -60,8 +60,8 @@ def safe_params(valid_params=None):
 def get_routes():
     return [
         URLSpec(r'/healthcheck/?', HealthcheckHandler),
-        URLSpec(r'/version/?', VersionHandler),
-        URLSpec(r'/prefixes/?', PrefixHandler),
+        URLSpec(r'/_version/?', VersionHandler),
+        URLSpec(r'/_prefixes/?', PrefixHandler),
         URLSpec(r'/_status/?$', StatusHandler),
         URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
         URLSpec(r'/_status/cache/?', CacheStatusHandler),

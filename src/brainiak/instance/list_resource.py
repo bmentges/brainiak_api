@@ -261,6 +261,8 @@ def build_json(items_list, query_params):
     item_url = "{0}/{{resource_id}}?{1}".format(base_url, item_query_string)
 
     add_link(links, 'item', item_url)
+    add_link(links, 'instance', item_url)
+    add_link(links, 'class', schema_url)
     add_link(links, "create", create_url, method='POST', schema={'$ref': schema_url})
     json = {
         'items': items_list,

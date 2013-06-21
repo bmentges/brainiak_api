@@ -395,6 +395,16 @@ class BuildJSONTestCase(unittest.TestCase):
                 'rel': 'item'
             },
             {
+                'href': 'http://mock.test.com/{resource_id}?instance_prefix={instance_prefix}',
+                'method': 'GET',
+                'rel': 'instance'
+            },
+            {
+                'href': 'http://mock.test.com/zoo/Lion/_class',
+                'method': 'GET',
+                'rel': 'class'
+            },
+            {
                 'href': 'http://mock.test.com/zoo/Lion',
                 'method': 'POST',
                 'rel': 'create',
@@ -420,8 +430,11 @@ class BuildJSONTestCase(unittest.TestCase):
             {'href': 'http://mock.test.com/?class_prefix=Xubiru', 'method': 'GET', 'rel': 'self'},
             {'href': 'http://mock.test.com?per_page=10&page=1', 'method': 'GET', 'rel': 'first'},
             {'href': 'http://mock.test.com?per_page=10&page=2', 'method': 'GET', 'rel': 'next'},
+            {'href': 'http://mock.test.com/zoo/Lion/_class?class_prefix=Xubiru', 'method': 'GET', 'rel': 'class'},
             {'href': 'http://mock.test.com/{resource_id}?class_prefix=Xubiru&instance_prefix={instance_prefix}',
              'method': 'GET', 'rel': 'item'},
+            {'href': 'http://mock.test.com/{resource_id}?class_prefix=Xubiru&instance_prefix={instance_prefix}',
+             'method': 'GET', 'rel': 'instance'},
             {'href': 'http://mock.test.com/zoo/Lion?class_prefix=Xubiru', 'method': 'POST', 'rel': 'create',
              'schema': {'$ref': 'http://mock.test.com/zoo/Lion/_class?class_prefix=Xubiru'}}
         ]

@@ -1,7 +1,7 @@
-Managing Schemas
+Managing Classes
 ====================
 
-Here are the services for manipulating schemas
+Here are the services for manipulating classes
 
 .. toctree::
    :maxdepth: 3

@@ -47,7 +47,7 @@ Therefore, it will be possible to represent classes in different database models
 Likewise, we expect a class to be easily written, by using the `Turtle <http://en.wikipedia.org/wiki/Turtle_(syntax)>`_
 format, the most compact serialization for ontologies developed in the RDF/OWL model.
 
-.. code-block:: guess
+.. code-block:: n3
 
     :City a owl:Class ;
           rdfs:subClassOf :Place .

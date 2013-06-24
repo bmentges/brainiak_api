@@ -23,6 +23,7 @@ see :ref:`concept-context`, :ref:`concept-schema`, :ref:`concept-collection`, an
    services/links.rst
    services/pagination.rst
    services/errors.rst
+   services/cache.rst
    services/i18n.rst
 
 

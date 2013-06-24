@@ -72,8 +72,8 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
     query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
     action_links = self_link(query_params) + crud_links(query_params)
-    add_link(links, 'describedBy', schema_url)
-    add_link(links, 'inCollection', class_url_with_query_string)
+    add_link(links, 'class', schema_url)
+    add_link(links, 'collection', class_url_with_query_string)
 
     links.extend(action_links)
 

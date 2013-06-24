@@ -46,7 +46,9 @@ By default, the first page containing 10 items is returned (``?page=1&per_page=1
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. include :: examples/list_collections_400.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/?invalid_param=1' | python -mjson.tool
+  :shell:
+
 
 **Status 404**
 

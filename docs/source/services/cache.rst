@@ -1,0 +1,101 @@
+Caching
+=======
+
+Enabling cache
+--------------
+
+Cache is enabled or disabled at the ``settings.py`` of the application, through the variable ``ENABLE_CACHE``.
+When this global cache configuration is enabled, cache is set (or not) for each resource of the API.
+To check if cache is enabled for some resource, run:
+
+.. code-block:: bash
+
+  $ curl -i -X OPTIONS http://api.semantica.dev.globoi.com/
+
+.. program-output:: curl -i -s -X OPTIONS http://api.semantica.dev.globoi.com/
+  :shell:
+
+If cache is enabled, ``PURGE`` will be shown on the response header ``Access-Control-Allow-Methods``.
+
+
+Resource cache status
+---------------------
+
+It is possible to check the cache status of a certain resource by the following headers:
+
+ * **X-Cache**: tells if there was a ``HIT`` (cached data) or ``MISS`` (fresh data) at Brainiak API
+ * **Last-Modified**: date and time when the response was computed. This is specially useful when ``X-Cache`` returns ``HIT``.
+
+Example
+-------
+
+The first time a URL is accessed, there will be no cache - so ``X-Cache``  will return ``MISS``:
+
+.. code-block:: bash
+
+  $ curl -i -X GET http://api.semantica.dev.globoi.com/
+
+.. program-output:: curl -s -X PURGE http://api.semantica.dev.globoi.com/; curl -i -s -X GET http://api.semantica.dev.globoi.com/ | head -n 10
+  :shell:
+
+From the second time on, ``X-Cache`` will contain ``HIT`` and ``Last-Modified`` will be the same:
+
+.. code-block:: bash
+
+  $ curl -i -X GET http://api.semantica.dev.globoi.com/
+
+.. program-output:: sleep 1; curl -i -s -X GET http://api.semantica.dev.globoi.com/ | head -n 10
+  :shell:
+
+
+Purge
+-----
+
+To cleanup cache, the ``PURGE`` method should be used:
+
+Example:
+
+.. code-block:: bash
+
+  $ curl -i -X PURGE http://api.semantica.dev.globoi.com/
+
+.. program-output:: curl -i -s -X PURGE http://api.semantica.dev.globoi.com/
+  :shell:
+
+Note that for purging purposes, query string parameters are ignored.
+
+
+Recursive purge
+---------------
+
+It is also possible to cleanup recursively, calling ``PURGE`` with the header ``X-Cache-Recursive`` set to ``1``:
+
+.. code-block:: bash
+
+  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://api.semantica.dev.globoi.com/
+
+Be careful when using this feature, all cached resources from that point on will be purged.
+
+For example, if the following keys were cached:
+
+a. http://localhost:5100/
+b. http://localhost:5100/person/
+c. http://localhost:5100/person/Person
+d. http://localhost:5100/person/Person/IsaacNewton
+
+And the command below is run:
+
+.. code-block:: bash
+
+  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://api.semantica.dev.globoi.com/
+
+All cache will be purged (a, b, c and d).
+
+Otherwise, to purge only (c) and (d), the command bellow should be run:
+
+.. code-block:: bash
+
+  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://api.semantica.dev.globoi.com/person/Person
+
+
+

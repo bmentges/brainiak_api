@@ -4,6 +4,7 @@ from mock import patch
 from brainiak.root.get import QUERY_LIST_CONTEXT
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.utils import sparql
+from brainiak.handlers import RootHandler
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -21,6 +22,9 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     def tearDown(self):
         sparql.filter_values = self.original_filter_values
         super(ListAllContextsTestCase, self).tearDown()
+
+    def test_root_handler_allows_purge(self):
+        self.assertIn("PURGE", RootHandler.SUPPORTED_METHODS)
 
     @patch("brainiak.handlers.logger")
     def test_400(self, log):
@@ -103,6 +107,32 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertIn("items", body.keys())
         self.assertTrue(response.headers.get('Last-Modified'))
         self.assertTrue(response.headers['X-Cache'].startswith('MISS from localhost'))
+
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=False)
+    def test_purge_returns_405_when_cache_is_disabled(self, enable_cache):
+        response = self.fetch("/", method='PURGE')
+        self.assertEqual(response.code, 405)
+        received = json.loads(response.body)
+        expected = {u'error': u"HTTP error: 405\nCache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"}
+        self.assertEqual(received, expected)
+
+    @patch("brainiak.utils.cache.delete")
+    @patch("brainiak.utils.cache.purge")
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
+    def test_purge_returns_200_when_cache_is_enabled(self, enable_cache, delete_all, delete):
+        response = self.fetch("/", method='PURGE')
+        self.assertEqual(response.code, 200)
+        delete.assert_called_once_with("/")
+        self.assertFalse(response.body)
+
+    @patch("brainiak.utils.cache.delete")
+    @patch("brainiak.utils.cache.purge")
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
+    def test_purge_returns_200_recursive(self, enable_cache, delete_all, delete):
+        response = self.fetch("/", method='PURGE', headers={'X-Cache-Recursive': '1'})
+        self.assertEqual(response.code, 200)
+        self.assertFalse(response.body)
+        delete_all.assert_called_once_with("/")
 
 
 class QueryTestCase(QueryTestCase):

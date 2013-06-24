@@ -15,6 +15,6 @@ ujson==1.30
 #docs
 sphinxcontrib-programoutput==0.8
 sphinx-bootstrap-theme==0.1.8
--e git+https://github.com/icaromedeiros/semantic-web-pygments#egg=semantic_web_pygments
+semantic_web_pygments==0.1.0
 
 --extra-index-url=http://pypi.globoi.com/

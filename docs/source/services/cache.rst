@@ -29,13 +29,13 @@ It is possible to check the cache status of a certain resource by the following 
 Example
 -------
 
-The first time a URL is accessed, there will be no cache - so ``X-Cache will`` return ``MISS``:
+The first time a URL is accessed, there will be no cache - so ``X-Cache``  will return ``MISS``:
 
 .. code-block:: bash
 
   $ curl -i -X GET http://api.semantica.dev.globoi.com/
 
-.. program-output:: curl -s -X PURGE http://api.semantica.dev.globoi.com/; curl -i -s -X GET http://api.semantica.dev.globoi.com/
+.. program-output:: curl -s -X PURGE http://api.semantica.dev.globoi.com/; curl -i -s -X GET http://api.semantica.dev.globoi.com/ | head -n 10
   :shell:
 
 From the second time on, ``X-Cache`` will contain ``HIT`` and ``Last-Modified`` will be the same:
@@ -44,7 +44,7 @@ From the second time on, ``X-Cache`` will contain ``HIT`` and ``Last-Modified`` 
 
   $ curl -i -X GET http://api.semantica.dev.globoi.com/
 
-.. program-output:: sleep 1; curl -i -s -X GET http://api.semantica.dev.globoi.com/
+.. program-output:: sleep 1; curl -i -s -X GET http://api.semantica.dev.globoi.com/ | head -n 10
   :shell:
 
 
@@ -74,7 +74,7 @@ It is also possible to cleanup recursively, calling ``PURGE`` with the header ``
 
   $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://api.semantica.dev.globoi.com/
 
-Careful when using this feature, all cached resources from that point on will be purged.
+Be careful when using this feature, all cached resources from that point on will be purged.
 
 For example, if the following keys were cached:
 

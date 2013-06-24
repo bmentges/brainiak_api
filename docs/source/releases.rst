@@ -4,6 +4,8 @@ Releases
 Version 1.1.1 - 2013-06-??
 --------------------------
 
+ - resource prefixes renamed to _prefixes
+ - resource version renamed to _version
  - More examples in the documentation were converted from static files into execution scripts expanded before deploy.
  - All references to schema renamed to class, including _schema -> _class
  - in the classes:

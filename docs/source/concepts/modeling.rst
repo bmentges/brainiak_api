@@ -22,7 +22,7 @@ This is done to avoid duplicated properties in a class definiton.
 
 For example, in the example below ``subRegionOf`` is a sub-property of ``isPartOf``, but only ``subRegionOf`` will appear when retrieving the schema for class ``Region``.
 
-.. code-block:: guess
+.. code-block:: n3
 
     :subRegionOf a owl:ObjectProperty ;
                 rdfs:subPropertyOf other:isPartOf ;
@@ -30,7 +30,7 @@ For example, in the example below ``subRegionOf`` is a sub-property of ``isPartO
 
 Moreover, if the class ``Region`` had two properties ``prop1`` and ``prop2`` where ``prop2`` is a subproperty of ``prop1``, only ``prop2`` will show up in the class ``Region`` definiton.
 
-.. code-block:: guess
+.. code-block:: n3
 
     :prop1 a owl:ObjectProperty ;
                 rdfs:domain :Region .
@@ -43,13 +43,13 @@ So, if the original intention was to show ``prop1`` and ``prop2`` as direct prop
 The example below illustrates that approach.
 
 
-.. code-block:: guess
+.. code-block:: n3
 
     :superprop a owl:ObjectProperty ;
                rdfs:domain :Place .
 
     :Region a owl:Class ;
-            rdfs:subClassOf :Place ,
+            rdfs:subClassOf :Place .
 
     :prop1 a owl:ObjectProperty ;
            rdfs:subPropertyOf :superprop ;

@@ -13,6 +13,7 @@
 
 import sys, os
 import sphinx_bootstrap_theme
+from brainiak.version import RELEASE
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -51,7 +52,7 @@ copyright = u'2013, Globo.com'
 # built documents.
 #
 # The short X.Y version.
-version = '1.1.0'
+version = RELEASE
 # The full version, including alpha/beta/rc tags.
 release = version
 

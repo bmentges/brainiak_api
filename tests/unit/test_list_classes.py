@@ -83,5 +83,11 @@ class GetContextTestCase(unittest.TestCase):
             'method': 'GET',
             'rel': 'instances'
         }
+        collection_link = {
+            'href': 'http://poke.oioi/company/{resource_id}?class_prefix={class_prefix}',
+            'method': 'GET',
+            'rel': 'collection'
+        }
         self.assertIn(self_link, computed['links'])
+        self.assertIn(collection_link, computed['links'])
         self.assertIn(instances_link, computed['links'])

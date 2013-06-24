@@ -65,7 +65,7 @@ Sample JSON "edit_female.json":
 .. include :: examples/edit_instance_payload.rst
 
 Note that prefixes are defined in the "@context" section.
-`Default prefixes  <http://api.semantica.dev.globoi.com/prefixes>`_ are implicit and don't need to be declared.
+`Default prefixes  <http://api.semantica.dev.globoi.com/_prefixes>`_ are implicit and don't need to be declared.
 
 
 Optional query string parameters
@@ -88,7 +88,8 @@ The instance was edited successfully, the response body is the modified instance
 If there are unknown parameters in the request, the response status code
 is 400 and the body contains a JSON containing valid and invalid parameters.
 
-.. include :: examples/get_instance_400.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Country/Brazil?invalid_param=1' | python -mjson.tool
+  :shell:
 
 The 400 status may also happen when the JSON provided is invalid:
 
@@ -100,9 +101,9 @@ If the class does not exist, the response status code is 404.
 
 .. code-block:: http
 
-  PUT 'http://api.semantica.dev.globoi.com/place/City/InexistentCity' JSON
 
-.. include :: examples/create_instance_404.rst
+.. program-output:: curl -s -X PUT 'http://api.semantica.dev.globoi.com/place/InexistentClass/InvalidInstance' -d '{}' | python -mjson.tool
+  :shell:
 
 **Status 500**
 

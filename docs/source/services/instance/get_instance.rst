@@ -1,5 +1,5 @@
-Get a Instance
-==============
+Get an Instance
+================
 
 This service retrieves all information about a instance, given its context, class name and instance id.
 
@@ -9,8 +9,6 @@ This service retrieves all information about a instance, given its context, clas
 
   $ curl -s 'http://api.semantica.dev.globoi.com/person/Gender/Female'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/person/Gender/Female' | python -mjson.tool
-  :shell:
 
 Optional parameters
 -------------------
@@ -28,14 +26,16 @@ Possible responses
 
 If the instance exists, the response body is a JSON with all instance information and links to related actions.
 
-.. include :: examples/get_instance_200.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Country/Brazil' | python -mjson.tool
+  :shell:
 
 **Status 400**
 
 If there are unknown parameters in the request, the response is a 400
 with a JSON informing the wrong parameters and the accepted ones.
 
-.. include :: examples/get_instance_400.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Country/Brazil?invalid_param=1' | python -mjson.tool
+  :shell:
 
 **Status 404**
 

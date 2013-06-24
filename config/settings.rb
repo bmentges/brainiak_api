@@ -6,7 +6,7 @@ load 'config/deploy'
 load 'config/filter.rb'
 load 'config/modules/puppet' # Load puppet module to execute puppet-setup every deploy, keeping the environment sync
 
-before "deploy", "deploy:setup"
+before "deploy:update",  "deploy:setup"
 before "deploy:restart", "deploy:clean_local"
 before "deploy:restart", "deploy:cleanup"
 

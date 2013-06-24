@@ -35,6 +35,7 @@ def list_all_contexts(params):
 
     links = self_link(params) + collection_links(params) + status_link(params)
     add_link(links, "instances", params.base_url + "{resource_id}")
+    add_link(links, "context", params.base_url + "{resource_id}")
 
     json = {'items': contexts}
 

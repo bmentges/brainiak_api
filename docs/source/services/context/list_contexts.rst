@@ -4,12 +4,13 @@ List of Contexts
 This primitive retrieves a list of contexts where one can define classes and/or instances.
 Contexts that contain no data are not listed.
 
+This resource is **cached**. Read :doc:`/services/cache` for more information.
+
 **Basic usage**
 
 .. code-block:: bash
 
   $ curl -s 'http://api.semantica.dev.globoi.com/'
-
 
 
 Optional parameters

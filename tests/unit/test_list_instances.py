@@ -428,8 +428,8 @@ class BuildJSONTestCase(unittest.TestCase):
         links = something["links"]
         expected_links = [
             {'href': 'http://mock.test.com/?class_prefix=Xubiru', 'method': 'GET', 'rel': 'self'},
-            {'href': 'http://mock.test.com?per_page=10&page=1', 'method': 'GET', 'rel': 'first'},
-            {'href': 'http://mock.test.com?per_page=10&page=2', 'method': 'GET', 'rel': 'next'},
+            {'href': 'http://mock.test.com?per_page=10&page=1&class_prefix=Xubiru', 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://mock.test.com?per_page=10&page=2&class_prefix=Xubiru', 'method': 'GET', 'rel': 'next'},
             {'href': 'http://mock.test.com/zoo/Lion/_class?class_prefix=Xubiru', 'method': 'GET', 'rel': 'class'},
             {'href': 'http://mock.test.com/{resource_id}?class_prefix=Xubiru&instance_prefix={instance_prefix}',
              'method': 'GET', 'rel': 'item'},

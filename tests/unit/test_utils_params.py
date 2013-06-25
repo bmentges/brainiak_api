@@ -46,38 +46,37 @@ class ParamsTestCase(TestCase):
         self.assertEquals('klass', params.get("class_name"))
 
     def test_override(self):
-        handler = MockHandler(context_name='dbpedia', class_name="overriden_class_name")
+        handler = MockHandler(querystring="context_name=dbpedia&class_name=overriden_class_name")
         params = ParamDict(handler, context_name='dbpedia', class_name="default_class_name", class_prefix=None)
         self.assertEquals("overriden_class_name", params.get("class_name"))
 
     def test_post_override_without_lang(self):
-        handler = MockHandler(lang="undefined")
+        handler = MockHandler(querystring="lang=undefined")
         params = ParamDict(handler, lang=None)
         self.assertEquals(params["lang"], "")
 
     def test_post_override_with_lang(self):
-        handler = MockHandler(lang="pt")
+        handler = MockHandler(querystring="lang=pt")
         params = ParamDict(handler, lang=None)
         self.assertEquals(params["lang"], "pt")
 
     def test_expand_curie(self):
-        handler = MockHandler(graph_uri="glb")
+        handler = MockHandler(querystring="graph_uri=glb")
         params = ParamDict(handler, graph_uri=None)
         self.assertEquals(params["graph_uri"], "http://semantica.globo.com/")
 
     def test_post_override_with_sort_order(self):
-        handler = MockHandler(sort_order="asc")
+        handler = MockHandler(querystring="sort_order=asc")
         params = ParamDict(handler, **LIST_PARAMS)
         self.assertEquals(params["sort_order"], "ASC")
 
     def test_post_override_without_sort_order(self):
-        handler = MockHandler(sort_order="")
+        handler = MockHandler()
         params = ParamDict(handler, **LIST_PARAMS)
-        self.assertEquals(params["sort_order"], "")
+        self.assertEquals(params["sort_order"], "ASC")
 
     def test_post_override_with_sort_include_empty(self):
-        handler = MockHandler(sort_include_empty="0")
-
+        handler = MockHandler(querystring="sort_include_empty=0")
         params = ParamDict(handler, **LIST_PARAMS)
         self.assertEquals(params["sort_include_empty"], "0")
 
@@ -87,40 +86,37 @@ class ParamsTestCase(TestCase):
         self.assertEquals(params["sort_include_empty"], "1")
 
     def test_post_override_with_page(self):
-        handler = MockHandler(page="3")
+        handler = MockHandler(querystring="page=3")
         params = ParamDict(handler, **LIST_PARAMS)
         # The Class will be responsible to decrement the page index to be compatible with virtuoso's indexing convention
         self.assertEquals(params["page"], "2")
 
     def test_override_with_invalid_argument(self):
-        handler = MockHandler(inexistent_argument="whatever")
+        handler = MockHandler(querystring="inexistent_argument=whatever")
         self.assertRaises(InvalidParam, ParamDict, handler, context_name='dbpedia', class_name="default_class_name", class_prefix=None)
 
     def test_class_uri_from_context_and_class(self):
         handler = MockHandler()
-        params = ParamDict(handler,
-                           context_name='dbpedia',
-                           class_name='Actor',
-                           class_uri=None)
+        params = ParamDict(handler, context_name="dbpedia", class_name="Actor", class_uri=None)
         self.assertEquals(params["class_uri"], "http://dbpedia.org/ontology/Actor")
 
     def test_class_uri_from_context_and_class_with_class_uri(self):
-        handler = MockHandler(class_uri="http://someprefix/someClass")
+        handler = MockHandler(querystring="class_uri=http://someprefix/someClass")
         params = ParamDict(handler, context_name='dbpedia', class_name='Actor')
         self.assertEquals(params["class_uri"], "http://someprefix/someClass")
 
     def test_class_uri_from_context_and_class_with_class_prefix(self):
-        handler = MockHandler(class_prefix="http://someprefix/")
+        handler = MockHandler(querystring="class_prefix=http://someprefix/")
         params = ParamDict(handler, context_name='dbpedia', class_name='Actor', class_prefix=None)
         self.assertEquals(params["class_prefix"], "http://someprefix/")
 
     def test_class_uri_from_context_and_class_with_class_prefix(self):
-        handler = MockHandler(class_prefix="http://someprefix/")
+        handler = MockHandler(querystring="class_prefix=http://someprefix/")
         params = ParamDict(handler, context_name='dbpedia', class_name='Actor', class_prefix=None)
         self.assertEquals(params["class_uri"], "http://someprefix/Actor")
 
     def test_class_uri_from_context_and_class_with_class_prefix(self):
-        handler = MockHandler(class_prefix="http://someprefix/")
+        handler = MockHandler(querystring="class_prefix=http://someprefix/")
         params = ParamDict(handler, context_name='dbpedia', class_name='Actor', class_prefix=None)
         self.assertEquals(params["class_uri"], "http://someprefix/Actor")
 

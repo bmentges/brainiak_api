@@ -1,4 +1,6 @@
 from unittest import TestCase
+
+from brainiak.utils import params
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
 from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination, INSTANCE_PARAMS, CACHE_PARAMS
@@ -26,6 +28,16 @@ class ParamsTestCase(TestCase):
         self.assertIn("class_name", params)
         self.assertEquals("context_name", params.get("context_name"))
         self.assertEquals("class_name", params.get("class_name"))
+
+    def test_arguments_o(self):
+        handler = MockHandler(querystring="o=Conan%20Doyle&o=Agatha%20Christie")
+        param_dict = params.ParamDict(handler, o="Aldous Huxley")
+        self.assertEqual(param_dict.arguments, {"o": "Conan Doyle"})
+
+    def test_arguments_page(self):
+        handler = MockHandler(querystring="page=1&per_page=2")
+        param_dict = params.ParamDict(handler, page="1", per_page="2")
+        self.assertEqual(param_dict.arguments, {"page": "1", "per_page": "2"})
 
     def test_root_context(self):
         handler = MockHandler()

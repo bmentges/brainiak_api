@@ -19,3 +19,4 @@ sphinx-bootstrap-theme==0.1.8
 semantic_web_pygments==0.1.0
 
 --extra-index-url=http://pypi.globoi.com/
+--extra-index-url=http://pypi.globoi.com/proxy

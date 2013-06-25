@@ -27,7 +27,7 @@ def assemble_list_json(query_params, query_result_dict):
     decorate_with_class_prefix(items_list)
 
     links = self_link(query_params) + collection_links(query_params)
-    add_link(links, 'instances', "{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(remove_last_slash(query_params.base_url)))
+    add_link(links, 'list', "{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(remove_last_slash(query_params.base_url)))
     add_link(links, 'collection', "{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(remove_last_slash(query_params.base_url)))
 
     context_section = context.context

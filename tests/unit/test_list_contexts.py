@@ -67,7 +67,7 @@ class GetContextTestCase(unittest.TestCase):
         expected_links = [
             {'href': 'http://api.semantica.dev.globoi.com/_status', 'method': 'GET', 'rel': 'status'},
             {'rel': 'self', 'href': base_url, 'method': 'GET'},
-            {'rel': 'instances', 'href': base_url + '/{resource_id}', 'method': 'GET'},
+            {'rel': 'list', 'href': base_url + '/{resource_id}', 'method': 'GET'},
             {'rel': 'context', 'href': base_url + '/{resource_id}', 'method': 'GET'},
             {'rel': 'next', 'href': 'http://api.semantica.dev.globoi.com/ctx?per_page=30&page=2', 'method': 'GET'},
             {'rel': 'first', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},

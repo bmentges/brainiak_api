@@ -68,7 +68,8 @@ class VirtuosoConnection(object):
             self.password = settings.SPARQL_ENDPOINT_PASSWORD
             self.auth_mode = settings.SPARQL_ENDPOINT_AUTH_MODE
         except AttributeError:
-            self.user = self.password = self.auth_mode = None
+            self.user = self.password = None
+            self.auth_mode = "basic"
 
     def query(self, query, *args, **kw):
         method = kw.get("method", "POST")

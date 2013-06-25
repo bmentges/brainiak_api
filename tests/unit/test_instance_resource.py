@@ -168,7 +168,8 @@ class AssembleTestCase(unittest.TestCase):
 
         param_dict = {'context_name': 'schema',
                       'class_name': 'klass',
-                      'instance_id': 'instance'}
+                      'instance_id': 'instance',
+                      'instance_prefix': 'fake_instance_prefix'}
         handler = MockHandler(uri="http://mock.test.com/schema/klass/instance", querystring="class_prefix=CLASS_PREFIX&instance_prefix=INSTANCE_PREFIX", **param_dict)
         query_params = ParamDict(handler, **param_dict)
 

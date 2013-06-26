@@ -36,8 +36,9 @@ class TriplestoreSetCredentialsTestCase(unittest.TestCase):
         del settings.SPARQL_ENDPOINT_AUTH_MODE
 
         virtuoso_connection = triplestore.VirtuosoConnection()
-        credentials = (virtuoso_connection.user, virtuoso_connection.password, virtuoso_connection.auth_mode)
-        self.assertTrue(all([x is None for x in credentials]))
+        self.assertIsNone(virtuoso_connection.user)
+        self.assertIsNone(virtuoso_connection.password)
+        self.assertEqual(virtuoso_connection.auth_mode, "basic")
 
     @patch('brainiak.triplestore.settings')
     def test_set_credentials_no_password(self, settings):
@@ -45,7 +46,9 @@ class TriplestoreSetCredentialsTestCase(unittest.TestCase):
 
         virtuoso_connection = triplestore.VirtuosoConnection()
         credentials = (virtuoso_connection.user, virtuoso_connection.password, virtuoso_connection.auth_mode)
-        self.assertTrue(all([x is None for x in credentials]))
+        self.assertIsNone(virtuoso_connection.user)
+        self.assertIsNone(virtuoso_connection.password)
+        self.assertEqual(virtuoso_connection.auth_mode, "basic")
 
 
 class MockSPARQLWrapper():

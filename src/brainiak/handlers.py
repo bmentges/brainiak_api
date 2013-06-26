@@ -33,7 +33,7 @@ from brainiak.utils.links import build_schema_url
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.resources import check_messages_when_port_is_mentioned
 from brainiak.event_bus import NotificationFailure
-
+from brainiak.root.json_schema import schema as root_schema
 
 logger = LazyObject(get_logger)
 
@@ -59,6 +59,7 @@ def safe_params(valid_params=None):
 
 def get_routes():
     return [
+        # internal resources for monitoring and meta-infromation inspection
         URLSpec(r'/healthcheck/?', HealthcheckHandler),
         URLSpec(r'/_version/?', VersionHandler),
         URLSpec(r'/_prefixes/?', PrefixHandler),
@@ -66,6 +67,11 @@ def get_routes():
         URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
         URLSpec(r'/_status/cache/?', CacheStatusHandler),
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
+        # json-schemas
+        URLSpec(r'/_class/?', RootJsonSchemaHandler),
+        #URLSpec(r'/(?P<context_name>[\w\-]+)/_class/?', ContextJsonSchemaHandler),
+        #URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', CollectionJsonSchemaHandler),
+        # resources that represents concepts
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', ClassHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)/?', InstanceHandler),
@@ -222,6 +228,12 @@ class StatusHandler(BrainiakRequestHandler):
         else:
             response = "WORKING"
         self.write(response)
+
+
+class RootJsonSchemaHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.finalize(root_schema)
 
 
 class ClassHandler(BrainiakRequestHandler):

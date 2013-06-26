@@ -7,7 +7,7 @@ from tornado.ioloop import IOLoop
 from tornado.options import define, options, parse_command_line
 from tornado.web import Application as TornadoApplication
 
-from brainiak import __doc__, log, settings
+from brainiak import log, settings
 from brainiak.greenlet_tornado import greenlet_set_ioloop
 from brainiak.handlers import get_routes
 from brainiak import event_bus

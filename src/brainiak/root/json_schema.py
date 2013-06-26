@@ -11,6 +11,7 @@ def schema(base_url):
         "type": "object",
         "required": ["items"],
         "properties": {
+            "item_count": {"type": "integer"},
             "items": {
                 "type": "array",
                 "items": {

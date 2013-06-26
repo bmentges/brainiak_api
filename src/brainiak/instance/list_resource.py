@@ -263,7 +263,7 @@ def build_json(items_list, query_params):
     add_link(links, 'item', item_url)
     add_link(links, 'instance', item_url)
     add_link(links, 'class', schema_url)
-    add_link(links, "create", create_url, method='POST', schema={'$ref': schema_url})
+    add_link(links, "add", create_url, method='POST', schema={'$ref': schema_url})
     json = {
         'items': items_list,
         "@context": {"@language": query_params.get("lang")}

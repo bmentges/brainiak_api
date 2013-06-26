@@ -21,25 +21,27 @@ class EndpointConfig:
 
 
 class TriplestoreTestCase(TornadoAsyncTestCase):
-    pass
-
     @patch("brainiak.triplestore.settings",
-           SPARQL_ENDPOINT=EndpointConfig.URL,
-           )
+        SPARQL_ENDPOINT=EndpointConfig.URL,
+        SPARQL_ENDPOINT_AUTH_MODE=EndpointConfig.BASIC)
     @greenlet_tornado.greenlet_test
     def test_query_ok_with_get_method(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection()
         response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY, method="GET")
         self.assertEqual(response.code, 200)
 
-    @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.URL)
+    @patch("brainiak.triplestore.settings",
+        SPARQL_ENDPOINT=EndpointConfig.URL,
+        SPARQL_ENDPOINT_AUTH_MODE=EndpointConfig.BASIC)
     @greenlet_tornado.greenlet_test
     def test_query_ok(self, settings):
         virtuoso_connection = triplestore.VirtuosoConnection()
         response = virtuoso_connection.query(SIMPLE_COUNT_CLASSES_QUERY)
         self.assertEqual(response.code, 200)
 
-    @patch("brainiak.triplestore.settings", SPARQL_ENDPOINT=EndpointConfig.URL)
+    @patch("brainiak.triplestore.settings",
+        SPARQL_ENDPOINT=EndpointConfig.URL,
+        SPARQL_ENDPOINT_AUTH_MODE=EndpointConfig.BASIC)
     @greenlet_tornado.greenlet_test
     def test_malformed_query(self, settings):
         MALFORMED_QUERY = "SELECT A MALFORMED QUERY {?s ?p ?o}"

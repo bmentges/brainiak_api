@@ -81,7 +81,6 @@ class PurgeTestCase(unittest.TestCase):
         except:
             debug.assert_called_with("Cache: key(s) to be deleted: ['some_other_url', 'some_url']")
 
-
     @patch("brainiak.utils.cache.delete", return_value=False)
     @patch("brainiak.utils.cache.log.logger.debug")
     @patch("brainiak.utils.cache.log.logger.info")

@@ -89,9 +89,9 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             path = self.request.path
             recursive = int(self.request.headers.get('X-Cache-recursive', '0'))
             if recursive:
-                response = cache.purge(path)
+                cache.purge(path)
             else:
-                response = cache.delete(path)
+                cache.delete(path)
         else:
             raise HTTPError(405, log_message="Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)")
 

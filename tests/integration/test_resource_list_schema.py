@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from mock import patch
 import json
 
@@ -266,52 +268,6 @@ class PredicatesQueryTestCase(QueryTestCase):
     fixtures = ["tests/sample/animalia.n3"]
     graph_uri = "http://example.onto/"
 
-    def test_query_predicates(self):
-        filter_ = "FILTER (?domain_class IN (<http://example.onto/Mammalia>))"
-        params = {"filter_classes_clause": filter_}
-        query = QUERY_PREDICATE_WITHOUT_LANG % params
-        computed = self.query(query)['results']['bindings']
-        expected = [
-            {
-                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furColour'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
-                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
-                u'title': {u'type': u'literal', u'value': u'Fur or hair colour'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
-            }
-        ]
-        for expected_item in expected:
-            self.assertIn(expected_item, computed)
-
-    def test_query_predicate_multiple_ranges(self):
-        filter_ = "FILTER (?domain_class IN (<http://example.onto/SubAnimal>))"
-        params = {"filter_classes_clause": filter_}
-        query = QUERY_PREDICATE_WITHOUT_LANG % params
-        computed = self.query(query)['results']['bindings']
-        expected = [
-            {
-                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
-                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
-                u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
-            },
-            {
-                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
-                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
-                u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
-            },
-            {
-                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furStyle'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
-                u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'},
-                u'title': {u'type': u'literal', u'value': u'Fur or hair style (could be a description, FurLenght or FurColour)'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
-            }
-        ]
-        self.assertEqual(sorted(expected), sorted(computed))
 
     def test_query_predicate_multiple_classes(self):
         filter_ = "FILTER (?domain_class IN (<http://example.onto/Mammalia>, <http://example.onto/Canidae>))"
@@ -383,6 +339,61 @@ class PredicatesQueryTestCase(QueryTestCase):
             }
         ]
         self.assertEqual(sorted(expected), sorted(computed))
+
+
+class PredicatesQueryTestCaseMultipleDomainRange(QueryTestCase):
+
+    maxDiff = None
+    allow_triplestore_connection = True
+    fixtures = ["tests/sample/place.n3"]
+    graph_uri = "http://example.onto/"
+
+    def test_query_predicate_multiple_ranges(self):
+        filter_ = "FILTER (?domain_class IN (<http://test.onto/ResearchGroup>))"
+        params = {"filter_classes_clause": filter_}
+        query = QUERY_PREDICATE_WITHOUT_LANG % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {
+                "predicate": { "type": "uri", "value": "http://test.onto/isBasedIn" },
+                "predicate_graph": { "type": "uri", "value": "http://test.onto/" },
+                "type": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty" },
+                "range": { "type": "uri", "value": "http://test.onto/University" },
+                "title": { "type": "literal", "value": "is based in" },
+                "range_graph": { "type": "uri", "value": "http://test.onto/" },
+                "range_label": { "type": "literal", "value": "University" }
+            },
+            {
+                "predicate": { "type": "uri", "value": "http://test.onto/isBasedIn" },
+                "predicate_graph": { "type": "uri", "value": "http://test.onto/" },
+                "type": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty" },
+                "range": { "type": "uri", "value": "http://test.onto/Institute" },
+                "title": { "type": "literal", "value": "is based in" },
+                "range_graph": { "type": "uri", "value": "http://test.onto/" },
+                "range_label": { "type": "literal", "value": "Institute" }
+            }
+        ]
+        self.assertEqual(sorted(expected), sorted(computed))
+
+    def test_query_predicate_multiple_domains(self):
+        filter_ = "FILTER (?domain_class IN (<http://example.onto/City>))"
+        params = {"filter_classes_clause": filter_}
+        query = QUERY_PREDICATE_WITHOUT_LANG % params
+        computed = self.query(query)['results']['bindings']
+        expected = [
+            {
+                u"predicate": { u"type": u"uri", u"value": u"http://example.onto/partOfCountry" },
+                u"predicate_graph": { u"type": u"uri", u"value": u"http://example.onto/" },
+                u"type": { u"type": u"uri", u"value": u"http://www.w3.org/2002/07/owl#ObjectProperty" },
+                u"range": { u"type": u"uri", u"value": u"http://example.onto/Country" },
+                u"title": { u"type": u"literal", u"value": u"Faz parte do país" },
+                u"range_graph": { u"type": u"uri", u"value": u"http://example.onto/" },
+                u"range_label": { u"type": u"literal", u"value": u"País" },
+                u'predicate_comment': {u'type': u'literal', u'value': u'Estado est\xe1 no pa\xeds.'},
+            }
+        ]
+        self.assertEqual(sorted(expected), sorted(computed))
+
 
 
 class GetSchemaTestCase(TornadoAsyncTestCase):

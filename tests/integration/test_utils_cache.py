@@ -76,7 +76,11 @@ class PurgeTestCase(unittest.TestCase):
         self.assertEqual(info.call_count, 1)
         info.assert_called_with('Cache: purged with success 2 key(s), matching the pattern: some')
         self.assertEqual(debug.call_count, 1)
-        debug.assert_called_with("Cache: key(s) to be deleted: ['some_url', 'some_other_url']")
+        try:
+            debug.assert_called_with("Cache: key(s) to be deleted: ['some_url', 'some_other_url']")
+        except:
+            debug.assert_called_with("Cache: key(s) to be deleted: ['some_other_url', 'some_url']")
+
 
     @patch("brainiak.utils.cache.delete", return_value=False)
     @patch("brainiak.utils.cache.log.logger.debug")

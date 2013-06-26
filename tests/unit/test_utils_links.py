@@ -190,7 +190,7 @@ class CollectionLinksTestCase(unittest.TestCase):
 
     def test_build_links_without_previous_with_next(self):
         params = {'page': 1, 'per_page': 1}
-        handler = MockHandler(uri="http://class.uri", **params)
+        handler = MockHandler(uri="http://class.uri", querystring="page=1&per_page=1")
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params)
         expected = [
@@ -200,7 +200,7 @@ class CollectionLinksTestCase(unittest.TestCase):
 
     def test_build_links_with_previous_with_next(self):
         params = {'page': 2, 'per_page': 1}
-        handler = MockHandler(uri="http://class.uri", **params)
+        handler = MockHandler(uri="http://class.uri", querystring="page=2&per_page=1")
         query_params = ParamDict(handler, **params)
         computed = collection_links(query_params)
         expected = [
@@ -214,7 +214,7 @@ class CollectionLinksTestCase(unittest.TestCase):
         params = DefaultParamsDict(context_name='dbpedia',
                                    class_name='People',
                                    instance_id='inst')
-        handler = MockHandler(uri="http://class.uri", **url_params)
+        handler = MockHandler(uri="http://class.uri", querystring="instance_prefix=http://semantica.globo.com/base/")
         query_params = ParamDict(handler, **(LIST_PARAMS + url_params + params))
         computed = collection_links(query_params)
         first_all_args = {'per_page': settings.DEFAULT_PER_PAGE,

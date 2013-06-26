@@ -81,7 +81,7 @@ class GetContextTestCase(unittest.TestCase):
         instances_link = {
             'href': 'http://poke.oioi/company/{resource_id}?class_prefix={class_prefix}',
             'method': 'GET',
-            'rel': 'instances'
+            'rel': 'list'
         }
         collection_link = {
             'href': 'http://poke.oioi/company/{resource_id}?class_prefix={class_prefix}',

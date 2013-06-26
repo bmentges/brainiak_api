@@ -350,7 +350,6 @@ class CollectionHandler(BrainiakRequestHandler):
                                           context_name=context_name,
                                           class_name=class_name,
                                           **valid_params)
-
         response = filter_instances(self.query_params)
 
         self.finalize(response)

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import urlparse
+
 from urllib import urlencode
 from copy import copy
 from brainiak import settings
@@ -101,6 +103,12 @@ class ParamDict(dict):
         self._override_with(handler)
         self._post_override()
 
+    @property
+    def arguments(self):
+        query_string = self["request"].query
+        query_dict = urlparse.parse_qs(query_string, keep_blank_values=True)
+        return {key: value[0] for key, value in query_dict.items()}
+
     def args(self, exclude_keys=None, **kw):
         if exclude_keys is None:
             exclude_keys = NON_ARGUMENT_PARAMS
@@ -110,7 +118,7 @@ class ParamDict(dict):
 
         effective_args = {}
         for key in VALID_PARAMS:
-            if key in self["request"].arguments and key not in exclude_keys:
+            if key in self.arguments and key not in exclude_keys:
                 value = self[key]
                 if value:
                     effective_args[key] = value
@@ -175,15 +183,14 @@ class ParamDict(dict):
 
     def _override_with(self, handler):
         "Override this dictionary with values whose keys are present in the request"
-        for arg in self['request'].arguments:
+        for arg in self.arguments:
             if arg not in self:
                 raise InvalidParam(arg)
 
         # order is critical below because *_uri should be set before *_prefix
         for key in VALID_PARAMS:
-            if key in self["request"].arguments:
-                value = handler.get_argument(key)
-                if value is not None:
+            value = self.arguments.get(key, None)
+            if value is not None:
                     self[key] = value
 
     def _post_override(self):
@@ -193,8 +200,8 @@ class ParamDict(dict):
 
         # In order to keep up with Repos, pages numbering start at 1.
         # As for Virtuoso pages start at 0, we convert page, if provided
-        if "page" in self['request'].arguments:
+        if "page" in self.arguments:
             self["page"] = str(int(self["page"]) - 1)
 
-        if "sort_order" in self['request'].arguments:
+        if "sort_order" in self.arguments:
             self["sort_order"] = self["sort_order"].upper()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from brainiak import triplestore, settings
-from brainiak.utils.links import build_class_url, build_schema_url, self_link, crud_links, add_link
+from brainiak.utils.links import build_class_url, build_schema_url_for_instance, self_link, crud_links, add_link
 from brainiak.prefixes import MemorizeContext, shorten_uri
 from brainiak.utils.sparql import expand_uri, get_super_properties, is_result_empty
 
@@ -68,7 +68,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
     class_url = build_class_url(query_params)
     class_url_with_query_string = build_class_url(query_params, include_query_string=True)
-    schema_url = build_schema_url(query_params)
+    schema_url = build_schema_url_for_instance(query_params)
 
     query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
     action_links = self_link(query_params) + crud_links(query_params)

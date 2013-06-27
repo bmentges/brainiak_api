@@ -59,6 +59,12 @@ class ParamsTestCase(TestCase):
         response = param_dict.get_po_tuples()
         expected = [('?p', 'Nina')]
 
+    def test_get_po_p_o(self):
+        handler = MockHandler(querystring="o=Nina&p=canidae:hasDog")
+        param_dict = params.ParamDict(handler)
+        response = param_dict.get_po_tuples()
+        expected = [('canidae:hasDog', 'Nina')]
+
     def test_get_po_o_o1_o2_o3(self):
         handler = MockHandler(querystring="o=0&o1=1&o2=2&o3=?o3")
         param_dict = params.ParamDict(handler)

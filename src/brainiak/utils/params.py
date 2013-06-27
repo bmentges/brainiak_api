@@ -136,23 +136,35 @@ class ParamDict(dict):
 
     def get_po_tuples(self):
         query_string_dict = self.arguments
-        p_indexes = [PATTERN_P.match(key).group('index') for key in query_string_dict if PATTERN_P.match(key)]
-        o_indexes = [PATTERN_O.match(key).group('index') for key in query_string_dict if PATTERN_O.match(key)]
-        
-        indexes = set(p_indexes + o_indexes)
+        # retrieve indexes defined in query strings for pN and oN
+        p_indexes = set([PATTERN_P.match(key).group('index') for key in query_string_dict if PATTERN_P.match(key)])
+        o_indexes = set([PATTERN_O.match(key).group('index') for key in query_string_dict if PATTERN_O.match(key)])
+
+        only_p_is_defined = p_indexes - o_indexes
+        only_o_is_defined = o_indexes - p_indexes
+        both_p_and_o_are_defined = o_indexes & p_indexes
+
         po_list = []
-        for index in indexes:
+
+        for index in both_p_and_o_are_defined:
             p_key = "p{0}".format(index)
-            if index in p_indexes:
-                p_value = query_string_dict[p_key]
-            else:
-                p_value = "?p{0}".format(index)
+            p_value = query_string_dict[p_key]
             o_key = "o{0}".format(index)
-            if index in o_indexes:
-                o_value = query_string_dict[o_key]
-            else:
-                o_value = "?o{0}".format(index)
+            o_value = query_string_dict[o_key]
             po_list.append((p_value, o_value))
+
+        for index in only_p_is_defined:
+            p_key = "p{0}".format(index)
+            p_value = query_string_dict[p_key]
+            o_value = "?o{0}".format(index)
+            po_list.append((p_value, o_value))
+
+        for index in only_o_is_defined:
+            p_value = "?p{0}".format(index)
+            o_key = "o{0}".format(index)
+            o_value = query_string_dict[o_key]
+            po_list.append((p_value, o_value))
+
         return sorted(po_list)
 
     def args(self, exclude_keys=None, **kw):

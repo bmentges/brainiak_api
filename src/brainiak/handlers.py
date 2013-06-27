@@ -29,7 +29,7 @@ from brainiak.root.get import list_all_contexts
 from brainiak.schema import resource as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
-from brainiak.utils.links import build_schema_url
+from brainiak.utils.links import build_schema_url_for_instance, build_schema_url
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.resources import check_messages_when_port_is_mentioned
 from brainiak.event_bus import NotificationFailure
@@ -233,7 +233,29 @@ class StatusHandler(BrainiakRequestHandler):
 class RootJsonSchemaHandler(BrainiakRequestHandler):
 
     def get(self):
-        self.finalize(root_schema)
+        self.query_params = ParamDict(self)
+        self.finalize(root_schema(self.query_params.base_url))
+
+
+class RootHandler(BrainiakRequestHandler):
+
+    SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
+
+    @greenlet_asynchronous
+    def get(self):
+        valid_params = LIST_PARAMS + CACHE_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, **valid_params)
+        response = memoize(list_all_contexts, self.query_params)
+        self.add_cache_headers(response['meta'])
+        self.finalize(response['body'])
+
+    def finalize(self, response):
+        if isinstance(response, dict):
+            self.write(response)
+            schema_url = build_schema_url(self.query_params)
+            content_type = "application/json; profile={0}".format(schema_url)
+            self.set_header("Content-Type", content_type)
 
 
 class ClassHandler(BrainiakRequestHandler):
@@ -341,7 +363,7 @@ class InstanceHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         elif isinstance(response, dict):
             self.write(response)
-            schema_url = build_schema_url(self.query_params)
+            schema_url = build_schema_url_for_instance(self.query_params)
             content_type = "application/json; profile={0}".format(schema_url)
             self.set_header("Content-Type", content_type)
         elif isinstance(response, int):  # status code
@@ -426,20 +448,6 @@ class CollectionHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
-
-
-class RootHandler(BrainiakRequestHandler):
-
-    SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
-
-    @greenlet_asynchronous
-    def get(self):
-        valid_params = LIST_PARAMS + CACHE_PARAMS
-        with safe_params(valid_params):
-            self.query_params = ParamDict(self, **valid_params)
-        response = memoize(list_all_contexts, self.query_params)
-        self.add_cache_headers(response['meta'])
-        self.finalize(response['body'])
 
 
 class ContextHandler(BrainiakRequestHandler):

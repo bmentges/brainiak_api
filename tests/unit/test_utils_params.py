@@ -47,6 +47,30 @@ class ParamsTestCase(TestCase):
         self.assertEqual(param_dict.arguments['o2'], '2')
         self.assertEqual(param_dict.arguments['o3'], '3')
 
+    def test_get_po_p(self):
+        handler = MockHandler(querystring="p=some:predicate")
+        param_dict = params.ParamDict(handler)
+        response = param_dict.get_po_tuples()
+        expected = [('some:predicate', '?o')]
+
+    def test_get_po_o(self):
+        handler = MockHandler(querystring="o=Nina")
+        param_dict = params.ParamDict(handler)
+        response = param_dict.get_po_tuples()
+        expected = [('?p', 'Nina')]
+
+    def test_get_po_o_o1_o2_o3(self):
+        handler = MockHandler(querystring="o=0&o1=1&o2=2&o3=?o3")
+        param_dict = params.ParamDict(handler)
+        response = param_dict.get_po_tuples()
+        expected = [('?p', '0'), ('?p1', '1'), ('?p2', '2'), ('?p3', '?o3')]
+
+    def test_get_po_complex_case(self):
+        handler = MockHandler(querystring="o=0&o1=1&p2=predicate2&p4=predicate4&p5=predicate5&o5=object5")
+        param_dict = params.ParamDict(handler)
+        response = param_dict.get_po_tuples()
+        expected = [('?p', '0'), ('?p1', '1'), ('predicate2', '?o2'), ('predicate4', '?o4'), ('predicate5', 'object5')]
+
     def test_root_context(self):
         handler = MockHandler()
         params = ParamDict(handler, context_name=ROOT_CONTEXT)

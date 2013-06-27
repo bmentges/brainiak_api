@@ -63,13 +63,17 @@ VALID_PARAMS = ('lang',
                 'instance_id', 'instance_prefix', 'instance_uri',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
-                #'p', 'o',  # pN and oN where N is a number are also supported
                 'purge',
                 'do_item_count')
 
+
+PATTERN_P = re.compile(r'p(?P<index>\d*)')  # p, p1, p2, p3 ...
+PATTERN_O = re.compile(r'o(?P<index>\d*)')  # o, o1, o2, o3 ...
+
+
 VALID_PATTERNS = (
-    re.compile(r'p\d*'),
-    re.compile(r'o\d*')
+    PATTERN_P,
+    PATTERN_O
 )
 
 
@@ -129,6 +133,27 @@ class ParamDict(dict):
         query_string = self["request"].query
         query_dict = urlparse.parse_qs(query_string, keep_blank_values=True)
         return {key: value[0] for key, value in query_dict.items()}
+
+    def get_po_tuples(self):
+        query_string_dict = self.arguments
+        p_indexes = [PATTERN_P.match(key).group('index') for key in query_string_dict if PATTERN_P.match(key)]
+        o_indexes = [PATTERN_O.match(key).group('index') for key in query_string_dict if PATTERN_O.match(key)]
+        
+        indexes = set(p_indexes + o_indexes)
+        po_list = []
+        for index in indexes:
+            p_key = "p{0}".format(index)
+            if index in p_indexes:
+                p_value = query_string_dict[p_key]
+            else:
+                p_value = "?p{0}".format(index)
+            o_key = "o{0}".format(index)
+            if index in o_indexes:
+                o_value = query_string_dict[o_key]
+            else:
+                o_value = "?o{0}".format(index)
+            po_list.append((p_value, o_value))
+        return sorted(po_list)
 
     def args(self, exclude_keys=None, **kw):
         if exclude_keys is None:

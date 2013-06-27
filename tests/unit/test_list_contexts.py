@@ -53,7 +53,6 @@ class GetContextTestCase(unittest.TestCase):
 
     def test_list_contexts(self):
         param_dict = {"per_page": "30", "page": "0"}
-        root_url = "http://api.semantica.dev.globoi.com"
         base_url = "http://api.semantica.dev.globoi.com/ctx"
         handler = MockHandler(uri=base_url)
         params = ParamDict(handler, **param_dict)
@@ -64,15 +63,6 @@ class GetContextTestCase(unittest.TestCase):
              'resource_id': 'dbpedia'}
         ]
         self.assertEqual(computed["items"], expected_items)
-        expected_links = [
-            {'href': 'http://api.semantica.dev.globoi.com/_status', 'method': 'GET', 'rel': 'status'},
-            {'rel': 'self', 'href': base_url, 'method': 'GET'},
-            {'rel': 'list', 'href': base_url + '/{resource_id}', 'method': 'GET'},
-            {'rel': 'context', 'href': base_url + '/{resource_id}', 'method': 'GET'},
-            {'rel': 'next', 'href': 'http://api.semantica.dev.globoi.com/ctx?per_page=30&page=2', 'method': 'GET'},
-            {'rel': 'first', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
-        ]
-        self.assertEqual(sorted(computed["links"]), sorted(expected_links))
 
     def test_with_item_count(self):
         base_url = "http://api.semantica.dev.globoi.com/ctx"

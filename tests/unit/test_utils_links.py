@@ -180,7 +180,7 @@ class CrudLinksTestCase(unittest.TestCase):
             "class_name": "City"
 
         }
-        computed = build_schema_url(query_params)
+        computed = build_schema_url_for_instance(query_params)
         expected = "https://dot.net/place/City/_class?class_prefix=include_me"
         self.assertEqual(computed, expected)
 

@@ -205,7 +205,7 @@ class ParamDict(dict):
     def _override_with(self, handler):
         "Override this dictionary with values whose keys are present in the request"
         for arg in self.arguments:
-            if arg not in self:
+            if (arg not in self) and (not matches_pattern(arg)):
                 raise InvalidParam(arg)
 
         # order is critical below because *_uri should be set before *_prefix

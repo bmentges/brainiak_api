@@ -57,8 +57,6 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         body = json.loads(response.body)
         default_graph = {u'resource_id': u'upper', u'@id': u'http://semantica.globo.com/upper/', u'title': u'upper'}
 
-        self.assertIn("links", body.keys())
-
         self.assertIn("items", body.keys())
         self.assertIn(default_graph, body['items'])
 
@@ -75,7 +73,6 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/?page=1&per_page=2", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertIn("links", body.keys())
         self.assertIn("items", body.keys())
 
     @patch("brainiak.utils.cache.retrieve", return_value={"body": {"status": "cached"}, "meta": {"last_modified": "Fri, 11 May 1984 20:00:00 -0300"}})

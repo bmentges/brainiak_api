@@ -188,6 +188,7 @@ WHERE {
       ?blank owl:unionOf ?enumeration .
       OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
       OPTIONAL { ?list_node rdf:first ?range } .
+      FILTER (bound(?range))
     }
     FILTER (!isBlank(?range))
     ?predicate rdfs:label ?title .
@@ -233,6 +234,7 @@ WHERE {
       ?blank owl:unionOf ?enumeration .
       OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
       OPTIONAL { ?list_node rdf:first ?range } .
+      FILTER (bound(?range))
     }
     FILTER (!isBlank(?range))
     ?predicate rdfs:label ?title .

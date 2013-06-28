@@ -8,6 +8,7 @@ from brainiak import settings
 from brainiak.prefixes import safe_slug_to_prefix
 from brainiak.utils.sparql import PATTERN_O, PATTERN_P
 
+
 class InvalidParam(Exception):
     pass
 

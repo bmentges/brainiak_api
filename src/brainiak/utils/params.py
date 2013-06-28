@@ -32,8 +32,6 @@ NON_ARGUMENT_PARAMS = ('context_name', 'class_name', 'instance_id')
 
 CACHE_PARAMS = DefaultParamsDict(purge="0")
 
-FILTER_PARAMS = DefaultParamsDict(p="?predicate", o="?object")
-
 LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
                                 per_page=settings.DEFAULT_PER_PAGE,
                                 sort_by="",

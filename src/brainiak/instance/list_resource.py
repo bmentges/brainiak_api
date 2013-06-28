@@ -60,7 +60,7 @@ class Query(object):
         rdfs_repetition = (predicate == "rdfs:label") and object_.startswith("?")
 
         return not generic_po and not rdfs_repetition
-    #xubiru
+
     @property
     def po_tuples(self):
         return extract_po_tuples(self.params)
@@ -124,23 +124,21 @@ class Query(object):
         sort_label = ""
         if sort_predicate:
             sort_predicate = shorten_uri(sort_predicate) if not sort_predicate.startswith("?") else sort_predicate
+            if (sort_predicate == "rdfs:label"):
+                sort_label = "?label"
+            else:
+                for predicate, object_ in self.po_tuples:
+                    #predicate = self.params.get("p", "?p")
+                    predicate = shorten_uri(predicate) if not predicate.startswith("?") else predicate
 
-            # ******
-            for predicate, object_ in self.po_tuples:
-                #predicate = self.params.get("p", "?p")
-                predicate = shorten_uri(predicate) if not predicate.startswith("?") else predicate
+                    #object_ = self.params.get("o", "?o")
 
-                #object_ = self.params.get("o", "?o")
-
-                sort_label = "?sort_object"
-                if (sort_predicate == "rdfs:label"):
-                    sort_label = "?label"
-                    break
-                elif (sort_predicate == predicate) and object_.startswith("?"):
-                    sort_label = object_
-                    break
-                # elif (sort_predicate == predicate) and not object_.startswith("?"):
-                #     sort_label = ""
+                    sort_label = "?sort_object"
+                    if (sort_predicate == predicate) and object_.startswith("?"):
+                        sort_label = object_
+                        break
+                    # elif (sort_predicate == predicate) and not object_.startswith("?"):
+                    #     sort_label = ""
 
         return sort_label
 

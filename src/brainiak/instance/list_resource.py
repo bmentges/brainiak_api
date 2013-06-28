@@ -128,18 +128,11 @@ class Query(object):
                 sort_label = "?label"
             else:
                 for predicate, object_ in self.po_tuples:
-                    #predicate = self.params.get("p", "?p")
-                    predicate = shorten_uri(predicate) if not predicate.startswith("?") else predicate
-
-                    #object_ = self.params.get("o", "?o")
-
-                    sort_label = "?sort_object"
                     if (sort_predicate == predicate) and object_.startswith("?"):
                         sort_label = object_
                         break
-                    # elif (sort_predicate == predicate) and not object_.startswith("?"):
-                    #     sort_label = ""
-
+                if not sort_label:
+                    sort_label = "?sort_object"
         return sort_label
 
     @property

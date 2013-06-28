@@ -63,8 +63,14 @@ def get_previous_page(page):
         return False
 
 
-def get_next_page(page):
-    return page + 1
+def get_next_page(page, last_page=None):
+    if last_page is not None:
+        if page < last_page:
+            return page + 1
+        else:
+            return False
+    else:
+        return page + 1
 
 
 def last_link(query_params, total_items):
@@ -93,43 +99,37 @@ def merge_schemas(*dicts):
         result['links'].extend(d['links'])
 
 
-def pagination_items(query_params):
+def pagination_items(query_params, total_items=None):
     """Add attributes and values related to pagination to a listing page"""
     page = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
     previous_page = get_previous_page(page)
+    per_page = int(query_params["per_page"])
     result = {
         'page': page,
-        'next_page': get_next_page(page),
-        'per_page': int(query_params["per_page"])
+        'per_page': per_page
     }
     if previous_page:
         result['previous_page'] = previous_page
+
+    if (query_params.get("do_item_count", None) == "1") and (total_items is not None):
+        last_page = get_last_page(total_items, per_page)
+    else:
+        last_page = None
+    next_page = get_next_page(page, last_page)
+    if next_page:
+        result['next_page'] = next_page
+
     return result
 
 
-def pagination_schema(base_url):
+def pagination_schema():
     """Json schema part that expresses pagination structure"""
-    base_url = remove_last_slash(base_url)
+    #base_url = remove_last_slash(base_url)
     def link(rel, href):
         link_pattern = {
             "href": href,
             "method": "GET",
-            "rel": rel,
-            "schema": {
-                "type": "object",
-                "properties": {
-                    "per_page": {
-                        "type": "integer",
-                        "minimum": 1,
-                        "default": int(DEFAULT_PER_PAGE)
-                    },
-                    "page": {
-                        "type": "integer",
-                        "minimum": 1,
-                    }
-                },
-                "required": ["page"]
-            }
+            "rel": rel
         }
         return link_pattern
 
@@ -141,8 +141,9 @@ def pagination_schema(base_url):
             "next_page": {"type": "integer"}
         },
         "links": [
-            link('first', base_url + '?page=1&per_page={per_page}'),
-            link('next', base_url + '?page={next_page}&per_page={per_page}')
+            link('first', '/?page=1&per_page={per_page}'),
+            link('next', '/?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
+            link('previous', '/?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}')
         ]
     }
     return result

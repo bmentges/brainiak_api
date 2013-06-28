@@ -33,15 +33,19 @@ def list_all_contexts(params):
         raise HTTPError(404, log_message="No contexts were found.")
 
     json = {
-        '@id': self_url(params),
+        'id': self_url(params),
         'items': contexts
     }
-    json.update(pagination_items(params))
 
     if params.get("do_item_count", None) == "1":
         total_items = len(filtered_contexts)
         validate_pagination_or_raise_404(params, total_items)
         json['item_count'] = total_items
+        json['do_item_count'] = "1"
+    else:
+        total_items = None
+        json['do_item_count'] = "0"
+    json.update(pagination_items(params, total_items))
 
     return json
 

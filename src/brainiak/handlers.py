@@ -233,8 +233,7 @@ class StatusHandler(BrainiakRequestHandler):
 class RootJsonSchemaHandler(BrainiakRequestHandler):
 
     def get(self):
-        self.query_params = ParamDict(self)
-        self.finalize(root_schema(self.query_params.base_url))
+        self.finalize(root_schema())
 
 
 class RootHandler(BrainiakRequestHandler):

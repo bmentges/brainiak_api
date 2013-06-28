@@ -409,18 +409,17 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
         }
-
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
         expected = [
             {
                 u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
-                u'object': {u'type': u'literal', u'value': u'Morumbi'},
+                u'o': {u'type': u'literal', u'value': u'Morumbi'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
-                u'object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'o': {u'type': u'literal', u'value': u'Toca da Raposa'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
             }
         ]
@@ -443,12 +442,12 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         expected = [
             {
                 u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
-                u'object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'o': {u'type': u'literal', u'value': u'Toca da Raposa'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
-                u'object': {u'type': u'literal', u'value': u'Morumbi'},
+                u'o': {u'type': u'literal', u'value': u'Morumbi'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
             }
         ]
@@ -524,7 +523,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         computed = self.query(query)["results"]["bindings"]
         expected = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'},
                      u'label': {u'type': u'literal', u'value': u'Mary Land'},
-                     u'object': {u'type': u'uri', u'value': u'http://tatipedia.org/BungeeJump'}}]
+                     u'o': {u'type': u'uri', u'value': u'http://tatipedia.org/BungeeJump'}}]
 
         self.assertEqual(computed, expected)
 
@@ -544,22 +543,22 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         expected = [
             {
                 u'label': {u'type': u'literal', u'value': u'Mary Land'},
-                u'object': {u'type': u'uri', u'value': u'http://tatipedia.org/JiuJitsu'},
+                u'o': {u'type': u'uri', u'value': u'http://tatipedia.org/JiuJitsu'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'John Jones'},
-                u'object': {u'type': u'uri', u'value': u'http://tatipedia.org/JiuJitsu'},
+                u'o': {u'type': u'uri', u'value': u'http://tatipedia.org/JiuJitsu'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Mary Land'},
-                u'object': {u'type': u'uri', u'value': u'http://tatipedia.org/Capoeira'},
+                u'o': {u'type': u'uri', u'value': u'http://tatipedia.org/Capoeira'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'John Jones'},
-                u'object': {u'type': u'literal', u'value': u'Aikido'},
+                u'o': {u'type': u'literal', u'value': u'Aikido'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'}
             }
         ]

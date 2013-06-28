@@ -338,8 +338,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     def test_sort_by(self):
         params = {
             "class_uri": 'http://tatipedia.org/SoccerClub',
-            "p": "?predicate",
-            "o": "?object",
+            "p": "?p",
+            "o": "?o",
             "sort_by": 'http://tatipedia.org/stadium',
             "sort_order": "asc",
             "sort_include_empty": "1",
@@ -371,8 +371,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     def test_sort_by_exclude_empty_values(self):
         params = {
             "class_uri": 'http://tatipedia.org/SoccerClub',
-            "p": "?predicate",
-            "o": "?object",
+            "p": "?p",
+            "o": "?o",
             "sort_by": 'http://tatipedia.org/stadium',
             "sort_order": "asc",
             "sort_include_empty": "0",
@@ -401,7 +401,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         params = {
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": 'http://tatipedia.org/stadium',
-            "o": '?object',
+            "o": '?o',
             "sort_by": "http://tatipedia.org/stadium",
             "sort_order": "asc",
             "lang": "",
@@ -430,7 +430,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         params = {
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": 'http://tatipedia.org/stadium',
-            "o": '?object',
+            "o": '?o',
             "sort_by": "rdfs:label",
             "sort_order": "asc",
             "lang": "",
@@ -493,7 +493,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_object(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "p": "?predicate",
+            "p": "?p",
             "o": "http://tatipedia.org/BungeeJump",
             "graph_uri": self.graph_uri,
             "lang": "",
@@ -518,7 +518,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
             "p": "http://tatipedia.org/dislikes",
-            "o": "?object",
+            "o": "?o",
             "sort_by": "",
         }
         query = Query(params).to_string()
@@ -537,7 +537,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
             "p": "http://tatipedia.org/likes",
-            "o": "?object",
+            "o": "?o",
             "sort_by": ""
         }
         query = Query(params).to_string()
@@ -570,7 +570,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_object_represented_as_string(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "p": "?predicate",
+            "p": "?p",
             "o": "Aikido",
             "lang": "",
             "graph_uri": self.graph_uri,
@@ -591,7 +591,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     # def test_instance_filter_in_inexistent_graph(self):
     #     params = {
     #         "class_uri": "http://tatipedia.org/test/Person",
-    #         "p": "?predicate",
+    #         "p": "?p",
     #         "o": "Aikido",
     #         "lang_filter": "",
     #         "graph_uri": "http://neverland.com/",

@@ -506,8 +506,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
         expected = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'},
                      u'label': {u'type': u'literal', u'value': u'Mary Land'},
-                     u'predicate': {u'type': u'uri', u'value': u'http://tatipedia.org/dislikes'}}]
-
+                     u'p': {u'type': u'uri', u'value': u'http://tatipedia.org/dislikes'}}]
         self.assertEqual(computed, expected)
 
     def test_instance_filter_query_by_predicate(self):
@@ -583,7 +582,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         computed = self.query(query)["results"]["bindings"]
         expected = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'},
                      u'label': {u'type': u'literal', u'value': u'John Jones'},
-                     u'predicate': {u'type': u'uri', u'value': u'http://tatipedia.org/likes'}
+                     u'p': {u'type': u'uri', u'value': u'http://tatipedia.org/likes'}
                      }]
 
         self.assertEqual(computed, expected)

@@ -1,7 +1,7 @@
 import unittest
 
 from brainiak.instance.list_resource import Query, merge_by_id, build_json
-from brainiak.utils.params import FILTER_PARAMS, LIST_PARAMS, ParamDict
+from brainiak.utils.params import LIST_PARAMS, ParamDict
 from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip
 
@@ -369,7 +369,7 @@ class BuildJSONTestCase(unittest.TestCase):
         params = ParamDict(handler,
                            context_name="zoo",
                            class_name="Lion",
-                           **(LIST_PARAMS + FILTER_PARAMS))
+                           **(LIST_PARAMS))
         items = []
 
         something = build_json(items, params)
@@ -418,7 +418,7 @@ class BuildJSONTestCase(unittest.TestCase):
         params = ParamDict(handler,
                            context_name="zoo",
                            class_name="Lion",
-                           **(LIST_PARAMS + FILTER_PARAMS))
+                           **(LIST_PARAMS))
         items = []
 
         something = build_json(items, params)

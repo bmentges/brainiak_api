@@ -68,8 +68,8 @@ class Query(object):
             ("rdfs:label", "?label")
         ]
 
-        predicate = self.params["p"]
-        object_ = self.params["o"]
+        predicate = self.params.get("p", "?p")
+        object_ = self.params.get("o", "?o")
         if self.should_add_predicate_and_object(predicate, object_):
             predicate = normalize_term(predicate, self.params["lang"])
             object_ = normalize_term(object_, self.params["lang"])
@@ -119,10 +119,10 @@ class Query(object):
         if sort_predicate:
             sort_predicate = shorten_uri(sort_predicate) if not sort_predicate.startswith("?") else sort_predicate
 
-            predicate = self.params["p"]
+            predicate = self.params.get("p", "?p")
             predicate = shorten_uri(predicate) if not predicate.startswith("?") else predicate
 
-            object_ = self.params["o"]
+            object_ = self.params.get("o", "?o")
 
             sort_label = "?sort_object"
             if (sort_predicate == "rdfs:label"):
@@ -152,8 +152,8 @@ class Query(object):
     def variables(self):
         items = ["?label", "?subject"]
 
-        predicate = self.params["p"]
-        object_ = self.params["o"]
+        predicate = self.params.get("p", "?p")
+        object_ = self.params.get("o", "?o")
         if self.should_add_predicate_and_object(predicate, object_):
             if predicate.startswith("?"):
                 items.append(predicate)
@@ -235,7 +235,8 @@ def filter_instances(query_params):
         "label": "title",
         "subject": "@id",
         "sort_object": shorten_uri(query_params["sort_by"]),
-        "object": shorten_uri(query_params["p"]),
+        "p": "predicate",
+        "o": shorten_uri(query_params.get("p", "?predicate")),
     }
     result_dict = query_filter_instances(query_params)
     if not result_dict or not result_dict['results']['bindings']:

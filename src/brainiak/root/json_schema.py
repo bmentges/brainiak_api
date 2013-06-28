@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-from brainiak.utils.links import remove_class_slash, merge_schemas, pagination_schema
+from brainiak.utils.links import merge_schemas, pagination_schema
 
 
-def schema(base_url):
-    base_url = remove_class_slash(base_url)
+def schema():
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
         "title": "Context List Schema",
         "type": "object",
         "required": ["items"],
         "properties": {
+            "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
-            "@id": {"type": "string", "format": "uri"},
+            "id": {"type": "string", "format": "uri"},
             "items": {
                 "type": "array",
                 "items": {
@@ -27,17 +27,17 @@ def schema(base_url):
         },
         "links": [
             {
-                "href": "{@id}",
+                "href": "{+id}",
                 "method": "GET",
                 "rel": "self"
             },
             {
-                "href": base_url + "/{resource_id}",
+                "href": "/{resource_id}",
                 "method": "GET",
                 "rel": "list"
             },
             {
-                "href": base_url + "/{resource_id}",
+                "href": "/{resource_id}",
                 "method": "GET",
                 "rel": "context"
             }
@@ -45,5 +45,5 @@ def schema(base_url):
         ]
     }
 
-    merge_schemas(base, pagination_schema(base_url))
+    merge_schemas(base, pagination_schema())
     return base

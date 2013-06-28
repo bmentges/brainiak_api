@@ -42,7 +42,7 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
 
     schema = {
         "type": "object",
-        "@id": short_uri,
+        "id": short_uri,
         "@context": effective_context,
         "$schema": "http://json-schema.org/draft-03/schema#",
         "title": title,

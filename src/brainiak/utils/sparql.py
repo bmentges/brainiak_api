@@ -4,6 +4,10 @@ import uuid
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, PrefixError, shorten_uri
 
 
+PATTERN_P = re.compile(r'p(?P<index>\d*)')  # p, p1, p2, p3 ...
+PATTERN_O = re.compile(r'o(?P<index>\d*)')  # o, o1, o2, o3 ...
+
+
 def get_super_properties(bindings):
     return {item['super_property']['value']: item['predicate']['value'] for item in bindings if 'super_property' in item}
 
@@ -321,3 +325,36 @@ def add_language_support(query_params, language_dependent_variable):
 
 class UnexpectedResultException(Exception):
     pass
+
+
+def extract_po_tuples(query_string_dict):
+    # retrieve indexes defined in query strings for pN and oN
+    p_indexes = set([PATTERN_P.match(key).group('index') for key in query_string_dict if PATTERN_P.match(key)])
+    o_indexes = set([PATTERN_O.match(key).group('index') for key in query_string_dict if PATTERN_O.match(key)])
+
+    only_p_is_defined = p_indexes - o_indexes
+    only_o_is_defined = o_indexes - p_indexes
+    both_p_and_o_are_defined = o_indexes & p_indexes
+
+    po_list = []
+
+    for index in both_p_and_o_are_defined:
+        p_key = "p{0}".format(index)
+        p_value = query_string_dict[p_key]
+        o_key = "o{0}".format(index)
+        o_value = query_string_dict[o_key]
+        po_list.append((p_value, o_value))
+
+    for index in only_p_is_defined:
+        p_key = "p{0}".format(index)
+        p_value = query_string_dict[p_key]
+        o_value = "?o{0}".format(index)
+        po_list.append((p_value, o_value))
+
+    for index in only_o_is_defined:
+        p_value = "?p{0}".format(index)
+        o_key = "o{0}".format(index)
+        o_value = query_string_dict[o_key]
+        po_list.append((p_value, o_value))
+
+    return sorted(po_list)

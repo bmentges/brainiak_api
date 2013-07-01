@@ -62,11 +62,11 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertIn("items", body.keys())
         self.assertIn(default_graph, body['items'])
 
-    def test_root_context(self):
+    def test_200_person_in_contexts(self):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        default_graph = {u'resource_id': ROOT_CONTEXT, u'@id': u'http://semantica.globo.com/', u'title': ROOT_CONTEXT}
+        default_graph = {u'title': u'person', u'@id': u'http://semantica.globo.com/person/', u'resource_id': u'person'}
         self.assertIn("items", body.keys())
         self.assertIn(default_graph, body['items'])
 

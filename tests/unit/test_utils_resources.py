@@ -14,11 +14,12 @@ class TestLazyObject(TestCase):
         lazy.append(2)
         self.assertEqual(1, lazy.pop())
 
+
 class TestValidatePagination(TestCase):
 
     @patch('brainiak.utils.resources.valid_pagination', return_value=False)
     def test_validatePagination_raises(self, mock):
-        self.assertRaises(HTTPError, validate_pagination_or_raise_404, params={'page':0, 'per_page':3}, total_items=10)
+        self.assertRaises(HTTPError, validate_pagination_or_raise_404, params={'page': 0, 'per_page': 3}, total_items=10)
 
 
 class TestCaseListInstanceResource(TestCase):

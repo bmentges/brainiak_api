@@ -223,6 +223,7 @@ def crud_links(query_params, schema_url=None):
     ]
     return links
 
+
 def self_url(query_params):
     """Produce the url for the self link"""
     protocol = query_params['request'].protocol
@@ -231,6 +232,7 @@ def self_url(query_params):
     if not host in url:
         url = "{0}://{1}{2}".format(protocol, host, url)
     return url
+
 
 # TODO: deprecate this
 def self_link(query_params):

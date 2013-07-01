@@ -8,24 +8,18 @@ class TestRootJsonSchema(unittest.TestCase):
 
     maxDiff = None
 
-    def setUp(self):
-        self.base_url = 'http://localhost:5100/'
-
     def test_valid_structure(self):
-        computed_schema = root_schema(self.base_url)
+        computed_schema = root_schema()
         self.assertEqual(type(computed_schema), dict)
 
     def test_list_contexts(self):
-        computed_schema = root_schema(self.base_url)
+        computed_schema = root_schema()
         expected_links = [
-            {'href': 'http://localhost:5100', 'method': 'GET', 'rel': 'self'},
-            {'href': 'http://localhost:5100/{resource_id}', 'method': 'GET', 'rel': 'list'},
-            {'href': 'http://localhost:5100/{resource_id}', 'method': 'GET', 'rel': 'context'},
-            {'href': 'http://localhost:5100', 'method': 'GET', 'rel': 'first',
-             'schema': {'required': ['page'], 'type': 'object',
-                        'properties': {'per_page': {'default': 10, 'minimum': 1, 'type': 'integer'}, 'page': {'minimum': 1, 'type': 'integer'}}}},
-            {'href': 'http://localhost:5100', 'method': 'GET', 'rel': 'next',
-             'schema': {'required': ['page'], 'type': 'object',
-                        'properties': {'per_page': {'default': 10, 'minimum': 1, 'type': 'integer'}, 'page': {'minimum': 1, 'type': 'integer'}}}}
+            {'href': '{+id}', 'method': 'GET', 'rel': 'self'},
+            {'href': '/{resource_id}', 'method': 'GET', 'rel': 'list'},
+            {'href': '/{resource_id}', 'method': 'GET', 'rel': 'context'},
+            {'href': '/?page=1&per_page={per_page}&do_item_count={do_item_count}', 'method': 'GET', 'rel': 'first'},
+            {'href': '/?page={next_page}&per_page={per_page}&do_item_count={do_item_count}', 'method': 'GET', 'rel': 'next'},
+            {'href': '/?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}', 'method': 'GET', 'rel': 'previous'}
         ]
         self.assertEqual(sorted(computed_schema["links"]), sorted(expected_links))

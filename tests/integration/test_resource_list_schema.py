@@ -407,7 +407,7 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
 
         self.assertIn("title", schema_response)
         self.assertIn("type", schema_response)
-        self.assertIn("@id", schema_response)
+        self.assertIn("id", schema_response)
         self.assertIn("properties", schema_response)
 
         self.assertEqual(schema_response["properties"], "property_dict")

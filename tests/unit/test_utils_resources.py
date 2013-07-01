@@ -1,6 +1,8 @@
+from mock import patch
 from unittest import TestCase
+from tornado.web import HTTPError
 from brainiak.prefixes import ROOT_CONTEXT
-from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids, LazyObject
+from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids, LazyObject, validate_pagination_or_raise_404
 
 
 class TestLazyObject(TestCase):
@@ -12,12 +14,24 @@ class TestLazyObject(TestCase):
         lazy.append(2)
         self.assertEqual(1, lazy.pop())
 
+class TestValidatePagination(TestCase):
+
+    @patch('brainiak.utils.resources.valid_pagination', return_value=False)
+    def test_validatePagination_raises(self, mock):
+        self.assertRaises(HTTPError, validate_pagination_or_raise_404, params={'page':0, 'per_page':3}, total_items=10)
+
 
 class TestCaseListInstanceResource(TestCase):
 
     def test_decorate_with_resource_id_successfully(self):
         expected_result = [{u"@id": u"http://a/b", u"resource_id": u"b"}]
         target = [{u"@id": u"http://a/b"}]
+        decorate_with_resource_id(target)
+        self.assertEqual(expected_result, target)
+
+    def test_decorate_with_resource_id_successfully(self):
+        expected_result = [{u"@id": u"http://a/b/", u"resource_id": u"b"}]
+        target = [{u"@id": u"http://a/b/"}]
         decorate_with_resource_id(target)
         self.assertEqual(expected_result, target)
 

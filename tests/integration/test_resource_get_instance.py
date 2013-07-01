@@ -57,8 +57,7 @@ class InstanceQueryTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     allow_triplestore_connection = True
     fixtures_by_graph = {
-        "http://test.com/": ["tests/sample/animalia.n3"],
-        "http://test2.com/": ["tests/sample/animalia.n3"]
+        "http://test.com/": ["tests/sample/animalia.n3"]
     }
 
     maxDiff = None

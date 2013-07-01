@@ -228,7 +228,7 @@ def self_url(query_params):
     """Produce the url for the self link"""
     protocol = query_params['request'].protocol
     host = query_params['request'].host
-    url = query_params["request"].uri
+    url = query_params['request'].uri
     if not host in url:
         url = "{0}://{1}{2}".format(protocol, host, url)
     return url

@@ -240,8 +240,23 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         sorted_computed_items = sorted(computed_items)
         sorted_expected_items = sorted(expected_items)
-        self.assertItemsEqual(sorted_computed_items[0], sorted_expected_items[0])
-        self.assertItemsEqual(sorted_computed_items[1], sorted_expected_items[1])
+        self.assertEqual(sorted_computed_items, sorted_expected_items)
+
+    @patch("brainiak.handlers.logger")
+    def test_multiple_predicates(self, log):
+        response = self.fetch('/tpedia/Person/?o=http://tatipedia.org/JiuJitsu&p1=http://tatipedia.org/isAlive&o1=Yes&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&lang=en', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u'predicate': u'http://tatipedia.org/likes',
+                u'instance_prefix': u'http://tatipedia.org/',
+                u'resource_id': u'john',
+                u'@id': u'http://tatipedia.org/john',
+                u'title': u'John Jones'
+            }
+        ]
+        self.assertItemsEqual(computed_items, expected_items)
 
     @patch("brainiak.handlers.logger")
     def test_json_returns_sortby_per_item(self, log):
@@ -362,6 +377,31 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
+                u'sort_object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
+            }
+        ]
+        self.assertEqual(computed, expected)
+
+    def test_sort_by_multiple_predicates(self):
+        params = {
+            "class_uri": 'http://tatipedia.org/SoccerClub',
+            "p1": "?p",
+            "o1": u'Cruzeiro Esporte Clube',
+            "sort_by": 'http://tatipedia.org/stadium',
+            "sort_order": "asc",
+            "sort_include_empty": "1",
+            "lang": "",
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0",
+        }
+        query = Query(params).to_string()
+        computed = self.query(query)["results"]["bindings"]
+        expected = [
+            {
+                u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
+                u'p': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
                 u'sort_object': {u'type': u'literal', u'value': u'Toca da Raposa'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
             }

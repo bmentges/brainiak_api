@@ -119,7 +119,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
-                u'predicate': [u'http://semantica.globo.com/upper/name', u'http://www.w3.org/2000/01/rdf-schema#label']
+                u'p': [u'http://semantica.globo.com/upper/name', u'http://www.w3.org/2000/01/rdf-schema#label']
             }
         ]
         received_response = json.loads(response.body)
@@ -249,7 +249,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         computed_items = json.loads(response.body)["items"]
         expected_items = [
             {
-                u'predicate': u'http://tatipedia.org/likes',
+                u'p': u'http://tatipedia.org/likes',
                 u'instance_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'john',
                 u'@id': u'http://tatipedia.org/john',
@@ -265,12 +265,41 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         computed_items = json.loads(response.body)["items"]
         expected_items = [
             {
-                u'predicate': u'http://tatipedia.org/likes',
+                u'p': u'http://tatipedia.org/likes',
                 u'p1': 'http://tatipedia.org/isAlive',
                 u'instance_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'john',
                 u'@id': u'http://tatipedia.org/john',
                 u'title': u'John Jones'
+            }
+        ]
+        self.assertItemsEqual(computed_items, expected_items)
+
+    @patch("brainiak.handlers.logger")
+    def test_multiple_unknown_objects(self, log):
+        response = self.fetch('/tpedia/Person/?p=http://tatipedia.org/likes&p1=http://tatipedia.org/isAlive&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&lang=en', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u'@id': u'http://tatipedia.org/john',
+                u'http://tatipedia.org/isAlive': u'Yes',
+                u'http://tatipedia.org/likes': [
+                    u'http://tatipedia.org/JiuJitsu',
+                    u'Aikido'],
+                u'instance_prefix': u'http://tatipedia.org/',
+                u'resource_id': u'john',
+                u'title': u'John Jones'
+            },
+            {
+                u'@id': u'http://tatipedia.org/mary',
+                u'http://tatipedia.org/isAlive': u'No',
+                u'http://tatipedia.org/likes': [
+                    u'http://tatipedia.org/JiuJitsu',
+                    u'http://tatipedia.org/Capoeira'],
+                u'instance_prefix': u'http://tatipedia.org/',
+                u'resource_id': u'mary',
+                u'title': u'Mary Land'
             }
         ]
         self.assertItemsEqual(computed_items, expected_items)

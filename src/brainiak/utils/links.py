@@ -1,7 +1,6 @@
 import urlparse
 from math import ceil
 from urllib import urlencode
-from brainiak.settings import DEFAULT_PER_PAGE
 
 
 def assemble_url(url, params={}):
@@ -124,7 +123,6 @@ def pagination_items(query_params, total_items=None):
 
 def pagination_schema():
     """Json schema part that expresses pagination structure"""
-    #base_url = remove_last_slash(base_url)
     def link(rel, href):
         link_pattern = {
             "href": href,
@@ -141,7 +139,7 @@ def pagination_schema():
             "next_page": {"type": "integer"}
         },
         "links": [
-            link('first', '/?page=1&per_page={per_page}'),
+            link('first', '/?page=1&per_page={per_page}&do_item_count={do_item_count}'),
             link('next', '/?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
             link('previous', '/?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}')
         ]

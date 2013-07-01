@@ -38,8 +38,6 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     href = assemble_url(base_url, {"class_prefix": query_params["class_prefix"]})
     add_link(links, "collection", href)
 
-    #expand_object_properties_links(links, context)
-
     schema = {
         "type": "object",
         "id": short_uri,
@@ -54,16 +52,6 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
         schema["description"] = comment
 
     return schema
-
-
-def expand_object_properties_links(links, context):
-    "Add object-properties links that define how to retrieve reference fields"
-    for property_name, uri in context.object_properties.items():
-        if (not "://" in uri) and (':' in uri):
-            parts = dict(zip(('ctx', 'klass'), uri.split(':')))
-            add_link(links, property_name, "/{ctx}/{klass}".format(**parts))
-        else:
-            add_link(links, property_name, uri)
 
 
 QUERY_CLASS_SCHEMA = """

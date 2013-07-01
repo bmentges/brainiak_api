@@ -71,10 +71,7 @@ class Query(object):
             ("a", "<%(class_uri)s>"),
             ("rdfs:label", "?label")
         ]
-        # *****
         for predicate, object_ in self.po_tuples:
-            #predicate = self.params.get("p", "?p")
-            #object_ = self.params.get("o", "?o")
             if self.should_add_predicate_and_object(predicate, object_):
                 predicate = normalize_term(predicate, self.params["lang"])
                 object_ = normalize_term(object_, self.params["lang"])
@@ -151,10 +148,7 @@ class Query(object):
     def variables(self):
         items = ["?label", "?subject"]
 
-        # *****
         for predicate, object_ in self.po_tuples:
-            #predicate = self.params.get("p", "?p")
-            #object_ = self.params.get("o", "?o")
             if self.should_add_predicate_and_object(predicate, object_):
                 if predicate.startswith("?"):
                     items.append(predicate)

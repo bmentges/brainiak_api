@@ -230,9 +230,11 @@ def filter_instances(query_params):
         "label": "title",
         "subject": "@id",
         "sort_object": shorten_uri(query_params["sort_by"]),
-        "p": "predicate",
-        "o": shorten_uri(query_params.get("p", "?predicate")),
+        #"o": shorten_uri(query_params.get("p", "?predicate")),
     }
+    for p, o in extract_po_tuples(query_params):
+        keymap[o[1:]] = shorten_uri(p)
+
     result_dict = query_filter_instances(query_params)
     if not result_dict or not result_dict['results']['bindings']:
         return None

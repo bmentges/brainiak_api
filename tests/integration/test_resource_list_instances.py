@@ -259,6 +259,23 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertItemsEqual(computed_items, expected_items)
 
     @patch("brainiak.handlers.logger")
+    def test_multiple_unknown_predicates(self, log):
+        response = self.fetch('/tpedia/Person/?o=http://tatipedia.org/JiuJitsu&o1=Yes&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&lang=en', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u'predicate': u'http://tatipedia.org/likes',
+                u'p1': 'http://tatipedia.org/isAlive',
+                u'instance_prefix': u'http://tatipedia.org/',
+                u'resource_id': u'john',
+                u'@id': u'http://tatipedia.org/john',
+                u'title': u'John Jones'
+            }
+        ]
+        self.assertItemsEqual(computed_items, expected_items)
+
+    @patch("brainiak.handlers.logger")
     def test_json_returns_sortby_per_item(self, log):
         response = self.fetch('/tpedia/Person/?sort_by=dbpedia:nickname&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/', method='GET')
         self.assertEqual(response.code, 200)

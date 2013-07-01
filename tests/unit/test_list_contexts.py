@@ -53,7 +53,7 @@ class GetContextTestCase(unittest.TestCase):
 
     def test_list_contexts(self):
         param_dict = {"per_page": "30", "page": "0"}
-        base_url = "http://api.semantica.dev.globoi.com/ctx"
+        base_url = "http://api.semantica.dev.globoi.com"
         handler = MockHandler(uri=base_url)
         params = ParamDict(handler, **param_dict)
         computed = list_all_contexts(params)
@@ -65,7 +65,7 @@ class GetContextTestCase(unittest.TestCase):
         self.assertEqual(computed["items"], expected_items)
 
     def test_with_item_count(self):
-        base_url = "http://api.semantica.dev.globoi.com/ctx"
+        base_url = "http://api.semantica.dev.globoi.com"
         param_dict = {"do_item_count": "1", "per_page": "30", "page": "0"}
         handler = MockHandler(uri=base_url)
         params = ParamDict(handler, **param_dict)
@@ -73,7 +73,7 @@ class GetContextTestCase(unittest.TestCase):
         self.assertEqual(int(computed["item_count"]), 1)
 
     def test_without_item_count(self):
-        base_url = "http://api.semantica.dev.globoi.com/ctx"
+        base_url = "http://api.semantica.dev.globoi.com"
         param_dict = {"do_item_count": "0", "per_page": "30", "page": "0"}
         handler = MockHandler(uri=base_url)
         params = ParamDict(handler, **param_dict)
@@ -106,3 +106,11 @@ class GetContextTestCase(unittest.TestCase):
              'resource_id': 'dbpedia'}
         ]
         self.assertEqual(computed, expected)
+
+    @patch('brainiak.root.get.split_into_chunks', return_value=[])
+    def test_no_context_found_raise_404(self, mock1):
+        param_dict = {"per_page": "3", "page": "1"}
+        base_url = "http://api.semantica.dev.globoi.com"
+        handler = MockHandler(uri=base_url)
+        params = ParamDict(handler, **param_dict)
+        self.assertRaises(HTTPError, list_all_contexts, params)

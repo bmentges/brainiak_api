@@ -118,6 +118,74 @@ class ListQueryTestCase(unittest.TestCase):
         """
         self.assertEqual(strip(computed), strip(expected))
 
+    def test_query_with_p1_and_o1(self):
+        params = self.default_params.copy()
+        params["p1"] = "some:predicate"
+        params["o1"] = "some:object"
+        query = Query(params)
+        computed = query.to_string()
+        expected = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT DISTINCT ?label, ?subject
+        WHERE {
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+                     rdfs:label ?label ;
+                     some:predicate some:object .
+                     }
+            FILTER(?g = <http://some.graph/>) .
+        }
+
+        LIMIT 10
+        OFFSET 0
+        """
+        self.assertEqual(strip(computed), strip(expected))
+
+    def test_query_with_p1_o1_p2_o2(self):
+        params = self.default_params.copy()
+        params["p1"] = "some:predicate"
+        params["o1"] = "some:object"
+        params["p2"] = "another:predicate"
+        params["o2"] = "?another_object"
+        query = Query(params)
+        computed = query.to_string()
+        expected = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT DISTINCT ?another_object, ?label, ?subject
+        WHERE {
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+                     rdfs:label ?label ;
+                     another:predicate ?another_object ;
+                     some:predicate some:object .
+                     }
+            FILTER(?g = <http://some.graph/>) .
+        }
+
+        LIMIT 10
+        OFFSET 0
+        """
+        self.assertEqual(strip(computed), strip(expected))
+
+    def test_query_with_p3_o3(self):
+        params = self.default_params.copy()
+        params["p3"] = "?any_predicate"
+        params["o3"] = "?any_object"
+        query = Query(params)
+        computed = query.to_string()
+        expected = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT DISTINCT ?label, ?subject
+        WHERE {
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+                     rdfs:label ?label .
+                     }
+            FILTER(?g = <http://some.graph/>) .
+        }
+
+        LIMIT 10
+        OFFSET 0
+        """
+        self.assertEqual(strip(computed), strip(expected))
+
     def test_query_with_pagination(self):
         params = self.default_params.copy()
         params["per_page"] = "15"

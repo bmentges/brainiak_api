@@ -2,10 +2,10 @@
 from brainiak.utils.links import merge_schemas, pagination_schema
 
 
-def schema():
+def schema(context_name):
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
-        "title": "Context List Schema",
+        "title": "Class List Schema",
         "type": "object",
         "required": ["items"],
         "properties": {
@@ -24,14 +24,14 @@ def schema():
                     },
                     "links": [
                         {
-                            "href": "/{resource_id}",
+                            "href": "/{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(context_name),
                             "method": "GET",
                             "rel": "list"
                         },
                         {
-                            "href": "/{resource_id}",
+                            "href": "/{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(context_name),
                             "method": "GET",
-                            "rel": "context"
+                            "rel": "collection"
                         }
                     ]
                 }
@@ -46,5 +46,5 @@ def schema():
         ]
     }
 
-    merge_schemas(base, pagination_schema('/'))
+    merge_schemas(base, pagination_schema('/{0}/'.format(context_name)))
     return base

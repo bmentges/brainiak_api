@@ -16,8 +16,6 @@ class TestRootJsonSchema(unittest.TestCase):
         computed_schema = root_schema()
         expected_links = [
             {'href': '{+id}', 'method': 'GET', 'rel': 'self'},
-            {'href': '/{resource_id}', 'method': 'GET', 'rel': 'list'},
-            {'href': '/{resource_id}', 'method': 'GET', 'rel': 'context'},
             {'href': '/?page=1&per_page={per_page}&do_item_count={do_item_count}', 'method': 'GET', 'rel': 'first'},
             {'href': '/?page={next_page}&per_page={per_page}&do_item_count={do_item_count}', 'method': 'GET', 'rel': 'next'},
             {'href': '/?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}', 'method': 'GET', 'rel': 'previous'}

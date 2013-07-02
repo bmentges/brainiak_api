@@ -3,6 +3,13 @@ from math import ceil
 from urllib import urlencode
 
 
+def set_content_type_profile(handler, query_params):
+    """Set header Content-Type + profile pointing to URL of the json-schema"""
+    schema_url = build_schema_url(query_params)
+    content_type = "application/json; profile={0}".format(schema_url)
+    handler.set_header("Content-Type", content_type)
+
+
 def assemble_url(url, params={}):
     url_parse = urlparse.urlparse(url)
 
@@ -121,7 +128,7 @@ def pagination_items(query_params, total_items=None):
     return result
 
 
-def pagination_schema():
+def pagination_schema(root_url):
     """Json schema part that expresses pagination structure"""
     def link(rel, href):
         link_pattern = {
@@ -139,9 +146,9 @@ def pagination_schema():
             "next_page": {"type": "integer"}
         },
         "links": [
-            link('first', '/?page=1&per_page={per_page}&do_item_count={do_item_count}'),
-            link('next', '/?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
-            link('previous', '/?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}')
+            link('first', root_url + '?page=1&per_page={per_page}&do_item_count={do_item_count}'),
+            link('next', root_url +  '?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
+            link('previous', root_url +  '?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}')
         ]
     }
     return result

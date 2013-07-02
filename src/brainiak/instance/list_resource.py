@@ -4,7 +4,7 @@ from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import build_class_url, build_schema_url, collection_links, add_link, filter_query_string_by_key_prefix, remove_last_slash, self_link, last_link
 from brainiak.utils.resources import decorate_with_resource_id, validate_pagination_or_raise_404
-from brainiak.utils.sparql import compress_keys_and_values, normalize_term, calculate_offset, get_one_value
+from brainiak.utils.sparql import calculate_offset, compress_keys_and_values, extract_po_tuples, get_one_value, normalize_term
 
 
 class Query(object):
@@ -62,18 +62,20 @@ class Query(object):
         return not generic_po and not rdfs_repetition
 
     @property
+    def po_tuples(self):
+        return extract_po_tuples(self.params)
+
+    @property
     def triples(self):
         tuples = [
             ("a", "<%(class_uri)s>"),
             ("rdfs:label", "?label")
         ]
-
-        predicate = self.params["p"]
-        object_ = self.params["o"]
-        if self.should_add_predicate_and_object(predicate, object_):
-            predicate = normalize_term(predicate, self.params["lang"])
-            object_ = normalize_term(object_, self.params["lang"])
-            tuples.append((predicate, object_))
+        for predicate, object_ in self.po_tuples:
+            if self.should_add_predicate_and_object(predicate, object_):
+                predicate = normalize_term(predicate, self.params["lang"])
+                object_ = normalize_term(object_, self.params["lang"])
+                tuples.append((predicate, object_))
 
         sort_object = self.get_sort_variable()
         sort_sufix = ""
@@ -116,24 +118,18 @@ class Query(object):
 
     def get_sort_variable(self):
         sort_predicate = self.params["sort_by"]
+        sort_label = ""
         if sort_predicate:
             sort_predicate = shorten_uri(sort_predicate) if not sort_predicate.startswith("?") else sort_predicate
-
-            predicate = self.params["p"]
-            predicate = shorten_uri(predicate) if not predicate.startswith("?") else predicate
-
-            object_ = self.params["o"]
-
-            sort_label = "?sort_object"
             if (sort_predicate == "rdfs:label"):
                 sort_label = "?label"
-            elif (sort_predicate == predicate) and object_.startswith("?"):
-                sort_label = object_
-            elif (sort_predicate == predicate) and not object_.startswith("?"):
-                sort_label = ""
-        else:
-            sort_label = ""
-
+            else:
+                for predicate, object_ in self.po_tuples:
+                    if (sort_predicate == predicate) and object_.startswith("?"):
+                        sort_label = object_
+                        break
+                if not sort_label:
+                    sort_label = "?sort_object"
         return sort_label
 
     @property
@@ -152,13 +148,12 @@ class Query(object):
     def variables(self):
         items = ["?label", "?subject"]
 
-        predicate = self.params["p"]
-        object_ = self.params["o"]
-        if self.should_add_predicate_and_object(predicate, object_):
-            if predicate.startswith("?"):
-                items.append(predicate)
-            elif object_.startswith("?"):
-                items.append(object_)
+        for predicate, object_ in self.po_tuples:
+            if self.should_add_predicate_and_object(predicate, object_):
+                if predicate.startswith("?"):
+                    items.append(predicate)
+                elif object_.startswith("?"):
+                    items.append(object_)
 
         sort_variable = self.get_sort_variable()
         if sort_variable:
@@ -235,8 +230,11 @@ def filter_instances(query_params):
         "label": "title",
         "subject": "@id",
         "sort_object": shorten_uri(query_params["sort_by"]),
-        "object": shorten_uri(query_params["p"]),
+        #"o": shorten_uri(query_params.get("p", "?predicate")),
     }
+    for p, o in extract_po_tuples(query_params):
+        keymap[o[1:]] = shorten_uri(p)
+
     result_dict = query_filter_instances(query_params)
     if not result_dict or not result_dict['results']['bindings']:
         return None

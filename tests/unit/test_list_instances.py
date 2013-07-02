@@ -1,7 +1,7 @@
 import unittest
 
 from brainiak.instance.list_resource import Query, merge_by_id, build_json
-from brainiak.utils.params import FILTER_PARAMS, LIST_PARAMS, ParamDict
+from brainiak.utils.params import LIST_PARAMS, ParamDict
 from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip
 
@@ -101,6 +101,74 @@ class ListQueryTestCase(unittest.TestCase):
 
     def test_query_without_extras(self):
         params = self.default_params
+        query = Query(params)
+        computed = query.to_string()
+        expected = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT DISTINCT ?label, ?subject
+        WHERE {
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+                     rdfs:label ?label .
+                     }
+            FILTER(?g = <http://some.graph/>) .
+        }
+
+        LIMIT 10
+        OFFSET 0
+        """
+        self.assertEqual(strip(computed), strip(expected))
+
+    def test_query_with_p1_and_o1(self):
+        params = self.default_params.copy()
+        params["p1"] = "some:predicate"
+        params["o1"] = "some:object"
+        query = Query(params)
+        computed = query.to_string()
+        expected = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT DISTINCT ?label, ?subject
+        WHERE {
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+                     rdfs:label ?label ;
+                     some:predicate some:object .
+                     }
+            FILTER(?g = <http://some.graph/>) .
+        }
+
+        LIMIT 10
+        OFFSET 0
+        """
+        self.assertEqual(strip(computed), strip(expected))
+
+    def test_query_with_p1_o1_p2_o2(self):
+        params = self.default_params.copy()
+        params["p1"] = "some:predicate"
+        params["o1"] = "some:object"
+        params["p2"] = "another:predicate"
+        params["o2"] = "?another_object"
+        query = Query(params)
+        computed = query.to_string()
+        expected = """
+        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        SELECT DISTINCT ?another_object, ?label, ?subject
+        WHERE {
+            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+                     rdfs:label ?label ;
+                     another:predicate ?another_object ;
+                     some:predicate some:object .
+                     }
+            FILTER(?g = <http://some.graph/>) .
+        }
+
+        LIMIT 10
+        OFFSET 0
+        """
+        self.assertEqual(strip(computed), strip(expected))
+
+    def test_query_with_p3_o3(self):
+        params = self.default_params.copy()
+        params["p3"] = "?any_predicate"
+        params["o3"] = "?any_object"
         query = Query(params)
         computed = query.to_string()
         expected = """
@@ -369,7 +437,7 @@ class BuildJSONTestCase(unittest.TestCase):
         params = ParamDict(handler,
                            context_name="zoo",
                            class_name="Lion",
-                           **(LIST_PARAMS + FILTER_PARAMS))
+                           **(LIST_PARAMS))
         items = []
 
         something = build_json(items, params)
@@ -418,7 +486,7 @@ class BuildJSONTestCase(unittest.TestCase):
         params = ParamDict(handler,
                            context_name="zoo",
                            class_name="Lion",
-                           **(LIST_PARAMS + FILTER_PARAMS))
+                           **(LIST_PARAMS))
         items = []
 
         something = build_json(items, params)

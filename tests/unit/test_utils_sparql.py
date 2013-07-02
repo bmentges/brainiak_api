@@ -498,31 +498,31 @@ class POTestCase(unittest.TestCase):
     def test_extract_po_tuples_p(self):
         params = {"p": "some:predicate"}
         response = extract_po_tuples(params)
-        expected = [('some:predicate', '?o')]
+        expected = [('some:predicate', '?o', '')]
         self.assertEqual(response, expected)
 
     def test_extract_po_tuples_o(self):
         params = {"o": "Nina"}
         response = extract_po_tuples(params)
-        expected = [('?p', 'Nina')]
+        expected = [('?p', 'Nina', '')]
         self.assertEqual(response, expected)
 
     def test_extract_po_tuples_p_o(self):
         params = {"o": "Nina", "p": "canidae:hasDog"}
         response = extract_po_tuples(params)
-        expected = [('canidae:hasDog', 'Nina')]
+        expected = [('canidae:hasDog', 'Nina', '')]
         self.assertEqual(response, expected)
 
     def test_extract_po_tuples_o_o1_o2_o3(self):
         params = {"o": "0", "o1": "1", "o2": "2", "o3": "?o3"}
         response = extract_po_tuples(params)
-        expected = [('?p', '0'), ('?p1', '1'), ('?p2', '2'), ('?p3', '?o3')]
+        expected = [('?p', '0', ''), ('?p1', '1', '1'), ('?p2', '2', '2'), ('?p3', '?o3', '3')]
         self.assertEqual(response, expected)
 
     def test_extract_po_tuples_complex_case(self):
         params = {"o": "0", "o1": "1", "p2": "predicate2", "p4": "predicate4", "p5": "predicate5", "o5": "object5"}
         response = extract_po_tuples(params)
-        expected = [('?p', '0'), ('?p1', '1'), ('predicate2', '?o2'), ('predicate4', '?o4'), ('predicate5', 'object5')]
+        expected = [('?p', '0', ''), ('?p1', '1', '1'), ('predicate2', '?o2', '2'), ('predicate4', '?o4', '4'), ('predicate5', 'object5', '5')]
         self.assertEqual(response, expected)
 
     def test_extract_po_invalid_params(self):

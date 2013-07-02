@@ -119,7 +119,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
-                u'predicate': [u'http://semantica.globo.com/upper/name', u'http://www.w3.org/2000/01/rdf-schema#label']
+                u'p': [u'http://semantica.globo.com/upper/name', u'http://www.w3.org/2000/01/rdf-schema#label']
             }
         ]
         received_response = json.loads(response.body)
@@ -240,8 +240,69 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         sorted_computed_items = sorted(computed_items)
         sorted_expected_items = sorted(expected_items)
-        self.assertItemsEqual(sorted_computed_items[0], sorted_expected_items[0])
-        self.assertItemsEqual(sorted_computed_items[1], sorted_expected_items[1])
+        self.assertEqual(sorted_computed_items, sorted_expected_items)
+
+    @patch("brainiak.handlers.logger")
+    def test_multiple_predicates(self, log):
+        response = self.fetch('/tpedia/Person/?o=http://tatipedia.org/JiuJitsu&p1=http://tatipedia.org/isAlive&o1=Yes&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&lang=en', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u'p': u'http://tatipedia.org/likes',
+                u'instance_prefix': u'http://tatipedia.org/',
+                u'resource_id': u'john',
+                u'@id': u'http://tatipedia.org/john',
+                u'title': u'John Jones'
+            }
+        ]
+        self.assertItemsEqual(computed_items, expected_items)
+
+    @patch("brainiak.handlers.logger")
+    def test_multiple_unknown_predicates(self, log):
+        response = self.fetch('/tpedia/Person/?o=http://tatipedia.org/JiuJitsu&o1=Yes&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&lang=en', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u'p': u'http://tatipedia.org/likes',
+                u'p1': 'http://tatipedia.org/isAlive',
+                u'instance_prefix': u'http://tatipedia.org/',
+                u'resource_id': u'john',
+                u'@id': u'http://tatipedia.org/john',
+                u'title': u'John Jones'
+            }
+        ]
+        self.assertItemsEqual(computed_items, expected_items)
+
+    @patch("brainiak.handlers.logger")
+    def test_multiple_unknown_objects(self, log):
+        response = self.fetch('/tpedia/Person/?p=http://tatipedia.org/likes&p1=http://tatipedia.org/isAlive&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&lang=en', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                u'@id': u'http://tatipedia.org/john',
+                u'http://tatipedia.org/isAlive': u'Yes',
+                u'http://tatipedia.org/likes': [
+                    u'http://tatipedia.org/JiuJitsu',
+                    u'Aikido'],
+                u'instance_prefix': u'http://tatipedia.org/',
+                u'resource_id': u'john',
+                u'title': u'John Jones'
+            },
+            {
+                u'@id': u'http://tatipedia.org/mary',
+                u'http://tatipedia.org/isAlive': u'No',
+                u'http://tatipedia.org/likes': [
+                    u'http://tatipedia.org/JiuJitsu',
+                    u'http://tatipedia.org/Capoeira'],
+                u'instance_prefix': u'http://tatipedia.org/',
+                u'resource_id': u'mary',
+                u'title': u'Mary Land'
+            }
+        ]
+        self.assertItemsEqual(computed_items, expected_items)
 
     @patch("brainiak.handlers.logger")
     def test_json_returns_sortby_per_item(self, log):
@@ -338,8 +399,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     def test_sort_by(self):
         params = {
             "class_uri": 'http://tatipedia.org/SoccerClub',
-            "p": "?predicate",
-            "o": "?object",
+            "p": "?p",
+            "o": "?o",
             "sort_by": 'http://tatipedia.org/stadium',
             "sort_order": "asc",
             "sort_include_empty": "1",
@@ -368,11 +429,36 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         ]
         self.assertEqual(computed, expected)
 
+    def test_sort_by_multiple_predicates(self):
+        params = {
+            "class_uri": 'http://tatipedia.org/SoccerClub',
+            "p1": "?p",
+            "o1": u'Cruzeiro Esporte Clube',
+            "sort_by": 'http://tatipedia.org/stadium',
+            "sort_order": "asc",
+            "sort_include_empty": "1",
+            "lang": "",
+            "graph_uri": self.graph_uri,
+            "per_page": "10",
+            "page": "0",
+        }
+        query = Query(params).to_string()
+        computed = self.query(query)["results"]["bindings"]
+        expected = [
+            {
+                u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
+                u'p': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                u'sort_object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
+            }
+        ]
+        self.assertEqual(computed, expected)
+
     def test_sort_by_exclude_empty_values(self):
         params = {
             "class_uri": 'http://tatipedia.org/SoccerClub',
-            "p": "?predicate",
-            "o": "?object",
+            "p": "?p",
+            "o": "?o",
             "sort_by": 'http://tatipedia.org/stadium',
             "sort_order": "asc",
             "sort_include_empty": "0",
@@ -401,7 +487,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         params = {
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": 'http://tatipedia.org/stadium',
-            "o": '?object',
+            "o": '?o',
             "sort_by": "http://tatipedia.org/stadium",
             "sort_order": "asc",
             "lang": "",
@@ -409,18 +495,17 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
         }
-
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
         expected = [
             {
                 u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
-                u'object': {u'type': u'literal', u'value': u'Morumbi'},
+                u'o': {u'type': u'literal', u'value': u'Morumbi'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
-                u'object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'o': {u'type': u'literal', u'value': u'Toca da Raposa'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
             }
         ]
@@ -430,7 +515,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         params = {
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": 'http://tatipedia.org/stadium',
-            "o": '?object',
+            "o": '?o',
             "sort_by": "rdfs:label",
             "sort_order": "asc",
             "lang": "",
@@ -443,12 +528,12 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         expected = [
             {
                 u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
-                u'object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'o': {u'type': u'literal', u'value': u'Toca da Raposa'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'S\xe3o Paulo Futebol Clube'},
-                u'object': {u'type': u'literal', u'value': u'Morumbi'},
+                u'o': {u'type': u'literal', u'value': u'Morumbi'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/SPFC'}
             }
         ]
@@ -493,7 +578,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_object(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "p": "?predicate",
+            "p": "?p",
             "o": "http://tatipedia.org/BungeeJump",
             "graph_uri": self.graph_uri,
             "lang": "",
@@ -506,8 +591,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
         expected = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'},
                      u'label': {u'type': u'literal', u'value': u'Mary Land'},
-                     u'predicate': {u'type': u'uri', u'value': u'http://tatipedia.org/dislikes'}}]
-
+                     u'p': {u'type': u'uri', u'value': u'http://tatipedia.org/dislikes'}}]
         self.assertEqual(computed, expected)
 
     def test_instance_filter_query_by_predicate(self):
@@ -518,14 +602,14 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
             "p": "http://tatipedia.org/dislikes",
-            "o": "?object",
+            "o": "?o",
             "sort_by": "",
         }
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
         expected = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'},
                      u'label': {u'type': u'literal', u'value': u'Mary Land'},
-                     u'object': {u'type': u'uri', u'value': u'http://tatipedia.org/BungeeJump'}}]
+                     u'o': {u'type': u'uri', u'value': u'http://tatipedia.org/BungeeJump'}}]
 
         self.assertEqual(computed, expected)
 
@@ -537,7 +621,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
             "p": "http://tatipedia.org/likes",
-            "o": "?object",
+            "o": "?o",
             "sort_by": ""
         }
         query = Query(params).to_string()
@@ -545,22 +629,22 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         expected = [
             {
                 u'label': {u'type': u'literal', u'value': u'Mary Land'},
-                u'object': {u'type': u'uri', u'value': u'http://tatipedia.org/JiuJitsu'},
+                u'o': {u'type': u'uri', u'value': u'http://tatipedia.org/JiuJitsu'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'John Jones'},
-                u'object': {u'type': u'uri', u'value': u'http://tatipedia.org/JiuJitsu'},
+                u'o': {u'type': u'uri', u'value': u'http://tatipedia.org/JiuJitsu'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'Mary Land'},
-                u'object': {u'type': u'uri', u'value': u'http://tatipedia.org/Capoeira'},
+                u'o': {u'type': u'uri', u'value': u'http://tatipedia.org/Capoeira'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'}
             },
             {
                 u'label': {u'type': u'literal', u'value': u'John Jones'},
-                u'object': {u'type': u'literal', u'value': u'Aikido'},
+                u'o': {u'type': u'literal', u'value': u'Aikido'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'}
             }
         ]
@@ -570,7 +654,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     def test_instance_filter_query_by_object_represented_as_string(self):
         params = {
             "class_uri": "http://tatipedia.org/Person",
-            "p": "?predicate",
+            "p": "?p",
             "o": "Aikido",
             "lang": "",
             "graph_uri": self.graph_uri,
@@ -583,7 +667,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         computed = self.query(query)["results"]["bindings"]
         expected = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'},
                      u'label': {u'type': u'literal', u'value': u'John Jones'},
-                     u'predicate': {u'type': u'uri', u'value': u'http://tatipedia.org/likes'}
+                     u'p': {u'type': u'uri', u'value': u'http://tatipedia.org/likes'}
                      }]
 
         self.assertEqual(computed, expected)
@@ -591,7 +675,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     # def test_instance_filter_in_inexistent_graph(self):
     #     params = {
     #         "class_uri": "http://tatipedia.org/test/Person",
-    #         "p": "?predicate",
+    #         "p": "?p",
     #         "o": "Aikido",
     #         "lang_filter": "",
     #         "graph_uri": "http://neverland.com/",

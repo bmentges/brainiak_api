@@ -19,14 +19,16 @@ tpedia:john a tpedia:Person ;
             rdfs:label "John Jones" ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:likes "Aikido" ;
-            dbpedia:nickname "JJ" .
+            dbpedia:nickname "JJ" ;
+            tpedia:isAlive "Yes"@en .
 
 tpedia:mary a tpedia:Person ;
             rdfs:label "Mary Land" ;
             tpedia:likes tpedia:Capoeira ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:dislikes tpedia:BungeeJump ;
-            dbpedia:nickname "ML" .
+            dbpedia:nickname "ML" ;
+            tpedia:isAlive "No"@en .
 
 tpedia:new_york a tpedia:Place ;
                 rdfs:label "Nova Iorque"@pt ;

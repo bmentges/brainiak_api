@@ -28,7 +28,7 @@ from brainiak.prefix.list_resource import list_prefixes
 from brainiak.root.get import list_all_contexts
 from brainiak.schema import resource as schema_resource
 from brainiak.utils import cache
-from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
+from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
 from brainiak.utils.links import build_schema_url
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.resources import check_messages_when_port_is_mentioned
@@ -344,13 +344,12 @@ class CollectionHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-        valid_params = LIST_PARAMS + FILTER_PARAMS + CLASS_PARAMS
+        valid_params = LIST_PARAMS + CLASS_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
                                           **valid_params)
-
         response = filter_instances(self.query_params)
 
         self.finalize(response)
@@ -405,10 +404,10 @@ class CollectionHandler(BrainiakRequestHandler):
         if response is None:
             # TODO separate filter message logic (e.g. if response is None and ("p" in self.query_params or "o" in self.query_params))
             filter_message = []
-            if self.query_params['p'] != "?predicate":
-                filter_message.append(" with predicate={0} ".format(self.query_params['p']))
-            if self.query_params['o'] != "?object":
-                filter_message.append(" with object={0} ".format(self.query_params['o']))
+            if self.query_params.get('p') != "?p":
+                filter_message.append(" with predicate={0} ".format(self.query_params.get('p')))
+            if self.query_params.get('o') != "?o":
+                filter_message.append(" with object={0} ".format(self.query_params.get('o')))
             self.query_params["filter_message"] = "".join(filter_message)
             msg = "Instances of class ({class_uri}) in graph ({graph_uri}) {filter_message} were not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))

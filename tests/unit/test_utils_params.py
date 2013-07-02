@@ -39,6 +39,14 @@ class ParamsTestCase(TestCase):
         param_dict = params.ParamDict(handler, page="1", per_page="2")
         self.assertEqual(param_dict.arguments, {"page": "1", "per_page": "2"})
 
+    def test_arguments_o_o1_o2_o3(self):
+        handler = MockHandler(querystring="o=0&o1=1&o2=2&o3=3")
+        param_dict = params.ParamDict(handler)
+        self.assertEqual(param_dict.arguments['o'], '0')
+        self.assertEqual(param_dict.arguments['o1'], '1')
+        self.assertEqual(param_dict.arguments['o2'], '2')
+        self.assertEqual(param_dict.arguments['o3'], '3')
+
     def test_root_context(self):
         handler = MockHandler()
         params = ParamDict(handler, context_name=ROOT_CONTEXT)

@@ -71,7 +71,7 @@ class Query(object):
             ("a", "<%(class_uri)s>"),
             ("rdfs:label", "?label")
         ]
-        for predicate, object_ in self.po_tuples:
+        for predicate, object_, index in self.po_tuples:
             if self.should_add_predicate_and_object(predicate, object_):
                 predicate = normalize_term(predicate, self.params["lang"])
                 object_ = normalize_term(object_, self.params["lang"])
@@ -124,7 +124,7 @@ class Query(object):
             if (sort_predicate == "rdfs:label"):
                 sort_label = "?label"
             else:
-                for predicate, object_ in self.po_tuples:
+                for predicate, object_, index in self.po_tuples:
                     if (sort_predicate == predicate) and object_.startswith("?"):
                         sort_label = object_
                         break
@@ -148,7 +148,7 @@ class Query(object):
     def variables(self):
         items = ["?label", "?subject"]
 
-        for predicate, object_ in self.po_tuples:
+        for predicate, object_, index in self.po_tuples:
             if self.should_add_predicate_and_object(predicate, object_):
                 if predicate.startswith("?"):
                     items.append(predicate)
@@ -232,7 +232,7 @@ def filter_instances(query_params):
         "sort_object": shorten_uri(query_params["sort_by"]),
         #"o": shorten_uri(query_params.get("p", "?predicate")),
     }
-    for p, o in extract_po_tuples(query_params):
+    for p, o, index in extract_po_tuples(query_params):
         keymap[o[1:]] = shorten_uri(p)
 
     result_dict = query_filter_instances(query_params)

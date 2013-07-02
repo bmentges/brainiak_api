@@ -30,8 +30,8 @@ from brainiak.schema import resource as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
 from brainiak.utils.links import build_schema_url
-from brainiak.utils.resources import LazyObject
-from brainiak.utils.resources import check_messages_when_port_is_mentioned
+from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
+from brainiak.utils.sparql import extract_po_tuples
 from brainiak.event_bus import NotificationFailure
 
 
@@ -404,12 +404,17 @@ class CollectionHandler(BrainiakRequestHandler):
         if response is None:
             # TODO separate filter message logic (e.g. if response is None and ("p" in self.query_params or "o" in self.query_params))
             filter_message = []
-            if self.query_params.get('p') != "?p":
-                filter_message.append(" with predicate={0} ".format(self.query_params.get('p')))
-            if self.query_params.get('o') != "?o":
-                filter_message.append(" with object={0} ".format(self.query_params.get('o')))
+            po_tuples = extract_po_tuples(self.query_params)
+            sorted_po_tuples = sorted(po_tuples, key=lambda po: po[2])
+            for (p, o, index) in sorted_po_tuples:
+                if not index:
+                    index = ''
+                if not p.startswith("?"):
+                    filter_message.append(" with p{0}=({1})".format(index, p))
+                if not o.startswith("?"):
+                    filter_message.append(" with o{0}=({1})".format(index, o))
             self.query_params["filter_message"] = "".join(filter_message)
-            msg = "Instances of class ({class_uri}) in graph ({graph_uri}) {filter_message} were not found."
+            msg = "Instances of class ({class_uri}) in graph ({graph_uri}){filter_message} and in language=({lang}) were not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)

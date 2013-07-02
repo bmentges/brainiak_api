@@ -55,18 +55,21 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        default_graph = {u'resource_id': u'upper', u'@id': u'http://semantica.globo.com/upper/', u'title': u'upper'}
-
         self.assertIn("items", body.keys())
-        self.assertIn(default_graph, body['items'])
 
-    def test_root_context(self):
-        response = self.fetch("/", method='GET')
-        self.assertEqual(response.code, 200)
-        body = json.loads(response.body)
+        upper_graph = {u'resource_id': u'upper', u'@id': u'http://semantica.globo.com/upper/', u'title': u'upper'}
+        self.assertIn(upper_graph, body['items'])
+
         default_graph = {u'resource_id': ROOT_CONTEXT, u'@id': u'http://semantica.globo.com/', u'title': ROOT_CONTEXT}
-        self.assertIn("items", body.keys())
         self.assertIn(default_graph, body['items'])
+
+        keys = body.keys()
+        self.assertIn('next_page', keys)
+        self.assertIn('page', keys)
+        self.assertIn('do_item_count', keys)
+        self.assertIn('page', keys)
+        self.assertIn('id', keys)
+
 
     def test_200_with_pagination(self):
         # disclaimer: this test assumes there are > 2 non-empty registered graphs in Virtuoso

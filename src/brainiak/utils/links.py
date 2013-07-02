@@ -147,8 +147,8 @@ def pagination_schema(root_url):
         },
         "links": [
             link('first', root_url + '?page=1&per_page={per_page}&do_item_count={do_item_count}'),
-            link('next', root_url +  '?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
-            link('previous', root_url +  '?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}')
+            link('next', root_url + '?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
+            link('previous', root_url + '?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}')
         ]
     }
     return result

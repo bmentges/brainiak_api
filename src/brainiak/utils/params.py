@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import re
 import urlparse
 
 from urllib import urlencode
 from copy import copy
 from brainiak import settings
 from brainiak.prefixes import safe_slug_to_prefix
+from brainiak.utils.sparql import PATTERN_O, PATTERN_P
 
 
 class InvalidParam(Exception):
@@ -29,8 +31,6 @@ def optionals(*args):
 NON_ARGUMENT_PARAMS = ('context_name', 'class_name', 'instance_id')
 
 CACHE_PARAMS = DefaultParamsDict(purge="0")
-
-FILTER_PARAMS = DefaultParamsDict(p="?predicate", o="?object")
 
 LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
                                 per_page=settings.DEFAULT_PER_PAGE,
@@ -62,9 +62,18 @@ VALID_PARAMS = ('lang',
                 'instance_id', 'instance_prefix', 'instance_uri',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
-                'p', 'o',
                 'purge',
                 'do_item_count')
+
+
+VALID_PATTERNS = (
+    PATTERN_P,
+    PATTERN_O
+)
+
+
+def matches_pattern(key):
+    return any([pattern.match(key) for pattern in VALID_PATTERNS])
 
 
 class ParamDict(dict):
@@ -96,6 +105,17 @@ class ParamDict(dict):
                     # the value None is used as a flag to avoid override the default value
                     self[key] = self.optionals[key]
                 del kw[key]  # I have consumed this item, remove it to check for invalid params
+
+        # TODO: test
+        unprocessed_keys = kw.keys()
+        for key in unprocessed_keys:
+            if matches_pattern(key):
+                value = self.optionals[key]
+                if value is not None:
+                    # the value None is used as a flag to avoid override the default value
+                    self[key] = self.optionals[key]
+                del kw[key]
+
         if kw:
             raise InvalidParam(kw.popitem()[0])
 
@@ -184,13 +204,14 @@ class ParamDict(dict):
     def _override_with(self, handler):
         "Override this dictionary with values whose keys are present in the request"
         for arg in self.arguments:
-            if arg not in self:
+            if (arg not in self) and (not matches_pattern(arg)):
                 raise InvalidParam(arg)
 
         # order is critical below because *_uri should be set before *_prefix
-        for key in VALID_PARAMS:
-            value = self.arguments.get(key, None)
-            if value is not None:
+        for key in self.arguments:
+            if key in VALID_PARAMS or matches_pattern(key):
+                value = self.arguments.get(key, None)
+                if value is not None:
                     self[key] = value
 
     def _post_override(self):

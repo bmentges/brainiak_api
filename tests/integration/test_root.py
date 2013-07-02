@@ -68,12 +68,12 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertIn('page', keys)
         self.assertIn('do_item_count', keys)
         self.assertIn('page', keys)
-        self.assertIn('id', keys)
+        self.assertIn('idok ', keys)
 
 
     def test_200_with_pagination(self):
         # disclaimer: this test assumes there are > 2 non-empty registered graphs in Virtuoso
-        response = self.fetch("/?page=1&per_page=2", method='GET')
+        response = self.fetch("/?page=1&per_page=2&do_item_count=1", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         self.assertIn("items", body.keys())

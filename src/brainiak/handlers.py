@@ -29,11 +29,12 @@ from brainiak.root.get import list_all_contexts
 from brainiak.schema import resource as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, FILTER_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
-from brainiak.utils.links import build_schema_url_for_instance, build_schema_url
+from brainiak.utils.links import build_schema_url_for_instance, set_content_type_profile
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.resources import check_messages_when_port_is_mentioned
 from brainiak.event_bus import NotificationFailure
 from brainiak.root.json_schema import schema as root_schema
+from brainiak.context.json_schema import schema as context_schema
 
 logger = LazyObject(get_logger)
 
@@ -69,7 +70,7 @@ def get_routes():
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
         # json-schemas
         URLSpec(r'/_class/?', RootJsonSchemaHandler),
-        #URLSpec(r'/(?P<context_name>[\w\-]+)/_class/?', ContextJsonSchemaHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/_class/?', ContextJsonSchemaHandler),
         #URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', CollectionJsonSchemaHandler),
         # resources that represents concepts
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', ClassHandler),
@@ -252,9 +253,7 @@ class RootHandler(BrainiakRequestHandler):
     def finalize(self, response):
         if isinstance(response, dict):
             self.write(response)
-            schema_url = build_schema_url(self.query_params)
-            content_type = "application/json; profile={0}".format(schema_url)
-            self.set_header("Content-Type", content_type)
+            set_content_type_profile(self, self.query_params)
 
 
 class ClassHandler(BrainiakRequestHandler):
@@ -449,6 +448,12 @@ class CollectionHandler(BrainiakRequestHandler):
             self.write(response)
 
 
+class ContextJsonSchemaHandler(BrainiakRequestHandler):
+
+    def get(self, context_name):
+        self.finalize(context_schema(context_name))
+
+
 class ContextHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
@@ -467,6 +472,7 @@ class ContextHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
+            set_content_type_profile(self, self.query_params)
 
 
 class PrefixHandler(BrainiakRequestHandler):

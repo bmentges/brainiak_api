@@ -14,7 +14,7 @@ It is also possible to set multiple ``p's`` and/or ``o's``, adding a number afte
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/place/City/?o=base:UF_RJ&p1=place:longitude&p2=place:latitude'
+  GET 'http://api.semantica.dev.globoi.com/place/City/?o=base:UF_RJ&p1=place:longitude&p2=place:latitude&per_page=1''
 
 .. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/City/?o=base:UF_RJ&p1=place:longitude&p2=place:latitude&per_page=1' | python -mjson.tool
   :shell:

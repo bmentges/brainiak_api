@@ -25,8 +25,6 @@ def assemble_list_json(query_params, query_result_dict):
     decorate_with_resource_id(items_list)
     decorate_with_class_prefix(items_list)
 
-    #links = self_link(query_params) + collection_links(query_params)
-
     context_section = context.context
     context_section.update({"@language": query_params.get("lang")})
 

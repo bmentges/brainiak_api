@@ -35,6 +35,7 @@ from brainiak.utils.resources import check_messages_when_port_is_mentioned
 from brainiak.event_bus import NotificationFailure
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.context.json_schema import schema as context_schema
+from brainiak.instance.json_schema import schema as collection_schema
 
 logger = LazyObject(get_logger)
 
@@ -71,7 +72,7 @@ def get_routes():
         # json-schemas
         URLSpec(r'/_class/?', RootJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/_class/?', ContextJsonSchemaHandler),
-        #URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', CollectionJsonSchemaHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', CollectionJsonSchemaHandler),
         # resources that represents concepts
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', ClassHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
@@ -369,6 +370,12 @@ class InstanceHandler(BrainiakRequestHandler):
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25
 
 
+class CollectionJsonSchemaHandler(BrainiakRequestHandler):
+
+    def get(self, context_name, class_name):
+        self.finalize(collection_schema(context_name, class_name))
+
+
 class CollectionHandler(BrainiakRequestHandler):
 
     def __init__(self, *args, **kwargs):
@@ -384,7 +391,6 @@ class CollectionHandler(BrainiakRequestHandler):
                                           **valid_params)
 
         response = filter_instances(self.query_params)
-
         self.finalize(response)
 
     @greenlet_asynchronous
@@ -446,6 +452,7 @@ class CollectionHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
+            set_content_type_profile(self, self.query_params)
 
 
 class ContextJsonSchemaHandler(BrainiakRequestHandler):

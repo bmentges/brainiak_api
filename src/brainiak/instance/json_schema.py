@@ -2,11 +2,20 @@
 from brainiak.utils.links import merge_schemas, pagination_schema
 
 
-def schema(context_name, class_name):
-    vars = (context_name, class_name)
+def schema(context_name, class_name, class_prefix):
+    vars = (context_name, class_name, class_prefix)
+    if  (class_prefix is not None):
+        schema_ref = "/{0}/{1}/_schema?class_prefix={2}".format(*vars)
+        href = "/{0}/{1}?class_prefix={2}".format(*vars)
+        link = "/{0}/{1}/{{resource_id}}?class_prefix={2}&instance_prefix={{instance_prefix}}".format(*vars)
+    else:
+        schema_ref = '/{0}/{1}/_schema'.format(*vars)
+        href = '/{0}/{1}'.format(*vars)
+        link = "/{0}/{1}/{{resource_id}}?instance_prefix={{instance_prefix}}".format(*vars)
+
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
-        "title": "Instance List Schema",
+        "title": "Collection Schema",
         "type": "object",
         "required": ["items"],
         "properties": {
@@ -23,25 +32,18 @@ def schema(context_name, class_name):
                         "@id": {"type": "string"},
                         "resource_id": {"type": "string"},
                         "instance_prefix": {"type": "string", "format": "uri"},
-                        "class_prefix": {"type": "string", "format": "uri"},
                     },
                     "links": [
                         {
-                            "href": "/{0}/{1}/{{resource_id}}?class_prefix={{class_prefix}}&instance_prefix={{instance_prefix}}".format(*vars),
+                            "href": link,
                             "method": "GET",
                             "rel": "item"
                         },
                         {
-                            "href": "/{0}/{1}/{{resource_id}}?class_prefix={{class_prefix}}&instance_prefix={{instance_prefix}}".format(*vars),
+                            "href": link,
                             "method": "GET",
                             "rel": "instance"
                         },
-                        {
-                            "href": "/{0}/{1}/{{resource_id}}?class_prefix={{_class_prefix}}".format(*vars),
-                            "method": "POST",
-                            "rel": "add",
-                            "schema": {"$ref": "/{0}/{1}/{{resource_id}}/_schema?class_prefix={{_class_prefix}}".format(*vars)}
-                        }
                     ]
                 }
             },
@@ -56,9 +58,20 @@ def schema(context_name, class_name):
                 "href": "{+_schema_url}",
                 "method": "GET",
                 "rel": "class"
+            },
+            {
+                "href": "/{0}".format(context_name),
+                "method": "GET",
+                "rel": "context"
+            },
+            {
+                "href": href,
+                "method": "POST",
+                "rel": "add",
+                "schema": {"$ref": schema_ref}
             }
         ]
     }
 
-    merge_schemas(base, pagination_schema('/{0}/'.format(context_name)))
+    merge_schemas(base, pagination_schema('/{0}/{1}'.format(context_name, class_name)))
     return base

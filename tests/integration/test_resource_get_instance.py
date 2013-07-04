@@ -26,13 +26,20 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 404)
 
     def test_get_instance_200(self):
-        response = self.fetch('/person/Gender/Female', method='GET')
+        response = self.fetch('/person/Gender/Female?lang=pt', method='GET')
         body = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertIn(u'/person/Gender/Female', body['@id'])
         self.assertEqual(body['@type'], u'person:Gender')
         self.assertEqual(body['rdf:type'], u'person:Gender')
         self.assertEqual(body['upper:name'], u'Feminino')
+
+    def test_get_instance_returns_schema_in_content_type(self):
+        response = self.fetch('/person/Gender/Female', method='GET')
+        self.assertEqual(response.code, 200)
+        content_type = response.headers["Content-type"]
+        self.assertTrue(content_type.startswith('application/json; profile=http://localhost:'))
+        self.assertTrue(content_type.endswith('/person/Gender/_schema'))
 
     def test_get_instance_with_compressed_instance_prefix_200(self):
         instance_prefix = "http://test.com/other_prefix/"

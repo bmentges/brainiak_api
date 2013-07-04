@@ -11,7 +11,7 @@ class TestListPrefixesResource(TornadoAsyncHTTPTestCase):
 
     @patch("brainiak.handlers.logger")
     def test_prefixes_200(self, log):
-        response = self.fetch('/prefixes', method='GET')
+        response = self.fetch('/_prefixes', method='GET')
         self.assertEqual(response.code, 200)
         response_dict = json.loads(response.body)
         self.assertIn("root_context", response_dict)
@@ -22,7 +22,7 @@ class TestListPrefixesResource(TornadoAsyncHTTPTestCase):
 
     @patch("brainiak.handlers.logger")
     def test_prefixes_400(self, log):
-        response = self.fetch('/prefixes?root_context=wrong_param', method='GET')
+        response = self.fetch('/_prefixes?root_context=wrong_param', method='GET')
         self.assertEqual(response.code, 400)
 
     @patch("brainiak.handlers.logger")
@@ -31,6 +31,6 @@ class TestListPrefixesResource(TornadoAsyncHTTPTestCase):
         patcher = patch("brainiak.handlers.list_prefixes", ** config)
         patcher.start()
 
-        response = self.fetch('/prefixes', method='GET')
+        response = self.fetch('/_prefixes', method='GET')
         self.assertEqual(response.code, 500)
         patcher.stop()

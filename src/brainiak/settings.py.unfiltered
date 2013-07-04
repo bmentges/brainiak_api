@@ -4,6 +4,7 @@ import os
 DEBUG = False
 ENVIRONMENT = '<%= puppetmaster_env %>'
 
+SPARQL_PORT = '<%= sparql_port %>'
 SPARQL_ENDPOINT = '<%= sparql_endpoint %>'
 SPARQL_ENDPOINT_USER = os.environ['GLB_API_SEMANTICA_VIRTUOSO_USR']
 SPARQL_ENDPOINT_PASSWORD = os.environ['GLB_API_SEMANTICA_VIRTUOSO_PWD']
@@ -21,10 +22,15 @@ LOG_NAME = "brainiak"
 
 URI_PREFIX = "http://semantica.globo.com/"
 
-DEFAULT_PER_PAGE = "10"
-DEFAULT_PAGE = "0"
-
 EVENT_BUS_HOST = '<%= event_bus_host %>'
 EVENT_BUS_PORT = 61613
+NOTIFY_BUS = True
+
+DEFAULT_RULESET_URI = "http://semantica.globo.com/ruleset"
 
 CORS_HEADERS = 'Content-Type, Authorization'
+
+REDIS_ENDPOINT = '<%= redis_endpoint %>'
+REDIS_PORT = <%= redis_port %>
+REDIS_PASSWORD = '<%= redis_password %>'
+ENABLE_CACHE = True

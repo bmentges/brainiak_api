@@ -39,3 +39,8 @@ nosetests.xml
 
 # PyVharm
 .idea
+
+# Redis
+dump.rdb
+
+.DS_Store

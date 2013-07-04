@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from copy import copy
 
-from brainiak import triplestore
+from brainiak import triplestore, settings
+from brainiak.utils.links import build_class_url, build_schema_url_for_instance, self_link, crud_links, add_link
 from brainiak.prefixes import MemorizeContext, shorten_uri
-from brainiak.utils.links import assemble_url, build_class_url, build_schema_url, self_link, crud_links, add_link, filter_query_string_by_key_prefix, remove_last_slash
 from brainiak.utils.sparql import expand_uri, get_super_properties, is_result_empty
 
 
@@ -69,12 +68,12 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
     class_url = build_class_url(query_params)
     class_url_with_query_string = build_class_url(query_params, include_query_string=True)
-    schema_url = build_schema_url(query_params)
+    schema_url = build_schema_url_for_instance(query_params)
 
     query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
     action_links = self_link(query_params) + crud_links(query_params)
-    add_link(links, 'describedBy', schema_url)
-    add_link(links, 'inCollection', class_url_with_query_string)
+    add_link(links, 'class', schema_url)
+    add_link(links, 'collection', class_url_with_query_string)
 
     links.extend(action_links)
 
@@ -95,12 +94,13 @@ SELECT DISTINCT ?predicate ?object ?label ?super_property {
         rdfs:label ?label;
         ?predicate ?object .
 OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
 FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
 }
 """
 
 
 def query_all_properties_and_objects(query_params):
-    query_params["ruleset"] = "http://semantica.globo.com/ruleset"
+    query_params["ruleset"] = settings.DEFAULT_RULESET_URI
     query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % query_params
     return triplestore.query_sparql(query)

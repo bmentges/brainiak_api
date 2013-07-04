@@ -1,3 +1,10 @@
+from brainiak import version
+from brainiak.utils.git import get_code_version, is_available
+
 __doc__ = u"Brainiak Semantic Wrapper Server"
-__nversion__ = (1, 0, 0)
-__version__ = ".".join(str(i) for i in __nversion__)
+
+
+def get_version():
+    return get_code_version() if is_available() else version.RELEASE
+
+__version__ = get_version()

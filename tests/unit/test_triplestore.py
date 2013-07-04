@@ -1,12 +1,14 @@
 # coding: utf-8
 import unittest
-import SPARQLWrapper
 from mock import patch
+
+from tornado.httpclient import HTTPError
+
 from brainiak import triplestore
-from tests.tornado_cases import TornadoAsyncTestCase
+import SPARQLWrapper
 
 
-class TriplestoreInitTestCase(TornadoAsyncTestCase):
+class TriplestoreInitTestCase(unittest.TestCase):
 
     @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT_HOST="http://myhost", SPARQL_ENDPOINT_PORT=8080)
     def tests_init_connection_endpoint_host_and_port_defined_in_settings(self, settings):
@@ -25,7 +27,7 @@ class TriplestoreInitTestCase(TornadoAsyncTestCase):
         self.assertEqual(expected, result)
 
 
-class TriplestoreSetCredentialsTestCase(TornadoAsyncTestCase):
+class TriplestoreSetCredentialsTestCase(unittest.TestCase):
 
     @patch('brainiak.triplestore.settings')
     def test_set_credentials_no_auth_settings_at_all(self, settings):
@@ -34,8 +36,9 @@ class TriplestoreSetCredentialsTestCase(TornadoAsyncTestCase):
         del settings.SPARQL_ENDPOINT_AUTH_MODE
 
         virtuoso_connection = triplestore.VirtuosoConnection()
-        credentials = (virtuoso_connection.user, virtuoso_connection.password, virtuoso_connection.auth_mode)
-        self.assertTrue(all([x is None for x in credentials]))
+        self.assertIsNone(virtuoso_connection.user)
+        self.assertIsNone(virtuoso_connection.password)
+        self.assertEqual(virtuoso_connection.auth_mode, "basic")
 
     @patch('brainiak.triplestore.settings')
     def test_set_credentials_no_password(self, settings):
@@ -43,7 +46,9 @@ class TriplestoreSetCredentialsTestCase(TornadoAsyncTestCase):
 
         virtuoso_connection = triplestore.VirtuosoConnection()
         credentials = (virtuoso_connection.user, virtuoso_connection.password, virtuoso_connection.auth_mode)
-        self.assertTrue(all([x is None for x in credentials]))
+        self.assertIsNone(virtuoso_connection.user)
+        self.assertIsNone(virtuoso_connection.password)
+        self.assertEqual(virtuoso_connection.auth_mode, "basic")
 
 
 class MockSPARQLWrapper():
@@ -57,6 +62,8 @@ class MockSPARQLWrapper():
     def query(self):
         self.iteration += 1
         if (self.iteration - 1) in self.exception_iterations:
+            # note that msg is used due to SPARQLWrapper.SPARQLExceptions.py
+            # implementation of error messages
             e = Exception()
             e.msg = "ERROR %d" % (self.iteration - 1)
             raise e
@@ -116,3 +123,15 @@ class TestCaseStatus(unittest.TestCase):
         msg2 = "Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | FAILED | http://localhost:8890/sparql-auth | ERROR 1"
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
+
+
+class TriplestoreExceptionTestCase(unittest.TestCase):
+
+    @patch("brainiak.triplestore.VirtuosoConnection.query", side_effect=HTTPError(401))
+    def test_query_returns_401(self, mocked_query):
+        try:
+            triplestore.query_sparql("aa")
+        except HTTPError as e:
+            self.assertEquals(e.message, 'HTTP 401: Check triplestore user and password.')
+        else:
+            self.fail()

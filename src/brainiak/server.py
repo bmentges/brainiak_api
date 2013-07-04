@@ -1,40 +1,48 @@
 # -*- coding: utf-8 -*-
+import sys
+import traceback
+
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
+from tornado.options import define, options, parse_command_line
 from tornado.web import Application as TornadoApplication
 
-from brainiak import __doc__, log, settings
+from brainiak import log, settings
 from brainiak.greenlet_tornado import greenlet_set_ioloop
 from brainiak.handlers import get_routes
-from brainiak.event_bus import event_bus_connection
+from brainiak import event_bus
+
 
 server = None
+
+define("debug", default=settings.DEBUG, help="Debug mode", type=bool)
 
 
 class Application(TornadoApplication):
 
     def __init__(self, debug=False):
-        log.initialize()
-        event_bus_connection.start()
-        event_bus_connection.connect()
-        super(Application, self).__init__(get_routes(), debug=debug)
+        try:
+            log.initialize()
+            event_bus.initialize()
+            super(Application, self).__init__(get_routes(), debug=debug)
+        except Exception as e:
+            sys.stdout.write("Failed to initialize application. {0}".format(str(e)))
+            traceback.print_exc(file=sys.stdout)
+            sys.exit(1)
 
 application = Application()
 
 
-def main(args):  # pragma: no cover
-    application = Application(debug=args.debug)
+def main():  # pragma: no cover
+    define("port", default=settings.SERVER_PORT, help="Run app on the given port", type=int)
+    parse_command_line()
+    application = Application(debug=options.debug)
     server = HTTPServer(application)
-    server.listen(settings.SERVER_PORT)
+    server.listen(options.port)
     io_loop = IOLoop.instance()
     greenlet_set_ioloop(io_loop)
     io_loop.start()
 
 
 if __name__ == '__main__':
-    from argparse import ArgumentParser
-    parser = ArgumentParser(description=__doc__)
-    parser.add_argument('-d', '--debug', action='store_const', const=True, default=settings.DEBUG, help='debug mode')
-    args = parser.parse_args()
-
-    main(args)
+    main()

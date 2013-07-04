@@ -249,7 +249,7 @@ def filter_instances(query_params):
 
 
 def build_json(items_list, query_params):
-    query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
+    #query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
     schema_url = build_schema_url_for_instance(query_params)
 
     #if query_string:

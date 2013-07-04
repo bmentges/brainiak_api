@@ -78,7 +78,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     #links.extend(action_links)
 
     instance = {
-        "id": query_params['instance_uri'],
+        "@id": query_params['instance_uri'],
         "@type": shorten_uri(query_params["class_uri"]),
         "@context": context.context,
         #"links": links,

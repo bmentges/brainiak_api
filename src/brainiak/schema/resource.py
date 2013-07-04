@@ -34,7 +34,7 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     query_params.resource_url = query_params.base_url
     links = self_link(query_params)
 
-    base_url = query_params.base_url[:-8]  # remove /_class
+    base_url = query_params.base_url[:-9]  # remove /_schema
     href = assemble_url(base_url, {"class_prefix": query_params["class_prefix"]})
     add_link(links, "collection", href)
 

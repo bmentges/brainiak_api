@@ -70,11 +70,11 @@ def get_routes():
         URLSpec(r'/_status/cache/?', CacheStatusHandler),
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
         # json-schemas
-        URLSpec(r'/_class/?', RootJsonSchemaHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/_class/?', ContextJsonSchemaHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', CollectionJsonSchemaHandler),
+        URLSpec(r'/_schema_list/?', RootJsonSchemaHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/_schema_list/?', ContextJsonSchemaHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema_list/?', CollectionJsonSchemaHandler),
         # resources that represents concepts
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', ClassHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', ClassHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)/?', InstanceHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/?', ContextHandler),

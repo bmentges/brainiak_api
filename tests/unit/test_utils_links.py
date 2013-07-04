@@ -7,10 +7,11 @@ from brainiak.utils.params import ParamDict, LIST_PARAMS, DefaultParamsDict
 from tests.mocks import MockHandler
 
 
-class RemoveSlashTestCase(unittest.TestCase):
-
-    def test_remove_class_slash(self):
-        self.assertEqual(remove_class_slash('http://a/_class'), 'http://a')
+# TODO: remove this
+# class RemoveSlashTestCase(unittest.TestCase):
+#
+#     def test_remove_class_slash(self):
+#         self.assertEqual(remove_class_slash('http://a/_schema'), 'http://a')
 
 
 class TestBuildSchema(unittest.TestCase):
@@ -20,7 +21,7 @@ class TestBuildSchema(unittest.TestCase):
         handler = MockHandler(uri="http://any.uri")
         query_params = ParamDict(handler, **params)
         computed = build_schema_url(query_params)
-        expected = 'http://any.uri/_class'
+        expected = 'http://any.uri/_schema_list'
         self.assertEqual(expected, computed)
 
     def test_self_url(self):
@@ -200,7 +201,7 @@ class CrudLinksTestCase(unittest.TestCase):
         computed = crud_links(query_params)
         expected = [
             {'href': 'http://any.uri/context/Class/instance', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/context/Class/instance', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_class'}}]
+            {'href': 'http://any.uri/context/Class/instance', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_class_url_without_querystring(self):
@@ -250,7 +251,7 @@ class CrudLinksTestCase(unittest.TestCase):
 
         }
         computed = build_schema_url_for_instance(query_params)
-        expected = "https://dot.net/place/City/_class?class_prefix=include_me"
+        expected = "https://dot.net/place/City/_schema?class_prefix=include_me"
         self.assertEqual(computed, expected)
 
 

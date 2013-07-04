@@ -42,9 +42,9 @@ def remove_last_slash(url):
     return url[:-1] if url.endswith("/") else url
 
 
-def remove_class_slash(url):
-    url = url.replace('/_class', '')
-    return url[:-1] if url.endswith("/") else url
+# def remove_class_slash(url):
+#     url = url.replace('/_schema', '')
+#     return url[:-1] if url.endswith("/") else url
 
 
 def split_into_chunks(items, chunk_size):
@@ -201,14 +201,14 @@ def build_class_url(query_params, include_query_string=False):
 
 def build_schema_url(query_params):
     base_url = remove_last_slash(query_params.base_url)
-    schema_url = assemble_url('{0}/_class'.format(base_url))
+    schema_url = assemble_url('{0}/_schema_list'.format(base_url))
     return schema_url
 
 
 def build_schema_url_for_instance(query_params):
     class_url = build_class_url(query_params)
     query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
-    schema_url = assemble_url('{0}/_class'.format(class_url), query_string)
+    schema_url = assemble_url('{0}/_schema'.format(class_url), query_string)
     return schema_url
 
 

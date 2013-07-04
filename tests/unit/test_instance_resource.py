@@ -117,7 +117,7 @@ class AssembleTestCase(unittest.TestCase):
         #     {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_schema'}}
         # ]
 
-        self.assertEqual(computed["id"], "http://schema.org/klass/instance")
+        self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
         self.assertEqual(computed["@type"], "schema:klass")
         self.assertEqual(computed["@context"], {})
         #self.assertEqual(sorted(computed["links"]), sorted(expected_links))
@@ -150,7 +150,7 @@ class AssembleTestCase(unittest.TestCase):
         #     {'rel': 'person', 'href': '/person/Person'}
         # ]
 
-        self.assertEqual(computed["id"], "http://schema.org/klass/instance")
+        self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
         self.assertEqual(computed["@type"], "schema:klass")
         self.assertIsInstance(computed["@context"], InnerContextMock)
         #self.assertItemsEqual(computed["links"], expected_links)

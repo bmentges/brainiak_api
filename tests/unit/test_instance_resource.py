@@ -111,10 +111,10 @@ class AssembleTestCase(unittest.TestCase):
         computed = get_resource.assemble_instance_json(query_params, query_result_dict)
         expected_links = [
             {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
-            {'rel': 'class', 'href': 'http://mock.test.com/schema/klass/_class', 'method': 'GET'},
+            {'rel': 'class', 'href': 'http://mock.test.com/schema/klass/_schema', 'method': 'GET'},
             {'rel': 'collection', 'href': 'http://mock.test.com/schema/klass', 'method': 'GET'},
             {'rel': 'delete', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_class'}}
+            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_schema'}}
         ]
 
         self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
@@ -143,10 +143,10 @@ class AssembleTestCase(unittest.TestCase):
         computed = get_resource.assemble_instance_json(query_params, query_result_dict, context)
         expected_links = [
             {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
-            {'rel': 'class', 'href': 'http://mock.test.com/schema/klass/_class', 'method': 'GET'},
+            {'rel': 'class', 'href': 'http://mock.test.com/schema/klass/_schema', 'method': 'GET'},
             {'rel': 'collection', 'href': 'http://mock.test.com/schema/klass', 'method': 'GET'},
             {'rel': 'delete', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_class'}},
+            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_schema'}},
             {'rel': 'person', 'href': '/person/Person'}
         ]
 
@@ -178,10 +178,10 @@ class AssembleTestCase(unittest.TestCase):
         computed = get_resource.assemble_instance_json(query_params, query_result_dict, context)
         expected_links = [
             {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance?class_prefix=CLASS_PREFIX&instance_prefix=INSTANCE_PREFIX', 'method': 'GET'},
-            {'rel': 'class', 'href': 'http://mock.test.com/schema/klass/_class?class_prefix=CLASS_PREFIX', 'method': 'GET'},
+            {'rel': 'class', 'href': 'http://mock.test.com/schema/klass/_schema?class_prefix=CLASS_PREFIX', 'method': 'GET'},
             {'rel': 'collection', 'href': 'http://mock.test.com/schema/klass?class_prefix=CLASS_PREFIX', 'method': 'GET'},
             {'rel': 'delete', 'href': 'http://mock.test.com/schema/klass/instance?class_prefix=CLASS_PREFIX&instance_prefix=INSTANCE_PREFIX', 'method': 'DELETE'},
-            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance?class_prefix=CLASS_PREFIX&instance_prefix=INSTANCE_PREFIX', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_class?class_prefix=CLASS_PREFIX'}},
+            {'rel': 'replace', 'href': 'http://mock.test.com/schema/klass/instance?class_prefix=CLASS_PREFIX&instance_prefix=INSTANCE_PREFIX', 'method': 'PUT', 'schema': {'$ref': 'http://mock.test.com/schema/klass/_schema?class_prefix=CLASS_PREFIX'}},
             {'rel': 'person', 'href': '/person/Person'}
         ]
         self.assertEquals(len(computed["links"]), 6)

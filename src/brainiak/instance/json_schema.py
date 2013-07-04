@@ -39,7 +39,7 @@ def schema(context_name, class_name):
                         {   "href": "/{0}/{1}/{{resource_id}}?class_prefix={{_class_prefix}}".format(*vars),
                             "method": "POST",
                             "rel": "add",
-                            "schema": {"$ref": "/{0}/{1}/{{resource_id}}/_class?class_prefix={{_class_prefix}}".format(*vars)}
+                            "schema": {"$ref": "/{0}/{1}/{{resource_id}}/_schema?class_prefix={{_class_prefix}}".format(*vars)}
                         }
                     ]
                 }

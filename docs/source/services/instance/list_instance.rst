@@ -8,42 +8,23 @@ according a propert/value filter. The results are paginated.
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/person/Gender/'
+  $ curl -s 'http://api.semantica.dev.globoi.com/place/Continent'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/person/Gender/' | python -mjson.tool
-  :shell:
 
-This will retrieve all instances of ``Gender`` in the graph ``person``
+This will retrieve all instances of ``Continent`` in the graph ``place``
+
 
 Optional parameters
 -------------------
 
-**lang**: Specify language of labels. Options: pt, en, undefined (do not filter labels)
+.. include :: ../params/lang.rst
+.. include :: ../params/pages.rst
+.. include :: ../params/item_count.rst
+.. include :: ../params/graph_uri.rst
+.. include :: ../params/class.rst
+.. include :: ../params/po.rst
+.. include :: ../params/sort.rst
 
-**graph_uri**: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
-
-**class_uri**: Set the class URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME``
-
-**page**: The page you want to retrieve. The default value is ``1``, i.e. the first page
-
-**per_page**: Defines how many items you want to retrieve per page. The default value is ``10``
-
-**p**: Filters the instances that have the (**p**)redicate specified used in a triple.
-
-**o**: Filters the instances that have the (**o**)bject specified used in a triple.
-
-**sort_by**: Defines predicate used to order instances. The sorting can also behave as a **p** filter, read **sort_include_empty**. Usage: ``sort_by=rdfs:label`` or ``sort_by=dbprop:stadium``.
-
-**sort_order**: Defines if ordering will be ascending or descending. The default is ascending. E.g: ``sort_order=asc`` or ``sort_order=desc``.
-
-**sort_include_empty**: By default, items that don't define **sort_by** property are also listed (``sort_include_empty=1``). If it is desired to exclude such items, set ``sort_include_empty=0``.
-
-By combining ``p`` and ``o`` parameters you can specify a filter for instances that have
-this property and object values. For exeample:
-
-.. code-block:: http
-
-  GET 'http://api.semantica.dev.globoi.com/place/Country/?p=place:partOfContinent&o=http://semantica.globo.com/place/Continent/America'
 
 Possible responses
 -------------------
@@ -54,14 +35,16 @@ Possible responses
 If there are instances that match the query, the response body is a JSON containing instances' titles, resources_id and @ids (URIs).
 By default, the first page containing 10 items is returned (``?page=1&per_page=10``).
 
-.. include :: examples/list_instance_200.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Continent?page=1&per_page=10' | python -mjson.tool
+  :shell:
 
 **Status 400**
 
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. include :: examples/list_instance_400.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Continent?invalid_param=1' | python -mjson.tool
+  :shell:
 
 **Status 404**
 

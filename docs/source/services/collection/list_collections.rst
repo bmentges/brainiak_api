@@ -19,13 +19,11 @@ This will retrieve all classes in the ``place`` graph.
 Optional parameters
 -------------------
 
-**lang**: Specify language of labels. Options: pt, en, undefined (do not filter labels)
+.. include :: ../params/lang.rst
+.. include :: ../params/graph_uri.rst
+.. include :: ../params/pages.rst
+.. include :: ../params/item_count.rst
 
-**graph_uri**: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
-
-**page**: The page you want to retrieve. The default value is ``1``, i.e. the first page
-
-**per_page**: Defines how many items you want to retrieve per page. The default value is ``10``
 
 Possible responses
 -------------------
@@ -35,14 +33,22 @@ Possible responses
 If there are classes in this graph, the response body is a JSON containing classes' titles and @ids (URIs).
 By default, the first page containing 10 items is returned (``?page=1&per_page=10``).
 
-.. include :: examples/list_collections_200.rst
+.. code-block:: bash
+
+  $ curl -s 'http://api.semantica.dev.globoi.com/place/?page=1&per_page=10'
+
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/?page=1&per_page=10' | python -mjson.tool
+  :shell:
+
 
 **Status 400**
 
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. include :: examples/list_collections_400.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/?invalid_param=1' | python -mjson.tool
+  :shell:
+
 
 **Status 404**
 

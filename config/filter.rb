@@ -24,6 +24,9 @@ namespace :python do
 
     desc "Filtragem dos arquivos de configuração por ambiente"
     task :filter do
+        puts "Sobrescrevendo version.py"
+        system 'cd src; python -c "from brainiak.utils.git import build_release_string; print build_release_string()" > brainiak/version.py'
+
         puts "Filtrando arquivos .unfiltered"
         #system "cp src/#{application}/settings.py src/#{application}/settings.py.atual"
         Dir["**/*.unfiltered"].each do |file_in|

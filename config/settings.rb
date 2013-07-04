@@ -6,7 +6,7 @@ load 'config/deploy'
 load 'config/filter.rb'
 load 'config/modules/puppet' # Load puppet module to execute puppet-setup every deploy, keeping the environment sync
 
-before "deploy", "deploy:setup"
+before "deploy:update",  "deploy:setup"
 before "deploy:restart", "deploy:clean_local"
 before "deploy:restart", "deploy:cleanup"
 
@@ -25,10 +25,11 @@ namespace :deploy do
     task :docs, :roles => :docs do
         puts "Gerando documentação"
         system "tar chzf docs.tar.gz docs"
+        system "cd docs; make html; cd .."
         put File.read("docs.tar.gz"), "/tmp/docs.tar.gz", :via => :scp
         run "cd /tmp && tar xzf docs.tar.gz"
         run 'cd /tmp/docs && export PATH="/opt/api_semantica/brainiak/virtualenv/bin:$PATH" && export PYTHONPATH="' + deploy_to + '/current:$PYTHONPATH" && make html'
-        run "mv /tmp/docs/build/html #{docs_html}"
+        run "rsync -ac --delay-updates --stats /tmp/docs/build/html/ #{docs_html}/"
         run 'cd /tmp && rm -rf docs && rm docs.tar.gz'
         system "rm docs.tar.gz"
     end

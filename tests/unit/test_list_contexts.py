@@ -1,42 +1,33 @@
 import unittest
 from tornado.web import HTTPError
+from mock import patch
 
 from brainiak import triplestore
 from brainiak.root.get import filter_and_build_contexts, list_all_contexts
-from brainiak.root import get
-from brainiak.utils import sparql
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler
 
 
 class MockedTestCase(unittest.TestCase):
 
-    def setUp(self):
-        self.original_filter_and_build_contexts = get.filter_and_build_contexts
-        self.original_filter_values = sparql.filter_values
-        self.original_query_sparql = triplestore.query_sparql
-
-    def tearDown(self):
-        get.filter_and_build_contexts = self.original_filter_and_build_contexts
-        sparql.filter_values = self.original_filter_values
-        triplestore.query_sparql = self.original_query_sparql
-
-    def test_raises_http_error(self):
-        triplestore.query_sparql = lambda query: None
-        sparql.filter_values = lambda a, b: []
-
-        def mock_filter_and_build_contexts(contexts_uris):
-            return []
-        get.filter_and_build_contexts = mock_filter_and_build_contexts
+    @patch('brainiak.triplestore.query_sparql')
+    @patch('brainiak.utils.sparql.filter_values', return_value=[])
+    @patch('brainiak.root.get.filter_and_build_contexts', return_value=[])
+    def test_raises_http_error(self, mock1, mock2, mock3):
         self.assertRaises(HTTPError, list_all_contexts, 'irrelevant_params')
 
-    def test_raises_http_error_invalid_page(self):
-        triplestore.query_sparql = lambda query: None
-        sparql.filter_values = lambda a, b: []
+    @patch('brainiak.triplestore.query_sparql')
+    @patch('brainiak.utils.sparql.filter_values', return_value=[])
+    @patch('brainiak.root.get.filter_and_build_contexts', return_value=[])
+    def test_raises_http_error_empty_page(self, mock1, mock2, mock3):
+        handler = MockHandler()
+        params = ParamDict(handler, page='100')
+        self.assertRaises(HTTPError, list_all_contexts, params)
 
-        def mock_filter_and_build_contexts(contexts_uris):
-            return []
-        get.filter_and_build_contexts = mock_filter_and_build_contexts
+    @patch('brainiak.triplestore.query_sparql')
+    @patch('brainiak.utils.sparql.filter_values')
+    @patch('brainiak.root.get.filter_and_build_contexts', return_value=[])
+    def test_raises_http_error_invalid_page(self, mock1, mock2, mock3):
         handler = MockHandler()
         params = ParamDict(handler, page='100')
         self.assertRaises(HTTPError, list_all_contexts, params)
@@ -48,11 +39,6 @@ class GetContextTestCase(unittest.TestCase):
 
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql
-
-    def tearDown(self):
-        triplestore.query_sparql = self.original_query_sparql
-
-    def test_list_contexts(self):
         response = {
             "results":
                 {"bindings": [
@@ -61,8 +47,13 @@ class GetContextTestCase(unittest.TestCase):
                 ]}
         }
         triplestore.query_sparql = lambda query: response
+
+    def tearDown(self):
+        triplestore.query_sparql = self.original_query_sparql
+
+    def test_list_contexts(self):
         param_dict = {"per_page": "30", "page": "0"}
-        base_url = "http://api.semantica.dev.globoi.com/ctx"
+        base_url = "http://api.semantica.dev.globoi.com"
         handler = MockHandler(uri=base_url)
         params = ParamDict(handler, **param_dict)
         computed = list_all_contexts(params)
@@ -72,14 +63,22 @@ class GetContextTestCase(unittest.TestCase):
              'resource_id': 'dbpedia'}
         ]
         self.assertEqual(computed["items"], expected_items)
-        self.assertEqual(computed["item_count"], 1)
-        expected_links = [
-            {'rel': 'self', 'href': base_url, 'method': 'GET'},
-            {'rel': 'instances', 'href': base_url + '/{resource_id}', 'method': 'GET'},
-            {'rel': 'first', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
-            {'rel': 'last', 'href': base_url + '?per_page=30&page=1', 'method': 'GET'},
-        ]
-        self.assertEqual(sorted(computed["links"]), sorted(expected_links))
+
+    def test_with_item_count(self):
+        base_url = "http://api.semantica.dev.globoi.com"
+        param_dict = {"do_item_count": "1", "per_page": "30", "page": "0"}
+        handler = MockHandler(uri=base_url)
+        params = ParamDict(handler, **param_dict)
+        computed = list_all_contexts(params)
+        self.assertEqual(int(computed["item_count"]), 1)
+
+    def test_without_item_count(self):
+        base_url = "http://api.semantica.dev.globoi.com"
+        param_dict = {"do_item_count": "0", "per_page": "30", "page": "0"}
+        handler = MockHandler(uri=base_url)
+        params = ParamDict(handler, **param_dict)
+        computed = list_all_contexts(params)
+        self.assertTrue("item_count" not in computed)
 
     def test_build_contexts_that_exist_in_prefixes(self):
         contexts_uris = [
@@ -107,3 +106,11 @@ class GetContextTestCase(unittest.TestCase):
              'resource_id': 'dbpedia'}
         ]
         self.assertEqual(computed, expected)
+
+    @patch('brainiak.root.get.split_into_chunks', return_value=[])
+    def test_no_context_found_raise_404(self, mock1):
+        param_dict = {"per_page": "3", "page": "1"}
+        base_url = "http://api.semantica.dev.globoi.com"
+        handler = MockHandler(uri=base_url)
+        params = ParamDict(handler, **param_dict)
+        self.assertRaises(HTTPError, list_all_contexts, params)

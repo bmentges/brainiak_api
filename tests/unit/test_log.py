@@ -29,11 +29,11 @@ class LogTestCase(unittest.TestCase):
         loggers_names = [logger.name for logger in loggers]
         self.assertIsInstance(log.logger, logging.Logger)
         self.assertEqual(log.logger.name, "brainiak")
-        self.assertEqual(len(loggers), 4)
+        self.assertEqual(len(loggers), 5)
         self.assertIn("tornado.access", loggers_names)
         self.assertIn("tornado.application", loggers_names)
         self.assertIn("tornado.general", loggers_names)
-        self.assertIn(log.logger, loggers)
+        self.assertIn(log.get_logger(), loggers)
 
     def test_initialize(self):
         self.assertEqual(log.logger, None)

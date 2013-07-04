@@ -24,7 +24,7 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         self.assertEqual(json_received['@type'], 'person:Gender')
-        self.assertEqual(json_received['@id'], "http://semantica.globo.com/person/Gender/Male")
+        self.assertEqual(json_received['id'], "http://semantica.globo.com/person/Gender/Male")
 
     def test_instance_has_options(self):
         response = self.fetch('/person/Gender/Female', method='OPTIONS')
@@ -40,7 +40,7 @@ class TestSchemaResource(TornadoAsyncHTTPTestCase):
         u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
         u'@id': u'person:Gender',
         u'links': [
-            {u'href': u'http://localhost:10023/person/Gender/_schema?lang=pt', u'method': u'GET', u'rel': u'self'},
+            {u'href': u'http://localhost:10023/person/Gender/_schema?lang=pt', u'method': u'GET', u'rel': u'class'},
             {u'href': u'http://localhost:10023/person/Gender?class_prefix=http%3A%2F%2Fsemantica.globo.com%2Fperson%2F', u'method': u'GET', u'rel': u'collection'}],
         u'properties': {},
         u'title': u"Gênero da Pessoa",

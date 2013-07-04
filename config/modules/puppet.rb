@@ -12,7 +12,7 @@ def onetime
 
   # Máquinas de deploy tem chave SSL no puppet master
   if not hostname.strip.eql?("riolb315") and not hostname.strip.eql?("riolb316")
-      if puppetmaster_env.to_s =~ /(dev|qa1|qa2)/
+      if puppetmaster_env.to_s =~ /(dev|qa1|qa2|qa)/
         set :password, 'puppet'
       else
         set(:password){ Capistrano::CLI.password_prompt("Senha para o usuário #{user}: ") }

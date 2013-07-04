@@ -3,8 +3,8 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql
-from brainiak.utils.links import self_link, split_into_chunks, collection_links, add_link
-from brainiak.utils.resources import validate_pagination_or_raise_404
+from brainiak.utils.links import split_into_chunks, self_url
+from brainiak.utils.resources import decorate_dict_with_pagination
 
 # Note that pagination was done outside the query
 # because we are filtering query results based on prefixes
@@ -12,7 +12,7 @@ from brainiak.utils.resources import validate_pagination_or_raise_404
 
 QUERY_LIST_CONTEXT = """
 SELECT DISTINCT ?graph
-WHERE {GRAPH ?graph { ?s ?p ?o }}
+WHERE {GRAPH ?graph { ?s a ?o }}
 """
 
 
@@ -21,26 +21,26 @@ def list_all_contexts(params):
     all_contexts_uris = sparql.filter_values(sparql_response, "graph")
 
     filtered_contexts = filter_and_build_contexts(all_contexts_uris)
-    total_items = len(filtered_contexts)
-
     if not filtered_contexts:
         raise HTTPError(404, log_message="No contexts were found.")
-
-    validate_pagination_or_raise_404(params, total_items)
 
     page_index = int(params["page"])
     per_page = int(params["per_page"])
     contexts_pages = split_into_chunks(filtered_contexts, per_page)
-    contexts = contexts_pages[page_index]
-
-    links = self_link(params) + collection_links(params, total_items)
-    add_link(links, "instances", params.base_url + "{resource_id}")
+    try:
+        contexts = contexts_pages[page_index]
+    except IndexError:
+        raise HTTPError(404, log_message="No contexts were found.")
 
     json = {
-        'items': contexts,
-        'item_count': total_items,
-        'links': links
+        'id': self_url(params),
+        'items': contexts
     }
+
+    def calculate_total_items():
+        return len(filtered_contexts)
+    decorate_dict_with_pagination(json, params, calculate_total_items)
+
     return json
 
 

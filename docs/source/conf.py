@@ -13,6 +13,7 @@
 
 import sys, os
 import sphinx_bootstrap_theme
+from brainiak.version import RELEASE
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -51,7 +52,7 @@ copyright = u'2013, Globo.com'
 # built documents.
 #
 # The short X.Y version.
-version = '1.0.0'
+version = RELEASE
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -67,7 +68,7 @@ release = version
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['services/*/examples/*.rst']
+exclude_patterns = ['services/*/examples/*.rst', 'services/params/*.rst']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None

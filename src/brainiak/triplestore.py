@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 import md5
+import time
 import urllib
-import ujson as json
 
 import SPARQLWrapper
-from tornado.httpclient import HTTPRequest
+from tornado.httpclient import HTTPRequest, HTTPError
 from tornado.httputil import url_concat
+import ujson as json
 
 from brainiak import settings, log
 from brainiak.greenlet_tornado import greenlet_fetch
+
+
+# This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works
+format = "POST - %(url)s - %(user_ip)s - %(user_name)s [tempo: %(time_diff)s] - QUERY - %(query)s"
 
 
 # TODO: compute runtime
@@ -20,7 +25,15 @@ def query_sparql(query, *args, **kw):
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
     connection = VirtuosoConnection()
-    query_response = connection.query(query, *args, **kw)
+    try:
+        query_response = connection.query(query, *args, **kw)
+    except HTTPError as e:
+        if e.code == 401:
+            message = 'Check triplestore user and password.'
+            raise HTTPError(e.code, message=message)
+        else:
+            raise
+
     result_dict = json.loads(query_response.body)
     return result_dict
 
@@ -55,7 +68,8 @@ class VirtuosoConnection(object):
             self.password = settings.SPARQL_ENDPOINT_PASSWORD
             self.auth_mode = settings.SPARQL_ENDPOINT_AUTH_MODE
         except AttributeError:
-            self.user = self.password = self.auth_mode = None
+            self.user = self.password = None
+            self.auth_mode = "basic"
 
     def query(self, query, *args, **kw):
         method = kw.get("method", "POST")
@@ -86,8 +100,21 @@ class VirtuosoConnection(object):
                               auth_username=self.user,
                               auth_password=self.password,
                               auth_mode=self.auth_mode)
-        log.logger.info("SPARQL query\n" + query)
+
+        time_i = time.time()
         response = greenlet_fetch(request)
+        time_f = time.time()
+
+        time_diff = time_f - time_i
+        log_msg = format % {
+            'url': url,
+            'user_ip': str(None),
+            'user_name': self.user,
+            'time_diff': time_diff,
+            'query': query
+        }
+        log.logger.info(log_msg)
+
         return response
 
 
@@ -114,8 +141,15 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
     try:
         response = endpoint.query()
         msg = success_msg % info
-    except Exception, error:
-        info["error"] = error.msg
+    except Exception as error:
+        if hasattr(error, 'msg'):
+            # note that msg is used due to SPARQLWrapper.SPARQLExceptions.py
+            # implementation of error messages
+            message = error.msg
+        else:
+            message = str(error)
+
+        info["error"] = message
         msg = failure_msg % info
 
     password_md5 = md5.new(password).digest()
@@ -130,7 +164,12 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
         response = endpoint.query()
         msg = msg + "<br>" + success_msg % info
     except Exception as error:
-        info["error"] = error.msg
+        if hasattr(error, 'msg'):
+            message = error.msg
+        else:
+            message = str(error)
+
+        info["error"] = message
         msg = msg + "<br>" + failure_msg % info
 
     return msg

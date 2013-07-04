@@ -30,9 +30,10 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
         return super(TornadoAsyncHTTPTestCase, self).wait(condition, timeout)
 
     def fetch(self, path, **kwargs):
-        request = HTTPRequest(url=self.get_url(path),
-                              method=kwargs.get('method', 'GET'),
-                              body=kwargs.get('body', ''))
+        kwargs['url'] = self.get_url(path)
+        body = kwargs.pop('body', '')
+        request = HTTPRequest(**kwargs)
+        request.body = body
         request.allow_nonstandard_methods = True
         self.http_client.fetch(request, self.stop, **kwargs)
         return self.wait()

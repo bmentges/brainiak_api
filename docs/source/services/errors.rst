@@ -21,7 +21,8 @@ Sending the unknown parameters in the request, the response is a 400 with a JSON
 
  HTTP/1.1 400 Bad Request
 
-.. include :: instance/examples/get_instance_400.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Country/Brazil?invalid_param=1' | python -mjson.tool
+  :shell:
 
 
 If the instance does not exist, the response is a 404 with a JSON informing the error

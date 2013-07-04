@@ -1,8 +1,8 @@
 # coding: utf-8
-from mock import patch
+from mock import patch, MagicMock
 from stomp.exception import NotConnectedException
 
-from brainiak import __version__, event_bus, settings
+from brainiak import __version__, event_bus, handlers, settings
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
@@ -16,9 +16,11 @@ class TestHealthcheckResource(TornadoAsyncHTTPTestCase):
 
 class TestVersionResource(TornadoAsyncHTTPTestCase):
     def test_healthcheck(self):
-        response = self.fetch('/version', method='GET')
+        response = self.fetch('/_version', method='GET')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, __version__)
+        version_pieces = __version__.split("|")
+        self.assertEqual(len(version_pieces), 2)
 
 
 class OptionsTestCase(TornadoAsyncHTTPTestCase):
@@ -35,8 +37,17 @@ class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
 
     def test_virtuoso_status_in_non_prod(self):
         settings.ENVIRONMENT = "local"
-        response = self.fetch('/status/virtuoso', method='GET')
+        response = self.fetch('/_status/virtuoso', method='GET')
         self.assertEqual(response.code, 200)
+
+
+class TestCacheStatusResource(TornadoAsyncHTTPTestCase):
+
+    def test_cache_status_in_non_prod(self):
+        response = self.fetch('/_status/cache', method='GET')
+        self.assertEqual(response.code, 200)
+        expected = 'Redis connection authenticated [:j\xdf\x97\xf8:\xcfdS\xd4\xa6\xa4\xb1\x07\x0f7T] | SUCCEED | localhost:6379'
+        self.assertEqual(response.body, expected)
 
 
 def raise_exception():
@@ -46,22 +57,75 @@ def raise_exception():
 class ActiveMQTestCase(TornadoAsyncHTTPTestCase):
 
     def setUp(self):
-        self.original_abort = event_bus.event_bus_connection.abort
+        self.original_not_connected = event_bus.middleware.not_connected
         TornadoAsyncHTTPTestCase.setUp(self)
+        self.original_notify_bus = settings.NOTIFY_BUS
+        settings.NOTIFY_BUS = True
+        self.original_connect = event_bus.middleware.connect
 
     def tearDown(self):
-        event_bus.event_bus_connection.abort = self.original_abort
+        event_bus.middleware.not_connected = self.original_not_connected
+        settings.NOTIFY_BUS = self.original_notify_bus
+        event_bus.middleware.connect = self.original_connect
 
     @patch("brainiak.event_bus.logger")
     def test_activemq_status_on(self, log):
-        event_bus.event_bus_connection.abort = lambda transaction: ""
-        response = self.fetch('/status/activemq', method='GET')
+        msg = 'ActiveMQ connection not-authenticated | SUCCEED | localhost:61613'
+        event_bus.middleware.not_connected = lambda: ""
+        response = self.fetch('/_status/activemq', method='GET')
         self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, 'ActiveMQ connection not-authenticated | SUCCEED | localhost:61613')
+        self.assertEqual(response.body, msg)
 
     @patch("brainiak.event_bus.logger")
     def test_activemq_status_off(self, log):
-        event_bus.event_bus_connection.abort = lambda transaction: raise_exception()
-        response = self.fetch('/status/activemq', method='GET')
+        msg = "Failed inside middleware"
+        body = "ActiveMQ connection not-authenticated | FAILED | localhost:61613 | {0}".format(msg)
+        event_bus.middleware.not_connected = lambda: msg
+        event_bus.middleware.connect = lambda: raise_exception()
+        response = self.fetch('/_status/activemq', method='GET')
         self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, "ActiveMQ connection not-authenticated | FAILED | localhost:61613 | 'stomp.exception.NotConnectedException'")
+        self.assertEqual(response.body, body)
+
+
+class LifecheckTestCase(TornadoAsyncHTTPTestCase):
+
+    def setUp(self):
+        TornadoAsyncHTTPTestCase.setUp(self)
+        self.original_eb_status = handlers.event_bus.status
+        self.original_ts_status = handlers.triplestore.status
+
+    def tearDown(self):
+        handlers.event_bus.status = self.original_eb_status
+        handlers.triplestore.status = self.original_ts_status
+
+    @patch("brainiak.event_bus.logger")
+    def test_lifecheck_working(self, log):
+        handlers.triplestore.status = lambda: "Virtuoso SUCCEED"
+        handlers.event_bus.status = lambda: "ActiveMQ SUCCEED"
+        response = self.fetch('/_status/', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, "WORKING")
+
+    @patch("brainiak.event_bus.logger")
+    def test_lifecheck_failed_due_to_virtuoso(self, log):
+        handlers.triplestore.status = lambda: "Virtuoso FAILED"
+        handlers.event_bus.status = lambda: "ActiveMQ SUCCEED"
+        response = self.fetch('/_status/', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, "Virtuoso FAILED")
+
+    @patch("brainiak.event_bus.logger")
+    def test_lifecheck_failed_due_to_activemq(self, log):
+        handlers.triplestore.status = lambda: "Virtuoso SUCCEED"
+        handlers.event_bus.status = lambda: "ActiveMQ FAILED"
+        response = self.fetch('/_status/', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, "ActiveMQ FAILED")
+
+    @patch("brainiak.event_bus.logger")
+    def test_lifecheck_failed_due_to_activemq(self, log):
+        handlers.triplestore.status = lambda: "Virtuoso FAILED"
+        handlers.event_bus.status = lambda: "ActiveMQ FAILED"
+        response = self.fetch('/_status/', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, "Virtuoso FAILED\nActiveMQ FAILED")

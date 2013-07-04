@@ -1,7 +1,12 @@
 import json
 from mock import patch as patch_mock
+
 from tornado.web import Application, HTTPError
+from tornado.curl_httpclient import CurlError
+from tornado.httpclient import HTTPError as ClientHTTPError
+
 from brainiak.handlers import BrainiakRequestHandler
+
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
@@ -19,6 +24,17 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
                 raise NotImplementedError("exception message")
             elif self.request.body == "400":
                 raise HTTPError(400, log_message="testing")
+
+        def put(self, unauthorized=False):
+            if self.request.body == "unauthorized":
+                raise ClientHTTPError(401, "http error: unauthorized, back off")
+            elif self.request.body == "500":
+                raise HTTPError(500, "Internal Virtuoso Error")
+            else:
+                raise CurlError(500, "Virtuoso Down on port 8890")
+
+        def delete(self):
+            self.finalize(None)
 
     def get_app(self):
         return Application([('/', self.Handler)],
@@ -44,6 +60,26 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
         response_error_json = json.loads(response.body)
         self.assertEqual(response.code, 500)
         self.assertIn(expected_error_json["error"], response_error_json["error"])
+
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
+    def test_500_curl_error(self, log):
+        response = self.fetch('/', method='PUT')
+        self.assertEqual(response.code, 500)
+
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
+    def test_500_client_error(self, log):
+        response = self.fetch('/', method='PUT', body="unauthorized")
+        self.assertEqual(response.code, 500)
+
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
+    def test_500_http_error_500(self, log):
+        response = self.fetch('/', method='PUT', body="500")
+        self.assertEqual(response.code, 500)
+
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
+    def test_delete_finalize_None(self, log):
+        response = self.fetch('/', method='DELETE')
+        self.assertEqual(response.code, 404)
 
 
 class TestUnmatchedHandler(TornadoAsyncHTTPTestCase):

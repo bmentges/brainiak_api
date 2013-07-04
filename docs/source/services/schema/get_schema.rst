@@ -1,33 +1,32 @@
-Get a Schema
+Get a Class
 ============
 
-A schema is where the definition of the data structure resides.
+A class is where the definition of the data structure resides.
 
-In this service, we can get a specific schema of a class in some context.
+In this service, we can get a class defined in some context.
 
 **Basic usage**
 
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/place/City/_schema'
+  $ curl -s 'http://api.semantica.dev.globoi.com/place/City/_class'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/City/_schema' | python -mjson.tool
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/City/_class' | python -mjson.tool
   :shell:
 
-Why _schema? In our data model we have a clear distinction between class schemas
-(structure of instances) and data (instances), and by using a request like
+Why _class? In our data model we have a clear distinction between class
+(structure of data) and instances (the data content itself), and by using a request like
 GET <context>/<class> we could not have a clear distinction whether we want
-the whole collection of instances of this specific class or we want the schema of this class.
+the whole collection of instances or we want the definition of this class.
 
-Thus, the _schema suffix is used to distinguish these two use cases.
+Thus, the _class suffix is used to distinguish the latter case from the former.
 
 Optional parameters
 -------------------
 
-**lang**: Specify language of labels. Options: pt, en, undefined (do not filter labels)
-
-**graph_uri**: Set the graph URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME``
+.. include :: ../params/lang.rst
+.. include :: ../params/graph_uri.rst
 
 
 Possible responses
@@ -37,9 +36,15 @@ Possible responses
 **Status 200**
 
 
-If the class exists, the response body is a JSON representing the class schema.
+If the class exists, the response body is a JSON representing the class definition.
 
-.. include :: examples/get_schema_200.rst
+.. code-block:: bash
+
+  $ curl -s 'http://api.semantica.dev.globoi.com/place/Country/_class'
+
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Country/_class' | python -mjson.tool
+  :shell:
+
 
 **Status 400**
 

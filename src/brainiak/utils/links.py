@@ -1,6 +1,13 @@
+import urlparse
 from math import ceil
 from urllib import urlencode
-import urlparse
+
+
+def set_content_type_profile(handler, query_params):
+    """Set header Content-Type + profile pointing to URL of the json-schema"""
+    schema_url = build_schema_url(query_params)
+    content_type = "application/json; profile={0}".format(schema_url)
+    handler.set_header("Content-Type", content_type)
 
 
 def assemble_url(url, params={}):
@@ -35,6 +42,11 @@ def remove_last_slash(url):
     return url[:-1] if url.endswith("/") else url
 
 
+# def remove_class_slash(url):
+#     url = url.replace('/_schema', '')
+#     return url[:-1] if url.endswith("/") else url
+
+
 def split_into_chunks(items, chunk_size):
     """
     Provided a list (items) and an integer representing the chunk size,
@@ -57,50 +69,112 @@ def get_previous_page(page):
         return False
 
 
-def get_next_page(page, last_page):
-    if page < last_page:
-        return page + 1
+def get_next_page(page, last_page=None):
+    if last_page is not None:
+        if page < last_page:
+            return page + 1
+        else:
+            return False
     else:
-        return False
+        return page + 1
 
 
-def prepare_link_params(query_params):
-    "Utility function shared amongst assemble link functions that sets some reused params"
+def last_link(query_params, total_items):
     link_params = {}
     link_params['base_url'] = remove_last_slash(query_params.base_url)
-    try:
-        link_params['page'] = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
-        link_params['per_page'] = int(query_params["per_page"])
-    except KeyError:
-        pass
+    link_params['page'] = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
+    link_params['per_page'] = int(query_params["per_page"])
+    base_url = link_params['base_url']
+    per_page = link_params['per_page']
+    last_page = get_last_page(total_items, link_params['per_page'])
+    links = [
+        {
+            'rel': "last",
+            'href': "%s?%s" % (base_url, query_params.args(page=last_page, per_page=per_page)),
+            'method': "GET"
+        }
+    ]
+    return links
+
+
+def merge_schemas(*dicts):
+    "Merge the remaining json-schema dictionaries into the first"
+    result = dicts[0]
+    for d in dicts[1:]:
+        result['properties'].update(d['properties'])
+        result['links'].extend(d['links'])
+
+
+def pagination_items(query_params, total_items=None):
+    """Add attributes and values related to pagination to a listing page"""
+    page = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
+    previous_page = get_previous_page(page)
+    per_page = int(query_params["per_page"])
+    result = {
+        'page': page,
+        'per_page': per_page
+    }
+    if previous_page:
+        result['previous_page'] = previous_page
+
+    if (query_params.get("do_item_count", None) == "1") and (total_items is not None):
+        last_page = get_last_page(total_items, per_page)
+    else:
+        last_page = None
+    next_page = get_next_page(page, last_page)
+    if next_page:
+        result['next_page'] = next_page
+
+    return result
+
+
+def pagination_schema(root_url):
+    """Json schema part that expresses pagination structure"""
+    def link(rel, href):
+        link_pattern = {
+            "href": href,
+            "method": "GET",
+            "rel": rel
+        }
+        return link_pattern
+
+    result = {
+        "properties": {
+            "page": {"type": "integer", "minimum": 1},
+            "per_page": {"type": "integer", "minimum": 1},
+            "previous_page": {"type": "integer", "minimum": 1},
+            "next_page": {"type": "integer"}
+        },
+        "links": [
+            link('first', root_url + '?page=1&per_page={per_page}&do_item_count={do_item_count}'),
+            link('next', root_url + '?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
+            link('previous', root_url + '?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}')
+        ]
+    }
+    return result
+
+
+# TODO: deprecate this function
+def collection_links(query_params):
+    link_params = {}
+    link_params['base_url'] = remove_last_slash(query_params.base_url)
+    link_params['page'] = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
+    link_params['per_page'] = int(query_params["per_page"])
+
     link_params['resource_url'] = remove_last_slash(query_params.resource_url)
 
-    if 'page' in query_params['request'].arguments:
-        link_params['args'] = query_params.args(page=link_params['page'], per_page=link_params['per_page'])
-    else:
-        link_params['args'] = query_params.args()
-
-    if link_params['args']:
-        link_params['base_url_with_params'] = "{0}?{1:s}".format(link_params['base_url'], link_params['args'])
-    else:
-        link_params['base_url_with_params'] = remove_last_slash(link_params['base_url'])
-
-    return link_params
-
-
-def collection_links(query_params, total_items):
-
-    link_params = prepare_link_params(query_params)
     base_url = link_params['base_url']
     per_page = link_params['per_page']
 
-    last_page = get_last_page(total_items, link_params['per_page'])
     previous_page = get_previous_page(link_params['page'])
-    next_page = get_next_page(link_params['page'], last_page)
+    next_page = get_next_page(link_params['page'])
 
     links = [
-        {'rel': "first", 'href': "%s?%s" % (base_url, query_params.args(page=1, per_page=per_page)), 'method': "GET"},
-        {'rel': "last", 'href': "%s?%s" % (base_url, query_params.args(page=last_page, per_page=per_page)), 'method': "GET"}
+        {
+            'rel': "first",
+            'href': "%s?%s" % (base_url, query_params.args(page=1, per_page=per_page)),
+            'method': "GET"
+        },
     ]
     if previous_page:
         links.append({'rel': "previous",
@@ -126,6 +200,12 @@ def build_class_url(query_params, include_query_string=False):
 
 
 def build_schema_url(query_params):
+    base_url = remove_last_slash(query_params.base_url)
+    schema_url = assemble_url('{0}/_schema_list'.format(base_url))
+    return schema_url
+
+
+def build_schema_url_for_instance(query_params):
     class_url = build_class_url(query_params)
     query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
     schema_url = assemble_url('{0}/_schema'.format(class_url), query_string)
@@ -135,7 +215,7 @@ def build_schema_url(query_params):
 def crud_links(query_params, schema_url=None):
     """Build crud links."""
     if schema_url is None:
-        schema_url = build_schema_url(query_params)
+        schema_url = build_schema_url_for_instance(query_params)
 
     class_url = build_class_url(query_params)
     querystring = query_params["request"].query
@@ -151,15 +231,20 @@ def crud_links(query_params, schema_url=None):
     return links
 
 
-def self_link(query_params):
-    "Produce a list with a single 'self' link entry"
+def self_url(query_params):
+    """Produce the url for the self link"""
     protocol = query_params['request'].protocol
     host = query_params['request'].host
-    url = query_params["request"].uri
+    url = query_params['request'].uri
     if not host in url:
         url = "{0}://{1}{2}".format(protocol, host, url)
+    return url
 
-    return [{'rel': "self", 'href': url, 'method': "GET"}]
+
+# TODO: deprecate this
+def self_link(query_params):
+    "Produce a list with a single 'self' link entry"
+    return [{'rel': "self", 'href': self_url(query_params), 'method': "GET"}]
 
 
 def add_link(link_list, rel, href, method='GET', **kw):
@@ -167,3 +252,12 @@ def add_link(link_list, rel, href, method='GET', **kw):
     link = {'rel': rel, 'method': method, 'href': href}
     link.update(kw)
     link_list.append(link)
+
+
+def status_link(query_params):
+    """Build _status links"""
+    protocol = query_params['request'].protocol
+    host = query_params['request'].host
+    url = "{0}://{1}/{2}".format(protocol, host, "_status")
+
+    return [{"rel": "status", "href": url, "method": "GET"}]

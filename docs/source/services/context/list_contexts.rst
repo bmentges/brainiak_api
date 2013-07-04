@@ -1,8 +1,10 @@
 List of Contexts
 ================
 
-This primitive retrieves contexts which define classes and/or instances.
+This primitive retrieves a list of contexts where one can define classes and/or instances.
 Contexts that contain no data are not listed.
+
+This resource is **cached**. Read :doc:`/services/cache` for more information.
 
 **Basic usage**
 
@@ -10,22 +12,13 @@ Contexts that contain no data are not listed.
 
   $ curl -s 'http://api.semantica.dev.globoi.com/'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/' | python -mjson.tool
-  :shell:
-
 
 Optional parameters
 -------------------
 
-**page**: The page to be retrieved. The default value is ``1``, i.e. the first page.
+.. include :: ../params/pages.rst
+.. include :: ../params/item_count.rst
 
-**per_page**: Defines how many items are retrieved per page. The default value is ``10``
-
-By default, the first page containing 10 items is returned, and it could also be retrieved by:
-
-.. code-block:: http
-
-  GET 'http://api.semantica.dev.globoi.com/?page=1&per_page=10'
 
 Possible responses
 -------------------
@@ -35,14 +28,16 @@ Possible responses
 
 If there are contexts, the response body is a JSON containing contexts' titles, resources_id and @ids (URIs).
 
-.. include :: examples/list_context_200.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/' | python -mjson.tool
+  :shell:
 
 **Status 400**
 
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. include :: examples/list_context_400.rst
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/?invalid_param=1' | python -mjson.tool
+  :shell:
 
 **Status 404**
 

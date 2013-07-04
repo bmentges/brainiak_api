@@ -1,23 +1,7 @@
 import unittest
-from brainiak.prefixes import MemorizeContext
-
 import brainiak.schema.resource as schema
 from brainiak import prefixes
-from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict, normalize_predicate_range, merge_ranges, join_predicates, get_common_key, expand_object_properties_links
-
-
-class ExpandLinksTestCase(unittest.TestCase):
-    maxDiff = None
-
-    def test_expand_links_with_URL(self):
-        links = []
-        context = MemorizeContext()
-        context.add_object_property("http://www.bbc.co.uk/ontologies/asset/primaryAsset",
-                                    "http://www.bbc.co.uk/ontologies/asset/Asset")
-        expand_object_properties_links(links, context)
-
-        self.assertEqual(links[0]['href'], 'http://www.bbc.co.uk/ontologies/asset/Asset')
-        self.assertEqual(links[0]['rel'], "http://www.bbc.co.uk/ontologies/asset/primaryAsset")
+from brainiak.schema.resource import _extract_cardinalities, assemble_predicate, convert_bindings_dict, normalize_predicate_range, merge_ranges, join_predicates, get_common_key
 
 
 class AuxiliaryFunctionsTestCase(unittest.TestCase):
@@ -31,7 +15,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         del prefixes._MAP_SLUG_TO_PREFIX['test']
         del prefixes._MAP_PREFIX_TO_SLUG['http://test/person/']
 
-    def test_extract_min(self):
+    def test_extract_min_1_required_true(self):
         binding = [{
             u'predicate': {u'type': u'uri',
                            u'value': u'http://test/person/gender'},
@@ -41,10 +25,10 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'type': u'typed-literal', u'value': u'1'}
         }]
         extracted = _extract_cardinalities(binding)
-        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': u'1'}}}
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'required': True, 'minItems': 1}}}
         self.assertEqual(extracted, expected)
 
-    def test_extract_max(self):
+    def test_extract_max_1_show_omit(self):
         binding = [{
             u'predicate': {u'type': u'uri',
                            u'value': u'http://test/person/gender'},
@@ -54,20 +38,18 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'type': u'typed-literal', u'value': u'1'}
         }]
         extracted = _extract_cardinalities(binding)
-        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'maxItems': u'1'}}}
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'maxItems': 1}}}
         self.assertEqual(extracted, expected)
 
     def test_assemble_predicate_with_object_property(self):
-        expected_predicate_dict = {'comment': u'G\xeanero.',
+        expected_predicate_dict = {'description': u'G\xeanero.',
                                    'range': {'graph': 'test',
                                              '@id': 'test:Gender',
                                              'title': u'G\xeanero da Pessoa',
                                              'type': 'string',
                                              'format': 'uri'},
                                    'graph': 'test',
-                                   'maxItems': u'1',
                                    'format': 'uri',
-                                   'minItems': u'1',
                                    'title': u'Sexo',
                                    'type': 'string'}
         name = u'http://test/person/gender'
@@ -76,10 +58,10 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'range_graph': {u'type': u'uri', u'value': u'http://test/person/'},
                      u'range_label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero da Pessoa'},
                      u'title': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Sexo'},
-                     u'predicate_graph': {u'type': u'uri', u'value': u'http://test/person/'},
+                     u'predicate_graph': {u'typce': u'uri', u'value': u'http://test/person/'},
                      u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero.'},
                      u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}}
-        cardinalities = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': u'1', 'maxItems': u'1'}}}
+        cardinalities = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': 1, 'maxItems': 1}}}
         context = prefixes.MemorizeContext()
         context.prefix_to_slug('http://test/person')
         # test call
@@ -89,10 +71,11 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         self.assertEqual(expected_predicate_dict, effective_predicate_dict)
 
     def test_assemble_predicate_with_datatype_property(self):
-        expected_predicate_dict = {'comment': u'Nome completo da pessoa',
+        expected_predicate_dict = {'description': u'Nome completo da pessoa',
                                    'graph': 'test',
                                    'title': u'Nome',
-                                   'type': 'string'}
+                                   'type': 'string',
+                                   'format': 'xsd:string'}
         name = u'http://test/person/gender'
         predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/name'},
                      u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
@@ -137,13 +120,13 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_merge_ranges_first_is_list(self):
-        r1 = [{'r0': 0}, {'r1', 1}]
+        r1 = [{'r0': 0}, {'r1': 1}]
         r2 = {'r2': 2}
         expected = [{'r0': 0}, {'r1': 1}, {'r2': 2}]
         computed = merge_ranges(r1, r2)
         self.assertEqual(sorted(computed), sorted(expected))
 
-    def test_merge_ranges_first_is_list(self):
+    def test_merge_ranges_first_is_not_list(self):
         r1 = {'r1': 1}
         r2 = [{'r2': 2}, {'r3': 3}]
         expected = [{'r2': 2}, {'r3': 3}, {'r1': 1}]
@@ -293,8 +276,9 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     'format': 'uri',
                     'type': 'string'},
                 'title': u'Has parent',
-                'type': 'string',
-                'format': 'uri'
+                'type': 'array',
+                'items': {'type': 'string', 'format': 'uri'}
+
             }
         }
 
@@ -335,8 +319,9 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     'type': 'string',
                     'format': 'uri'},
                 'title': u'Entidades',
-                'type': 'string',
-                'format': 'uri'
+                'type': 'array',
+                'items': {'type': 'string', 'format': 'uri'}
+
             },
             'G1:trata_do_assunto': {
                 'graph': 'G1',
@@ -347,8 +332,8 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     'type': 'string',
                     'format': 'uri'},
                 'title': u'Assuntos',
-                'type': 'string',
-                'format': 'uri'
+                'type': 'array',
+                'items': {'type': 'string', 'format': 'uri'}
             }
         }
 

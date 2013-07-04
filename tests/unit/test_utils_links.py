@@ -1,11 +1,76 @@
 import unittest
 from urllib import urlencode
+from mock import MagicMock
 from brainiak import settings
-from brainiak.handlers import ListServiceParams
-
 from brainiak.utils.links import *
-from brainiak.utils.params import ParamDict
+from brainiak.utils.params import ParamDict, LIST_PARAMS, DefaultParamsDict
 from tests.mocks import MockHandler
+
+
+# TODO: remove this
+# class RemoveSlashTestCase(unittest.TestCase):
+#
+#     def test_remove_class_slash(self):
+#         self.assertEqual(remove_class_slash('http://a/_schema'), 'http://a')
+
+
+class TestBuildSchema(unittest.TestCase):
+
+    def test_build_schema(self):
+        params = {'page': 1, 'per_page': 2}
+        handler = MockHandler(uri="http://any.uri")
+        query_params = ParamDict(handler, **params)
+        computed = build_schema_url(query_params)
+        expected = 'http://any.uri/_schema_list'
+        self.assertEqual(expected, computed)
+
+    def test_self_url(self):
+        params = {'page': 1, 'per_page': 2}
+        handler = MockHandler(uri="http://any.uri")
+        query_params = ParamDict(handler, **params)
+        computed = self_url(query_params)
+        expected = 'http://any.uri'
+        self.assertEqual(expected, computed)
+
+    def test_self_url_no_host(self):
+        request = MagicMock(uri='/', host='127.0.0.1', protocol='https')
+        handler = MagicMock(request=request)
+        query_params = ParamDict(handler)
+        computed = self_url(query_params)
+        expected = 'https://127.0.0.1/'
+        self.assertEqual(expected, computed)
+
+
+class TestLastLink(unittest.TestCase):
+
+    def test_last_link(self):
+        params = {'page': 1, 'per_page': 2}
+        handler = MockHandler(uri="http://any.uri")
+        query_params = ParamDict(handler, **params)
+        computed = last_link(query_params, 10)
+        expected = [{'href': 'http://any.uri?per_page=2&page=5', 'method': 'GET', 'rel': 'last'}]
+        self.assertEqual(computed, expected)
+
+
+class TestPaginationItems(unittest.TestCase):
+
+    def test_last_link(self):
+        params = {'page': 1, 'per_page': 2}
+        handler = MockHandler(uri="http://any.uri")
+        query_params = ParamDict(handler, **params)
+        computed = pagination_items(query_params, 10)
+        expected = {'per_page': 2, 'previous_page': 1, 'page': 2, 'next_page': 3}
+        self.assertEqual(computed, expected)
+
+
+class TestMergeSchemas(unittest.TestCase):
+
+    def test_merge_schemas(self):
+        mutable = {'properties': {'a': 1}, 'links': [1]}
+        other = {'properties': {'b': 2}, 'links': [2]}
+        expected = {'properties': {'a': 1, 'b': 2}, 'links': [1, 2]}
+        merge_schemas(mutable, other)
+        self.assertEqual(mutable, expected)
 
 
 class LinksTestCase(unittest.TestCase):
@@ -16,8 +81,10 @@ class LinksTestCase(unittest.TestCase):
         self.assertEqual(get_previous_page(5), 4)
 
     def test_get_next_page(self):
-        self.assertEqual(get_next_page(3, 3), False)
-        self.assertEqual(get_next_page(9, 20), 10)
+        self.assertEqual(get_next_page(3), 4)
+
+    def test_get_next_page_direct(self):
+        self.assertEqual(get_next_page(3, 4), 4)
 
     def test_get_last_page_exact_division(self):
         total_items = 7
@@ -151,6 +218,7 @@ class CrudLinksTestCase(unittest.TestCase):
         }
         computed = build_class_url(query_params)
         expected = "https://dot.net/place/City"
+        self.assertEqual(computed, expected)
 
     def test_build_class_url_with_querystring(self):
 
@@ -165,8 +233,9 @@ class CrudLinksTestCase(unittest.TestCase):
             "class_name": "City"
 
         }
-        computed = build_class_url(query_params)
+        computed = build_class_url(query_params, include_query_string=True)
         expected = "https://dot.net/place/City?class_prefix=include_me"
+        self.assertEqual(computed, expected)
 
     def test_build_schema_url(self):
 
@@ -181,75 +250,67 @@ class CrudLinksTestCase(unittest.TestCase):
             "class_name": "City"
 
         }
-        computed = build_schema_url(query_params)
+        computed = build_schema_url_for_instance(query_params)
         expected = "https://dot.net/place/City/_schema?class_prefix=include_me"
+        self.assertEqual(computed, expected)
 
 
 class CollectionLinksTestCase(unittest.TestCase):
     maxDiff = None
 
-    def test_build_links_without_previous_without_next(self):
-        total_items = 1
-        handler = MockHandler(uri="http://class.uri")
-        params = {'page': 1, 'per_page': 1}
-        query_params = ParamDict(handler, **params)
-        computed = collection_links(query_params, total_items)
-        expected = [
-            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
-            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'last'},
-            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
-        self.assertEqual(sorted(computed), sorted(expected))
-
     def test_build_links_without_previous_with_next(self):
-        total_items = 2
         params = {'page': 1, 'per_page': 1}
-        handler = MockHandler(uri="http://class.uri", **params)
+        handler = MockHandler(uri="http://class.uri", querystring="page=1&per_page=1")
         query_params = ParamDict(handler, **params)
-        computed = collection_links(query_params, total_items)
+        computed = collection_links(query_params)
         expected = [
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
-            {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'last'},
             {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'next'}]
         self.assertEqual(sorted(computed), sorted(expected))
 
-    def test_build_links_with_previous_without_next(self):
-        total_items = 2
-        params = {'page': 2, 'per_page': 1}
-        handler = MockHandler(uri="http://class.uri", **params)
-        query_params = ParamDict(handler, **params)
-        computed = collection_links(query_params, total_items)
-        expected = [
-            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
-            {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'last'},
-            {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
-        self.assertEqual(sorted(computed), sorted(expected))
-
     def test_build_links_with_previous_with_next(self):
-        total_items = 3
         params = {'page': 2, 'per_page': 1}
-        handler = MockHandler(uri="http://class.uri", **params)
+        handler = MockHandler(uri="http://class.uri", querystring="page=2&per_page=1")
         query_params = ParamDict(handler, **params)
-        computed = collection_links(query_params, total_items)
+        computed = collection_links(query_params)
         expected = [
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
-            {'href': 'http://class.uri?per_page=1&page=3', 'method': 'GET', 'rel': 'last'},
             {'href': 'http://class.uri?per_page=1&page=3', 'method': 'GET', 'rel': 'next'},
             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_links_with_param_instance_prefix(self):
-        total_items = 3
-        params = {'instance_prefix': 'http://semantica.globo.com/base/'}
-        handler = MockHandler(uri="http://class.uri", **params)
-        query_params = ListServiceParams(handler, **params)
-        computed = collection_links(query_params, total_items)
-        all_args = {'per_page': settings.DEFAULT_PER_PAGE,
-                    'page': '1'}
-        all_args.update(params)
-        inst_arg_str = urlencode(params, doseq=True)
-        all_args_str = urlencode(all_args, doseq=True)
+        url_params = DefaultParamsDict(instance_prefix='http://semantica.globo.com/base/')
+        params = DefaultParamsDict(context_name='dbpedia',
+                                   class_name='People',
+                                   instance_id='inst')
+        handler = MockHandler(uri="http://class.uri", querystring="instance_prefix=http://semantica.globo.com/base/")
+        query_params = ParamDict(handler, **(LIST_PARAMS + url_params + params))
+        computed = collection_links(query_params)
+        first_all_args = {'per_page': settings.DEFAULT_PER_PAGE,
+                          'page': '1'}
+        first_all_args.update(url_params)
+        first_all_args_str = urlencode(first_all_args, doseq=True)
+
+        next_all_args = {'per_page': settings.DEFAULT_PER_PAGE,
+                         'page': '2'}
+        next_all_args.update(url_params)
+        next_all_args_str = urlencode(next_all_args, doseq=True)
         expected = [
-            {'href': 'http://class.uri?{0}'.format(all_args_str), 'method': 'GET', 'rel': 'first'},
-            {'href': 'http://class.uri?{0}'.format(all_args_str), 'method': 'GET', 'rel': 'last'}]
+            {'href': 'http://class.uri?{0}'.format(first_all_args_str), 'method': 'GET', 'rel': 'first'},
+            {'href': 'http://class.uri?{0}'.format(next_all_args_str), 'method': 'GET', 'rel': 'next'}]
 
         self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_status_link(self):
+        class MockRequest(object):
+            protocol = "http"
+            host = "localhost"
+
+        query_params = {
+            "request": MockRequest(),
+        }
+
+        computed = status_link(query_params)
+        expected = [{"rel": "status", "href": "http://localhost/_status", "method": "GET"}]
+        self.assertEqual(computed, expected)

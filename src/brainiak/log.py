@@ -1,5 +1,5 @@
 from logging.handlers import WatchedFileHandler, SysLogHandler
-from syslog import LOG_SYSLOG
+from syslog import LOG_LOCAL3
 import logging
 
 from brainiak.settings import LOG_FILEPATH, LOG_LEVEL, LOG_NAME
@@ -57,7 +57,7 @@ def _create_handlers(filename=LOG_FILEPATH, level=LOG_LEVEL):
     file_handler.setLevel(level)
 
     # Used by internal log monitoring applications
-    syslog_handler = SysLogHandler(facility=LOG_SYSLOG)
+    syslog_handler = SysLogHandler(facility=LOG_LOCAL3)
     syslog_handler.setFormatter(formatter)
     syslog_handler.setLevel(level)
 
@@ -77,11 +77,14 @@ def _retrieve_loggers():
     # General-purpose logging from Tornado itself
     gen_logger = logging.getLogger("tornado.general")
 
+    # Stomp logger imported by dad library
+    stomp_logger = logging.getLogger("stomp.py")
+
     # Brainiak application logger
     global logger
     logger = logging.getLogger(LOG_NAME)
 
-    return [access_logger, app_logger, gen_logger, logger]
+    return [access_logger, app_logger, gen_logger, stomp_logger, logger]
 
 
 def initialize(level=LOG_LEVEL):

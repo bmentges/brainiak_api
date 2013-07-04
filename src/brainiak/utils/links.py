@@ -241,12 +241,6 @@ def self_url(query_params):
     return url
 
 
-# TODO: deprecate this
-def self_link(query_params):
-    "Produce a list with a single 'self' link entry"
-    return [{'rel': "self", 'href': self_url(query_params), 'method': "GET"}]
-
-
 def add_link(link_list, rel, href, method='GET', **kw):
     "Add an entry to the list given by ``link_list'' with key==rel and href as a string template that is formated by kw"
     link = {'rel': rel, 'method': method, 'href': href}

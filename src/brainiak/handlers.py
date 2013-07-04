@@ -3,7 +3,6 @@ import httplib
 import sys
 import traceback
 from contextlib import contextmanager
-from copy import copy
 
 import ujson as json
 
@@ -327,12 +326,12 @@ class InstanceHandler(BrainiakRequestHandler):
             edit_instance(self.query_params, instance_data)
 
         response = get_instance(self.query_params)
-
         if response and settings.NOTIFY_BUS:
-            instance_dict = copy(response)
-            instance_dict.pop("links", None)
-            notify_bus(instance=instance_dict["@id"], klass=self.query_params["class_uri"],
-                       graph=self.query_params["graph_uri"], action="PUT", instance_data=instance_dict)
+            notify_bus(instance=response["@id"],
+                       klass=self.query_params["class_uri"],
+                       graph=self.query_params["graph_uri"],
+                       action="PUT",
+                       instance_data=response)
 
         self.finalize(response)
 
@@ -423,10 +422,11 @@ class CollectionHandler(BrainiakRequestHandler):
 
         if settings.NOTIFY_BUS:
             try:
-                instance_data_without_links = copy(instance_data)
-                instance_data_without_links.pop("links", None)
-                notify_bus(instance=instance_uri, klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"], action="POST", instance_data=instance_data_without_links)
+                notify_bus(instance=instance_uri,
+                           klass=self.query_params["class_uri"],
+                           graph=self.query_params["graph_uri"],
+                           action="POST",
+                           instance_data=instance_data)
             except MiddlewareError:
                 # rollback data insertion
                 self.query_params['instance_id'] = instance_id

@@ -372,7 +372,8 @@ class InstanceHandler(BrainiakRequestHandler):
 class CollectionJsonSchemaHandler(BrainiakRequestHandler):
 
     def get(self, context_name, class_name):
-        self.finalize(collection_schema(context_name, class_name))
+        query_params = ParamDict(self, context_name=context_name, class_name=class_name)
+        self.finalize(collection_schema(context_name, class_name, query_params.get('class_prefix', None)))
 
 
 class CollectionHandler(BrainiakRequestHandler):

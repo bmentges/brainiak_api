@@ -200,8 +200,8 @@ class CrudLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri/context/Class/instance', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/context/Class/instance', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
+            {'href': 'http://any.uri/context/Class/{@resource_id}', 'method': 'DELETE', 'rel': 'delete'},
+            {'href': 'http://any.uri/context/Class/{@resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_class_url_without_querystring(self):

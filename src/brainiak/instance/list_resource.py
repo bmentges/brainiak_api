@@ -2,8 +2,8 @@ import inspect
 
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import build_class_url, build_schema_url_for_instance, collection_links, add_link, filter_query_string_by_key_prefix, remove_last_slash, self_link, last_link, self_url
-from brainiak.utils.resources import decorate_with_resource_id, validate_pagination_or_raise_404, decorate_dict_with_pagination
+from brainiak.utils.links import  build_schema_url_for_instance, filter_query_string_by_key_prefix, self_url
+from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination
 from brainiak.utils.sparql import compress_keys_and_values, normalize_term, calculate_offset, get_one_value
 
 

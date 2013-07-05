@@ -9,7 +9,8 @@ The conventional patterns for assembling the URIs associated with resources are:
      Resources               URI
     ============  ===================================================
      context       <URI_PREFIX><context_id>/
-     class         <URI_PREFIX><context_id>/<class_id>
+     collection    <URI_PREFIX><context_id>/<class_id>
+     class         <URI_PREFIX><context_id>/<class_id>/_schema
      instance      <URI_PREFIX><context_id>/<class_id>/<instance_id>
     ============  ===================================================
 
@@ -46,11 +47,11 @@ When specified, the URI for context becomes "<graph_prefix><context_id>/" .
 
 .. _override_schema:
 
-Overriding the URI for the class
-----------------------------------
+Overriding the URI for the collection+class
+----------------------------------------------------
 
-The parameters ``class_uri`` and ``class_prefix`` can be used to define the URI for the class.
-The parameter ``class_uri`` completely defines the URI for the class.
+The parameters ``class_uri`` and ``class_prefix`` can be used to define the URI for the collection+class.
+The parameter ``class_uri`` completely defines the URI for the colelction+class.
 When specified, the ``class_id`` referred in the URL for the service is ignored.
 
 The parameter  ``class_prefix`` serves to override the pattern "<URI_PREFIX><context_id>/" when composing the URI for the context.

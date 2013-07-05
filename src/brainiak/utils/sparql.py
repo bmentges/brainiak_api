@@ -343,18 +343,18 @@ def extract_po_tuples(query_string_dict):
         p_value = query_string_dict[p_key]
         o_key = "o{0}".format(index)
         o_value = query_string_dict[o_key]
-        po_list.append((p_value, o_value))
+        po_list.append((p_value, o_value, index))
 
     for index in only_p_is_defined:
         p_key = "p{0}".format(index)
         p_value = query_string_dict[p_key]
         o_value = "?o{0}".format(index)
-        po_list.append((p_value, o_value))
+        po_list.append((p_value, o_value, index))
 
     for index in only_o_is_defined:
         p_value = "?p{0}".format(index)
         o_key = "o{0}".format(index)
         o_value = query_string_dict[o_key]
-        po_list.append((p_value, o_value))
+        po_list.append((p_value, o_value, index))
 
     return sorted(po_list)

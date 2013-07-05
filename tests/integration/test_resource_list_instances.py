@@ -12,6 +12,13 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     maxDiff = None
 
+    def setUp(self):
+        self.original_filter_instances = list_resource.filter_instances
+        TornadoAsyncHTTPTestCase.setUp(self)
+
+    def tearDown(self):
+        list_resource.filter_instances = self.original_filter_instances
+
     @patch("brainiak.handlers.logger")
     def test_filter_with_invalid_query_string(self, log):
         response = self.fetch('/person/Gender/?love=u', method='GET')
@@ -178,12 +185,29 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         ]
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(received_response['items'], expected_items)
+        self.assertItemsEqual(received_response['items'], expected_items)
 
     @patch("brainiak.handlers.logger")
     def test_filter_with_no_results(self, log):
         response = self.fetch('/person/Gender/?o=Xubiru&lang=pt', method='GET')
         self.assertEqual(response.code, 404)
+        body = json.loads(response.body)
+        expected_body = {
+            u'error':
+            u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with o=(Xubiru) and in language=(pt) were not found.'
+        }
+        self.assertEqual(body, expected_body)
+
+    @patch("brainiak.handlers.logger")
+    def test_filter_with_no_results_and_multiple_predicates(self, log):
+        list_resource.filter_instances = lambda params: None
+        response = self.fetch('/person/Gender/?o=object&p=rdfs:label&o1=object1&lang=pt', method='GET')
+        self.assertEqual(response.code, 404)
+        body = json.loads(response.body)
+        expected_body = {
+            u'error': u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1) and in language=(pt) were not found.'
+        }
+        self.assertEqual(body, expected_body)
 
 
 class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):

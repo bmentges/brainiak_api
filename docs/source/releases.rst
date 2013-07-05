@@ -1,16 +1,22 @@
-Releases
-========
+Next Release
+============
 
-Version 1.1.1 - 2013-06-??
+Version 2.0.0 - 2013-??-??
 --------------------------
 
+ - support for multiple predicates inf filters
+ - compliance with json-schema (moving links from resource to its respective json-schema)
  - resource prefixes renamed to _prefixes
  - resource version renamed to _version
  - More examples in the documentation were converted from static files into execution scripts expanded before deploy.
- - All references to schema renamed to class, including _schema -> _class
+ - Previous references to schema renamed to  _schema_list if associated with lists. (COmpatible with other uses at Globo.com)
  - in the classes:
      - besides the type, the format field describes the actual type used inside Virtuoso.
      - the field comment was renamed to description to better comply wiht json-schema specification.
+
+
+Releases
+========
 
 
 Version 1.1.0 - 2013-05-28

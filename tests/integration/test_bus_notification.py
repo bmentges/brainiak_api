@@ -99,7 +99,6 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             "instance_data": ANY
         }
         response = self.fetch('/tpedia/SoccerClub/?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='POST', body=json.dumps(CSA_FOOTBALL_TEAM))
-
         self.assertEqual(response.code, 201)
         mock_notify_bus.assert_called_with(**expected_message)
 

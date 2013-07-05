@@ -226,11 +226,11 @@ def unpack_tuples(instance_data):
 
 
 def is_reserved_attribute(predicate):
-    reserved_words = ["@context", "links"]
+    reserved_words = ["@context"]
     if predicate in reserved_words:
         return True
 
-    reserved_prefix = ["@", "$"]
+    reserved_prefix = ["@", "$", "_"]
     if predicate[0] in reserved_prefix:
         return True
 

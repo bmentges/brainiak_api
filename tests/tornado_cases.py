@@ -27,7 +27,7 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
 
     # Disabling timeout for debugging purposes
     def wait(self, condition=None, timeout=None):
-        return super(TornadoAsyncHTTPTestCase, self).wait(condition, timeout)
+        return super(TornadoAsyncHTTPTestCase, self).wait(None, 10)
 
     def fetch(self, path, **kwargs):
         kwargs['url'] = self.get_url(path)

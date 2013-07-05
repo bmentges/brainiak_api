@@ -42,11 +42,6 @@ def remove_last_slash(url):
     return url[:-1] if url.endswith("/") else url
 
 
-# def remove_class_slash(url):
-#     url = url.replace('/_schema', '')
-#     return url[:-1] if url.endswith("/") else url
-
-
 def split_into_chunks(items, chunk_size):
     """
     Provided a list (items) and an integer representing the chunk size,
@@ -225,7 +220,7 @@ def crud_links(query_params, schema_url=None):
     class_url = build_class_url(query_params)
     querystring = query_params["request"].query
     if querystring:
-        instance_url = "{0}/{{@resource_id}}?{2}".format(class_url, querystring)
+        instance_url = "{0}/{{@resource_id}}?{1}".format(class_url, querystring)
     else:
         instance_url = "{0}/{{@resource_id}}".format(class_url)
 

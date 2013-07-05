@@ -7,13 +7,6 @@ from brainiak.utils.params import ParamDict, LIST_PARAMS, DefaultParamsDict
 from tests.mocks import MockHandler
 
 
-# TODO: remove this
-# class RemoveSlashTestCase(unittest.TestCase):
-#
-#     def test_remove_class_slash(self):
-#         self.assertEqual(remove_class_slash('http://a/_schema'), 'http://a')
-
-
 class TestBuildSchema(unittest.TestCase):
 
     def test_build_schema(self):

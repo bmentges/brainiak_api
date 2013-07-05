@@ -5,8 +5,23 @@ Hypermedia Support
 
 Any resource may have one or more properties linking to other resources, represented in the resource's link section.
 These links are meant to provide explicit URLs so that proper API clients don’t need to hardcode URLs to API services.
-In hypermedia APIs you should be able to navigate through API services from the ``/``.
+
+In hypermedia APIs you should be able to navigate through API services from the root ``/``.
 It is highly recommended that API clients use these links, because API service URLs may change in production without previous notice to clients.
+The links are not embedded in the resource, they are present in the schema that described such resource.
+In order to obtain the list of links for a given resource, one should follow the profile URL present in the Content-Type response header.
+For example:
+
+::
+
+    $ curl -i http://api.semantica.dev.globoi.com
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json; profile=http://api.semantica.dev.globoi.com/_schema_list
+    Content-Length: 1007
+    ...
+
+
 All URLs are expected to be proper RFC 6570 URI templates.
 
 Each link is described by attributes, typically: rel, href and method.

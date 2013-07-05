@@ -39,7 +39,7 @@ We also make this distinction on the API interface.
 A *Class* is a priviledged instance that defines the structure of the data (non-class instances) being stored.
 To avoid confusion, we avoid referring to classes calling them *instances*, a term we reserve for *non-class* instances.
 Although we prefer ``class``, sometimes we use the term ``schema`` as a synonym.
-``Class`` is preferable to ``chema`` in order to avoid the confusion with the listings schemas rendered in json-schema format.
+``Class`` is preferable to ``schema`` in order to avoid the confusion with the listings schemas rendered in json-schema format.
 
 Classes are defined in the RDF/OWL Model, given its high expressivity and flexibility.
 Therefore, it will be possible to represent classes in different database models or even translations between them in a common language.
@@ -65,7 +65,7 @@ Collection
 ----------
 
 We need to distinguish the structure of an instance (class) from a group of instances with the same structure (collection).
-Therefore, for each class corresponds a unique collection.
+Therefore, for each class corresponds a unique collection adn vice-versa.
 The collection name and the class name are the same.
 
 

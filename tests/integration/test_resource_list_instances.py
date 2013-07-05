@@ -23,18 +23,21 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'title': u'Feminino',
                 u'@id': settings.URI_PREFIX + 'person/Gender/Female',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'resource_id': u'Female'
             },
             {
                 u'title': u'Masculino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'resource_id': u'Male'
             },
             {
                 u'title': u'Transg\xeanero',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'resource_id': u'Transgender'
             }
@@ -65,12 +68,14 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Female',
                 u'resource_id': u'Female',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Feminino'
             },
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Masculino'
             }
@@ -85,6 +90,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
                 u'resource_id': u'Transgender',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Transg\xeanero'
             }
@@ -99,12 +105,14 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
                 u'resource_id': u'Transgender',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Transg\xeanero'
             },
             {
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'title': u'Masculino'
             }
@@ -118,6 +126,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
                 u'title': u'Masculino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'p': [u'http://semantica.globo.com/upper/name', u'http://www.w3.org/2000/01/rdf-schema#label']
             }
@@ -133,18 +142,21 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'title': u'Feminino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Female',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'resource_id': u'Female'
             },
             {
                 u'title': u'Masculino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'resource_id': u'Male'
             },
             {
                 u'title': u'Transg\xeanero',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Transgender',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'resource_id': u'Transgender'
             }
@@ -160,6 +172,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
             {
                 u'title': u'Feminino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Female',
+                u'class_prefix': u'http://semantica.globo.com/person/',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'resource_id': u'Female'}
         ]
@@ -190,6 +203,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         expected_items = [{
             u'resource_id': u'news_cricket',
             u'instance_prefix': u'http://brmedia.com/',
+            u'class_prefix': u'http://dbpedia.org/ontology/',
             u'@id': u'http://brmedia.com/news_cricket',
             u'title': u'Cricket becomes the most popular sport of Brazil'
         }]
@@ -203,6 +217,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         expected_items = [{
             u'resource_id': u'news_president_answer',
             u'instance_prefix': u'http://brmedia.com/',
+            u'class_prefix': u'http://dbpedia.org/ontology/',
             u'@id': u'http://brmedia.com/news_president_answer',
             u'title': u"President explains the reason for the war - it is 42"
         }]
@@ -226,6 +241,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'http://tatipedia.org/Capoeira'],
                 u'instance_prefix': u'http://tatipedia.org/',
+                u'class_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'mary',
                 u'@id': u'http://tatipedia.org/mary',
                 u'title': u'Mary Land'
@@ -233,6 +249,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'Aikido'],
                 u'instance_prefix': u'http://tatipedia.org/',
+                u'class_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'john',
                 u'@id': u'http://tatipedia.org/john',
                 u'title': u'John Jones'
@@ -250,6 +267,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         expected_items = [
             {
                 u'p': u'http://tatipedia.org/likes',
+                u'class_prefix': u'http://tatipedia.org/',
                 u'instance_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'john',
                 u'@id': u'http://tatipedia.org/john',
@@ -267,6 +285,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u'p': u'http://tatipedia.org/likes',
                 u'p1': 'http://tatipedia.org/isAlive',
+                u'class_prefix': u'http://tatipedia.org/',
                 u'instance_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'john',
                 u'@id': u'http://tatipedia.org/john',
@@ -283,6 +302,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         expected_items = [
             {
                 u'@id': u'http://tatipedia.org/john',
+                u'class_prefix': u'http://tatipedia.org/',
                 u'http://tatipedia.org/isAlive': u'Yes',
                 u'http://tatipedia.org/likes': [
                     u'http://tatipedia.org/JiuJitsu',
@@ -293,6 +313,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             },
             {
                 u'@id': u'http://tatipedia.org/mary',
+                u'class_prefix': u'http://tatipedia.org/',
                 u'http://tatipedia.org/isAlive': u'No',
                 u'http://tatipedia.org/likes': [
                     u'http://tatipedia.org/JiuJitsu',
@@ -313,6 +334,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u'dbpedia:nickname': u'JJ',
                 u'resource_id': u'john',
+                u'class_prefix': u'http://tatipedia.org/',
                 u'instance_prefix': u'http://tatipedia.org/',
                 u'@id': u'http://tatipedia.org/john',
                 u'title': u'John Jones'
@@ -320,6 +342,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u'dbpedia:nickname': u'ML',
                 u'resource_id': u'mary',
+                u'class_prefix': u'http://tatipedia.org/',
                 u'instance_prefix': u'http://tatipedia.org/',
                 u'@id': u'http://tatipedia.org/mary',
                 u'title': u'Mary Land'
@@ -336,12 +359,14 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u"title": u"Clube de Regatas do Flamengo",
                 u"instance_prefix": u"http://tatipedia.org/",
+                u'class_prefix': u'http://tatipedia.org/',
                 u"@id": u"http://tatipedia.org/CRF",
                 u"resource_id": u"CRF"
             },
             {
                 u"title": u'S\xe3o Paulo Futebol Clube',
                 u"instance_prefix": u"http://tatipedia.org/",
+                u'class_prefix': u'http://tatipedia.org/',
                 u"@id": u"http://tatipedia.org/SPFC",
                 u"http://tatipedia.org/stadium": u"Morumbi",
                 u"resource_id": u"SPFC"
@@ -349,6 +374,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u"title": u"Cruzeiro Esporte Clube",
                 u"instance_prefix": u"http://tatipedia.org/",
+                u'class_prefix': u'http://tatipedia.org/',
                 u"@id": u"http://tatipedia.org/CEC",
                 u"http://tatipedia.org/stadium": u"Toca da Raposa",
                 u"resource_id": u"CEC"
@@ -365,6 +391,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u"title": u'S\xe3o Paulo Futebol Clube',
                 u"instance_prefix": u"http://tatipedia.org/",
+                u'class_prefix': u'http://tatipedia.org/',
                 u"@id": u"http://tatipedia.org/SPFC",
                 u"http://tatipedia.org/stadium": u"Morumbi",
                 u"resource_id": u"SPFC"
@@ -372,6 +399,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             {
                 u"title": u"Cruzeiro Esporte Clube",
                 u"instance_prefix": u"http://tatipedia.org/",
+                u'class_prefix': u'http://tatipedia.org/',
                 u"@id": u"http://tatipedia.org/CEC",
                 u"http://tatipedia.org/stadium": u"Toca da Raposa",
                 u"resource_id": u"CEC"

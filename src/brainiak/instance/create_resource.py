@@ -5,7 +5,6 @@ from brainiak.utils.sparql import create_explicit_triples, create_instance_uri, 
     extract_instance_id, join_triples, join_prefixes, is_insert_response_successful
 
 
-# TODO: test
 def create_instance(query_params, instance_data, instance_uri=None):
     class_uri = query_params["class_uri"]
 

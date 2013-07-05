@@ -24,7 +24,7 @@ class RouteTestCase(TestCase):
 
     def test_schema_resource(self):
         regex = self._regex_for(ClassHandler)
-        VALID_SCHEMA_RESOURCE_SUFFIX = '/person/Gender/_class'
+        VALID_SCHEMA_RESOURCE_SUFFIX = '/person/Gender/_schema'
         match_pattern = regex.match(VALID_SCHEMA_RESOURCE_SUFFIX)
 
         expected_params = {"context_name": "person", "class_name": "Gender"}
@@ -39,7 +39,7 @@ class RouteTestCase(TestCase):
 
     def test_invalid_schema_resource_with_unexpected_params(self):
         regex = self._regex_for(ClassHandler)
-        VALID_SCHEMA_RESOURCE_SUFFIX = '/person/Gender/_class'
+        VALID_SCHEMA_RESOURCE_SUFFIX = '/person/Gender/_schema'
         match_pattern = regex.match(VALID_SCHEMA_RESOURCE_SUFFIX)
 
         unexpected_params = {"context_name": "person",

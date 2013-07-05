@@ -1,5 +1,6 @@
 import json
 from mock import patch
+from brainiak.prefixes import ROOT_CONTEXT
 
 from brainiak.root.get import QUERY_LIST_CONTEXT
 from brainiak.utils import sparql
@@ -54,27 +55,26 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        default_graph = {u'resource_id': u'upper', u'@id': u'http://semantica.globo.com/upper/', u'title': u'upper'}
-
-        self.assertIn("links", body.keys())
-
         self.assertIn("items", body.keys())
+
+        upper_graph = {u'resource_id': u'upper', u'@id': u'http://semantica.globo.com/upper/', u'title': u'upper'}
+        self.assertIn(upper_graph, body['items'])
+
+        default_graph = {u'resource_id': ROOT_CONTEXT, u'@id': u'http://semantica.globo.com/', u'title': ROOT_CONTEXT}
         self.assertIn(default_graph, body['items'])
 
-    def test_200_person_in_contexts(self):
-        response = self.fetch("/", method='GET')
-        self.assertEqual(response.code, 200)
-        body = json.loads(response.body)
-        default_graph = {u'title': u'person', u'@id': u'http://semantica.globo.com/person/', u'resource_id': u'person'}
-        self.assertIn("items", body.keys())
-        self.assertIn(default_graph, body['items'])
+        keys = body.keys()
+        self.assertIn('next_page', keys)
+        self.assertIn('page', keys)
+        self.assertIn('do_item_count', keys)
+        self.assertIn('page', keys)
+        self.assertIn('id', keys)
 
     def test_200_with_pagination(self):
         # disclaimer: this test assumes there are > 2 non-empty registered graphs in Virtuoso
-        response = self.fetch("/?page=1&per_page=2", method='GET')
+        response = self.fetch("/?page=1&per_page=2&do_item_count=1", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertIn("links", body.keys())
         self.assertIn("items", body.keys())
 
     @patch("brainiak.utils.cache.retrieve", return_value={"body": {"status": "cached"}, "meta": {"last_modified": "Fri, 11 May 1984 20:00:00 -0300"}})

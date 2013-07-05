@@ -13,12 +13,12 @@
 
 import sys, os
 import sphinx_bootstrap_theme
-from brainiak.version import RELEASE
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../../src'))
+from brainiak import version as version_release
 
 # -- General configuration -----------------------------------------------------
 
@@ -52,7 +52,7 @@ copyright = u'2013, Globo.com'
 # built documents.
 #
 # The short X.Y version.
-version = RELEASE
+version = version_release.RELEASE[:25]
 # The full version, including alpha/beta/rc tags.
 release = version
 

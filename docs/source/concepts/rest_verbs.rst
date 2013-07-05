@@ -6,7 +6,7 @@ They represent the actions applied over the resources provided by the interface.
 
 The primary or most commonly used HTTP verbs (or methods) are ``POST``, ``GET``, ``PUT``, and ``DELETE``.
 These correspond to create, read, update, and delete (or CRUD) operations, respectively.
-There are a number of other verbs, too, but are utilized less frequently such as ``OPTIONS`` and ``HEAD``.
+There are a number of other verbs, too, but are utilized less frequently such as ``OPTIONS``, ``HEAD`` and ``PURGE``.
 
 Below is a table summarizing recommended return values of the primary HTTP methods in combination with the resource URIs:
 

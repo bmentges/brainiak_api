@@ -2,9 +2,9 @@ import inspect
 
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import build_class_url, build_schema_url, collection_links, add_link, filter_query_string_by_key_prefix, remove_last_slash, self_link, last_link
-from brainiak.utils.resources import decorate_with_resource_id, validate_pagination_or_raise_404
-from brainiak.utils.sparql import calculate_offset, compress_keys_and_values, extract_po_tuples, get_one_value, normalize_term
+from brainiak.utils.links import build_schema_url_for_instance, self_url
+from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination
+from brainiak.utils.sparql import compress_keys_and_values, normalize_term, calculate_offset, get_one_value, extract_po_tuples
 
 
 class Query(object):
@@ -219,10 +219,11 @@ def extract_prefix(url):
 
 
 # TODO: unit test
-def add_instance_prefix(items_list):
+def add_prefix(items_list, class_prefix):
     for item in items_list:
         uri = item["@id"]
         item["instance_prefix"] = extract_prefix(uri)
+        item["class_prefix"] = class_prefix
 
 
 def filter_instances(query_params):
@@ -240,39 +241,35 @@ def filter_instances(query_params):
         return None
     items_list = compress_keys_and_values(result_dict, keymap=keymap, ignore_keys=["total"])
     items_list = merge_by_id(items_list)
-    add_instance_prefix(items_list)
+    add_prefix(items_list, query_params['class_prefix'])
     decorate_with_resource_id(items_list)
     return build_json(items_list, query_params)
 
 
 def build_json(items_list, query_params):
-    base_url = remove_last_slash(query_params.base_url)
-    links = self_link(query_params) + collection_links(query_params)
-    query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
-    create_url = build_class_url(query_params, include_query_string=True)
-    schema_url = build_schema_url(query_params)
+    #query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
+    schema_url = build_schema_url_for_instance(query_params)
 
-    if query_string:
-        item_query_string = query_string + "&" + "instance_prefix={instance_prefix}"
-    else:
-        item_query_string = query_string + "instance_prefix={instance_prefix}"
-    item_url = "{0}/{{resource_id}}?{1}".format(base_url, item_query_string)
+    #if query_string:
+    #    item_query_string = query_string + "&" + "instance_prefix={instance_prefix}"
+    #else:
+    #    item_query_string = query_string + "instance_prefix={instance_prefix}"
+    #item_url = "{0}/{{resource_id}}?{1}".format(base_url, item_query_string)
 
-    add_link(links, 'item', item_url)
-    add_link(links, 'instance', item_url)
-    add_link(links, 'class', schema_url)
-    add_link(links, "add", create_url, method='POST', schema={'$ref': schema_url})
+    #add_link(links, 'item', item_url)
+    #add_link(links, 'instance', item_url)
+    #add_link(links, 'class', schema_url)
     json = {
+        '_schema_url': schema_url,
+        'id': self_url(query_params),
         'items': items_list,
         "@context": {"@language": query_params.get("lang")}
     }
 
-    if query_params.get("do_item_count", None) == "1":
+    def calculate_total_items():
         result_dict = query_count_filter_instances(query_params)
         total_items = int(get_one_value(result_dict, 'total'))
-        validate_pagination_or_raise_404(query_params, total_items)
-        links += last_link(query_params, total_items)
-        json['item_count'] = total_items
+        return total_items
+    decorate_dict_with_pagination(json, query_params, calculate_total_items)
 
-    json['links'] = links
     return json

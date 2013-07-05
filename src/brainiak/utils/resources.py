@@ -2,6 +2,7 @@
 import re
 from tornado.web import HTTPError
 from brainiak.prefixes import expand_uri, is_compressed_uri, ROOT_CONTEXT
+from brainiak.utils.links import pagination_items
 from brainiak.utils.params import valid_pagination
 from brainiak.settings import SPARQL_PORT, EVENT_BUS_PORT
 
@@ -26,6 +27,18 @@ def check_messages_when_port_is_mentioned(source_message):
     return result
 
 
+def decorate_dict_with_pagination(target_dict, params, get_total_items_func):
+    if params.get("do_item_count", None) == "1":
+        total_items = get_total_items_func()
+        validate_pagination_or_raise_404(params, total_items)
+        target_dict['item_count'] = total_items
+        target_dict['do_item_count'] = "1"
+    else:
+        total_items = None
+        target_dict['do_item_count'] = "0"
+    target_dict.update(pagination_items(params, total_items))
+
+
 def validate_pagination_or_raise_404(params, total_items):
     "Uniform validation for a page out of range"
     page_index = int(params["page"])
@@ -47,7 +60,7 @@ def decorate_with_resource_id(list_of_dicts):
                 resource_id = id_key.rsplit("/")[-2]
             else:
                 resource_id = id_key.rsplit("/")[-1]
-            dict_item['resource_id'] = resource_id
+            dict_item['resource_id'] = unicode(resource_id)
         except KeyError as ex:
             raise TypeError("dict missing key {0:s} while processing decorate_with_resource_id()".format(ex))
 

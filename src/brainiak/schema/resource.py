@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from brainiak.prefixes import MemorizeContext
-from brainiak.utils.links import assemble_url, add_link, self_link
+from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties
 from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
@@ -32,17 +32,30 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
     effective_context.update(context.context)
 
     query_params.resource_url = query_params.base_url
-    links = self_link(query_params)
+    base_url = remove_last_slash(query_params.base_url)
 
-    base_url = query_params.base_url[:-8]  # remove /_class
     href = assemble_url(base_url, {"class_prefix": query_params["class_prefix"]})
+
+    links = [
+        {
+            'rel': "self",
+            'href': base_url + '/{_resource_id}',  # TODO: Adicionar aqui outros parâmetros
+            'method': "GET"
+        },
+        {
+            'rel': "class",
+            'href': self_url(query_params),
+            'method': "GET"
+        }
+    ]
     add_link(links, "collection", href)
 
-    #expand_object_properties_links(links, context)
+    action_links = crud_links(query_params)
+    links.extend(action_links)
 
     schema = {
         "type": "object",
-        "@id": short_uri,
+        "id": short_uri,
         "@context": effective_context,
         "$schema": "http://json-schema.org/draft-03/schema#",
         "title": title,
@@ -54,16 +67,6 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
         schema["description"] = comment
 
     return schema
-
-
-def expand_object_properties_links(links, context):
-    "Add object-properties links that define how to retrieve reference fields"
-    for property_name, uri in context.object_properties.items():
-        if (not "://" in uri) and (':' in uri):
-            parts = dict(zip(('ctx', 'klass'), uri.split(':')))
-            add_link(links, property_name, "/{ctx}/{klass}".format(**parts))
-        else:
-            add_link(links, property_name, uri)
 
 
 QUERY_CLASS_SCHEMA = """

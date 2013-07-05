@@ -72,22 +72,4 @@ class GetContextTestCase(unittest.TestCase):
 
         self.assertEqual(computed['@context'], expected_context)
         self.assertEqual(computed['items'], expected_items)
-
-        self_link = {
-            'href': 'http://poke.oioi/company/',
-            'method': 'GET',
-            'rel': 'self',
-        }
-        instances_link = {
-            'href': 'http://poke.oioi/company/{resource_id}?class_prefix={class_prefix}',
-            'method': 'GET',
-            'rel': 'list'
-        }
-        collection_link = {
-            'href': 'http://poke.oioi/company/{resource_id}?class_prefix={class_prefix}',
-            'method': 'GET',
-            'rel': 'collection'
-        }
-        self.assertIn(self_link, computed['links'])
-        self.assertIn(collection_link, computed['links'])
-        self.assertIn(instances_link, computed['links'])
+        self.assertEqual("http://poke.oioi/company/", computed['id'])

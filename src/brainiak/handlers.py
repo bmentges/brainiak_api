@@ -3,7 +3,6 @@ import httplib
 import sys
 import traceback
 from contextlib import contextmanager
-from copy import copy
 
 import ujson as json
 
@@ -29,11 +28,13 @@ from brainiak.root.get import list_all_contexts
 from brainiak.schema import resource as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
-from brainiak.utils.links import build_schema_url
+from brainiak.utils.links import build_schema_url_for_instance, set_content_type_profile
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.resources import check_messages_when_port_is_mentioned
 from brainiak.event_bus import NotificationFailure
-
+from brainiak.root.json_schema import schema as root_schema
+from brainiak.context.json_schema import schema as context_schema
+from brainiak.instance.json_schema import schema as collection_schema
 
 logger = LazyObject(get_logger)
 
@@ -59,6 +60,7 @@ def safe_params(valid_params=None):
 
 def get_routes():
     return [
+        # internal resources for monitoring and meta-infromation inspection
         URLSpec(r'/healthcheck/?', HealthcheckHandler),
         URLSpec(r'/_version/?', VersionHandler),
         URLSpec(r'/_prefixes/?', PrefixHandler),
@@ -66,7 +68,12 @@ def get_routes():
         URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
         URLSpec(r'/_status/cache/?', CacheStatusHandler),
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
-        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_class/?', ClassHandler),
+        # json-schemas
+        URLSpec(r'/_schema_list/?', RootJsonSchemaHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/_schema_list/?', ContextJsonSchemaHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema_list/?', CollectionJsonSchemaHandler),
+        # resources that represents concepts
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', ClassHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)/?', InstanceHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/?', ContextHandler),
@@ -89,9 +96,9 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             path = self.request.path
             recursive = int(self.request.headers.get('X-Cache-recursive', '0'))
             if recursive:
-                response = cache.purge(path)
+                cache.purge(path)
             else:
-                response = cache.delete(path)
+                cache.delete(path)
         else:
             raise HTTPError(405, log_message="Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)")
 
@@ -224,6 +231,31 @@ class StatusHandler(BrainiakRequestHandler):
         self.write(response)
 
 
+class RootJsonSchemaHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.finalize(root_schema())
+
+
+class RootHandler(BrainiakRequestHandler):
+
+    SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
+
+    @greenlet_asynchronous
+    def get(self):
+        valid_params = LIST_PARAMS + CACHE_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, **valid_params)
+        response = memoize(list_all_contexts, self.query_params)
+        self.add_cache_headers(response['meta'])
+        self.finalize(response['body'])
+
+    def finalize(self, response):
+        if isinstance(response, dict):
+            self.write(response)
+            set_content_type_profile(self, self.query_params)
+
+
 class ClassHandler(BrainiakRequestHandler):
 
     def __init__(self, *args, **kwargs):
@@ -294,12 +326,12 @@ class InstanceHandler(BrainiakRequestHandler):
             edit_instance(self.query_params, instance_data)
 
         response = get_instance(self.query_params)
-
         if response and settings.NOTIFY_BUS:
-            instance_dict = copy(response)
-            instance_dict.pop("links", None)
-            notify_bus(instance=instance_dict["@id"], klass=self.query_params["class_uri"],
-                       graph=self.query_params["graph_uri"], action="PUT", instance_data=instance_dict)
+            notify_bus(instance=response["@id"],
+                       klass=self.query_params["class_uri"],
+                       graph=self.query_params["graph_uri"],
+                       action="PUT",
+                       instance_data=response)
 
         self.finalize(response)
 
@@ -329,12 +361,19 @@ class InstanceHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         elif isinstance(response, dict):
             self.write(response)
-            schema_url = build_schema_url(self.query_params)
+            schema_url = build_schema_url_for_instance(self.query_params)
             content_type = "application/json; profile={0}".format(schema_url)
             self.set_header("Content-Type", content_type)
         elif isinstance(response, int):  # status code
             self.set_status(response)
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25
+
+
+class CollectionJsonSchemaHandler(BrainiakRequestHandler):
+
+    def get(self, context_name, class_name):
+        query_params = ParamDict(self, context_name=context_name, class_name=class_name)
+        self.finalize(collection_schema(context_name, class_name, query_params.get('class_prefix', None)))
 
 
 class CollectionHandler(BrainiakRequestHandler):
@@ -351,7 +390,6 @@ class CollectionHandler(BrainiakRequestHandler):
                                           class_name=class_name,
                                           **valid_params)
         response = filter_instances(self.query_params)
-
         self.finalize(response)
 
     @greenlet_asynchronous
@@ -384,10 +422,11 @@ class CollectionHandler(BrainiakRequestHandler):
 
         if settings.NOTIFY_BUS:
             try:
-                instance_data_without_links = copy(instance_data)
-                instance_data_without_links.pop("links", None)
-                notify_bus(instance=instance_uri, klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"], action="POST", instance_data=instance_data_without_links)
+                notify_bus(instance=instance_uri,
+                           klass=self.query_params["class_uri"],
+                           graph=self.query_params["graph_uri"],
+                           action="POST",
+                           instance_data=instance_data)
             except MiddlewareError:
                 # rollback data insertion
                 self.query_params['instance_id'] = instance_id
@@ -413,20 +452,13 @@ class CollectionHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
+            set_content_type_profile(self, self.query_params)
 
 
-class RootHandler(BrainiakRequestHandler):
+class ContextJsonSchemaHandler(BrainiakRequestHandler):
 
-    SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
-
-    @greenlet_asynchronous
-    def get(self):
-        valid_params = LIST_PARAMS + CACHE_PARAMS
-        with safe_params(valid_params):
-            self.query_params = ParamDict(self, **valid_params)
-        response = memoize(list_all_contexts, self.query_params)
-        self.add_cache_headers(response['meta'])
-        self.finalize(response['body'])
+    def get(self, context_name):
+        self.finalize(context_schema(context_name))
 
 
 class ContextHandler(BrainiakRequestHandler):
@@ -447,6 +479,7 @@ class ContextHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
+            set_content_type_profile(self, self.query_params)
 
 
 class PrefixHandler(BrainiakRequestHandler):

@@ -3,9 +3,8 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql
-from brainiak.utils.links import self_link, split_into_chunks, collection_links,\
-    add_link, status_link, last_link
-from brainiak.utils.resources import validate_pagination_or_raise_404
+from brainiak.utils.links import split_into_chunks, self_url
+from brainiak.utils.resources import decorate_dict_with_pagination
 
 # Note that pagination was done outside the query
 # because we are filtering query results based on prefixes
@@ -33,19 +32,15 @@ def list_all_contexts(params):
     except IndexError:
         raise HTTPError(404, log_message="No contexts were found.")
 
-    links = self_link(params) + collection_links(params) + status_link(params)
-    add_link(links, "list", params.base_url + "{resource_id}")
-    add_link(links, "context", params.base_url + "{resource_id}")
+    json = {
+        'id': self_url(params),
+        'items': contexts
+    }
 
-    json = {'items': contexts}
+    def calculate_total_items():
+        return len(filtered_contexts)
+    decorate_dict_with_pagination(json, params, calculate_total_items)
 
-    if params.get("do_item_count", None) == "1":
-        total_items = len(filtered_contexts)
-        validate_pagination_or_raise_404(params, total_items)
-        links += last_link(params, total_items)
-        json['item_count'] = total_items
-
-    json['links'] = links
     return json
 
 

@@ -1,9 +1,9 @@
 from brainiak import triplestore, settings
-from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, validate_pagination_or_raise_404
+from brainiak.utils.links import self_url
+from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, decorate_dict_with_pagination
 from brainiak.utils.sparql import add_language_support, calculate_offset
 from brainiak.utils.sparql import compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids
-from brainiak.utils.links import add_link, collection_links, remove_last_slash, self_link, last_link
 from brainiak.prefixes import MemorizeContext
 
 
@@ -22,30 +22,23 @@ def assemble_list_json(query_params, query_result_dict):
         keymap={"class": "@id", "label": "title"},
         context=context)
     items_list = compress_duplicated_ids(items_list)
-
     decorate_with_resource_id(items_list)
     decorate_with_class_prefix(items_list)
-
-    links = self_link(query_params) + collection_links(query_params)
-    add_link(links, 'list', "{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(remove_last_slash(query_params.base_url)))
-    add_link(links, 'collection', "{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(remove_last_slash(query_params.base_url)))
 
     context_section = context.context
     context_section.update({"@language": query_params.get("lang")})
 
     json_dict = {
+        'id': self_url(query_params),
         'items': items_list,
         '@context': context_section
     }
 
-    if query_params.get("do_item_count", None) == "1":
+    def calculate_total_items():
         count_query_result_dict = query_count_classes(query_params)
         total_items = int(get_one_value(count_query_result_dict, "total_items"))
-        validate_pagination_or_raise_404(query_params, total_items)
-        links += last_link(query_params, total_items)
-        json_dict['item_count'] = total_items
-
-    json_dict['links'] = links
+        return total_items
+    decorate_dict_with_pagination(json_dict, query_params, calculate_total_items)
 
     return json_dict
 

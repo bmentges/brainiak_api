@@ -391,11 +391,11 @@ class CreateExplicitTriples(unittest.TestCase):
 
     def test_predicate_is_reserved_word(self):
         self.assertTrue(is_reserved_attribute("@context"))
-        self.assertTrue(is_reserved_attribute("links"))
 
     def test_predicate_begins_with_reserved_prefix(self):
         self.assertTrue(is_reserved_attribute("@xubiru"))
         self.assertTrue(is_reserved_attribute("$nissim"))
+        self.assertTrue(is_reserved_attribute("_resource_id"))
 
     def test_predicate_is_not_reserved_attribute(self):
         self.assertFalse(is_reserved_attribute("bla"))

@@ -1,9 +1,69 @@
 import unittest
 from urllib import urlencode
+from mock import MagicMock
 from brainiak import settings
 from brainiak.utils.links import *
 from brainiak.utils.params import ParamDict, LIST_PARAMS, DefaultParamsDict
 from tests.mocks import MockHandler
+
+
+class TestBuildSchema(unittest.TestCase):
+
+    def test_build_schema(self):
+        params = {'page': 1, 'per_page': 2}
+        handler = MockHandler(uri="http://any.uri")
+        query_params = ParamDict(handler, **params)
+        computed = build_schema_url(query_params)
+        expected = 'http://any.uri/_schema_list'
+        self.assertEqual(expected, computed)
+
+    def test_self_url(self):
+        params = {'page': 1, 'per_page': 2}
+        handler = MockHandler(uri="http://any.uri")
+        query_params = ParamDict(handler, **params)
+        computed = self_url(query_params)
+        expected = 'http://any.uri'
+        self.assertEqual(expected, computed)
+
+    def test_self_url_no_host(self):
+        request = MagicMock(uri='/', host='127.0.0.1', protocol='https')
+        handler = MagicMock(request=request)
+        query_params = ParamDict(handler)
+        computed = self_url(query_params)
+        expected = 'https://127.0.0.1/'
+        self.assertEqual(expected, computed)
+
+
+class TestLastLink(unittest.TestCase):
+
+    def test_last_link(self):
+        params = {'page': 1, 'per_page': 2}
+        handler = MockHandler(uri="http://any.uri")
+        query_params = ParamDict(handler, **params)
+        computed = last_link(query_params, 10)
+        expected = [{'href': 'http://any.uri?per_page=2&page=5', 'method': 'GET', 'rel': 'last'}]
+        self.assertEqual(computed, expected)
+
+
+class TestPaginationItems(unittest.TestCase):
+
+    def test_last_link(self):
+        params = {'page': 1, 'per_page': 2}
+        handler = MockHandler(uri="http://any.uri")
+        query_params = ParamDict(handler, **params)
+        computed = pagination_items(query_params, 10)
+        expected = {'per_page': 2, 'previous_page': 1, 'page': 2, 'next_page': 3}
+        self.assertEqual(computed, expected)
+
+
+class TestMergeSchemas(unittest.TestCase):
+
+    def test_merge_schemas(self):
+        mutable = {'properties': {'a': 1}, 'links': [1]}
+        other = {'properties': {'b': 2}, 'links': [2]}
+        expected = {'properties': {'a': 1, 'b': 2}, 'links': [1, 2]}
+        merge_schemas(mutable, other)
+        self.assertEqual(mutable, expected)
 
 
 class LinksTestCase(unittest.TestCase):
@@ -15,6 +75,9 @@ class LinksTestCase(unittest.TestCase):
 
     def test_get_next_page(self):
         self.assertEqual(get_next_page(3), 4)
+
+    def test_get_next_page_direct(self):
+        self.assertEqual(get_next_page(3, 4), 4)
 
     def test_get_last_page_exact_division(self):
         total_items = 7
@@ -130,8 +193,8 @@ class CrudLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri/context/Class/instance', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/context/Class/instance', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_class'}}]
+            {'href': 'http://any.uri/context/Class/{@resource_id}', 'method': 'DELETE', 'rel': 'delete'},
+            {'href': 'http://any.uri/context/Class/{@resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_build_class_url_without_querystring(self):
@@ -180,8 +243,8 @@ class CrudLinksTestCase(unittest.TestCase):
             "class_name": "City"
 
         }
-        computed = build_schema_url(query_params)
-        expected = "https://dot.net/place/City/_class?class_prefix=include_me"
+        computed = build_schema_url_for_instance(query_params)
+        expected = "https://dot.net/place/City/_schema?class_prefix=include_me"
         self.assertEqual(computed, expected)
 
 
@@ -218,12 +281,12 @@ class CollectionLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **(LIST_PARAMS + url_params + params))
         computed = collection_links(query_params)
         first_all_args = {'per_page': settings.DEFAULT_PER_PAGE,
-                    'page': '1'}
+                          'page': '1'}
         first_all_args.update(url_params)
         first_all_args_str = urlencode(first_all_args, doseq=True)
 
         next_all_args = {'per_page': settings.DEFAULT_PER_PAGE,
-                          'page': '2'}
+                         'page': '2'}
         next_all_args.update(url_params)
         next_all_args_str = urlencode(next_all_args, doseq=True)
         expected = [

@@ -1,6 +1,5 @@
 from unittest import TestCase
 from mock import patch
-import re
 from brainiak import get_version, version
 from brainiak.server import Application
 
@@ -14,6 +13,7 @@ class ServerTestCase(TestCase):
         Application()
         mocked_exit.assert_called_with(1)
 
+    # TODO: FIXME: This test is was breaking the CI probably due to fails in the git spawned process
     # def test_version(self):
     #     pat = re.compile("\w+\s+\|\s+\w+")
     #     m = pat.match(get_version())

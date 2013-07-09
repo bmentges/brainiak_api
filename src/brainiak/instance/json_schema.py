@@ -7,30 +7,30 @@ def schema(context_name, class_name, class_prefix):
     if class_prefix is not None:
         schema_ref = "/{0}/{1}/_schema?class_prefix={2}".format(*vars)
         href = "/{0}/{1}?class_prefix={2}".format(*vars)
-        link = "/{0}/{1}/{{resource_id}}?class_prefix={2}&instance_prefix={{instance_prefix}}".format(*vars)
+        link = "/{0}/{1}/{{resource_id}}?class_prefix={{class_prefix}}&instance_prefix={{instance_prefix}}".format(*vars)
     else:
         schema_ref = '/{0}/{1}/_schema'.format(*vars)
         href = '/{0}/{1}'.format(*vars)
-        link = "/{0}/{1}/{{resource_id}}?instance_prefix={{instance_prefix}}".format(*vars)
+        link = "/{0}/{1}/{{resource_id}}?class_prefix={{class_prefix}}&instance_prefix={{instance_prefix}}".format(*vars)
 
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
         "title": "Collection Schema",
         "type": "object",
-        "required": ["items"],
         "properties": {
+            "_class_prefix": {"type": "string", "required": True},
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
-            "id": {"type": "string", "format": "uri"},
+            "id": {"type": "string", "format": "uri", "required": True},
             "items": {
+                "required": True,
                 "type": "array",
                 "items": {
                     "type": "object",
-                    "required": ["@id", "title", "resource_id"],
                     "properties": {
-                        "title": {"type": "string"},
-                        "@id": {"type": "string"},
-                        "resource_id": {"type": "string"},
+                        "title": {"type": "string", "required": True},
+                        "@id": {"type": "string", "required": True},
+                        "resource_id": {"type": "string", "required": True},
                         "instance_prefix": {"type": "string", "format": "uri"},
                     },
                     "links": [
@@ -73,5 +73,8 @@ def schema(context_name, class_name, class_prefix):
         ]
     }
 
-    merge_schemas(base, pagination_schema('/{0}/{1}'.format(context_name, class_name)))
+    base_pagination_url = '/{0}/{1}'.format(context_name, class_name)
+    extra_url_params = '&class_prefix={_class_prefix}'
+    pagination_dict = pagination_schema(base_pagination_url, extra_url_params)
+    merge_schemas(base, pagination_dict)
     return base

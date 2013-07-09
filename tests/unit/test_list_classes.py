@@ -2,7 +2,7 @@
 import unittest
 from brainiak import settings
 
-from brainiak.context import list_resource
+from brainiak.context import get_context
 from brainiak.utils.params import ParamDict, LIST_PARAMS
 from tests.mocks import MockHandler
 
@@ -12,39 +12,39 @@ class GetContextTestCase(unittest.TestCase):
     maxDiff = None
 
     def setUp(self):
-        self.original_add_language_support = list_resource.add_language_support
-        list_resource.add_language_support = lambda query, lang: (query, lang)
+        self.original_add_language_support = get_context.add_language_support
+        get_context.add_language_support = lambda query, lang: (query, lang)
 
-        self.original_query_count_classes = list_resource.query_count_classes
-        list_resource.query_count_classes = lambda x: 1
+        self.original_query_count_classes = get_context.query_count_classes
+        get_context.query_count_classes = lambda x: 1
 
-        self.original_query_classes_list = list_resource.query_classes_list
-        list_resource.query_classes_list = lambda x: None
+        self.original_query_classes_list = get_context.query_classes_list
+        get_context.query_classes_list = lambda x: None
 
-        self.original_assemble_list_json = list_resource.assemble_list_json
-        self.original_query_classes_list = list_resource.query_classes_list
+        self.original_assemble_list_json = get_context.assemble_list_json
+        self.original_query_classes_list = get_context.query_classes_list
 
     def tearDown(self):
-        list_resource.add_language_support = self.original_add_language_support
-        list_resource.query_count_classes = self.original_query_count_classes
-        list_resource.query_classes_list = self.original_query_classes_list
-        list_resource.assemble_list_json = self.original_assemble_list_json
-        list_resource.query_classes_list = self.original_query_classes_list
+        get_context.add_language_support = self.original_add_language_support
+        get_context.query_count_classes = self.original_query_count_classes
+        get_context.query_classes_list = self.original_query_classes_list
+        get_context.assemble_list_json = self.original_assemble_list_json
+        get_context.query_classes_list = self.original_query_classes_list
 
     def test_list_classes_with_no_result(self):
-        list_resource.get_one_value = lambda x, y: "0"
+        get_context.get_one_value = lambda x, y: "0"
         handler = MockHandler(page="1")
         params = ParamDict(handler, context_name="context_name", class_name="class_name", **LIST_PARAMS)
-        result = list_resource.list_classes(params)
+        result = get_context.list_classes(params)
         self.assertEqual(result, None)
 
     def test_list_classes_return_result(self):
-        list_resource.get_one_value = lambda x, y: "1"
-        list_resource.assemble_list_json = lambda x, y: "expected result"
-        list_resource.query_classes_list = lambda x: {'results': {'bindings': 'do not remove this'}}
+        get_context.get_one_value = lambda x, y: "1"
+        get_context.assemble_list_json = lambda x, y: "expected result"
+        get_context.query_classes_list = lambda x: {'results': {'bindings': 'do not remove this'}}
         handler = MockHandler(page="1")
         params = ParamDict(handler, context_name="context_name", class_name="class_name", **LIST_PARAMS)
-        expected = list_resource.list_classes(params)
+        expected = get_context.list_classes(params)
         self.assertEqual(expected, "expected result")
 
     def test_assemble_list_json_with_class_prefix(self):
@@ -55,7 +55,7 @@ class GetContextTestCase(unittest.TestCase):
             u'label': {u'type': u'literal', u'value': u'Company'}
         }
         query_result_dict = {'results': {'bindings': [item]}}
-        computed = list_resource.assemble_list_json(params, query_result_dict)
+        computed = get_context.assemble_list_json(params, query_result_dict)
 
         expected_context = {
             '@language': settings.DEFAULT_LANG,

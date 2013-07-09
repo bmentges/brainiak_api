@@ -3,7 +3,7 @@ from tornado.web import HTTPError
 from mock import patch
 
 from brainiak import triplestore
-from brainiak.root.get import filter_and_build_contexts, list_all_contexts
+from brainiak.root.get_root import filter_and_build_contexts, list_all_contexts
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler
 
@@ -12,13 +12,13 @@ class MockedTestCase(unittest.TestCase):
 
     @patch('brainiak.triplestore.query_sparql')
     @patch('brainiak.utils.sparql.filter_values', return_value=[])
-    @patch('brainiak.root.get.filter_and_build_contexts', return_value=[])
+    @patch('brainiak.root.get_root.filter_and_build_contexts', return_value=[])
     def test_raises_http_error(self, mock1, mock2, mock3):
         self.assertRaises(HTTPError, list_all_contexts, 'irrelevant_params')
 
     @patch('brainiak.triplestore.query_sparql')
     @patch('brainiak.utils.sparql.filter_values', return_value=[])
-    @patch('brainiak.root.get.filter_and_build_contexts', return_value=[])
+    @patch('brainiak.root.get_root.filter_and_build_contexts', return_value=[])
     def test_raises_http_error_empty_page(self, mock1, mock2, mock3):
         handler = MockHandler()
         params = ParamDict(handler, page='100')
@@ -26,7 +26,7 @@ class MockedTestCase(unittest.TestCase):
 
     @patch('brainiak.triplestore.query_sparql')
     @patch('brainiak.utils.sparql.filter_values')
-    @patch('brainiak.root.get.filter_and_build_contexts', return_value=[])
+    @patch('brainiak.root.get_root.filter_and_build_contexts', return_value=[])
     def test_raises_http_error_invalid_page(self, mock1, mock2, mock3):
         handler = MockHandler()
         params = ParamDict(handler, page='100')
@@ -107,7 +107,7 @@ class GetContextTestCase(unittest.TestCase):
         ]
         self.assertEqual(computed, expected)
 
-    @patch('brainiak.root.get.split_into_chunks', return_value=[])
+    @patch('brainiak.root.get_root.split_into_chunks', return_value=[])
     def test_no_context_found_raise_404(self, mock1):
         param_dict = {"per_page": "3", "page": "1"}
         base_url = "http://api.semantica.dev.globoi.com"

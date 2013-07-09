@@ -17,15 +17,15 @@ from brainiak.utils.cache import memoize
 from brainiak.log import get_logger
 from brainiak.event_bus import notify_bus, MiddlewareError
 from brainiak.greenlet_tornado import greenlet_asynchronous
-from brainiak.context.list_resource import list_classes
-from brainiak.instance.create_resource import create_instance
-from brainiak.instance.delete_resource import delete_instance
-from brainiak.instance.edit_resource import edit_instance, instance_exists
-from brainiak.instance.get_resource import get_instance
-from brainiak.instance.list_resource import filter_instances
-from brainiak.prefix.list_resource import list_prefixes
-from brainiak.root.get import list_all_contexts
-from brainiak.schema import resource as schema_resource
+from brainiak.context.get_context import list_classes
+from brainiak.instance.create_instance import create_instance
+from brainiak.instance.delete_instance import delete_instance
+from brainiak.instance.edit_instance import edit_instance, instance_exists
+from brainiak.instance.get_instance import get_instance
+from brainiak.collection.get_collection import filter_instances
+from brainiak.prefix.get_prefixes import list_prefixes
+from brainiak.root.get_root import list_all_contexts
+from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
 from brainiak.utils.links import build_schema_url_for_instance, set_content_type_profile
@@ -35,7 +35,7 @@ from brainiak.utils.sparql import extract_po_tuples
 from brainiak.event_bus import NotificationFailure
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.context.json_schema import schema as context_schema
-from brainiak.instance.json_schema import schema as collection_schema
+from brainiak.collection.json_schema import schema as collection_schema
 
 logger = LazyObject(get_logger)
 
@@ -43,7 +43,7 @@ custom_decorator.wrapper = greenlet_asynchronous
 
 
 class ListServiceParams(ParamDict):
-    "Customize parameters for services with pagination"
+    """Customize parameters for services with pagination"""
     optionals = LIST_PARAMS
 
 

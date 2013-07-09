@@ -16,11 +16,10 @@ def schema():
                 "type": "array",
                 "items": {
                     "type": "object",
-                    "required": ["@id", "title", "resource_id"],
                     "properties": {
-                        "title": {"type": "string"},
-                        "@id": {"type": "string"},
-                        "resource_id": {"type": "string"}
+                        "title": {"type": "string", "required": True},
+                        "@id": {"type": "string", "required": True},
+                        "resource_id": {"type": "string", "required": True}
                     },
                     "links": [
                         {

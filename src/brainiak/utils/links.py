@@ -126,11 +126,11 @@ def pagination_items(query_params, total_items=None):
     return result
 
 
-def pagination_schema(root_url):
+def pagination_schema(root_url, extra_url_params=''):
     """Json schema part that expresses pagination structure"""
     def link(rel, href):
         link_pattern = {
-            "href": href,
+            "href": ''.join((root_url, href, extra_url_params)),
             "method": "GET",
             "rel": rel
         }
@@ -145,10 +145,10 @@ def pagination_schema(root_url):
             "last_page": {"type": "integer"}
         },
         "links": [
-            link('first', root_url + '?page=1&per_page={per_page}&do_item_count={do_item_count}'),
-            link('previous', root_url + '?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}'),
-            link('next', root_url + '?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
-            link('last', root_url + '?page={last_page}&per_page={per_page}&do_item_count={do_item_count}')
+            link('first', '?page=1&per_page={per_page}&do_item_count={do_item_count}'),
+            link('previous', '?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}'),
+            link('next', '?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
+            link('last', '?page={last_page}&per_page={per_page}&do_item_count={do_item_count}')
         ]
     }
     return result

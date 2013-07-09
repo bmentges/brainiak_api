@@ -1,6 +1,6 @@
 import unittest
 
-from brainiak.instance.list_resource import Query, merge_by_id, build_json
+from brainiak.collection.get_collection import Query, merge_by_id, build_json
 from brainiak.utils.params import LIST_PARAMS, ParamDict
 from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip

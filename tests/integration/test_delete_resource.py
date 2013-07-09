@@ -1,7 +1,7 @@
 from tornado.web import HTTPError
 from mock import patch
 
-from brainiak.instance.delete_resource import query_delete, query_dependants, \
+from brainiak.instance.delete_instance import query_delete, query_dependants, \
     delete_instance
 from brainiak import triplestore, server
 

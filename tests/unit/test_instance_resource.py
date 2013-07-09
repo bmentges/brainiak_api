@@ -3,7 +3,7 @@ import unittest
 from mock import Mock
 
 from brainiak import settings, triplestore
-from brainiak.instance import get_resource
+from brainiak.instance import get_instance
 from brainiak.prefixes import MemorizeContext
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockRequest, MockHandler
@@ -13,13 +13,13 @@ from tests.sparql import strip
 class TestCaseInstanceResource(unittest.TestCase):
 
     def setUp(self):
-        self.original_query_all_properties_and_objects = get_resource.query_all_properties_and_objects
-        self.original_assemble_instance_json = get_resource.assemble_instance_json
+        self.original_query_all_properties_and_objects = get_instance.query_all_properties_and_objects
+        self.original_assemble_instance_json = get_instance.assemble_instance_json
         self.original_query_sparql = triplestore.query_sparql
 
     def tearDown(self):
-        get_resource.query_all_properties_and_objects = self.original_query_all_properties_and_objects
-        get_resource.assemble_instance_json = self.original_assemble_instance_json
+        get_instance.query_all_properties_and_objects = self.original_query_all_properties_and_objects
+        get_instance.assemble_instance_json = self.original_assemble_instance_json
         triplestore.query_sparql = self.original_query_sparql
 
     def test_get_instance_with_result(self):
@@ -27,10 +27,10 @@ class TestCaseInstanceResource(unittest.TestCase):
 
         def mock_query_all_properties_and_objects(query_params):
             return db_response
-        get_resource.query_all_properties_and_objects = mock_query_all_properties_and_objects
+        get_instance.query_all_properties_and_objects = mock_query_all_properties_and_objects
 
         mock_assemble_instance_json = Mock(return_value="ok")
-        get_resource.assemble_instance_json = mock_assemble_instance_json
+        get_instance.assemble_instance_json = mock_assemble_instance_json
         query_params = {'request': MockRequest(instance="instance"),
                         'context_name': 'place',
                         'class_name': 'Country',
@@ -38,7 +38,7 @@ class TestCaseInstanceResource(unittest.TestCase):
                         'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil',
                         'lang': 'pt'}
 
-        response = get_resource.get_instance(query_params)
+        response = get_instance.get_instance(query_params)
 
         self.assertEqual(response, "ok")
         self.assertTrue(mock_assemble_instance_json.called)
@@ -48,10 +48,10 @@ class TestCaseInstanceResource(unittest.TestCase):
 
         def mock_query_all_properties_and_objects(query_params):
             return db_response
-        get_resource.query_all_properties_and_objects = mock_query_all_properties_and_objects
+        get_instance.query_all_properties_and_objects = mock_query_all_properties_and_objects
 
         mock_assemble_instance_json = Mock(return_value="ok")
-        get_resource.assemble_instance_json = mock_assemble_instance_json
+        get_instance.assemble_instance_json = mock_assemble_instance_json
         query_params = {'request': MockRequest(instance="instance"),
                         'context_name': 'place',
                         'class_name': 'Country',
@@ -59,7 +59,7 @@ class TestCaseInstanceResource(unittest.TestCase):
                         'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil',
                         'lang': 'pt'}
 
-        response = get_resource.get_instance(query_params)
+        response = get_instance.get_instance(query_params)
 
         self.assertEqual(response, None)
         self.assertFalse(mock_assemble_instance_json.called)
@@ -72,7 +72,7 @@ class TestCaseInstanceResource(unittest.TestCase):
             "lang": "en"
 
         }
-        computed = get_resource.query_all_properties_and_objects(params)
+        computed = get_instance.query_all_properties_and_objects(params)
         expected = """
             DEFINE input:inference <http://semantica.globo.com/ruleset>
             SELECT DISTINCT ?predicate ?object ?label ?super_property {
@@ -92,10 +92,10 @@ class AssembleTestCase(unittest.TestCase):
     maxDiff = None
 
     def setUp(self):
-        self.original_build_items = get_resource.build_items_dict
+        self.original_build_items = get_instance.build_items_dict
 
     def tearDown(self):
-        get_resource.build_items_dict = self.original_build_items
+        get_instance.build_items_dict = self.original_build_items
 
     def test_assemble_instance_json_links(self):
         param_dict = {'context_name': 'schema',
@@ -107,8 +107,8 @@ class AssembleTestCase(unittest.TestCase):
 
         query_result_dict = {'results': {'bindings': []}}
 
-        get_resource.build_items_dict = lambda context, bindings, class_uri: {}
-        computed = get_resource.assemble_instance_json(query_params, query_result_dict)
+        get_instance.build_items_dict = lambda context, bindings, class_uri: {}
+        computed = get_instance.assemble_instance_json(query_params, query_result_dict)
         # expected_links = [
         #     {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
         #     {'rel': 'class', 'href': 'http://mock.test.com/schema/klass/_schema', 'method': 'GET'},
@@ -139,8 +139,8 @@ class AssembleTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **param_dict)
 
         query_result_dict = {'results': {'bindings': []}}
-        get_resource.build_items_dict = lambda context, bindings, class_uri: {}
-        computed = get_resource.assemble_instance_json(query_params, query_result_dict, context)
+        get_instance.build_items_dict = lambda context, bindings, class_uri: {}
+        computed = get_instance.assemble_instance_json(query_params, query_result_dict, context)
         # expected_links = [
         #     {'rel': 'self', 'href': 'http://mock.test.com/schema/klass/instance', 'method': 'GET'},
         #     {'rel': 'class', 'href': 'http://mock.test.com/schema/klass/_schema', 'method': 'GET'},
@@ -202,7 +202,7 @@ class BuildItemsDictTestCase(unittest.TestCase):
             "key2": "value2",
             'rdfs:label': 'label1',
             "rdf:type": "some:Class"}
-        response = get_resource.build_items_dict(MemorizeContext(), bindings, "some:Class")
+        response = get_instance.build_items_dict(MemorizeContext(), bindings, "some:Class")
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_same_value(self):
@@ -221,7 +221,7 @@ class BuildItemsDictTestCase(unittest.TestCase):
         ]
         expected = {"birthCity": "Rio de Janeiro", 'rdfs:label': "birth place", 'rdf:type': 'http://class.uri'}
         context = MemorizeContext()
-        response = get_resource.build_items_dict(context, bindings, "http://class.uri")
+        response = get_instance.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_different_values(self):
@@ -245,5 +245,5 @@ class BuildItemsDictTestCase(unittest.TestCase):
             'rdf:type': 'http://class.uri'
         }
         context = MemorizeContext()
-        response = get_resource.build_items_dict(context, bindings, "http://class.uri")
+        response = get_instance.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)

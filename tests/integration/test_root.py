@@ -2,7 +2,7 @@ import json
 from mock import patch
 from brainiak.prefixes import ROOT_CONTEXT
 
-from brainiak.root.get import QUERY_LIST_CONTEXT
+from brainiak.root.get_root import QUERY_LIST_CONTEXT
 from brainiak.utils import sparql
 from brainiak.handlers import RootHandler
 from tests.tornado_cases import TornadoAsyncHTTPTestCase

@@ -1,5 +1,5 @@
 import inspect
-
+from urllib import unquote
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import build_schema_url_for_instance, self_url
@@ -248,7 +248,7 @@ def filter_instances(query_params):
 
 def build_json(items_list, query_params):
     #query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
-    schema_url = build_schema_url_for_instance(query_params)
+    schema_url = unquote(build_schema_url_for_instance(query_params))
 
     #if query_string:
     #    item_query_string = query_string + "&" + "instance_prefix={instance_prefix}"

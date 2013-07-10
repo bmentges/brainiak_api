@@ -3,6 +3,13 @@
 Hypermedia Support
 ==================
 
+In the words of Jon Moore, ``HATEOAS`` - Hypermedia as the engine of application state is:
+
+::
+
+    You do stuff by reading pages and then either following links or submitting forms.
+
+
 Any resource may have one or more properties linking to other resources, represented in the resource's link section.
 These links are meant to provide explicit URLs so that proper API clients don’t need to hardcode URLs to API services.
 

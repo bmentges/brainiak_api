@@ -126,6 +126,9 @@ class ParamDict(dict):
     @property
     def arguments(self):
         query_string = self["request"].query
+        # Adapt handling of '%3D' -> '='
+        query_string = query_string.replace('%3D', '=')
+
         query_dict = urlparse.parse_qs(query_string, keep_blank_values=True)
         return {key: value[0] for key, value in query_dict.items()}
 

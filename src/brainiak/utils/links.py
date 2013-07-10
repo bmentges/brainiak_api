@@ -23,7 +23,9 @@ def assemble_url(url, params={}):
         url = url[:-url_size_minus_query_string]
 
     if params:
-        return "{0}?{1}".format(url, urlencode(params, doseq=True))
+        # Attention! urlencode does not convert '=' -> '%3D'
+        encoded_params = urlencode(params, doseq=True).replace('=', "%3D")
+        return "{0}?{1}".format(url, encoded_params)
     else:
         return "{0}".format(url)
 
@@ -101,7 +103,9 @@ def merge_schemas(*dicts):
 
 
 def pagination_items(query_params, total_items=None):
-    """Add attributes and values related to pagination to a listing page"""
+    """Add attributes and values related to pagination to a listing page.
+    See also https://coderwall.com/p/lkcaag?i=1&p=1&q=sort%3Aupvotes+desc&t[]=algorithm&t[]=algorithms
+    """
     page = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
     previous_page = get_previous_page(page)
     per_page = int(query_params["per_page"])

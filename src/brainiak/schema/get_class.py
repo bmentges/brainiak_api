@@ -48,7 +48,7 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
             'method': "GET"
         }
     ]
-    add_link(links, "collection", href)
+    add_link(links, "collection", href.replace('_schema',''))
 
     action_links = crud_links(query_params)
     links.extend(action_links)

@@ -3,7 +3,7 @@ from unittest import TestCase
 from brainiak.utils import params
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination, INSTANCE_PARAMS, CACHE_PARAMS
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination, INSTANCE_PARAMS, CACHE_PARAMS, safe_encoding
 from tests.mocks import MockHandler
 
 
@@ -203,3 +203,9 @@ class SpecificParamsDictTestCase(TestCase):
 
     def test_cache_params_definitions(self):
         self.assertEqual(CACHE_PARAMS.get("purge"), "0")
+
+
+class SafeEncodingTestCase(TestCase):
+
+    def test_safe_encoding(self):
+        self.assertEqual(safe_encoding("http://bla.com?x=1"), "http://bla.com?x%3D1")

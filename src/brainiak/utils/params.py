@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import re
 import urlparse
 
 from urllib import urlencode
@@ -77,6 +76,16 @@ def matches_pattern(key):
     return any([pattern.match(key) for pattern in VALID_PATTERNS])
 
 
+def safe_encoding(url):
+    # Adapt handling of '=' -> '%3D'
+    return url.replace('=', '%3D')
+
+
+def safe_decoding(url):
+    # Adapt handling of  '%3D' -> '='
+    return url.replace('%3D', '=')
+
+
 class ParamDict(dict):
     "Utility class to generate default params on demand and memoize results"
 
@@ -126,10 +135,7 @@ class ParamDict(dict):
 
     @property
     def arguments(self):
-        query_string = self["request"].query
-        # Adapt handling of '%3D' -> '='
-        query_string = query_string.replace('%3D', '=')
-
+        query_string = safe_decoding(self["request"].query)
         query_dict = urlparse.parse_qs(query_string, keep_blank_values=True)
         return {key: value[0] for key, value in query_dict.items()}
 

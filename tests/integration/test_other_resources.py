@@ -1,5 +1,5 @@
 # coding: utf-8
-from mock import patch, MagicMock
+from mock import patch
 from stomp.exception import NotConnectedException
 
 from brainiak import __version__, event_bus, handlers, settings

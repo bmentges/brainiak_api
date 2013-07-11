@@ -1,6 +1,7 @@
 import urlparse
 from math import ceil
 from urllib import urlencode
+from brainiak.utils.params import safe_encoding
 
 
 def set_content_type_profile(handler, query_params):
@@ -23,8 +24,7 @@ def assemble_url(url, params={}):
         url = url[:-url_size_minus_query_string]
 
     if params:
-        # Attention! urlencode does not convert '=' -> '%3D'
-        encoded_params = urlencode(params, doseq=True).replace('=', "%3D")
+        encoded_params = safe_encoding(urlencode(params, doseq=True))
         return "{0}?{1}".format(url, encoded_params)
     else:
         return "{0}".format(url)

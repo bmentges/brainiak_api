@@ -1,9 +1,35 @@
 import json
 from mock import patch
+from brainiak import settings, server
 
 from brainiak.instance.get_instance import QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
+
+
+class TestInstanceResource(TornadoAsyncHTTPTestCase):
+
+    def get_app(self):
+        return server.Application()
+
+    @patch("brainiak.handlers.logger")
+    def test_get_instance_with_nonexistent_uri(self, log):
+        response = self.fetch('/person/Gender/Alien')
+        self.assertEqual(response.code, 404)
+        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nInstance (http://semantica.globo.com/person/Gender/Alien) of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) was not found."}')
+
+    def test_get_instance(self):
+        response = self.fetch('/person/Gender/Male')
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received['@type'], 'person:Gender')
+        self.assertEqual(json_received['@id'], "http://semantica.globo.com/person/Gender/Male")
+
+    def test_instance_has_options(self):
+        response = self.fetch('/person/Gender/Female', method='OPTIONS')
+        self.assertEqual(response.code, 204)
+        self.assertEqual(response.headers['Access-Control-Allow-Origin'], '*')
+        self.assertEqual(response.headers['Access-Control-Allow-Headers'], settings.CORS_HEADERS)
 
 
 # FIXME: this test is totally broken - it is acessing http://semantica.globo.com/person/Gender

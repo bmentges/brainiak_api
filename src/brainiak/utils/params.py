@@ -32,12 +32,13 @@ NON_ARGUMENT_PARAMS = ('context_name', 'class_name', 'instance_id')
 
 CACHE_PARAMS = DefaultParamsDict(purge="0")
 
-LIST_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
-                                per_page=settings.DEFAULT_PER_PAGE,
-                                sort_by="",
-                                sort_order="ASC",
-                                sort_include_empty="1",
-                                do_item_count="0")
+PAGING_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
+                                  per_page=settings.DEFAULT_PER_PAGE,
+                                  do_item_count="0")
+
+LIST_PARAMS = PAGING_PARAMS + DefaultParamsDict(sort_by="",
+                                                sort_order="ASC",
+                                                sort_include_empty="1")
 
 INSTANCE_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri', 'instance_prefix', 'instance_uri')
 

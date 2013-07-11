@@ -27,7 +27,7 @@ from brainiak.prefix.get_prefixes import list_prefixes
 from brainiak.root.get_root import list_all_contexts
 from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
-from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS
+from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS, PAGING_PARAMS
 from brainiak.utils.links import build_schema_url_for_instance, set_content_type_profile
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.resources import check_messages_when_port_is_mentioned
@@ -244,7 +244,7 @@ class RootHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self):
-        valid_params = LIST_PARAMS + CACHE_PARAMS
+        valid_params = PAGING_PARAMS + CACHE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
         response = memoize(list_all_contexts, self.query_params)

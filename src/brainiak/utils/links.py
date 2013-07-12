@@ -1,30 +1,43 @@
-import urlparse
+from urlparse import urlparse, parse_qs
 from math import ceil
-from urllib import urlencode
-from brainiak.utils.params import safe_encoding
+from urllib import urlencode, quote
 
 
-def set_content_type_profile(handler, query_params):
+def set_content_type_profile(handler, schema_url):
     """Set header Content-Type + profile pointing to URL of the json-schema"""
-    schema_url = build_schema_url(query_params)
+    parsed_url = urlparse(schema_url)
+
+    # The escaping of parameters is to allow JsonBrowser to work, later this can be
+    # replaced by the line below:
+    #    content_type = "application/json; profile={0}".format(quote(schema_url))
+    schema_url = "{0}://{1}{2}".format(
+        parsed_url.scheme,
+        parsed_url.netloc,
+        parsed_url.path
+    )
+    if parsed_url.query:
+        schema_url += "?{0}".format(quote(parsed_url.query))
+    if parsed_url.fragment:
+        schema_url += "#{0}".format(parsed_url.fragment)
+
     content_type = "application/json; profile={0}".format(schema_url)
     handler.set_header("Content-Type", content_type)
 
 
 def assemble_url(url, params={}):
-    url_parse = urlparse.urlparse(url)
+    parsed_url = urlparse(url)
 
     if isinstance(params, str):
-        params = urlparse.parse_qs(params)
+        params = parse_qs(params)
 
-    if url_parse.query:
-        existing_params = urlparse.parse_qs(url_parse.query)
+    if parsed_url.query:
+        existing_params = parse_qs(parsed_url.query)
         params = dict(params, **existing_params)
-        url_size_minus_query_string = len(url_parse.query) + 1
+        url_size_minus_query_string = len(parsed_url.query) + 1
         url = url[:-url_size_minus_query_string]
 
     if params:
-        encoded_params = safe_encoding(urlencode(params, doseq=True))
+        encoded_params = urlencode(params, doseq=True)
         return "{0}?{1}".format(url, encoded_params)
     else:
         return "{0}".format(url)
@@ -32,7 +45,7 @@ def assemble_url(url, params={}):
 
 # TODO: refactor and add to a method similar to utils.params.args
 def filter_query_string_by_key_prefix(query_string, include_prefixes=[]):
-    query_string_dict = urlparse.parse_qs(query_string)
+    query_string_dict = parse_qs(query_string)
     relevant_params = {}
     for key, value in query_string_dict.items():
         if any([key.startswith(prefix) for prefix in include_prefixes]):

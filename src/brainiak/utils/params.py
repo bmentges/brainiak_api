@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import urlparse
-
+from urlparse import unquote, parse_qs
 from urllib import urlencode
 from copy import copy
 from brainiak import settings
@@ -76,16 +75,6 @@ def matches_pattern(key):
     return any([pattern.match(key) for pattern in VALID_PATTERNS])
 
 
-def safe_encoding(url):
-    # Adapt handling of '=' -> '%3D'
-    return url.replace('=', '%3D')
-
-
-def safe_decoding(url):
-    # Adapt handling of  '%3D' -> '='
-    return url.replace('%3D', '=')
-
-
 class ParamDict(dict):
     "Utility class to generate default params on demand and memoize results"
 
@@ -135,8 +124,8 @@ class ParamDict(dict):
 
     @property
     def arguments(self):
-        query_string = safe_decoding(self["request"].query)
-        query_dict = urlparse.parse_qs(query_string, keep_blank_values=True)
+        query_string = unquote(self["request"].query)
+        query_dict = parse_qs(query_string, keep_blank_values=True)
         return {key: value[0] for key, value in query_dict.items()}
 
     def args(self, exclude_keys=None, **kw):
@@ -144,7 +133,7 @@ class ParamDict(dict):
             exclude_keys = NON_ARGUMENT_PARAMS
         else:
             exclude_keys = []
-            exclude_keys.extends(NON_ARGUMENT_PARAMS)
+            exclude_keys.extend(NON_ARGUMENT_PARAMS)
 
         effective_args = {}
         for key in VALID_PARAMS:

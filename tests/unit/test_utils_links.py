@@ -122,21 +122,21 @@ class LinksTestCase(unittest.TestCase):
         url = "http://dot.com"
         params = {"some_url": "http://some.url"}
         computed = assemble_url(url, params)
-        expected = "http://dot.com?some_url%3Dhttp%3A%2F%2Fsome.url"
+        expected = "http://dot.com?some_url=http%3A%2F%2Fsome.url"
         self.assertEqual(computed, expected)
 
     def test_assemble_url_with_dict_and_literal_key(self):
         url = "http://dot.com"
         params = {"key": "value"}
         computed = assemble_url(url, params)
-        expected = "http://dot.com?key%3Dvalue"
+        expected = "http://dot.com?key=value"
         self.assertEqual(computed, expected)
 
     def test_assemble_url_containing_query_string_with_string(self):
         url = "http://dot.com?exists=previously"
         params = {}
         computed = assemble_url(url, params)
-        expected = "http://dot.com?exists%3Dpreviously"
+        expected = "http://dot.com?exists=previously"
         self.assertEqual(computed, expected)
 
     def test_filter_query_string_by_key_prefix_return_empty(self):
@@ -227,7 +227,7 @@ class CrudLinksTestCase(unittest.TestCase):
 
         }
         computed = build_class_url(query_params, include_query_string=True)
-        expected = "https://dot.net/place/City?class_prefix%3Dinclude_me"
+        expected = "https://dot.net/place/City?class_prefix=include_me"
         self.assertEqual(computed, expected)
 
     def test_build_schema_url(self):
@@ -244,7 +244,7 @@ class CrudLinksTestCase(unittest.TestCase):
 
         }
         computed = build_schema_url_for_instance(query_params)
-        expected = "https://dot.net/place/City/_schema?class_prefix%3Dinclude_me"
+        expected = "https://dot.net/place/City/_schema?class_prefix=include_me"
         self.assertEqual(computed, expected)
 
 

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import re
-import urlparse
-
+from urlparse import unquote, parse_qs
 from urllib import urlencode
 from copy import copy
 from brainiak import settings
@@ -126,11 +124,8 @@ class ParamDict(dict):
 
     @property
     def arguments(self):
-        query_string = self["request"].query
-        # Adapt handling of '%3D' -> '='
-        query_string = query_string.replace('%3D', '=')
-
-        query_dict = urlparse.parse_qs(query_string, keep_blank_values=True)
+        query_string = unquote(self["request"].query)
+        query_dict = parse_qs(query_string, keep_blank_values=True)
         return {key: value[0] for key, value in query_dict.items()}
 
     def args(self, exclude_keys=None, **kw):
@@ -138,7 +133,7 @@ class ParamDict(dict):
             exclude_keys = NON_ARGUMENT_PARAMS
         else:
             exclude_keys = []
-            exclude_keys.extends(NON_ARGUMENT_PARAMS)
+            exclude_keys.extend(NON_ARGUMENT_PARAMS)
 
         effective_args = {}
         for key in VALID_PARAMS:

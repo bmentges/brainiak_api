@@ -25,7 +25,7 @@ namespace :deploy do
     task :docs, :roles => :docs do
         puts "Gerando documentação"
         system "tar chzf docs.tar.gz docs"
-        system "cd docs; make html; cd .."
+        system "make clean; cd docs; make html; cd .."
         put File.read("docs.tar.gz"), "/tmp/docs.tar.gz", :via => :scp
         run "cd /tmp && tar xzf docs.tar.gz"
         run 'cd /tmp/docs && export PATH="/opt/api_semantica/brainiak/virtualenv/bin:$PATH" && export PYTHONPATH="' + deploy_to + '/current:$PYTHONPATH" && make html'

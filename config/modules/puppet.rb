@@ -1,56 +1,53 @@
-namespace :puppet  do
+namespace :puppet do
 
-def onetime
-  
-  set :hostname, `hostname`
-  set :user, "puppet"
-  set :pp_params, ""
-  default_run_options[:pty] = true
+    task :default do
+        all
+    end
 
-  # Atualiza o submodulo puppet/deploy-module
-  system "git submodule update --init"
+    task :all do
+        be
+    end
 
-  # Máquinas de deploy tem chave SSL no puppet master
-  if not hostname.strip.eql?("riolb315") and not hostname.strip.eql?("riolb316")
-      if puppetmaster_env.to_s =~ /(dev|qa1|qa2|qa)/
-        set :password, 'puppet'
-      else
-        set(:password){ Capistrano::CLI.password_prompt("Senha para o usuário #{user}: ") }
-      end
-      set :pp_params, "-p #{password}"
-  end
+    task :be, :roles => :be do
 
-  # Deploy para o puppetmaster
-  system <<-EOF
-      cd puppet/deploy-module/deploy/ &&
-      fab #{puppetmaster_env} deploy #{pp_params}
-  EOF
+        if puppet_already_run == 0
 
-  # Disconnect
-  sessions.values.each {|session| session.close}
-  sessions.clear
-  
-  puts "Sleeping 3s..."
-  sleep 3
-  
-  # Run puppet-setup
-  sudo "/opt/local/bin/puppet-setup"
-  
-end
+            puppet_prepare
 
-  desc "Executa  puppet_onetime no APP"
-  task :be, :roles => :role_be do
-    onetime
-  end
+            # Setup
+            sudo "/opt/local/bin/puppet-setup"
 
-  desc "Executa  puppet_onetime no FE"
-  task :fe, :roles => :role_fe do
-    onetime
-  end
+            # Voltando usuário anterior
+            set :user, current_user
+            utils.askpass(user) # Nao sei porque isso acaba sendo necessario so nesse projeto.
 
-  desc "Executa  puppet_onetime em todos servidores"
-  task :all, :roles => [ :restart ] do
-    onetime
-  end
+        end
+     end
+
+    task :puppet_prepare do
+
+        # Salvando usuário atual
+        set :current_user, user
+
+        # Password
+        utils.askpass("puppet")
+
+        # Submódulos
+        run_local "git submodule update --init"
+
+        # Salvando loglevel atual
+        current_loglevel = logger.level
+        logger.level = Capistrano::Logger::INFO
+
+        # Deploy puppetmaster
+        run_local <<-EOF
+            cd puppet/deploy &&
+            fab #{puppetmaster_env} deploy_puppet #{puppet_params}
+        EOF
+
+        # Voltando para o loglevel anterior
+        logger.level = current_loglevel
+
+    end
 
 end

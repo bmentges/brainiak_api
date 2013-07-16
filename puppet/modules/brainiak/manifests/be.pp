@@ -31,7 +31,7 @@
 class brainiak::be {
 
   include supso::dir_opt
-
+  include tdi
   include api_semantica::defs
 
   #$projeto = 'brainiak'
@@ -41,20 +41,31 @@ class brainiak::be {
   #$basedir = "${supso::dir_opt::dir}/${projeto}"
   $basedir = "${supso::dir_opt::dir}/${projeto}/brainiak"
 
+  # Login para InfraScrum via LDAP
+  infra::ldap { "InfraScrum - ${usuario}" :
+      grupoldap => 'infrascrum'
+  }
+
+  supso::sudoers { "${usuario}-tdi":
+    entity    => "${usuario}, %infrascrum, %supprod",
+    cmd       => "/opt/local/bin/tdi",
+    nopasswd  => true,
+  }
+
   $python_virtualenv_dir  = "${basedir}/virtualenv"
 
   $git_projeto            = 'http://ngit.globoi.com/brainiak'
 
   virtualenv { $python_virtualenv_dir:
-    ensure          => present,
-    projeto         => $projeto,
-    usuario         => $usuario,
-    grupo           => $usuario,
-    use_nodeps      => false, ## A equipe prefere nao usar.
-    python_prefix   => '/opt/generic/python27',
-    requirements_file => "requirements.txt",
-    file_search_dir => "brainiak",
-    require         => Package['python27-virtualenv_generic_globo'],
+    ensure              => present,
+    projeto             => $projeto,
+    usuario             => $usuario,
+    grupo               => $usuario,
+    use_nodeps          => false, ## A equipe prefere nao usar.
+    python_prefix       => '/opt/generic/python27',
+    requirements_file   => "requirements.txt",
+    file_search_dir     => "brainiak",
+    require             => Package['python27-virtualenv_generic_globo'],
   }
 }
 

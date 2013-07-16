@@ -56,6 +56,7 @@ When filtering instances using ``p`` and ``o`` I only get "HTTP error: 404". But
 
 Brainiak is internationalized. It is possible that the value mapped by ``o`` is in some specific language, eg. "London"@en or "Londres"@pt.
 Try adding to the query string:
+
  * ``lang=en``, for English
  * ``lang=pt``, for Portuguese
  * or ``lang=undefined``, if the word is not internationalized  

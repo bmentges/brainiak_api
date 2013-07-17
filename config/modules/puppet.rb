@@ -9,19 +9,14 @@ namespace :puppet do
     end
 
     task :be, :roles => :be do
+        puppet_prepare
 
-        if puppet_already_run == 0
+        # Setup
+        sudo "/opt/local/bin/puppet-setup"
 
-            puppet_prepare
-
-            # Setup
-            sudo "/opt/local/bin/puppet-setup"
-
-            # Voltando usuário anterior
-            set :user, current_user
-            utils.askpass(user) # Nao sei porque isso acaba sendo necessario so nesse projeto.
-
-        end
+        # Voltando usuário anterior
+        set :user, current_user
+        utils.askpass(user)
      end
 
     task :puppet_prepare do

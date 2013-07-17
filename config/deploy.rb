@@ -87,6 +87,6 @@ namespace :deploy do
     end
 
     task :clean_local do
-        run_local "git checkout -- src/brainiak/settings.py"
+        run_local "git checkout -- src/brainiak/version.py"
     end
 end

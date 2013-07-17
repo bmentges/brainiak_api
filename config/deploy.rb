@@ -2,6 +2,8 @@ namespace :deploy do
 
     task :filter do
         Dir["**/*.unfiltered"].each do |file_in|
+            puts "Atualizando arquivo version.py..."
+            run_local 'cd src; python -c "from brainiak.utils.git import build_release_string; print build_release_string()" > brainiak/version.py'
             puts "Filtrando arquivo '#{file_in}'..."
             filter_file(file_in,file_in.chomp(".unfiltered"))
         end

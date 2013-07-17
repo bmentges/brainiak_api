@@ -25,8 +25,3 @@ set :copy_exclude,          [
                             "**/*.log",
                             "**/.git", "**/.gitignore",
                             "nosetests.xml", "**/.coverage", "**/.idea" ]
-
-#
-# Variaveis
-#
-set :puppet_already_run,    0

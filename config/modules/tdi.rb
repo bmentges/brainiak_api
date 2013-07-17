@@ -10,8 +10,8 @@ namespace :tdi do
 
     task :be, :roles => :be do
         utils.askpass("puppet")
-        tdi_installed = capture("[[ -e /opt/local/bin/tdi ]] && echo true || echo false").chomp
-        if tdi_installed == "true"
+        tdi_permission = capture("sudo -l | grep /opt/local/bin/tdi -q && echo true || echo false").chomp
+        if tdi_permission == "true"
             deploy.filter
             upload "tdi.json", "/tmp/tdi.json"
             run "sudo /opt/local/bin/tdi /tmp/tdi.json"

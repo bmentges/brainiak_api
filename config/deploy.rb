@@ -56,12 +56,13 @@ namespace :deploy do
             make html                   &&
             cd ..
         EOF
+        utils.askpass("busca")
         put File.read("docs.tar.gz"), "/tmp/docs.tar.gz", :via => :scp
         run_once <<-EOF
             cd /tmp && tar xzf docs.tar.gz                                          &&
             cd /tmp/docs                                                            &&
             export PATH="/opt/api_semantica/brainiak/virtualenv/bin:$PATH"          &&
-            export PYTHONPATH="' + deploy_to + '/current:$PYTHONPATH"               &&
+            export PYTHONPATH="#{deploy_to}/current:$PYTHONPATH"                    &&
             make html                                                               &&
             rsync -ac --delay-updates --stats /tmp/docs/build/html/ #{docs_html}/   &&
             cd /tmp                                                                 &&

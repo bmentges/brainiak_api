@@ -8,7 +8,7 @@ tdi.json
 *.egg
 *.egg-info
 dist
-build
+./build
 eggs
 parts
 bin

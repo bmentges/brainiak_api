@@ -9,3 +9,5 @@ set :puppetmaster_env,  'prod'
 set :redis_endpoint,    'redis.api.semantica.globoi.com'
 set :redis_port,        20015
 set :redis_password,    'a8pdifs2e2m9afn7tcifcea99674aad2'
+
+set :log_filepath,      '/opt/logs/brainiak/gunicorn-be/gunicorn-be.log'

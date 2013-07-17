@@ -47,6 +47,14 @@ namespace :deploy do
         # coisa que nao queremos
     end
 
+    task :copy_doc do
+        run_local "cp -rf docs/build/html src/"
+    end
+
+    task :clean_doc do
+        run_local "rm -rf src/html"
+    end
+
     task :docs, :roles => :be do
         puts 'Gerando documentação'
         run_local <<-EOF

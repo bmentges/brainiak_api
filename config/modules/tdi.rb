@@ -13,8 +13,8 @@ namespace :tdi do
         tdi_permission = capture("sudo -l | grep /opt/local/bin/tdi -q && echo true || echo false").chomp
         if tdi_permission == "true"
             deploy.filter
-            upload "tdi.json", "/tmp/tdi.json"
-            run "sudo /opt/local/bin/tdi /tmp/tdi.json"
+            upload "tdi.json", "/tmp/tdi-#{projeto}.json"
+            run "sudo /opt/local/bin/tdi /tmp/tdi-#{projeto}.json"
             deploy.unfilter
         end
     end

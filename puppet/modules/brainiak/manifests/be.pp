@@ -31,30 +31,18 @@
 class brainiak::be {
 
   include supso::dir_opt
-  include tdi
   include api_semantica::defs
 
   #$projeto = 'brainiak'
   $projeto = 'api_semantica'
   $usuario = $api_semantica::defs::usuario
-
   #$basedir = "${supso::dir_opt::dir}/${projeto}"
   $basedir = "${supso::dir_opt::dir}/${projeto}/brainiak"
-
-  # Login para InfraScrum via LDAP
-  infra::ldap { "InfraScrum - ${usuario}" :
-      grupoldap => 'infrascrum'
-  }
-
-  supso::sudoers { "${usuario}-tdi":
-    entity    => "${usuario}, %infrascrum, %supprod",
-    cmd       => "/opt/local/bin/tdi",
-    nopasswd  => true,
-  }
-
   $python_virtualenv_dir  = "${basedir}/virtualenv"
-
   $git_projeto            = 'http://ngit.globoi.com/brainiak'
+
+  include supso::ldap
+  realize Supso::Ldap::Projeto[$projeto]
 
   virtualenv { $python_virtualenv_dir:
     ensure              => present,

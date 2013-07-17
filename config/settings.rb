@@ -1,3 +1,5 @@
+role :deploy,           'riomp74lb08.globoi.com', 'riomp75lb08.globoi.com', 'riolb315.globoi.com', 'riolb316.globoi.com'
+
 set :stages,                %w(dev qa1 qa2 qa staging prod)
 set :default_stage,         "dev"
 

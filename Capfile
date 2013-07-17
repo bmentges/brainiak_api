@@ -9,7 +9,7 @@ Dir['vendor/gems/*/recipes/*.rb','vendor/plugins/*/recipes/*.rb'].each { |plugin
 Dir['config/*.rb'].each { |m| load m }
 Dir['config/modules/*.rb'].each { |m| load m }
 
-before "deploy:update",         "deploy::clean_local"
+before "deploy:update",         "deploy:clean_local"
 before "deploy:update",         "tdi:all"
 before "deploy:update",         "deploy:setup"
 before "deploy:update",         "deploy:filter"
@@ -18,4 +18,4 @@ before "deploy:update",         "deploy:copy_doc"
 before "deploy:update_code",    "deploy:hacks"
 after  "deploy:restart",        "deploy:unfilter"
 after  "deploy:update",         "deploy:clean_doc"
-after  "deploy:update",         "deploy::clean_local"
+after  "deploy:update",         "deploy:clean_local"

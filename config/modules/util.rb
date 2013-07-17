@@ -78,9 +78,8 @@ end
 #########
 namespace :utils do
     def is_deploy_host?
-      hostname = `hostname`.strip
-      deploy_host_list = roles[:deploy].servers
-      deploy_host_list.any? { |entry| entry.to_s.start_with?(hostname) }
+      puts "Deployment via OCD: " + ( ENV.has_key?('OCD') and ENV['OCD'] == "1" ).to_s
+      return ( ENV.has_key?('OCD') and ENV['OCD'] == "1" )
     end
 
     # Fecha todas as sessões SSH para troca de usuário.
@@ -91,35 +90,39 @@ namespace :utils do
 
     # Senha no shell (cap ... <username>_pass=<senha> ...).
     def askpass(username)
-      no_autologin_users_list = %w(deploy root)
+        no_autologin_users_list = %w(deploy root)
 
-      if stage.to_s =~ /^(dev|qa1|qa2)/
-        set :"#{username}_pass", username unless no_autologin_users_list.include?(username)
-      end
+        disconnect
 
-      disconnect
+        set :user, username
+        set :"#{username}_params", ''
 
-      set :user, username
-      set :"#{username}_params", ''
+        unless is_deploy_host?
+            if stage.to_s =~ /^(dev|qa1|qa2)/
+                unless no_autologin_users_list.include?(username)
+                    set :"#{username}_pass", username
+                    puts "Setting password automatically for user '#{username}'..."
+                end
+            end
 
-      unless ENV["#{username}_pass"].nil?
-        set :"#{username}_pass", ENV["#{username}_pass"]
-      end
+            unless ENV["#{username}_pass"].nil?
+                set :"#{username}_pass", ENV["#{username}_pass"]
+            end
 
-      unless is_deploy_host?
-        if exists?(:"#{username}_pass")
-          set :password, fetch("#{username}_pass")
-        else
-          set(:password) { Capistrano::CLI.password_prompt("Senha para o usuário #{username}: ") }
-          set :"#{username}_pass", password
+            if exists?(:"#{username}_pass")
+                set :password, fetch("#{username}_pass")
+            else
+                set(:password) { Capistrano::CLI.password_prompt("Senha para o usuário #{username}: ") }
+                set :"#{username}_pass", password
+            end
+
+            case username
+                when 'puppet'
+                    set :"#{username}_params", "-p #{password}"
+                else
+                    # Nothing (reservado para outras configurações especiais).
+            end
         end
-        case username
-          when 'puppet'
-            set :"#{username}_params", "-p #{password}"
-          else
-            # Nothing (reservado para outras configurações especiais).
-        end
-      end
     end
 
     # Cria dir temporário local

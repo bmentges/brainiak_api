@@ -454,6 +454,22 @@ class NormalizeTerm(unittest.TestCase):
         expected = "?variable"
         self.assertEqual(computed, expected)
 
+    def test_is_literal_given_a_variable_return_false(self):
+        response = is_literal("?a_variable")
+        self.assertFalse(response)
+
+    def test_is_literal_given_a_url_return_false(self):
+        response = is_literal("http://xubiru.com")
+        self.assertFalse(response)
+
+    def test_is_literal_given_a_compressed_url_return_false(self):
+        response = is_literal("upper:something")
+        self.assertFalse(response)
+
+    def test_is_literal_given_a_literal_return_true(self):
+        response = is_literal("literal")
+        self.assertTrue(response)
+
 
 class SuperPropertiesTestCase(unittest.TestCase):
 

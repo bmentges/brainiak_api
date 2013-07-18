@@ -6,6 +6,8 @@ from brainiak import settings
 from brainiak.prefixes import safe_slug_to_prefix
 from brainiak.utils.sparql import PATTERN_O, PATTERN_P
 
+EXPAND_URI_BY_DEFAULT = '0'
+
 
 class InvalidParam(Exception):
     pass
@@ -49,13 +51,8 @@ def normalize_last_slash(url):
     return url if url.endswith("/") else url + "/"
 
 
-def valid_pagination(total, page, per_page):
-    "Verify if the given pagination is valid to the existent total items"
-    return (page * per_page) < total
-
-
 # Define possible params and their processing order
-VALID_PARAMS = ('lang',
+VALID_PARAMS = ('lang', 'expand_uri',
                 'graph_uri',
                 'context_name', 'class_name', 'class_prefix', 'class_uri',
                 'instance_id', 'instance_prefix', 'instance_uri',
@@ -185,6 +182,7 @@ class ParamDict(dict):
     def _set_defaults(self):
         "Define a set of predefined keys that "
         self["lang"] = self.optionals.get("lang", settings.DEFAULT_LANG)
+        self["expand_uri"] = self.optionals.get("expand_uri", EXPAND_URI_BY_DEFAULT)
 
         self._set_if_optional("context_name", self.optionals.get("context_name", "invalid_context"))
         self._set_if_optional("class_name", self.optionals.get("class_name", "invalid_class"))

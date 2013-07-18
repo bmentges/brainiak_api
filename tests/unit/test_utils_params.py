@@ -3,7 +3,8 @@ from unittest import TestCase
 from brainiak.utils import params
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, valid_pagination, INSTANCE_PARAMS, CACHE_PARAMS
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS
+from brainiak.utils.resources import valid_pagination
 from tests.mocks import MockHandler
 
 
@@ -152,6 +153,26 @@ class ParamsTestCase(TestCase):
                            context_name='dbpedia', class_name='klass', instance_id='inst',
                            graph_uri=None, instance_uri=None, instance_prefix=None)
         self.assertEquals(params["instance_uri"], "http://dbpedia.org/ontology/klass/inst")
+
+    def test_default_value_for_param_do_item_count(self):
+        handler = MockHandler()
+        params = ParamDict(handler, **PAGING_PARAMS)
+        self.assertEqual(params["do_item_count"], '0')
+
+    def test_set_param_do_item_count(self):
+        handler = MockHandler()
+        params = ParamDict(handler, do_item_count='1')
+        self.assertEqual(params["do_item_count"], '1')
+
+    def test_default_value_for_param_expand_uri(self):
+        handler = MockHandler()
+        params = ParamDict(handler)
+        self.assertEqual(params["expand_uri"], '0')
+
+    def test_set_param_expand_uri(self):
+        handler = MockHandler()
+        params = ParamDict(handler, expand_uri=1)
+        self.assertEqual(params["expand_uri"], 1)
 
     def test_pagination_validation(self):
         self.assertTrue(valid_pagination(total=1, page=0, per_page=10))

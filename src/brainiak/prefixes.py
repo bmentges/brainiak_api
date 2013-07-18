@@ -174,7 +174,11 @@ class MemorizeContext(object):
         return slug
 
     def normalize_uri(self, uri):
-        return normalize_uri(uri, self._normalize_uri_mode)
+        if self._normalize_uri_mode == SHORTEN:
+            return self.shorten_uri(uri)
+        elif self._normalize_uri_mode == EXPAND:
+            return expand_uri(uri)
+        raise InvalidModeForNormalizeUriError('Unrecognized mode {0:s}'.format(self._normalize_uri_mode))
 
 
 # TODO: verifify if module re would give better performance

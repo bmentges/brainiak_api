@@ -84,6 +84,7 @@ class PrefixesTestCase(unittest.TestCase):
     def test_normalize_uri_invalid_mode(self):
         self.assertRaises(InvalidModeForNormalizeUriError, normalize_uri, "rdf:type", mode='INVALID_MODE')
 
+
 class ExtractPrefixTestCase(unittest.TestCase):
 
     def setUp(self):

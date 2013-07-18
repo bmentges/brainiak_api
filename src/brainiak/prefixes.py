@@ -9,7 +9,10 @@ This module uses the following nomenclature:
  short_uri = x:D
 """
 
+import re
+
 from brainiak import settings
+
 
 class InvalidModeForNormalizeUriError(Exception):
     pass
@@ -21,6 +24,7 @@ ROOT_CONTEXT = 'glb'
 _MAP_SLUG_TO_PREFIX = {}
 
 STANDARD_PREFIXES = {
+    'nodeID': 'nodeID',
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
     'owl': 'http://www.w3.org/2002/07/owl#',
@@ -131,14 +135,21 @@ def is_compressed_uri(candidate, extra_prefixes={}):
 def expand_uri(short_uri):
     if is_uri(short_uri):
         return short_uri
-    slug, item = short_uri.split(":")
-    prefix = slug_to_prefix(slug)
-    return "{0}{1}".format(prefix, item)
+    short_uri_pattern = re.compile(r"(\w+):(\S+)")
+    match = short_uri_pattern.match(short_uri)
+    if match:
+        slug, item = match.groups()
+        prefix = slug_to_prefix(slug)
+        return "{0}{1}".format(prefix, item)
+    else:
+        return short_uri
 
 
 UNDEFINED = None
 SHORTEN = '0'
 EXPAND = '1'
+
+
 def normalize_uri(uri, mode):
     if mode == SHORTEN:
         return shorten_uri(uri)
@@ -173,6 +184,7 @@ class MemorizeContext(object):
             self.context[slug] = prefix
         return slug
 
+    # TODO: avoid duplication with normalize_uri function
     def normalize_uri(self, uri):
         if self._normalize_uri_mode == SHORTEN:
             return self.shorten_uri(uri)

@@ -2,8 +2,8 @@
 
 from brainiak import triplestore, settings
 from brainiak.utils.links import build_class_url
-from brainiak.prefixes import MemorizeContext, shorten_uri
-from brainiak.utils.sparql import expand_uri, get_super_properties, is_result_empty
+from brainiak.prefixes import MemorizeContext, expand_uri
+from brainiak.utils.sparql import get_super_properties, is_result_empty
 
 
 def get_instance(query_params):
@@ -26,7 +26,9 @@ def build_items_dict(context, bindings, class_uri):
     items_dict = {}
     for item in bindings:
         predicate_uri = context.shorten_uri(item["predicate"]["value"])
+        #predicate_uri = context.normalize_uri(item["predicate"]["value"])
         value = context.shorten_uri(item["object"]["value"])
+        # value = context.normalize_uri(item["object"]["value"])
         if predicate_uri in items_dict:
             if not isinstance(items_dict[predicate_uri], list):
                 value_list = [items_dict[predicate_uri]]
@@ -47,19 +49,24 @@ def build_items_dict(context, bindings, class_uri):
 
     if not class_uri is None:
         items_dict["rdf:type"] = context.shorten_uri(class_uri)
+        #items_dict[context.normalize_uri("rdf:type")] = context.normalize_uri(class_uri)
 
     # overwrite label only with filtered language
+    normalized_rdfs_label = context.normalize_uri("rdfs:label")
     if expand_uri("rdfs:label") not in super_predicates:
-        items_dict["rdfs:label"] = item["label"]["value"]
+    #if normalized_rdfs_label not in super_predicates:
+        items_dict[normalized_rdfs_label] = item["label"]["value"]
     else:
+        #items_dict.pop(normalized_rdfs_label)
         items_dict.pop("rdfs:label")
 
     return items_dict
+#http://localhost:5100/place/Country/Brazil?expand_uri=1
 
 
 def assemble_instance_json(query_params, query_result_dict, context=None):
     if context is None:
-        context = MemorizeContext()
+        context = MemorizeContext(normalize_uri_mode=query_params['expand_uri'])
 
     items = build_items_dict(context, query_result_dict['results']['bindings'], query_params["class_uri"])
     class_url = build_class_url(query_params)
@@ -68,7 +75,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     instance = {
         "_resource_id": query_params['instance_id'],
         "@id": query_params['instance_uri'],
-        "@type": shorten_uri(query_params["class_uri"]),
+        "@type": context.normalize_uri(query_params["class_uri"]),
         "@context": context.context,
     }
     instance.update(items)

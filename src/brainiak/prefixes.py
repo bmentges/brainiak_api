@@ -11,6 +11,9 @@ This module uses the following nomenclature:
 
 from brainiak import settings
 
+class InvalidModeForNormalizeUriError(Exception):
+    pass
+
 # This ROOT CONTEXT is a special context whose URI is equal to the settings.URL_PREFIX
 ROOT_CONTEXT = 'glb'
 
@@ -133,13 +136,25 @@ def expand_uri(short_uri):
     return "{0}{1}".format(prefix, item)
 
 
+UNDEFINED = None
+SHORTEN = '0'
+EXPAND = '1'
+def normalize_uri(uri, mode):
+    if mode == SHORTEN:
+        return shorten_uri(uri)
+    elif mode == EXPAND:
+        return expand_uri(uri)
+    raise InvalidModeForNormalizeUriError('Unrecognized mode {0:s}'.format(mode))
+
+
 def get_prefixes_dict():
     return _MAP_SLUG_TO_PREFIX
 
 
 class MemorizeContext(object):
     "Wrap operations replace_prefix() and uri_to_prefix() remembering all substitutions in the context attribute"
-    def __init__(self):
+    def __init__(self, normalize_uri_mode=UNDEFINED):
+        self._normalize_uri_mode = normalize_uri_mode
         self.context = {}
         self.object_properties = {}
 
@@ -157,6 +172,9 @@ class MemorizeContext(object):
         if slug != prefix:
             self.context[slug] = prefix
         return slug
+
+    def normalize_uri(self, uri):
+        return normalize_uri(uri, self._normalize_uri_mode)
 
 
 # TODO: verifify if module re would give better performance

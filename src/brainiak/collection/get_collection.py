@@ -4,7 +4,7 @@ from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import build_schema_url_for_instance, self_url
 from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination
-from brainiak.utils.sparql import compress_keys_and_values, normalize_term, calculate_offset, get_one_value, extract_po_tuples
+from brainiak.utils.sparql import compress_keys_and_values, is_literal, normalize_term, calculate_offset, get_one_value, extract_po_tuples
 
 
 class Query(object):
@@ -65,17 +65,27 @@ class Query(object):
     def po_tuples(self):
         return extract_po_tuples(self.params)
 
+    def next_variable(self, index):
+        return "?literal{0}".format(index) 
+
     @property
     def triples(self):
         tuples = [
             ("a", "<%(class_uri)s>"),
             ("rdfs:label", "?label")
         ]
+        variable_index = 0
         for predicate, object_, index in self.po_tuples:
             if self.should_add_predicate_and_object(predicate, object_):
-                predicate = normalize_term(predicate, self.params["lang"])
-                object_ = normalize_term(object_, self.params["lang"])
-                tuples.append((predicate, object_))
+                if is_literal(object_):
+                    # this is used to escape the datatype when filtering objects that are literals 
+                    variable_index += 1
+                    variable_name = self.next_variable(variable_index)
+                    tuples.append((predicate, variable_name))
+                else:
+                    predicate = normalize_term(predicate, self.params["lang"])
+                    object_ = normalize_term(object_, self.params["lang"])
+                    tuples.append((predicate, object_))
 
         sort_object = self.get_sort_variable()
         sort_sufix = ""
@@ -97,6 +107,20 @@ class Query(object):
         translatables = ["?label"]
         statement = ""
         filter_list = []
+
+        # the block bellow is similar to part of variable's method
+        # it is "copied" to assure independency between the methods
+        # this is used to escape the datatype when filtering objects that are literals 
+        variable_index = 0
+        for predicate, object_, index in self.po_tuples:
+            if is_literal(object_):
+                variable_index += 1
+                variable_name = self.next_variable(variable_index)
+                translatables.append(variable_name)
+                literal_filter = 'FILTER(str({0}) = "{1}") .'.format(variable_name, object_)
+                if literal_filter not in filter_list:
+                    filter_list.append(literal_filter)
+
         FILTER_CLAUSE = 'FILTER(langMatches(lang(%(variable)s), "%(lang)s") OR langMatches(lang(%(variable)s), "")) .'
         if self.params["lang"]:
             for variable in translatables:
@@ -105,6 +129,8 @@ class Query(object):
                     "lang": self.params["lang"]
                 }
                 filter_list.append(statement)
+
+
 
         filter_list.append("FILTER(?g = <%(graph_uri)s>) ." % self.params)
         if filter_list:

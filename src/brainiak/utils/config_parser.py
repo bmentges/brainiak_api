@@ -2,14 +2,10 @@ from ConfigParser import ConfigParser, NoSectionError
 
 
 def parse_section(filename, section="default"):
+    parser = ConfigParser()
+    parser.read(filename)
     try:
-        parser = ConfigParser()
-        parser.read(filename)
-        keys = parser.options(section)
+        config_dict = dict(parser.items('default'))
     except NoSectionError:
-        raise Exception("There is no {0} section in the file".format(section))
-    config_dict = {}
-    for key in keys:
-        value = parser.get(section, key)
-        config_dict[key] = value
+        raise Exception("There is no {0} section in the file {1}".format(section, filename))
     return config_dict

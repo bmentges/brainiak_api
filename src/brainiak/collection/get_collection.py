@@ -231,7 +231,6 @@ def filter_instances(query_params):
         "label": "title",
         "subject": "@id",
         "sort_object": shorten_uri(query_params["sort_by"]),
-        #"o": shorten_uri(query_params.get("p", "?predicate")),
     }
     for p, o, index in extract_po_tuples(query_params):
         keymap[o[1:]] = shorten_uri(p)

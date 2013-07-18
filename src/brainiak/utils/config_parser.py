@@ -7,7 +7,7 @@ def parse_section(filename, section="default"):
         parser.read(filename)
         keys = parser.options(section)
     except NoSectionError:
-        raise RuntimeError("There is no {0} section in the file".format(section))
+        raise Exception("There is no {0} section in the file".format(section))
     config_dict = {}
     for key in keys:
         value = parser.get(section, key)

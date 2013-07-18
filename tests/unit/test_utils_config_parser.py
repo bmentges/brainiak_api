@@ -16,4 +16,4 @@ class ConfigParserTestCase(TestCase):
     @patch("brainiak.utils.config_parser.ConfigParser.read")
     @patch("brainiak.utils.config_parser.ConfigParser.options", side_effect=NoSectionError(""))
     def test_config_file_no_default_section(self, mocked_options, mocked_read):
-        self.assertRaises(RuntimeError, parse_section, "filename")
+        self.assertRaises(Exception, parse_section, "filename")

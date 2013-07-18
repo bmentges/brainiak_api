@@ -4,7 +4,7 @@ from brainiak.prefixes import MemorizeContext
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties
 from brainiak import triplestore
-from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
+from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO_JSON_TYPE
 
 
 def get_schema(query_params):
@@ -276,6 +276,14 @@ def _query_superclasses(query_params):
     return triplestore.query_sparql(query)
 
 
+def items_from_range(context, range_uri):
+    short_range = context.normalize_uri(range_uri)
+    if short_range == 'xsd:date' or short_range == 'xsd:dateTime':
+        return {"type": "string", "format": "date"}
+    else:
+        return {"type": _MAP_XSD_TO_JSON_TYPE.get(short_range, 'object'), "format": short_range}
+
+
 def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
     predicate_graph = binding_row["predicate_graph"]['value']
@@ -319,7 +327,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
     elif predicate_type == DATATYPE_PROPERTY:
         # add predicate['type'] and (optional) predicate['format']
-        predicate.update(items_from_range(range_uri))
+        predicate.update(items_from_range(context, range_uri))
 
     if predicate["type"] == "array":
         if (predicate_uri in cardinalities) and (range_uri in cardinalities[predicate_uri]):

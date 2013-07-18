@@ -66,7 +66,7 @@ class Query(object):
         return extract_po_tuples(self.params)
 
     def next_variable(self, index):
-        return "?literal{0}".format(index) 
+        return "?literal{0}".format(index)
 
     @property
     def triples(self):
@@ -77,13 +77,13 @@ class Query(object):
         variable_index = 0
         for predicate, object_, index in self.po_tuples:
             if self.should_add_predicate_and_object(predicate, object_):
+                predicate = normalize_term(predicate, self.params["lang"])
                 if is_literal(object_):
-                    # this is used to escape the datatype when filtering objects that are literals 
+                    # this is used to escape the datatype when filtering objects that are literals
                     variable_index += 1
                     variable_name = self.next_variable(variable_index)
                     tuples.append((predicate, variable_name))
                 else:
-                    predicate = normalize_term(predicate, self.params["lang"])
                     object_ = normalize_term(object_, self.params["lang"])
                     tuples.append((predicate, object_))
 
@@ -110,7 +110,7 @@ class Query(object):
 
         # the block bellow is similar to part of variable's method
         # it is "copied" to assure independency between the methods
-        # this is used to escape the datatype when filtering objects that are literals 
+        # this is used to escape the datatype when filtering objects that are literals
         variable_index = 0
         for predicate, object_, index in self.po_tuples:
             if is_literal(object_):
@@ -129,8 +129,6 @@ class Query(object):
                     "lang": self.params["lang"]
                 }
                 filter_list.append(statement)
-
-
 
         filter_list.append("FILTER(?g = <%(graph_uri)s>) ." % self.params)
         if filter_list:

@@ -1,1 +1,1 @@
-RELEASE = 'master | 43b17dec0f15f2d688e5b8f452466e87b9b572df'
+RELEASE = '2.0.0 | a1eaccdd091b52d884c789f6636bf7ad1e7bf17a'

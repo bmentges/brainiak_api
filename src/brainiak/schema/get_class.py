@@ -9,17 +9,18 @@ from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PRO
 
 def get_schema(query_params):
 
-    context = MemorizeContext()
-    short_uri = context.shorten_uri(query_params["class_uri"])
+    context = MemorizeContext(query_params["expand_uri"])
 
     class_schema = query_class_schema(query_params)
     if not class_schema["results"]["bindings"]:
         return
 
+    normalized_uri = context.normalize_uri(query_params["class_uri"])
+
     query_params["superclasses"] = query_superclasses(query_params)
     predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
     response_dict = assemble_schema_dict(query_params,
-                                         short_uri,
+                                         normalized_uri,
                                          get_one_value(class_schema, "title"),
                                          predicates_and_cardinalities,
                                          context,
@@ -27,7 +28,7 @@ def get_schema(query_params):
     return response_dict
 
 
-def assemble_schema_dict(query_params, short_uri, title, predicates, context, **kw):
+def assemble_schema_dict(query_params, normalized_uri, title, predicates, context, **kw):
     effective_context = {"@language": query_params.get("lang")}
     effective_context.update(context.context)
 
@@ -55,7 +56,7 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
 
     schema = {
         "type": "object",
-        "id": short_uri,
+        "id": normalized_uri,
         "@context": effective_context,
         "$schema": "http://json-schema.org/draft-03/schema#",
         "title": title,

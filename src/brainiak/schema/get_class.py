@@ -294,7 +294,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     range_label = binding_row.get('range_label', {}).get('value', "")
 
     # compression-related
-    compressed_range_uri = context.shorten_uri(range_uri)
+    compressed_range_uri = context.normalize_uri(range_uri)
     compressed_range_graph = context.prefix_to_slug(range_graph)
     compressed_graph = context.prefix_to_slug(predicate_graph)
 
@@ -396,7 +396,7 @@ def convert_bindings_dict(context, bindings, cardinalities):
 
     for binding_row in bindings:
         predicate_uri = binding_row['predicate']['value']
-        predicate_key = context.shorten_uri(predicate_uri)
+        predicate_key = context.normalize_uri(predicate_uri)
         if not predicate_uri in super_predicates.keys():
             predicate = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
             existing_predicate = assembled_predicates.get(predicate_key, False)

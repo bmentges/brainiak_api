@@ -2,6 +2,7 @@
 
 from mock import patch
 import json
+from brainiak.prefixes import SHORTEN
 
 import brainiak.schema.get_class as schema
 
@@ -596,7 +597,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         schema.query_cardinalities = lambda query: fake_response_cardinalities
         schema.query_predicates = lambda query: fake_response_predicates
 
-        context = prefixes.MemorizeContext()
+        context = prefixes.MemorizeContext(normalize_uri_mode=SHORTEN)
         params = {"class_uri": "http://test/person/gender",
                   "class_schema": None}
 

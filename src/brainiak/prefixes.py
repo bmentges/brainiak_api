@@ -128,9 +128,12 @@ def is_compressed_uri(candidate, extra_prefixes={}):
 def expand_uri(short_uri):
     if is_uri(short_uri):
         return short_uri
-    slug, item = short_uri.split(":")
-    prefix = slug_to_prefix(slug)
-    return "{0}{1}".format(prefix, item)
+    try:
+        slug, item = short_uri.split(":")
+        prefix = slug_to_prefix(slug)
+        return "{0}{1}".format(prefix, item)
+    except ValueError:
+        return short_uri
 
 
 def get_prefixes_dict():

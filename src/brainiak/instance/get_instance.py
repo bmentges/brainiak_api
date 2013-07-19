@@ -37,24 +37,22 @@ def build_items_dict(context, bindings, class_uri):
         else:
             items_dict[predicate_uri] = value
 
-    # remove super properties that have the same value as subproperties
-    for (analyzed_predicate, value) in items_dict.items():
-        if analyzed_predicate in super_predicates.keys():
-            sub_predicate = super_predicates[analyzed_predicate]
-            sub_value = items_dict[sub_predicate]
-            if value == sub_value:
-                items_dict.pop(analyzed_predicate)
+    remove_super_properties(items_dict, super_predicates)
 
     if not class_uri is None:
         items_dict["rdf:type"] = context.shorten_uri(class_uri)
 
-    # overwrite label only with filtered language
-    if expand_uri("rdfs:label") not in super_predicates:
-        items_dict["rdfs:label"] = item["label"]["value"]
-    else:
-        items_dict.pop("rdfs:label")
-
     return items_dict
+
+
+def remove_super_properties(items_dict, super_predicates):
+    for (analyzed_predicate, value) in items_dict.items():
+        expanded_predicate = expand_uri(analyzed_predicate)
+        if expanded_predicate in super_predicates.keys():
+            sub_predicate = super_predicates[expanded_predicate]
+            sub_value = items_dict[shorten_uri(sub_predicate)]
+            if value == sub_value:
+                items_dict.pop(analyzed_predicate)
 
 
 def assemble_instance_json(query_params, query_result_dict, context=None):
@@ -77,13 +75,11 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
 DEFINE input:inference <%(ruleset)s>
-SELECT DISTINCT ?predicate ?object ?label ?super_property {
+SELECT DISTINCT ?predicate ?object ?super_property {
     <%(instance_uri)s> a <%(class_uri)s>;
-        rdfs:label ?label;
         ?predicate ?object .
 OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
 FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
-FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
 }
 """
 

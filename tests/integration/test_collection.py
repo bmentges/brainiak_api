@@ -751,7 +751,6 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "sort_by": ""
         }
         query = query_filter_instances(params)
-
         computed_bindings = self.query(query)["results"]["bindings"]
         expected_bindings = [
             {

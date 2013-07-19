@@ -277,9 +277,11 @@ class ListQueryTestCase(unittest.TestCase):
         WHERE {
             GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
-                     <http://schema.org/Creature> "Xubiru" .
+                     <http://schema.org/Creature> ?literal1 .
                      }
+            FILTER(str(?literal1) = "Xubiru") .
             FILTER(?g = <http://some.graph/>) .
+
         }
         LIMIT 10
         OFFSET 0
@@ -299,9 +301,11 @@ class ListQueryTestCase(unittest.TestCase):
         WHERE {
             GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
-                     <http://schema.org/Creature> "Xubiru"@pt .
+                     <http://schema.org/Creature> ?literal1 .
                      }
+            FILTER(str(?literal1) = "Xubiru") .
             FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .
+            FILTER(langMatches(lang(?literal1), "pt") OR langMatches(lang(?literal1), "")) .
             FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10

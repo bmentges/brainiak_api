@@ -2,7 +2,7 @@
 
 from brainiak import triplestore, settings
 from brainiak.utils.links import build_class_url
-from brainiak.prefixes import MemorizeContext, expand_uri
+from brainiak.prefixes import MemorizeContext
 from brainiak.utils.sparql import get_super_properties, is_result_empty
 
 
@@ -25,10 +25,8 @@ def build_items_dict(context, bindings, class_uri):
 
     items_dict = {}
     for item in bindings:
-        predicate_uri = context.shorten_uri(item["predicate"]["value"])
-        #predicate_uri = context.normalize_uri(item["predicate"]["value"])
-        value = context.shorten_uri(item["object"]["value"])
-        # value = context.normalize_uri(item["object"]["value"])
+        predicate_uri = context.normalize_uri(item["predicate"]["value"])
+        value = context.normalize_uri(item["object"]["value"])
         if predicate_uri in items_dict:
             if not isinstance(items_dict[predicate_uri], list):
                 value_list = [items_dict[predicate_uri]]
@@ -39,29 +37,22 @@ def build_items_dict(context, bindings, class_uri):
         else:
             items_dict[predicate_uri] = value
 
-    # remove super properties that have the same value as subproperties
-    for (analyzed_predicate, value) in items_dict.items():
-        if analyzed_predicate in super_predicates.keys():
-            sub_predicate = super_predicates[analyzed_predicate]
-            sub_value = items_dict[sub_predicate]
-            if value == sub_value:
-                items_dict.pop(analyzed_predicate)
+    remove_super_properties(context, items_dict, super_predicates)
 
     if not class_uri is None:
-        items_dict["rdf:type"] = context.shorten_uri(class_uri)
-        #items_dict[context.normalize_uri("rdf:type")] = context.normalize_uri(class_uri)
-
-    # overwrite label only with filtered language
-    normalized_rdfs_label = context.normalize_uri("rdfs:label")
-    if expand_uri("rdfs:label") not in super_predicates:
-    #if normalized_rdfs_label not in super_predicates:
-        items_dict[normalized_rdfs_label] = item["label"]["value"]
-    else:
-        #items_dict.pop(normalized_rdfs_label)
-        items_dict.pop("rdfs:label")
+        items_dict[context.normalize_uri("rdf:type")] = context.normalize_uri(class_uri)
 
     return items_dict
-#http://localhost:5100/place/Country/Brazil?expand_uri=1
+
+
+def remove_super_properties(context, items_dict, super_predicates):
+    for (analyzed_predicate, value) in items_dict.items():
+        expanded_predicate = analyzed_predicate
+        if expanded_predicate in super_predicates.keys():
+            sub_predicate = super_predicates[expanded_predicate]
+            sub_value = items_dict[context.normalize_uri(sub_predicate)]
+            if value == sub_value:
+                items_dict.pop(analyzed_predicate)
 
 
 def assemble_instance_json(query_params, query_result_dict, context=None):
@@ -84,13 +75,11 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
 DEFINE input:inference <%(ruleset)s>
-SELECT DISTINCT ?predicate ?object ?label ?super_property {
+SELECT DISTINCT ?predicate ?object ?super_property {
     <%(instance_uri)s> a <%(class_uri)s>;
-        rdfs:label ?label;
         ?predicate ?object .
 OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
 FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
-FILTER(langMatches(lang(?label), "%(lang)s") OR langMatches(lang(?label), "")) .
 }
 """
 

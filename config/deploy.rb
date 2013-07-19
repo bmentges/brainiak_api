@@ -64,7 +64,8 @@ namespace :deploy do
             make clean                  &&
             cd docs                     &&
             make html                   &&
-            cd ..
+            cd ..                       &&
+            git checkout -- .
         EOF
         utils.askpass("busca")
         put File.read("docs.tar.gz"), "/tmp/docs.tar.gz", :via => :scp

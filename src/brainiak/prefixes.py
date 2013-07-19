@@ -9,8 +9,6 @@ This module uses the following nomenclature:
  short_uri = x:D
 """
 
-import re
-
 from brainiak import settings
 
 
@@ -135,13 +133,11 @@ def is_compressed_uri(candidate, extra_prefixes={}):
 def expand_uri(short_uri):
     if is_uri(short_uri):
         return short_uri
-    short_uri_pattern = re.compile(r"(\w+):(\S+)")
-    match = short_uri_pattern.match(short_uri)
-    if match:
-        slug, item = match.groups()
+    try:
+        slug, item = short_uri.split(":")
         prefix = slug_to_prefix(slug)
         return "{0}{1}".format(prefix, item)
-    else:
+    except ValueError:
         return short_uri
 
 

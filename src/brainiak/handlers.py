@@ -5,7 +5,6 @@ import traceback
 from contextlib import contextmanager
 
 import ujson as json
-
 from tornado.curl_httpclient import CurlError
 from tornado.httpclient import HTTPError as ClientHTTPError
 from tornado.web import HTTPError, RequestHandler, URLSpec
@@ -27,8 +26,9 @@ from brainiak.prefix.get_prefixes import list_prefixes
 from brainiak.root.get_root import list_all_contexts
 from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
-from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, optionals, INSTANCE_PARAMS, CLASS_PARAMS, GRAPH_PARAMS, PAGING_PARAMS
-from brainiak.utils.links import build_schema_url_for_instance, set_content_type_profile
+from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, optionals, INSTANCE_PARAMS
+from brainiak.utils.params import CLASS_PARAMS, GRAPH_PARAMS, PAGING_PARAMS
+from brainiak.utils.links import build_schema_url_for_instance, set_content_type_profile, build_schema_url
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.resources import check_messages_when_port_is_mentioned
 from brainiak.utils.sparql import extract_po_tuples
@@ -185,53 +185,6 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             # self.finish() -- this is automagically called by greenlet_asynchronous
 
 
-class HealthcheckHandler(BrainiakRequestHandler):
-
-    def get(self):
-        self.write("WORKING")
-
-
-class VersionHandler(BrainiakRequestHandler):
-
-    def get(self):
-        self.write(__version__)
-
-
-class VirtuosoStatusHandler(BrainiakRequestHandler):
-
-    def get(self):
-        self.write(triplestore.status())
-
-
-class CacheStatusHandler(BrainiakRequestHandler):
-
-    def get(self):
-        self.write(cache.status())
-
-
-class EventBusStatusHandler(BrainiakRequestHandler):
-
-    def get(self):
-        self.write(event_bus.status())
-
-
-class StatusHandler(BrainiakRequestHandler):
-
-    def get(self):
-        triplestore_status = triplestore.status()
-        event_bus_status = event_bus.status()
-        output = []
-        if "SUCCEED" not in triplestore_status:
-            output.append(triplestore_status)
-        if "FAILED" in event_bus_status:
-            output.append(event_bus_status)
-        if output:
-            response = "\n".join(output)
-        else:
-            response = "WORKING"
-        self.write(response)
-
-
 class RootJsonSchemaHandler(BrainiakRequestHandler):
 
     def get(self):
@@ -254,7 +207,34 @@ class RootHandler(BrainiakRequestHandler):
     def finalize(self, response):
         if isinstance(response, dict):
             self.write(response)
-            set_content_type_profile(self, self.query_params)
+            set_content_type_profile(self, build_schema_url(self.query_params))
+
+
+class ContextJsonSchemaHandler(BrainiakRequestHandler):
+
+    def get(self, context_name):
+        self.finalize(context_schema(context_name))
+
+
+class ContextHandler(BrainiakRequestHandler):
+
+    @greenlet_asynchronous
+    def get(self, context_name):
+        valid_params = LIST_PARAMS + GRAPH_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, context_name=context_name, **valid_params)
+
+        response = list_classes(self.query_params)
+
+        self.finalize(response)
+
+    def finalize(self, response):
+        if response is None:
+            msg = "No classes found in graph ({graph_uri})."
+            raise HTTPError(404, log_message=msg.format(**self.query_params))
+        else:
+            self.write(response)
+            set_content_type_profile(self, build_schema_url(self.query_params))
 
 
 class ClassHandler(BrainiakRequestHandler):
@@ -279,95 +259,6 @@ class ClassHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
-
-
-class InstanceHandler(BrainiakRequestHandler):
-
-    def __init__(self, *args, **kwargs):
-        super(InstanceHandler, self).__init__(*args, **kwargs)
-
-    @greenlet_asynchronous
-    def get(self, context_name, class_name, instance_id):
-        optional_params = INSTANCE_PARAMS
-        with safe_params(optional_params):
-            self.query_params = ParamDict(self,
-                                          context_name=context_name,
-                                          class_name=class_name,
-                                          instance_id=instance_id,
-                                          **optional_params)
-
-        response = get_instance(self.query_params)
-
-        self.finalize(response)
-
-    @greenlet_asynchronous
-    def put(self, context_name, class_name, instance_id):
-        valid_params = INSTANCE_PARAMS
-        with safe_params(valid_params):
-            self.query_params = ParamDict(self,
-                                          context_name=context_name,
-                                          class_name=class_name,
-                                          instance_id=instance_id,
-                                          **valid_params)
-
-        try:
-            instance_data = json.loads(self.request.body)
-        except ValueError:
-            raise HTTPError(400, log_message="No JSON object could be decoded")
-
-        if not instance_exists(self.query_params):
-            schema = schema_resource.get_schema(self.query_params)
-            if schema is None:
-                raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
-            instance_uri, instance_id = create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
-            resource_url = self.request.full_url()
-            self.set_status(201)
-            self.set_header("location", resource_url)
-        else:
-            edit_instance(self.query_params, instance_data)
-
-        response = get_instance(self.query_params)
-        if response and settings.NOTIFY_BUS:
-            notify_bus(instance=response["@id"],
-                       klass=self.query_params["class_uri"],
-                       graph=self.query_params["graph_uri"],
-                       action="PUT",
-                       instance_data=response)
-
-        self.finalize(response)
-
-    @greenlet_asynchronous
-    def delete(self, context_name, class_name, instance_id):
-        valid_params = INSTANCE_PARAMS
-        with safe_params(valid_params):
-            self.query_params = ParamDict(self,
-                                          context_name=context_name,
-                                          class_name=class_name,
-                                          instance_id=instance_id,
-                                          **valid_params)
-
-        deleted = delete_instance(self.query_params)
-        if deleted:
-            response = 204
-            if settings.NOTIFY_BUS:
-                notify_bus(instance=self.query_params["instance_uri"], klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"], action="DELETE")
-        else:
-            response = None
-        self.finalize(response)
-
-    def finalize(self, response):
-        if response is None:
-            msg = "Instance ({instance_uri}) of class ({class_uri}) in graph ({graph_uri}) was not found."
-            raise HTTPError(404, log_message=msg.format(**self.query_params))
-        elif isinstance(response, dict):
-            self.write(response)
-            schema_url = build_schema_url_for_instance(self.query_params)
-            content_type = "application/json; profile={0}".format(schema_url)
-            self.set_header("Content-Type", content_type)
-        elif isinstance(response, int):  # status code
-            self.set_status(response)
-            # A call to finalize() was removed from here! -- rodsenra 2013/04/25
 
 
 class CollectionJsonSchemaHandler(BrainiakRequestHandler):
@@ -458,34 +349,94 @@ class CollectionHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
-            set_content_type_profile(self, self.query_params)
+            set_content_type_profile(self, build_schema_url(self.query_params))
 
 
-class ContextJsonSchemaHandler(BrainiakRequestHandler):
+class InstanceHandler(BrainiakRequestHandler):
 
-    def get(self, context_name):
-        self.finalize(context_schema(context_name))
-
-
-class ContextHandler(BrainiakRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super(InstanceHandler, self).__init__(*args, **kwargs)
 
     @greenlet_asynchronous
-    def get(self, context_name):
-        valid_params = LIST_PARAMS + GRAPH_PARAMS
+    def get(self, context_name, class_name, instance_id):
+        optional_params = INSTANCE_PARAMS
+        with safe_params(optional_params):
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          instance_id=instance_id,
+                                          **optional_params)
+
+        response = get_instance(self.query_params)
+
+        self.finalize(response)
+
+    @greenlet_asynchronous
+    def put(self, context_name, class_name, instance_id):
+        valid_params = INSTANCE_PARAMS
         with safe_params(valid_params):
-            self.query_params = ParamDict(self, context_name=context_name, **valid_params)
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          instance_id=instance_id,
+                                          **valid_params)
 
-        response = list_classes(self.query_params)
+        try:
+            instance_data = json.loads(self.request.body)
+        except ValueError:
+            raise HTTPError(400, log_message="No JSON object could be decoded")
 
+        if not instance_exists(self.query_params):
+            schema = schema_resource.get_schema(self.query_params)
+            if schema is None:
+                raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
+            instance_uri, instance_id = create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
+            resource_url = self.request.full_url()
+            self.set_status(201)
+            self.set_header("location", resource_url)
+        else:
+            edit_instance(self.query_params, instance_data)
+
+        response = get_instance(self.query_params)
+        if response and settings.NOTIFY_BUS:
+            notify_bus(instance=response["@id"],
+                       klass=self.query_params["class_uri"],
+                       graph=self.query_params["graph_uri"],
+                       action="PUT",
+                       instance_data=response)
+
+        self.finalize(response)
+
+    @greenlet_asynchronous
+    def delete(self, context_name, class_name, instance_id):
+        valid_params = INSTANCE_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          instance_id=instance_id,
+                                          **valid_params)
+
+        deleted = delete_instance(self.query_params)
+        if deleted:
+            response = 204
+            if settings.NOTIFY_BUS:
+                notify_bus(instance=self.query_params["instance_uri"], klass=self.query_params["class_uri"],
+                           graph=self.query_params["graph_uri"], action="DELETE")
+        else:
+            response = None
         self.finalize(response)
 
     def finalize(self, response):
         if response is None:
-            msg = "No classes found in graph ({graph_uri})."
+            msg = "Instance ({instance_uri}) of class ({class_uri}) in graph ({graph_uri}) was not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
-        else:
+        elif isinstance(response, dict):
             self.write(response)
-            set_content_type_profile(self, self.query_params)
+            set_content_type_profile(self, build_schema_url_for_instance(self.query_params))
+        elif isinstance(response, int):  # status code
+            self.set_status(response)
+            # A call to finalize() was removed from here! -- rodsenra 2013/04/25
 
 
 class PrefixHandler(BrainiakRequestHandler):
@@ -499,6 +450,53 @@ class PrefixHandler(BrainiakRequestHandler):
         response = list_prefixes()
 
         self.finalize(response)
+
+
+class HealthcheckHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.write("WORKING")
+
+
+class VersionHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.write(__version__)
+
+
+class VirtuosoStatusHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.write(triplestore.status())
+
+
+class CacheStatusHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.write(cache.status())
+
+
+class EventBusStatusHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.write(event_bus.status())
+
+
+class StatusHandler(BrainiakRequestHandler):
+
+    def get(self):
+        triplestore_status = triplestore.status()
+        event_bus_status = event_bus.status()
+        output = []
+        if "SUCCEED" not in triplestore_status:
+            output.append(triplestore_status)
+        if "FAILED" in event_bus_status:
+            output.append(event_bus_status)
+        if output:
+            response = "\n".join(output)
+        else:
+            response = "WORKING"
+        self.write(response)
 
 
 class UnmatchedHandler(BrainiakRequestHandler):

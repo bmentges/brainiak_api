@@ -45,6 +45,10 @@ def normalize_term(term, language=""):
     return term
 
 
+def is_literal(term):
+    return (not term.startswith("?")) and (not ":" in term)
+
+
 def has_lang(literal):
     return literal[-3:].startswith("@")
 

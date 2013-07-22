@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Future Releases &mdash; brainiak 2.0.0 | a1eaccdd091b52d88 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-2.3.0/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-2.3.0/css/bootstrap-responsive.min.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.0.0 | a1eaccdd091b52d88',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="brainiak 2.0.0 | a1eaccdd091b52d88 documentation" href="index.html" />
+    <link rel="next" title="Concepts" href="concepts.html" />
+    <link rel="prev" title="Brainiak API documentation!" href="index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+<div class="container">
+  
+  <div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+      <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+      <a class="brand" href="index.html">Brainiak</a>
+      <span class="navbar-text pull-left"><b>2.0.0 | a1eaccdd091b52d88</b></span>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+          <li class="divider-vertical"></li>
+          
+            <li class="dropdown globaltoc-container">
+  <a href="index.html"
+     class="dropdown-toggle"
+     data-toggle="dropdown">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+    ><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Future Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-1-0-2013-07-18">Version 2.1.0 - 2013/07/18</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#releases">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-0-0-2013-04-24">Version 1.0.0  - 2013/04/24</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="concepts/resources.html">Ubiquitous Language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/rest_verbs.html">Using HTTP methods in a RESTful way</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/hypermedia.html">Hypermedia Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/modeling.html">Modeling and Ontology Engineering</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="services.html">Services</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="services/context/context.html">Managing Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/prefix/prefix.html">Managing Prefixes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/collection/collection.html">Managing Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/schema/schema.html">Managing Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/instance/instance.html">Managing Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/parameters.html">Overriding URIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/links.html">Hypermap of Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/links.html#links-specification">Links Specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/links.html#rel-vocabulary">Rel Vocabulary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/pagination.html">Pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/errors.html">Handling Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/cache.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/i18n.html">Internationalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.html#convention-for-url-resources">Convention for URL Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.html#service-examples">Service Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/building_local_dev_environment.html">Building Brainiak in your local environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshoot.html#when-filtering-instances-using-p-and-o-i-only-get-http-error-404-but-when-i-only-use-p-it-lists-items-containing-the-o-i-defined-what-am-i-doing-wrong">When filtering instances using <tt class="docutils literal"><span class="pre">p</span></tt> and <tt class="docutils literal"><span class="pre">o</span></tt> I only get &#8220;HTTP error: 404&#8221;. But when I only use <tt class="docutils literal"><span class="pre">p</span></tt>, it lists items containing the <tt class="docutils literal"><span class="pre">o</span></tt> I defined. What am I doing wrong?</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+            <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"><ul>
+<li><a class="reference internal" href="#">Future Releases</a><ul>
+<li><a class="reference internal" href="#version-2-1-0-2013-07-18">Version 2.1.0 - 2013/07/18</a><ul>
+<li><a class="reference internal" href="#new-features">New features</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#releases">Releases</a><ul>
+<li><a class="reference internal" href="#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a><ul>
+<li><a class="reference internal" href="#id1">New features</a></li>
+<li><a class="reference internal" href="#refactor">Refactor</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#developers-notes">Developers&#8217; notes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
+<li><a class="reference internal" href="#version-1-0-0-2013-04-24">Version 1.0.0  - 2013/04/24</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+          
+          
+            
+  <li><a href="index.html"
+         title="previous chapter">&laquo; Brainiak API documentation!</a></li>
+  <li><a href="concepts.html"
+         title="next chapter">Concepts &raquo;</a></li>
+          
+          
+            <li>
+  <a href="_sources/releases.txt"
+     rel="nofollow">Source</a></li>
+          
+        </ul>
+
+        
+          
+<form class="navbar-search pull-right" style="margin-bottom:-3px;" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="section" id="future-releases">
+<h1>Future Releases<a class="headerlink" href="#future-releases" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-2-1-0-2013-07-18">
+<h2>Version 2.1.0 - 2013/07/18<a class="headerlink" href="#version-2-1-0-2013-07-18" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="new-features">
+<h3>New features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Support to multiple triplestore endpoints</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="releases">
+<h1>Releases<a class="headerlink" href="#releases" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-2-0-0-2013-07-18">
+<h2>Version 2.0.0 - 2013/07/18<a class="headerlink" href="#version-2-0-0-2013-07-18" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>New features<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Instances list (filtering) resource supports multiple predicates and objects</li>
+<li>Root resource (/) is currently cached</li>
+<li>New &#8220;purge&#8221; HTTP method (both recursive and non-recursive),
+available on cached resources</li>
+<li>Improve compliance towards json-schema
+(&#8220;links&#8221; section was moved from the instances to their json-schemas)</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="refactor">
+<h3>Refactor<a class="headerlink" href="#refactor" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Instances list (filtering) resource now applies lang to objects (?o) when
+literals are provided</li>
+<li>Resources URLs renamed<ul>
+<li>&lt;resource&gt;/_schema -&gt; &lt;resource&gt;/_schema_list, when related to a list resource</li>
+<li>/prefixes -&gt; /_prefixes</li>
+<li>/version -&gt; /_version</li>
+<li>/status/&lt;dependency&gt; -&gt; /_status/&lt;dependency&gt;</li>
+</ul>
+</li>
+<li>Hypermedia links renamed<ul>
+<li>instances -&gt; list</li>
+<li>create -&gt; add</li>
+</ul>
+</li>
+<li>Properties on resources&#8217; responses<ul>
+<li>list resources<ul>
+<li>&#8220;item_count&#8221; property was removed by default
+(do_item_count querystring param should be used to show &#8220;item_count&#8221;)</li>
+</ul>
+</li>
+<li>schema resource<ul>
+<li>&#8220;format&#8221; field, related to &#8220;type&#8221; field, now uses the same format of the property on the triplestore</li>
+<li>&#8220;comment&#8221; -&gt; &#8220;description&#8221; to better comply with json-schema specification</li>
+<li>&#8220;required&#8221; now maps boolean values, instead of an array of strings</li>
+<li>&#8220;_class_prefix&#8221; was added to fix navigation of legacy instances</li>
+<li>content-type &#8220;profile&#8221; variable scapes querystrings&#8217; urls, to please JsonBrowser</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>New hypermedia map</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="developers-notes">
+<h3>Developers&#8217; notes<a class="headerlink" href="#developers-notes" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>SPARQL queries logging is now compatible to Globo.com DBA team&#8217;s expectations</li>
+<li>Syslog handler now uses LOG_LOCAL3 (before: LOG_SYSLOG)</li>
+<li>Redis is an optional dependency for running Brainiak locally (tests, however, require it)</li>
+<li>Cache implementation uses Redis and is optional to run Brainiak</li>
+<li>Improved test coverage analysis method</li>
+<li>Updated to Tornado 3.1</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="version-1-1-0-2013-05-28">
+<h2>Version 1.1.0 - 2013/05/28<a class="headerlink" href="#version-1-1-0-2013-05-28" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>notification of instance creation, removal and update to external event bus through stomp protocol. Using package DAD for notifications to MOM bus.</li>
+<li>class_prefix argument was added to hypernavigational links.</li>
+<li>more rigorous argument handling in services, invalid parameters make the service fail. On failure, the valid parameters are informed in the error message.</li>
+<li>The Content-Type header in HTTP responses now includes the URL for the class given in the response payload.</li>
+<li>BUGFIX: fixed rdfs:label and rdfs:comment in place/Country/Brazil, now using upper:name and upper:description.</li>
+<li>BUGFIX: the field rdf:type of any instance only contains the direct class of the instance, blank nodes and other intermediate ancestor classes were removed.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="version-1-0-0-2013-04-24">
+<h2>Version 1.0.0  - 2013/04/24<a class="headerlink" href="#version-1-0-0-2013-04-24" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul>
+<li><p class="first">first release in production</p>
+</li>
+<li><p class="first">features supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li>listing of prefixes, contexts, collections and instances</li>
+<li>retrieval of schemas and instances</li>
+<li>creation of instances</li>
+<li>removal of instances</li>
+<li>update of instances</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Globo.com.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

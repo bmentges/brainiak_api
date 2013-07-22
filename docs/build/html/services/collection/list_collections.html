@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>List of Collections &mdash; brainiak 2.0.0 | a1eaccdd091b52d88 documentation</title>
+    <title>List of Collections &mdash; brainiak master | d1b339e546cda522 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2.0.0 | a1eaccdd091b52d88',
+        VERSION:     'master | d1b339e546cda522',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.0.0 | a1eaccdd091b52d88 documentation" href="../../index.html" />
+    <link rel="top" title="brainiak master | d1b339e546cda522 documentation" href="../../index.html" />
     <link rel="up" title="Managing Collections" href="collection.html" />
     <link rel="next" title="Managing Classes" href="../schema/schema.html" />
     <link rel="prev" title="Managing Collections" href="collection.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.0.0 | a1eaccdd091b52d88</b></span>
+      <span class="navbar-text pull-left"><b>master | d1b339e546cda522</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -236,6 +236,9 @@ The results are paginated.</p>
 <div class="section" id="optional-parameters">
 <h2>Optional parameters<a class="headerlink" href="#optional-parameters" title="Permalink to this headline">¶</a></h2>
 <p><strong>lang</strong>: Specify language of labels. Options: pt, en, undefined (do not filter labels)</p>
+<p><strong>expand_uri</strong>: When set to 1, this parameter implies that URIs (attribute names and values) in the response should be expanded.
+By default, this parameter is set to 0, meaning that URIs are compressed.
+<tt class="docutils literal"><span class="pre">rdfs:label</span></tt> is the compressed form <tt class="docutils literal"><span class="pre">http://www.w3.org/2000/01/rdf-schema#label</span></tt> is rendered as  .</p>
 <p><strong>graph_uri</strong>: Set the graph URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME</span></tt></p>
 <p><strong>page</strong>: The page to be retrieved. The default value is <tt class="docutils literal"><span class="pre">1</span></tt>, i.e. the first page.</p>
 <p><strong>per_page</strong>: Defines how many items are retrieved per page. The default value is <tt class="docutils literal"><span class="pre">10</span></tt></p>

@@ -4,7 +4,7 @@ from mock import Mock
 
 from brainiak import settings, triplestore
 from brainiak.instance import get_instance
-from brainiak.prefixes import MemorizeContext, SHORTEN
+from brainiak.prefixes import MemorizeContext, SHORTEN, EXPAND
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip
@@ -91,43 +91,40 @@ class AssembleTestCase(unittest.TestCase):
 
     def setUp(self):
         self.original_build_items = get_instance.build_items_dict
+        get_instance.build_items_dict = lambda context, bindings, class_uri: {}
 
     def tearDown(self):
         get_instance.build_items_dict = self.original_build_items
 
-    def test_assemble_instance_json_links(self):
+    def prepare_params(self, instance_uri="http://mock.test.com/schema/klass/instance"):
         param_dict = {'context_name': 'schema',
                       'class_name': 'klass',
                       'instance_id': 'instance'}
+        handler = MockHandler(uri=instance_uri, **param_dict)
+        self.query_params = ParamDict(handler, **param_dict)
+        self.query_result_dict = {'results': {'bindings': []}}
 
-        handler = MockHandler(uri="http://mock.test.com/schema/klass/instance", **param_dict)
-        query_params = ParamDict(handler, **param_dict)
-
-        query_result_dict = {'results': {'bindings': []}}
-
-        get_instance.build_items_dict = lambda context, bindings, class_uri: {}
-        computed = get_instance.assemble_instance_json(query_params, query_result_dict)
-
+    def assertResults(self, computed):
         self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
         self.assertEqual(computed["@type"], "schema:klass")
         self.assertEqual(computed["@context"], {'schema': 'http://schema.org/'})
+
+    def test_assemble_instance_json_links(self):
+        self.prepare_params()
+        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict)
+        self.assertResults(computed)
 
     def test_assemble_instance_json_links_with_context(self):
-
+        self.prepare_params()
         context = MemorizeContext(normalize_uri_mode=SHORTEN)
-        param_dict = {'context_name': 'schema',
-                      'class_name': 'klass',
-                      'instance_id': 'instance'}
-        handler = MockHandler(uri="http://mock.test.com/schema/klass/instance", **param_dict)
-        query_params = ParamDict(handler, **param_dict)
+        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, context)
+        self.assertResults(computed)
 
-        query_result_dict = {'results': {'bindings': []}}
-        get_instance.build_items_dict = lambda context, bindings, class_uri: {}
-        computed = get_instance.assemble_instance_json(query_params, query_result_dict, context)
-
-        self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
-        self.assertEqual(computed["@type"], "schema:klass")
-        self.assertEqual(computed["@context"], {'schema': 'http://schema.org/'})
+    def test_assemble_instance_json_links_with_context_expanding_uri(self):
+        self.prepare_params(instance_uri="http://mock.test.com/schema/klass/instance?expand_uri=1")
+        context = MemorizeContext(normalize_uri_mode=EXPAND)
+        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, context)
+        self.assertEqual(computed["@type"], "http://schema.org/klass")
 
 
 class BuildItemsDictTestCase(unittest.TestCase):
@@ -145,7 +142,8 @@ class BuildItemsDictTestCase(unittest.TestCase):
         response = get_instance.build_items_dict(MemorizeContext(normalize_uri_mode=SHORTEN), bindings, "some:Class")
         self.assertEqual(response, expected)
 
-    def test_build_items_dict_with_super_property_and_same_value(self):
+
+    def prepare_input_and_expected_output(self, object_value):
         bindings = [
             {
                 "predicate": {"value": "birthCity"},
@@ -155,34 +153,37 @@ class BuildItemsDictTestCase(unittest.TestCase):
             },
             {
                 "predicate": {"value": "birthPlace"},
-                "object": {"value": "Rio de Janeiro"},
+                "object": {"value": object_value},
                 "label": {"value": "birth place"}
             }
         ]
+        return bindings
+
+    def test_build_items_dict_with_super_property_and_same_value(self):
+        bindings = self.prepare_input_and_expected_output(object_value="Rio de Janeiro")
         expected = {"birthCity": "Rio de Janeiro", 'rdf:type': 'http://class.uri'}
         context = MemorizeContext(normalize_uri_mode=SHORTEN)
         response = get_instance.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_different_values(self):
-        bindings = [
-            {
-                "predicate": {"value": "birthCity"},
-                "object": {"value": "Rio de Janeiro"},
-                "label": {"value": "birth place"},
-                "super_property": {"value": "birthPlace"}
-            },
-            {
-                "predicate": {"value": "birthPlace"},
-                "object": {"value": "Brasil"},
-                "label": {"value": "birth place"}
-            }
-        ]
+        bindings = self.prepare_input_and_expected_output(object_value="Brasil")
         expected = {
             "birthCity": "Rio de Janeiro",
             "birthPlace": "Brasil",
             'rdf:type': 'http://class.uri'
         }
         context = MemorizeContext(normalize_uri_mode=SHORTEN)
+        response = get_instance.build_items_dict(context, bindings, "http://class.uri")
+        self.assertEqual(response, expected)
+
+    def test_build_items_dict_with_super_property_and_different_values_expanding_uri(self):
+        bindings = self.prepare_input_and_expected_output(object_value="Brasil")
+        expected = {
+            "birthCity": "Rio de Janeiro",
+            "birthPlace": "Brasil",
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://class.uri'
+        }
+        context = MemorizeContext(normalize_uri_mode=EXPAND)
         response = get_instance.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)

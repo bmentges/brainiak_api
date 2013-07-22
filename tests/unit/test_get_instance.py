@@ -142,7 +142,6 @@ class BuildItemsDictTestCase(unittest.TestCase):
         response = get_instance.build_items_dict(MemorizeContext(normalize_uri_mode=SHORTEN), bindings, "some:Class")
         self.assertEqual(response, expected)
 
-
     def prepare_input_and_expected_output(self, object_value):
         bindings = [
             {

@@ -6,7 +6,7 @@ import unittest
 import nose.tools as nose
 import requests
 
-version = "2.0.0"
+version = "master"
 
 brainiak_endpoint = {	
 	"local": "http://0.0.0.0:5100/",
@@ -90,11 +90,11 @@ class BrainiakChecker(Checker):
 		nose.assert_in(expected_piece, body["items"])
 		sys.stdout.write("\ncheck_root - pass")
 
-	# def check_version(self):
-	# 	response = self.get("_version")
-	# 	nose.assert_equal(response.status_code, 200)
-	# 	nose.assert_in(version, response.text)
-	# 	sys.stdout.write("\ncheck_version - pass")
+	def check_version(self):
+		response = self.get("_version")
+		nose.assert_equal(response.status_code, 200)
+		nose.assert_in(version, response.text)
+		sys.stdout.write("\ncheck_version - pass")
 
 	def check_docs(self):
 		if environ == "local":

@@ -8,49 +8,6 @@ from brainiak import triplestore
 import SPARQLWrapper
 
 
-class TriplestoreInitTestCase(unittest.TestCase):
-
-    @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT_HOST="http://myhost", SPARQL_ENDPOINT_PORT=8080)
-    def tests_init_connection_endpoint_host_and_port_defined_in_settings(self, settings):
-        del settings.SPARQL_ENDPOINT
-
-        expected = "http://myhost:8080/sparql"
-        virtuoso_connection = triplestore.VirtuosoConnection()
-        result = virtuoso_connection.endpoint_url
-        self.assertEqual(expected, result)
-
-    @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT="http://myhost:8080/sparql")
-    def test_init_connection_endpoint_full_url_defined_in_settings(self, settings):
-        expected = "http://myhost:8080/sparql"
-        virtuoso_connection = triplestore.VirtuosoConnection()
-        result = virtuoso_connection.endpoint_url
-        self.assertEqual(expected, result)
-
-
-class TriplestoreSetCredentialsTestCase(unittest.TestCase):
-
-    @patch('brainiak.triplestore.settings')
-    def test_set_credentials_no_auth_settings_at_all(self, settings):
-        del settings.SPARQL_ENDPOINT_USER
-        del settings.SPARQL_ENDPOINT_PASSWORD
-        del settings.SPARQL_ENDPOINT_AUTH_MODE
-
-        virtuoso_connection = triplestore.VirtuosoConnection()
-        self.assertIsNone(virtuoso_connection.user)
-        self.assertIsNone(virtuoso_connection.password)
-        self.assertEqual(virtuoso_connection.auth_mode, "basic")
-
-    @patch('brainiak.triplestore.settings')
-    def test_set_credentials_no_password(self, settings):
-        del settings.SPARQL_ENDPOINT_PASSWORD
-
-        virtuoso_connection = triplestore.VirtuosoConnection()
-        credentials = (virtuoso_connection.user, virtuoso_connection.password, virtuoso_connection.auth_mode)
-        self.assertIsNone(virtuoso_connection.user)
-        self.assertIsNone(virtuoso_connection.password)
-        self.assertEqual(virtuoso_connection.auth_mode, "basic")
-
-
 class MockSPARQLWrapper():
 
     iteration = 0
@@ -123,15 +80,3 @@ class TestCaseStatus(unittest.TestCase):
         msg2 = "Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | FAILED | http://localhost:8890/sparql-auth | ERROR 1"
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
-
-
-class TriplestoreExceptionTestCase(unittest.TestCase):
-
-    @patch("brainiak.triplestore.VirtuosoConnection.query", side_effect=HTTPError(401))
-    def test_query_returns_401(self, mocked_query):
-        try:
-            triplestore.query_sparql("aa")
-        except HTTPError as e:
-            self.assertEquals(e.message, 'HTTP 401: Check triplestore user and password.')
-        else:
-            self.fail()

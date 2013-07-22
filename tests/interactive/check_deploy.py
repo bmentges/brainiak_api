@@ -5,7 +5,7 @@ import sys
 import nose.tools as nose
 import requests
 
-version = "2.0.0"
+version = "master"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",
@@ -53,68 +53,68 @@ class Checker(object):
 
 class BrainiakChecker(Checker):
 
-    def __init__(self, environ):
-        Checker.__init__(self, environ)
-        self.endpoint = brainiak_endpoint.get(environ)
+	def __init__(self, environ):
+		Checker.__init__(self, environ)
+		self.endpoint = brainiak_endpoint.get(environ)
 
-    def check_healthcheck(self):
-        response = self.get("healthcheck/")
-        nose.assert_equal(response.status_code, 200)
-        nose.assert_in(u'WORKING', response.text)
-        sys.stdout.write("\ncheck_healthcheck - pass")
+	def check_healthcheck(self):
+		response = self.get("healthcheck/")
+		nose.assert_equal(response.status_code, 200)
+		nose.assert_in(u'WORKING', response.text)
+		sys.stdout.write("\ncheck_healthcheck - pass")
 
-    def check_virtuoso(self):
-        response = self.get("_status/virtuoso")
-        nose.assert_equal(response.status_code, 200)
-        nose.assert_in("SUCCEED", response.text)
-        sys.stdout.write("\ncheck_virtuoso - pass")
+	def check_virtuoso(self):
+		response = self.get("_status/virtuoso")
+		nose.assert_equal(response.status_code, 200)
+		nose.assert_in("SUCCEED", response.text)
+		sys.stdout.write("\ncheck_virtuoso - pass")
 
-    # def check_activemq(self):
-    # 	response = self.get("_status/activemq")
-    # 	nose.assert_equal(response.status_code, 200)
-    # 	nose.assert_in("SUCCEED", response.text)
-    # 	sys.stdout.write("\ncheck_activemq - pass")
+	def check_activemq(self):
+		response = self.get("_status/activemq")
+		nose.assert_equal(response.status_code, 200)
+		nose.assert_in("SUCCEED", response.text)
+		sys.stdout.write("\ncheck_activemq - pass")
 
-    def check_redis(self):
-        response = self.get("_status/cache")
-        nose.assert_equal(response.status_code, 200)
-        nose.assert_in("SUCCEED", response.text)
-        sys.stdout.write("\ncheck_redis - pass")
+	def check_redis(self):
+		response = self.get("_status/cache")
+		nose.assert_equal(response.status_code, 200)
+		nose.assert_in("SUCCEED", response.text)
+		sys.stdout.write("\ncheck_redis - pass")
 
-    def check_root(self):
-        response = self.get()
-        nose.assert_equal(response.status_code, 200)
-        body = json.loads(response.text)
-        expected_piece = {"resource_id": "upper", "@id": "http://semantica.globo.com/upper/", "title": "upper"}
-        nose.assert_in(expected_piece, body["items"])
-        sys.stdout.write("\ncheck_root - pass")
+	def check_root(self):
+		response = self.get()
+		nose.assert_equal(response.status_code, 200)
+		body = json.loads(response.text)
+		expected_piece = {"resource_id": "upper", "@id": "http://semantica.globo.com/upper/", "title": "upper"}
+		nose.assert_in(expected_piece, body["items"])
+		sys.stdout.write("\ncheck_root - pass")
 
-    # def check_version(self):
-    # 	response = self.get("_version")
-    # 	nose.assert_equal(response.status_code, 200)
-    # 	nose.assert_in(version, response.text)
-    # 	sys.stdout.write("\ncheck_version - pass")
+	def check_version(self):
+		response = self.get("_version")
+		nose.assert_equal(response.status_code, 200)
+		nose.assert_in(version, response.text)
+		sys.stdout.write("\ncheck_version - pass")
 
-    # def check_docs(self):
-    # 	if environ == "local":
-    # 		sys.stdout.write("check_docs - ignore")
-    # 	else:
-    # 		response = self.get("/docs")
-    # 		nose.assert_equal(response.status_code, 200)
-    # 		nose.assert_in("Brainiak API documentation!", response.text)
-    # 		sys.stdout.write("check_docs - pass")
+	def check_docs(self):
+		if environ == "local":
+			sys.stdout.write("\ncheck_docs - ignore")
+		else:
+			response = self.get("docs/")
+			nose.assert_equal(response.status_code, 200)
+			nose.assert_in("Brainiak API documentation!", response.text)
+			sys.stdout.write("\ncheck_docs - pass")
 
-    def check_instance_create(self):
-        self.delete("place/City/globoland")
-        response = self.put("place/City/globoland", "new_city.json")
-        nose.assert_equal(response.status_code, 201)
-        sys.stdout.write("\ncheck_instance_create - pass")
+	def check_instance_create(self):
+		self.delete("place/City/globoland")
+		response = self.put("place/City/globoland", "new_city.json")
+		nose.assert_equal(response.status_code, 201)
+		sys.stdout.write("\ncheck_instance_create - pass")
 
-    def check_instance_delete(self):
-        self.put("place/City/globoland", "new_city.json")
-        response = self.delete("place/City/globoland")
-        nose.assert_equal(response.status_code, 204)
-        sys.stdout.write("\ncheck_instance_delete - pass")
+	def check_instance_delete(self):
+		self.put("place/City/globoland", "new_city.json")
+		response = self.delete("place/City/globoland")
+		nose.assert_equal(response.status_code, 204)
+		sys.stdout.write("\ncheck_instance_delete - pass")
 
 
 class MercuryChecker(Checker):

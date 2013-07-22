@@ -78,7 +78,6 @@ def run_query(query, *args, **kw):
     url = endpoint_url()
     url = url if method == "POST" else url_concat(url, params)
 
-
     request_params = {
         "url": url,
         "method": method,

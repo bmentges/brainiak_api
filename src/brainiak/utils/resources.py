@@ -3,7 +3,6 @@ import re
 from tornado.web import HTTPError
 from brainiak.prefixes import expand_uri, is_compressed_uri, ROOT_CONTEXT
 from brainiak.utils.links import pagination_items
-from brainiak.utils.params import valid_pagination
 from brainiak.settings import SPARQL_PORT, EVENT_BUS_PORT
 
 
@@ -37,6 +36,11 @@ def decorate_dict_with_pagination(target_dict, params, get_total_items_func):
         total_items = None
         target_dict['do_item_count'] = "0"
     target_dict.update(pagination_items(params, total_items))
+
+
+def valid_pagination(total, page, per_page):
+    "Verify if the given pagination is valid to the existent total items"
+    return (page * per_page) < total
 
 
 def validate_pagination_or_raise_404(params, total_items):

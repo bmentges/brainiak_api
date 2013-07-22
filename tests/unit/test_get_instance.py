@@ -4,7 +4,7 @@ from mock import Mock
 
 from brainiak import settings, triplestore
 from brainiak.instance import get_instance
-from brainiak.prefixes import MemorizeContext
+from brainiak.prefixes import MemorizeContext, SHORTEN
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip
@@ -110,18 +110,11 @@ class AssembleTestCase(unittest.TestCase):
 
         self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
         self.assertEqual(computed["@type"], "schema:klass")
-        self.assertEqual(computed["@context"], {})
+        self.assertEqual(computed["@context"], {'schema': 'http://schema.org/'})
 
     def test_assemble_instance_json_links_with_context(self):
 
-        class InnerContextMock():
-            pass
-
-        class ContextMock():
-            context = InnerContextMock()
-            object_properties = {"person": "person:Person"}
-
-        context = ContextMock()
+        context = MemorizeContext(normalize_uri_mode=SHORTEN)
         param_dict = {'context_name': 'schema',
                       'class_name': 'klass',
                       'instance_id': 'instance'}
@@ -134,7 +127,7 @@ class AssembleTestCase(unittest.TestCase):
 
         self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
         self.assertEqual(computed["@type"], "schema:klass")
-        self.assertIsInstance(computed["@context"], InnerContextMock)
+        self.assertEqual(computed["@context"], {'schema': 'http://schema.org/'})
 
 
 class BuildItemsDictTestCase(unittest.TestCase):
@@ -149,7 +142,7 @@ class BuildItemsDictTestCase(unittest.TestCase):
             "key1": ["value1", "value2"],
             "key2": "value2",
             "rdf:type": "some:Class"}
-        response = get_instance.build_items_dict(MemorizeContext(), bindings, "some:Class")
+        response = get_instance.build_items_dict(MemorizeContext(normalize_uri_mode=SHORTEN), bindings, "some:Class")
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_same_value(self):
@@ -167,7 +160,7 @@ class BuildItemsDictTestCase(unittest.TestCase):
             }
         ]
         expected = {"birthCity": "Rio de Janeiro", 'rdf:type': 'http://class.uri'}
-        context = MemorizeContext()
+        context = MemorizeContext(normalize_uri_mode=SHORTEN)
         response = get_instance.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)
 
@@ -190,6 +183,6 @@ class BuildItemsDictTestCase(unittest.TestCase):
             "birthPlace": "Brasil",
             'rdf:type': 'http://class.uri'
         }
-        context = MemorizeContext()
+        context = MemorizeContext(normalize_uri_mode=SHORTEN)
         response = get_instance.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)

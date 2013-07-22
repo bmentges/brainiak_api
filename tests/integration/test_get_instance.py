@@ -3,6 +3,7 @@ from mock import patch
 from brainiak import settings, server
 
 from brainiak.instance.get_instance import QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE
+from brainiak.settings import URI_PREFIX
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -32,7 +33,6 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.headers['Access-Control-Allow-Headers'], settings.CORS_HEADERS)
 
 
-# FIXME: this test is totally broken - it is acessing http://semantica.globo.com/person/Gender
 class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     allow_triplestore_connection = True
@@ -59,6 +59,14 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(body['@type'], u'person:Gender')
         self.assertEqual(body['rdf:type'], u'person:Gender')
         self.assertEqual(body['upper:name'], u'Feminino')
+
+    def test_get_instance_200_with_expanded_uris(self):
+        response = self.fetch('/person/Gender/Female?expand_uri=1', method='GET')
+        body = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+
+        self.assertEqual(body[u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'], URI_PREFIX + u'person/Gender')
+        self.assertEqual(body[URI_PREFIX + u'upper/name'], u'Feminino')
 
     def test_get_instance_returns_schema_in_content_type(self):
         response = self.fetch('/person/Gender/Female', method='GET')

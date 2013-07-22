@@ -11,7 +11,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
     SAMPLE_SCHEMA_JSON = {
         u'$schema': u'http://json-schema.org/draft-03/schema#',
         u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
-        u'@id': u'person:Gender',
+        u'id': u'person:Gender',
         u'links': [
             {u'href': u'http://localhost:10023/person/Gender/{_resource_id}?lang=pt', u'method': u'GET', u'rel': u'self'},
             {u'href': u'http://localhost:10023/person/Gender/_schema?lang=pt', u'method': u'GET', u'rel': u'class'},
@@ -48,6 +48,24 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         received_rels = [link['rel'] for link in json_received['links']]
         self.assertListEqual(received_rels, ['self', 'class', 'collection', 'delete', 'replace'])
         # TODO: test the URLs of the links
+
+    def test_schema_handler_with_default_uri_normalization(self):
+        response = self.fetch('/person/Gender/_schema')
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received['id'], u'person:Gender')
+
+    def test_schema_handler_with_uri_normalization_shorten(self):
+        response = self.fetch('/person/Gender/_schema?expand_uri=0')
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received['id'], u'person:Gender')
+
+    def test_schema_handler_with_uri_normalization_expand(self):
+        response = self.fetch('/person/Gender/_schema?expand_uri=1')
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received['id'], u'http://semantica.globo.com/person/Gender')
 
     @patch("brainiak.handlers.logger")
     def test_schema_handler_with_invalid_params(self, log):

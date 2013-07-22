@@ -12,8 +12,15 @@ from brainiak import settings, log
 from brainiak.greenlet_tornado import greenlet_fetch
 
 
-# This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works
-format = "POST - %(url)s - %(user_ip)s - %(user_name)s [tempo: %(time_diff)s] - QUERY - %(query)s"
+def _query_sparql(query, credentials):
+    # will parse the ini file to endpoint_dict
+    # will call query_sparql_to_endpoint
+    pass
+
+
+def query_sparql_to_endpoint(query, endpoint_dict):
+    # will send the request to the triplestore, using endpoint_dict
+    pass
 
 
 # TODO: compute runtime
@@ -24,9 +31,8 @@ def query_sparql(query, *args, **kw):
     in JSON format. For now it only works with Virtuoso, but in futurw we intend to support other databases
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
-    connection = VirtuosoConnection()
     try:
-        query_response = connection.query(query, *args, **kw)
+        query_response = run_query(query, *args, **kw)
     except HTTPError as e:
         if e.code == 401:
             message = 'Check triplestore user and password.'
@@ -50,72 +56,51 @@ URL_ENCODED = "application/x-www-form-urlencoded"
 DEFAULT_CONTENT_TYPE = URL_ENCODED
 
 
-class VirtuosoConnection(object):
+def endpoint_url():
+    url = getattr(settings, "SPARQL_ENDPOINT", None)
+    if url is None:
+        host = settings.SPARQL_ENDPOINT_HOST
+        port = settings.SPARQL_ENDPOINT_PORT
+        url = "{0}:{1}".format(host, port)
+    return url
 
-    def __init__(self):
-        if hasattr(settings, "SPARQL_ENDPOINT"):
-            self.endpoint_url = settings.SPARQL_ENDPOINT
-        else:
-            self.host = settings.SPARQL_ENDPOINT_HOST
-            self.port = settings.SPARQL_ENDPOINT_PORT
-            self.endpoint_url = self.host + ":" + str(self.port) + "/sparql"
+# This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works
+format = "POST - %(url)s - %(user_ip)s - %(auth_username)s [tempo: %(time_diff)s] - QUERY - %(query)s"
 
-        self._set_credentials()
 
-    def _set_credentials(self):
-        try:
-            self.user = settings.SPARQL_ENDPOINT_USER
-            self.password = settings.SPARQL_ENDPOINT_PASSWORD
-            self.auth_mode = settings.SPARQL_ENDPOINT_AUTH_MODE
-        except AttributeError:
-            self.user = self.password = None
-            self.auth_mode = "basic"
+def run_query(query, *args, **kw):
+    method = kw.get("method", "POST")
+    params = {
+        "query": unicode(query).encode("utf-8"),
+        "format": kw.get("result_format", DEFAULT_FORMAT)
+    }
+    body = urllib.urlencode(params) if method == "POST" else ""
+    url = endpoint_url()
+    url = url if method == "POST" else url_concat(url, params)
 
-    def query(self, query, *args, **kw):
-        method = kw.get("method", "POST")
-        result_format = kw.get("result_format", DEFAULT_FORMAT)
-        content_type = DEFAULT_CONTENT_TYPE
 
-        headers = {
-            "Content-Type": content_type,
-        }
+    request_params = {
+        "url": url,
+        "method": method,
+        "headers": {"Content-Type": DEFAULT_CONTENT_TYPE},
+        "body": body,
+        "auth_username": getattr(settings, "SPARQL_ENDPOINT_USER", None),
+        "auth_password": getattr(settings, "SPARQL_ENDPOINT_PASSWORD", None),
+        "auth_mode": getattr(settings, "SPARQL_ENDPOINT_AUTH_MODE", "basic"),
+    }
+    request = HTTPRequest(**request_params)
 
-        params = {
-            "query": unicode(query).encode("utf-8"),
-            "format": result_format
-        }
+    time_i = time.time()
+    response = greenlet_fetch(request)
+    time_f = time.time()
 
-        url = self.endpoint_url
+    request_params["time_diff"] = time_f - time_i
+    request_params["query"] = query
+    request_params["user_ip"] = str(None)
+    log_msg = format % request_params
+    log.logger.info(log_msg)
 
-        if method == "GET":
-            url = url_concat(url, params)
-            body = None
-        elif method == "POST":
-            body = urllib.urlencode(params)
-
-        request = HTTPRequest(url=url,
-                              method=method,
-                              headers=headers,
-                              body=body,
-                              auth_username=self.user,
-                              auth_password=self.password,
-                              auth_mode=self.auth_mode)
-
-        time_i = time.time()
-        response = greenlet_fetch(request)
-        time_f = time.time()
-
-        time_diff = time_f - time_i
-        log_msg = format % {
-            'url': url,
-            'user_ip': str(None),
-            'user_name': self.user,
-            'time_diff': time_diff,
-            'query': query
-        }
-        log.logger.info(log_msg)
-
-        return response
+    return response
 
 
 class VirtuosoException(Exception):

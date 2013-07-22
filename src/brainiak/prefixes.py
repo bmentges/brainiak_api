@@ -11,6 +11,10 @@ This module uses the following nomenclature:
 
 from brainiak import settings
 
+
+class InvalidModeForNormalizeUriError(Exception):
+    pass
+
 # This ROOT CONTEXT is a special context whose URI is equal to the settings.URL_PREFIX
 ROOT_CONTEXT = 'glb'
 
@@ -18,6 +22,7 @@ ROOT_CONTEXT = 'glb'
 _MAP_SLUG_TO_PREFIX = {}
 
 STANDARD_PREFIXES = {
+    'nodeID': 'nodeID',
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
     'owl': 'http://www.w3.org/2002/07/owl#',
@@ -136,13 +141,27 @@ def expand_uri(short_uri):
         return short_uri
 
 
+UNDEFINED = None
+SHORTEN = '0'
+EXPAND = '1'
+
+
+def normalize_uri(uri, mode):
+    if mode == SHORTEN:
+        return shorten_uri(uri)
+    elif mode == EXPAND:
+        return expand_uri(uri)
+    raise InvalidModeForNormalizeUriError('Unrecognized mode {0:s}'.format(mode))
+
+
 def get_prefixes_dict():
     return _MAP_SLUG_TO_PREFIX
 
 
 class MemorizeContext(object):
     "Wrap operations replace_prefix() and uri_to_prefix() remembering all substitutions in the context attribute"
-    def __init__(self):
+    def __init__(self, normalize_uri_mode=UNDEFINED):
+        self._normalize_uri_mode = normalize_uri_mode
         self.context = {}
         self.object_properties = {}
 
@@ -160,6 +179,14 @@ class MemorizeContext(object):
         if slug != prefix:
             self.context[slug] = prefix
         return slug
+
+    # TODO: avoid duplication with normalize_uri function
+    def normalize_uri(self, uri):
+        if self._normalize_uri_mode == SHORTEN:
+            return self.shorten_uri(uri)
+        elif self._normalize_uri_mode == EXPAND:
+            return expand_uri(uri)
+        raise InvalidModeForNormalizeUriError('Unrecognized mode {0:s}'.format(self._normalize_uri_mode))
 
 
 # TODO: verifify if module re would give better performance

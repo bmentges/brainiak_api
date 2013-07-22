@@ -2,8 +2,8 @@
 
 from brainiak import triplestore, settings
 from brainiak.utils.links import build_class_url
-from brainiak.prefixes import MemorizeContext, shorten_uri
-from brainiak.utils.sparql import expand_uri, get_super_properties, is_result_empty
+from brainiak.prefixes import MemorizeContext
+from brainiak.utils.sparql import get_super_properties, is_result_empty
 
 
 def get_instance(query_params):
@@ -25,8 +25,8 @@ def build_items_dict(context, bindings, class_uri):
 
     items_dict = {}
     for item in bindings:
-        predicate_uri = context.shorten_uri(item["predicate"]["value"])
-        value = context.shorten_uri(item["object"]["value"])
+        predicate_uri = context.normalize_uri(item["predicate"]["value"])
+        value = context.normalize_uri(item["object"]["value"])
         if predicate_uri in items_dict:
             if not isinstance(items_dict[predicate_uri], list):
                 value_list = [items_dict[predicate_uri]]
@@ -37,27 +37,27 @@ def build_items_dict(context, bindings, class_uri):
         else:
             items_dict[predicate_uri] = value
 
-    remove_super_properties(items_dict, super_predicates)
+    remove_super_properties(context, items_dict, super_predicates)
 
     if not class_uri is None:
-        items_dict["rdf:type"] = context.shorten_uri(class_uri)
+        items_dict[context.normalize_uri("rdf:type")] = context.normalize_uri(class_uri)
 
     return items_dict
 
 
-def remove_super_properties(items_dict, super_predicates):
+def remove_super_properties(context, items_dict, super_predicates):
     for (analyzed_predicate, value) in items_dict.items():
-        expanded_predicate = expand_uri(analyzed_predicate)
+        expanded_predicate = analyzed_predicate
         if expanded_predicate in super_predicates.keys():
             sub_predicate = super_predicates[expanded_predicate]
-            sub_value = items_dict[shorten_uri(sub_predicate)]
+            sub_value = items_dict[context.normalize_uri(sub_predicate)]
             if value == sub_value:
                 items_dict.pop(analyzed_predicate)
 
 
 def assemble_instance_json(query_params, query_result_dict, context=None):
     if context is None:
-        context = MemorizeContext()
+        context = MemorizeContext(normalize_uri_mode=query_params['expand_uri'])
 
     items = build_items_dict(context, query_result_dict['results']['bindings'], query_params["class_uri"])
     class_url = build_class_url(query_params)
@@ -66,7 +66,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     instance = {
         "_resource_id": query_params['instance_id'],
         "@id": query_params['instance_uri'],
-        "@type": shorten_uri(query_params["class_uri"]),
+        "@type": context.normalize_uri(query_params["class_uri"]),
         "@context": context.context,
     }
     instance.update(items)

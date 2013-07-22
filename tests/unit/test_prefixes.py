@@ -3,18 +3,17 @@ import unittest
 from mock import patch
 
 from brainiak import prefixes
-from brainiak.prefixes import expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri, prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix, uri_to_slug
+from brainiak.prefixes import expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri, prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix, uri_to_slug, normalize_uri, SHORTEN, EXPAND, InvalidModeForNormalizeUriError
 
 
 class PrefixesTestCase(unittest.TestCase):
 
     def test_prefix_contains_obligatory_keys(self):
         existing_keys = sorted(prefixes._MAP_SLUG_TO_PREFIX.keys())
-        expected_keys = ['base', 'dbpedia', 'dc', 'dct', 'ego', 'esportes',
+        expected_keys = ['nodeID', 'base', 'dbpedia', 'dc', 'dct', 'ego', 'esportes',
                          'eureka', 'event', 'foaf', 'G1', 'geo', 'glb', 'organization',
                          'owl', 'person', 'place', 'rdf', 'rdfs', 'schema', 'time', 'tvg',
                          'upper', 'xsd']
-        self.assertEqual(len(existing_keys), 23)
         self.assertEqual(sorted(existing_keys), sorted(expected_keys))
 
     def test_prefix_to_slug(self):
@@ -75,6 +74,15 @@ class PrefixesTestCase(unittest.TestCase):
     def test_is_compressed_uri_given_a_compressed_and_prefixes(self):
         self.assertEqual(is_compressed_uri("newslug:xubiru", {"newslug": "http://newslug.com"}), True)
 
+    def test_normalize_uri_shorten(self):
+        self.assertEqual(normalize_uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#type", mode=SHORTEN), "rdf:type")
+
+    def test_normalize_uri_expand(self):
+        self.assertEqual(normalize_uri("rdf:type", mode=EXPAND), "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+
+    def test_normalize_uri_invalid_mode(self):
+        self.assertRaises(InvalidModeForNormalizeUriError, normalize_uri, "rdf:type", mode='INVALID_MODE')
+
 
 class ExtractPrefixTestCase(unittest.TestCase):
 
@@ -117,3 +125,14 @@ class MemorizeContextTestCase(unittest.TestCase):
         self.assertEqual(self.context.shorten_uri('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 'rdf:type')
         self.assertIn('rdf', self.context.context)
         self.assertEqual(self.context.context['rdf'], 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+
+
+class MemorizeContextTestCase(unittest.TestCase):
+
+    def test_normalize_uri_expand(self):
+        context_expand = MemorizeContext(normalize_uri_mode=EXPAND)
+        self.assertEqual(context_expand.normalize_uri("rdf:type"), "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+
+    def test_normalize_uri_shorten(self):
+        context_expand = MemorizeContext(normalize_uri_mode=SHORTEN)
+        self.assertEqual(context_expand.normalize_uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), "rdf:type")

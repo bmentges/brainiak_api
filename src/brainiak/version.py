@@ -1,1 +1,1 @@
-RELEASE = 'dev_10377 | aa22792e8b77a4194e08773aea4c257d8df9fbce'
+RELEASE = 'master | bff277cc6ce7b40729d2f8290d2ae08a25018b51'

@@ -4,22 +4,23 @@ from brainiak.prefixes import MemorizeContext
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties
 from brainiak import triplestore
-from brainiak.type_mapper import DATATYPE_PROPERTY, items_from_range, OBJECT_PROPERTY
+from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO_JSON_TYPE
 
 
 def get_schema(query_params):
 
-    context = MemorizeContext()
-    short_uri = context.shorten_uri(query_params["class_uri"])
+    context = MemorizeContext(query_params["expand_uri"])
 
     class_schema = query_class_schema(query_params)
     if not class_schema["results"]["bindings"]:
         return
 
+    normalized_uri = context.normalize_uri(query_params["class_uri"])
+
     query_params["superclasses"] = query_superclasses(query_params)
     predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
     response_dict = assemble_schema_dict(query_params,
-                                         short_uri,
+                                         normalized_uri,
                                          get_one_value(class_schema, "title"),
                                          predicates_and_cardinalities,
                                          context,
@@ -27,7 +28,7 @@ def get_schema(query_params):
     return response_dict
 
 
-def assemble_schema_dict(query_params, short_uri, title, predicates, context, **kw):
+def assemble_schema_dict(query_params, normalized_uri, title, predicates, context, **kw):
     effective_context = {"@language": query_params.get("lang")}
     effective_context.update(context.context)
 
@@ -55,7 +56,7 @@ def assemble_schema_dict(query_params, short_uri, title, predicates, context, **
 
     schema = {
         "type": "object",
-        "id": short_uri,
+        "id": normalized_uri,
         "@context": effective_context,
         "$schema": "http://json-schema.org/draft-03/schema#",
         "title": title,
@@ -275,6 +276,14 @@ def _query_superclasses(query_params):
     return triplestore.query_sparql(query)
 
 
+def items_from_range(context, range_uri):
+    short_range = context.normalize_uri(range_uri)
+    if short_range == 'xsd:date' or short_range == 'xsd:dateTime':
+        return {"type": "string", "format": "date"}
+    else:
+        return {"type": _MAP_XSD_TO_JSON_TYPE.get(short_range, 'object'), "format": short_range}
+
+
 def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
     predicate_graph = binding_row["predicate_graph"]['value']
@@ -285,7 +294,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     range_label = binding_row.get('range_label', {}).get('value', "")
 
     # compression-related
-    compressed_range_uri = context.shorten_uri(range_uri)
+    compressed_range_uri = context.normalize_uri(range_uri)
     compressed_range_graph = context.prefix_to_slug(range_graph)
     compressed_graph = context.prefix_to_slug(predicate_graph)
 
@@ -318,7 +327,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
     elif predicate_type == DATATYPE_PROPERTY:
         # add predicate['type'] and (optional) predicate['format']
-        predicate.update(items_from_range(range_uri))
+        predicate.update(items_from_range(context, range_uri))
 
     if predicate["type"] == "array":
         if (predicate_uri in cardinalities) and (range_uri in cardinalities[predicate_uri]):
@@ -387,7 +396,7 @@ def convert_bindings_dict(context, bindings, cardinalities):
 
     for binding_row in bindings:
         predicate_uri = binding_row['predicate']['value']
-        predicate_key = context.shorten_uri(predicate_uri)
+        predicate_key = context.normalize_uri(predicate_uri)
         if not predicate_uri in super_predicates.keys():
             predicate = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
             existing_predicate = assembled_predicates.get(predicate_key, False)

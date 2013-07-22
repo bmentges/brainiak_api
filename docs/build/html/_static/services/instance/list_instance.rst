@@ -17,7 +17,7 @@ This will retrieve all instances of ``Continent`` in the graph ``place``
 Optional parameters
 -------------------
 
-.. include :: ../params/lang.rst
+.. include :: ../params/default.rst
 .. include :: ../params/pages.rst
 .. include :: ../params/item_count.rst
 .. include :: ../params/graph_uri.rst

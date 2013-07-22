@@ -19,7 +19,7 @@ This will retrieve all classes in the ``place`` graph.
 Optional parameters
 -------------------
 
-.. include :: ../params/lang.rst
+.. include :: ../params/default.rst
 .. include :: ../params/graph_uri.rst
 .. include :: ../params/pages.rst
 .. include :: ../params/item_count.rst

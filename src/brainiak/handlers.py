@@ -28,7 +28,7 @@ from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, optionals, INSTANCE_PARAMS
 from brainiak.utils.params import CLASS_PARAMS, GRAPH_PARAMS, PAGING_PARAMS
-from brainiak.utils.links import build_schema_url_for_instance, set_content_type_profile, build_schema_url
+from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.resources import check_messages_when_port_is_mentioned
 from brainiak.utils.sparql import extract_po_tuples
@@ -207,7 +207,7 @@ class RootHandler(BrainiakRequestHandler):
     def finalize(self, response):
         if isinstance(response, dict):
             self.write(response)
-            set_content_type_profile(self, build_schema_url(self.query_params))
+            self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
 
 
 class ContextJsonSchemaHandler(BrainiakRequestHandler):
@@ -234,7 +234,7 @@ class ContextHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
-            set_content_type_profile(self, build_schema_url(self.query_params))
+            self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
 
 
 class ClassHandler(BrainiakRequestHandler):
@@ -349,7 +349,7 @@ class CollectionHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         else:
             self.write(response)
-            set_content_type_profile(self, build_schema_url(self.query_params))
+            self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
 
 
 class InstanceHandler(BrainiakRequestHandler):
@@ -433,7 +433,7 @@ class InstanceHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         elif isinstance(response, dict):
             self.write(response)
-            set_content_type_profile(self, build_schema_url_for_instance(self.query_params))
+            self.set_header("Content-Type", content_type_profile(build_schema_url_for_instance(self.query_params)))
         elif isinstance(response, int):  # status code
             self.set_status(response)
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25

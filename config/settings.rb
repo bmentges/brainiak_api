@@ -1,48 +1,27 @@
-load 'deploy' if respond_to?(:namespace) # cap2 differentiator
+set :stages,                %w(dev qa1 qa2 qa staging prod)
+set :default_stage,         "dev"
 
-Dir['vendor/gems/*/recipes/*.rb','vendor/plugins/*/recipes/*.rb'].each { |plugin| load(plugin) }
+set :application,           "brainiak"
+set :project,               "#{application}"
+set :projeto,               "#{application}"
 
-load 'config/deploy'
-load 'config/filter.rb'
-load 'config/modules/puppet' # Load puppet module to execute puppet-setup every deploy, keeping the environment sync
+set :deploy_to,             "/mnt/projetos/deploy-be/api_semantica/#{projeto}/app"
+set :docs_html,             "#{deploy_to}/current/docs"
 
-before "deploy:update",  "deploy:setup"
-before "deploy:restart", "deploy:clean_local"
-before "deploy:restart", "deploy:cleanup"
+set :user,                  "busca"
+set :use_sudo,              false
+set :via,                   :scp
 
-#
-# Sempre executo o puppet para garantir o ambiente
-#
-before "deploy:restart", "puppet:all"
+set :repository,            "src"
+set :scm, :none
+set :deploy_via,            :copy
+set :copy_dir,              "/tmp"
 
-namespace :deploy do
-    task :finalize_update do
-        # essa task assume que eh um projeto rails e faz
-        # symlink do public pro shared, e do logs
-        # coisa que nao queremos
-    end
+set :keep_releases,         4
 
-    task :docs, :roles => :docs do
-        puts "Gerando documentação"
-        system "tar chzf docs.tar.gz docs"
-        system "cd docs; make html; cd .."
-        put File.read("docs.tar.gz"), "/tmp/docs.tar.gz", :via => :scp
-        run "cd /tmp && tar xzf docs.tar.gz"
-        run 'cd /tmp/docs && export PATH="/opt/api_semantica/brainiak/virtualenv/bin:$PATH" && export PYTHONPATH="' + deploy_to + '/current:$PYTHONPATH" && make html'
-        run "rsync -ac --delay-updates --stats /tmp/docs/build/html/ #{docs_html}/"
-        run 'cd /tmp && rm -rf docs && rm docs.tar.gz'
-        system "rm docs.tar.gz"
-    end
-
-    # :restart redefinido para reinciar o gunicorn da APP_v2 (brainiak) apenas
-    task :restart, :roles => :restart do
-        puts "Reiniciando o GUNICORN 2 do BRAINIAK..."
-        run "sudo /etc/init.d/brainiak-gunicorn-be restart 2> /dev/null"
-    end
-
-
-    task :clean_local do
-        puts "Voltando o settings atual"
-        system "git checkout -- src/brainiak/settings.py"
-    end
-end
+set :copy_exclude,          [
+                            "*.pyc", "**/*.pyc",
+                            ".unfiltered",
+                            "**/*.log",
+                            "**/.git", "**/.gitignore",
+                            "nosetests.xml", "**/.coverage", "**/.idea" ]

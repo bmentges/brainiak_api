@@ -60,9 +60,6 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         upper_graph = {u'resource_id': u'upper', u'@id': u'http://semantica.globo.com/upper/', u'title': u'upper'}
         self.assertIn(upper_graph, body['items'])
 
-        default_graph = {u'resource_id': ROOT_CONTEXT, u'@id': u'http://semantica.globo.com/', u'title': ROOT_CONTEXT}
-        self.assertIn(default_graph, body['items'])
-
         keys = body.keys()
         self.assertIn('next_page', keys)
         self.assertIn('page', keys)

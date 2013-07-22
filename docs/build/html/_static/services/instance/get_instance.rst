@@ -13,7 +13,7 @@ This service retrieves all information about a instance, given its context, clas
 Optional parameters
 -------------------
 
-.. include :: ../params/lang.rst
+.. include :: ../params/default.rst
 .. include :: ../params/graph_uri.rst
 .. include :: ../params/instance.rst
 

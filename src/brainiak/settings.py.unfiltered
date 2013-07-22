@@ -14,11 +14,10 @@ else:
     ENABLE_CACHE = True
     REDIS_PASSWORD = '<%= redis_password %>'
 
-REDIS_ENDPOINT = '<%= redis_endpoint %>'
+REDIS_ENDPOINT = '<%= redis_host %>'
 REDIS_PORT = <%= redis_port %>
 
-SPARQL_PORT = '<%= sparql_port %>'
-SPARQL_ENDPOINT = '<%= sparql_endpoint %>'
+SPARQL_ENDPOINT = '<%= virtuoso_url %>'
 SPARQL_ENDPOINT_USER = os.environ.get('GLB_API_SEMANTICA_VIRTUOSO_USR') or "api-semantica"
 SPARQL_ENDPOINT_PASSWORD = os.environ.get('GLB_API_SEMANTICA_VIRTUOSO_PWD') or "api-semantica"
 SPARQL_ENDPOINT_AUTH_MODE = "digest"
@@ -35,7 +34,7 @@ LOG_NAME = "brainiak"
 
 URI_PREFIX = "http://semantica.globo.com/"
 
-EVENT_BUS_HOST = '<%= event_bus_host %>'
+EVENT_BUS_HOST = '<%= barramento_baas_host %>'
 EVENT_BUS_PORT = 61613
 NOTIFY_BUS = True
 

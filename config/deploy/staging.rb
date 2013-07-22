@@ -1,12 +1,19 @@
-role :filer,            'filer.staging.globoi.com'
-role :be,               'riovlb160.globoi.com', 'riovlb161.globoi.com'
+role :be,                   'riovlb160.globoi.com', 'riovlb161.globoi.com'
+role :filer,                'filer.staging.globoi.com'
 
-set :sparql_port,       8890
-set :sparql_endpoint,   "http://staging.semantica.globoi.com:#{sparql_port}/sparql-auth"
-set :event_bus_host,    'barramento.baas.globoi.com'
-set :puppetmaster_env,  'staging'
-set :redis_endpoint,    'redis.api.semantica.globoi.com'
-set :redis_port,        20015
-set :redis_password,    'a8pdifs2e2m9afn7tcifcea99674aad2'
+# Hosts
+set :virtuoso_host,         'staging.semantica.globoi.com'
+set :barramento_baas_host,  'barramento.baas.globoi.com'
+set :redis_host,            'redis.api.semantica.globoi.com'
+set :syslog_host,           'syslog.tcp.glog.globoi.com'
+set :filer_host,            'riofb01a'
 
-set :log_filepath,      '/opt/logs/brainiak/gunicorn-be/gunicorn-be.log'
+# Ports
+set :sparql_port,           8890
+
+# URLs
+set :virtuoso_url,          "http://#{virtuoso_host}:#{sparql_port}/sparql-auth"
+
+# Variables
+set :puppetmaster_env,      'staging'
+set :redis_password,        'a8pdifs2e2m9afn7tcifcea99674aad2'

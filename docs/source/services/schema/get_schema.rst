@@ -25,7 +25,7 @@ Thus, the _class suffix is used to distinguish the latter case from the former.
 Optional parameters
 -------------------
 
-.. include :: ../params/lang.rst
+.. include :: ../params/default.rst
 .. include :: ../params/graph_uri.rst
 
 

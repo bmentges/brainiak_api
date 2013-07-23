@@ -188,6 +188,7 @@ class ParamDict(dict):
     def _set_defaults(self):
         "Define a set of predefined keys that "
         self["lang"] = self.optionals.get("lang", settings.DEFAULT_LANG)
+
         self["expand_uri"] = self.optionals.get("expand_uri", settings.DEFAULT_URI_EXPANSION)
         self["expand_uri_values"] = self.optionals.get("expand_uri_values", settings.DEFAULT_URI_EXPANSION)
         self["expand_uri_keys"] = self.optionals.get("expand_uri_keys", settings.DEFAULT_URI_EXPANSION)

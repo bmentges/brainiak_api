@@ -116,13 +116,13 @@ class AssembleTestCase(unittest.TestCase):
 
     def test_assemble_instance_json_links_with_context(self):
         self.prepare_params()
-        context = MemorizeContext(normalize_uri_mode=SHORTEN)
+        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
         computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, context)
         self.assertResults(computed)
 
     def test_assemble_instance_json_links_with_context_expanding_uri(self):
         self.prepare_params(instance_uri="http://mock.test.com/schema/klass/instance?expand_uri=1")
-        context = MemorizeContext(normalize_uri_mode=EXPAND)
+        context = MemorizeContext(normalize_keys=EXPAND, normalize_values=EXPAND)
         computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, context)
         self.assertEqual(computed["@type"], "http://schema.org/klass")
 
@@ -139,9 +139,9 @@ class BuildItemsDictTestCase(unittest.TestCase):
             "key1": ["value1", "value2"],
             "key2": "value2",
             "rdf:type": "some:Class"}
-        response = get_instance.build_items_dict(MemorizeContext(normalize_uri_mode=SHORTEN), bindings, "some:Class")
+        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        response = get_instance.build_items_dict(context, bindings, "some:Class")
         self.assertEqual(response, expected)
-
 
     def prepare_input_and_expected_output(self, object_value):
         bindings = [
@@ -162,7 +162,7 @@ class BuildItemsDictTestCase(unittest.TestCase):
     def test_build_items_dict_with_super_property_and_same_value(self):
         bindings = self.prepare_input_and_expected_output(object_value="Rio de Janeiro")
         expected = {"birthCity": "Rio de Janeiro", 'rdf:type': 'http://class.uri'}
-        context = MemorizeContext(normalize_uri_mode=SHORTEN)
+        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
         response = get_instance.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)
 
@@ -173,7 +173,7 @@ class BuildItemsDictTestCase(unittest.TestCase):
             "birthPlace": "Brasil",
             'rdf:type': 'http://class.uri'
         }
-        context = MemorizeContext(normalize_uri_mode=SHORTEN)
+        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
         response = get_instance.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)
 
@@ -184,6 +184,6 @@ class BuildItemsDictTestCase(unittest.TestCase):
             "birthPlace": "Brasil",
             'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://class.uri'
         }
-        context = MemorizeContext(normalize_uri_mode=EXPAND)
+        context = MemorizeContext(normalize_keys=EXPAND, normalize_values=EXPAND)
         response = get_instance.build_items_dict(context, bindings, "http://class.uri")
         self.assertEqual(response, expected)

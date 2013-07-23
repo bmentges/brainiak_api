@@ -7,8 +7,8 @@ def set_content_type_profile(handler, schema_url):
     """Set header Content-Type + profile pointing to URL of the json-schema"""
     parsed_url = urlparse(schema_url)
 
-    # The escaping of parameters is to allow JsonBrowser to work, later this can be
-    # replaced by the line below:
+    # The escaping of parameters is to allow JsonBrowser to work
+    #  later this can be replaced by the line below:
     #    content_type = "application/json; profile={0}".format(quote(schema_url))
     schema_url = "{0}://{1}{2}".format(
         parsed_url.scheme,

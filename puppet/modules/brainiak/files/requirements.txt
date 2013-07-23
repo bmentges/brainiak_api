@@ -1,4 +1,4 @@
-dad==1.0.1
+DAD==1.0.1
 greenlet==0.4.0
 gunicorn==0.14.6
 pycurl==7.19.0

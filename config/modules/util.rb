@@ -150,6 +150,14 @@ namespace :utils do
         run_local "git clean -df"
     end
 
+    task :version_py do
+        puts 'Atualizando arquivo version.py...'
+        run_local <<-EOF
+            cd src      &&
+            python -c "from brainiak.utils.git import build_release_string; print build_release_string()" > brainiak/version.py
+        EOF
+    end
+
     # git version.txt local
     task :version_git do
         run_local <<-EOF

@@ -597,7 +597,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         schema.query_cardinalities = lambda query: fake_response_cardinalities
         schema.query_predicates = lambda query: fake_response_predicates
 
-        context = prefixes.MemorizeContext(normalize_uri_mode=SHORTEN)
+        context = prefixes.MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
         params = {"class_uri": "http://test/person/gender",
                   "class_schema": None}
 

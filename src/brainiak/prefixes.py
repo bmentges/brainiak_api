@@ -123,7 +123,7 @@ def is_uri(something):
     return False
 
 
-def is_compressed_uri(candidate, extra_prefixes={}):
+def is_compressed_uri(candidate, extra_prefixes=None):
     if is_uri(candidate):
         return False
     try:
@@ -131,7 +131,7 @@ def is_compressed_uri(candidate, extra_prefixes={}):
     except ValueError:
         return False
     else:
-        if _MAP_SLUG_TO_PREFIX.get(slug) or extra_prefixes.get(slug):
+        if _MAP_SLUG_TO_PREFIX.get(slug) or (extra_prefixes and extra_prefixes.get(slug)):
             return True
     return False
 

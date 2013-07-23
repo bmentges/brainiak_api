@@ -9,10 +9,10 @@ set :syslog_host,           'syslog.tcp.glog.globoi.com'
 set :filer_host,            'riofb01a'
 
 # Ports
-set :sparql_port,           8890
+set :virtuoso_port,         8890
 
 # URLs
-set :virtuoso_url,          "http://#{virtuoso_host}:#{sparql_port}/sparql-auth"
+set :virtuoso_url,          "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"
 
 # Variables
 set :puppetmaster_env,      'staging'

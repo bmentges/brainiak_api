@@ -71,7 +71,7 @@ class PrefixesTestCase(unittest.TestCase):
         self.assertEqual(is_compressed_uri("unexistent:Xubi"), False)
 
     def test_is_compressed_uri_given_a_uncompressed_uri(self):
-        self.assertEqual(is_compressed_uri("http://something.org/xubiru"), False)
+        self.assertEqual(is_compressed_uri("http://something.org/xubiru", {}), False)
 
     def test_is_compressed_uri_given_a_compressed_and_prefixes(self):
         self.assertEqual(is_compressed_uri("newslug:xubiru", {"newslug": "http://newslug.com"}), True)

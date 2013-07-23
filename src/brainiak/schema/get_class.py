@@ -9,7 +9,8 @@ from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO
 
 def get_schema(query_params):
 
-    context = MemorizeContext(query_params["expand_uri"])
+    context = MemorizeContext(normalize_keys=query_params['expand_uri_keys'],
+                              normalize_values=query_params['expand_uri_values'])
 
     class_schema = query_class_schema(query_params)
     if not class_schema["results"]["bindings"]:

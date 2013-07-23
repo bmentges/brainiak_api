@@ -1,1 +1,1 @@
-RELEASE = 'master | 2e2c2c105bb5fe6eb6d62979fdbaf42993316bd4'
+RELEASE = 'master | 923a703e4b9ed5e0d1552bd5dfe2cbcbd2ab3c6c'

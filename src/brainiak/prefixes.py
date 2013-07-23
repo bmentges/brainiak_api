@@ -15,6 +15,12 @@ from brainiak import settings
 class InvalidModeForNormalizeUriError(Exception):
     pass
 
+# URI Normalization operation modes
+UNDEFINED = None
+SHORTEN = '0'
+EXPAND = '1'
+
+
 # This ROOT CONTEXT is a special context whose URI is equal to the settings.URL_PREFIX
 ROOT_CONTEXT = 'glb'
 
@@ -141,14 +147,9 @@ def expand_uri(short_uri):
         return short_uri
 
 
-UNDEFINED = None
-SHORTEN = '0'
-EXPAND = '1'
-
-
-def normalize_uri(uri, mode):
+def normalize_uri(uri, mode, shorten_uri_function=shorten_uri):
     if mode == SHORTEN:
-        return shorten_uri(uri)
+        return shorten_uri_function(uri)
     elif mode == EXPAND:
         return expand_uri(uri)
     raise InvalidModeForNormalizeUriError('Unrecognized mode {0:s}'.format(mode))
@@ -159,9 +160,11 @@ def get_prefixes_dict():
 
 
 class MemorizeContext(object):
-    "Wrap operations replace_prefix() and uri_to_prefix() remembering all substitutions in the context attribute"
-    def __init__(self, normalize_uri_mode=UNDEFINED):
-        self._normalize_uri_mode = normalize_uri_mode
+    """Wrap operations replace_prefix() and uri_to_prefix() remembering all substitutions in the context attribute.
+    Remember how to handle URI normalization preferences."""
+    def __init__(self, normalize_keys=UNDEFINED, normalize_values=UNDEFINED):
+        self._normalize_uri_keys = normalize_keys
+        self._normalize_uri_values = normalize_values
         self.context = {}
         self.object_properties = {}
 
@@ -180,14 +183,11 @@ class MemorizeContext(object):
             self.context[slug] = prefix
         return slug
 
-    # TODO: avoid duplication with normalize_uri function
-    def normalize_uri(self, uri):
-        if self._normalize_uri_mode == SHORTEN:
-            return self.shorten_uri(uri)
-        elif self._normalize_uri_mode == EXPAND:
-            return expand_uri(uri)
-        raise InvalidModeForNormalizeUriError('Unrecognized mode {0:s}'.format(self._normalize_uri_mode))
+    def normalize_uri_key(self, uri):
+        return normalize_uri(uri, self._normalize_uri_keys, shorten_uri_function=self.shorten_uri)
 
+    def normalize_uri_value(self, uri):
+        return normalize_uri(uri, self._normalize_uri_values, shorten_uri_function=self.shorten_uri)
 
 # TODO: verifify if module re would give better performance
 # http://stackoverflow.com/questions/7539959/python-finding-whether-a-string-starts-with-one-of-a-lists-variable-length-pre

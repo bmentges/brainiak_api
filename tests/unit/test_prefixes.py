@@ -77,7 +77,6 @@ class PrefixesTestCase(unittest.TestCase):
         self.assertEqual(is_compressed_uri("newslug:xubiru", {"newslug": "http://newslug.com"}), True)
 
 
-
 class ExtractPrefixTestCase(unittest.TestCase):
 
     def setUp(self):

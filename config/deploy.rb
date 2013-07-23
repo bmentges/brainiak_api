@@ -50,11 +50,11 @@ namespace :deploy do
     end
 
     task :copy_doc do
-        run_local "cp -rf docs/build/html src/"
+        run_local "cp -rf docs/build/html src/docs"
     end
 
     task :clean_doc do
-        run_local "rm -rf src/html"
+        run_local "rm -rf src/docs"
     end
 
     task :docs, :roles => :be do

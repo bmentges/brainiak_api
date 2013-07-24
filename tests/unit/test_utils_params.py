@@ -113,7 +113,7 @@ class ParamsTestCase(TestCase):
         # The Class will be responsible to decrement the page index to be compatible with virtuoso's indexing convention
         self.assertEquals(params["page"], "2")
 
-    def test_override_with_invalid_argument(self):
+    def test_invalid_argument_in_handler(self):
         handler = MockHandler(querystring="inexistent_argument=whatever")
         self.assertRaises(InvalidParam,
                           ParamDict,
@@ -122,6 +122,16 @@ class ParamsTestCase(TestCase):
                           context_name='dbpedia',
                           class_name="default_class_name",
                           class_prefix=None)
+
+    def test_invalid_argument_in_request(self):
+        handler = MockHandler(querystring="inexistent_argument=whatever")
+        self.assertRaises(InvalidParam,
+                          ParamDict,
+                          handler,
+                          context_name='dbpedia',
+                          class_name="default_class_name",
+                          class_prefix=None)
+
 
     def test_class_uri_from_context_and_class(self):
         handler = MockHandler()
@@ -254,6 +264,20 @@ class OrderingTestCase(TestCase):
                            instance_uri="http://this/should/be/used",
                            instance_prefix="http://this/is/less/important/than/instance_uri")
         self.assertEquals(params["instance_uri"], "http://this/should/be/used")
+
+
+class PublicAPITestCase(TestCase):
+
+    def test_set_arguments_params(self):
+        handler = MockHandler(querystring='lang=en&expand_uri=1')
+        params = ParamDict(handler, lang='en', expand_uri='1')
+        self.assertEqual(params.arguments, {'lang': 'en', 'expand_uri': '1'})
+
+    def test_format_url_params(self):
+        handler = MockHandler(querystring='lang=en&expand_uri=1')
+        params = ParamDict(handler, lang='en', expand_uri='1')
+        computed = params.format_url_params(exclude_keys=['lang'])
+        self.assertEqual(computed, 'expand_uri=1')
 
 
 class SpecificParamsDictTestCase(TestCase):

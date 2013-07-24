@@ -2,8 +2,6 @@ namespace :deploy do
 
     task :filter do
         Dir["**/*.unfiltered"].each do |file_in|
-            puts "Atualizando arquivo version.py..."
-            run_local 'cd src; python -c "from brainiak.utils.git import build_release_string; print build_release_string()" > brainiak/version.py'
             puts "Filtrando arquivo '#{file_in}'..."
             filter_file(file_in,file_in.chomp(".unfiltered"))
         end
@@ -50,11 +48,11 @@ namespace :deploy do
     end
 
     task :copy_doc do
-        run_local "cp -rf docs/build/html src/"
+        run_local "cp -rf docs/build/html src/docs"
     end
 
     task :clean_doc do
-        run_local "rm -rf src/html"
+        run_local "rm -rf src/docs"
     end
 
     task :docs, :roles => :be do

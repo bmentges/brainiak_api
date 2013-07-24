@@ -6,8 +6,6 @@ from brainiak import settings
 from brainiak.prefixes import safe_slug_to_prefix
 from brainiak.utils.sparql import PATTERN_O, PATTERN_P
 
-EXPAND_URI_BY_DEFAULT = '0'
-
 
 class InvalidParam(Exception):
     pass
@@ -53,7 +51,8 @@ def normalize_last_slash(url):
 
 
 # Define possible params and their processing order
-VALID_PARAMS = ('lang', 'expand_uri',
+VALID_PARAMS = ('lang',
+                'expand_uri', 'expand_uri_values', 'expand_uri_keys',
                 'graph_uri',
                 'context_name', 'class_name', 'class_prefix', 'class_uri',
                 'instance_id', 'instance_prefix', 'instance_uri',
@@ -146,6 +145,7 @@ class ParamDict(dict):
     def __setitem__(self, key, value):
         """Process collateral effects in params that are related.
         Changes in *_prefix should reflect in *_uri.
+        Changes in expand_uri should reflect in expand_uri_values and expand_uri_keys.
         """
         if key in ('graph_uri', 'class_uri'):
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
@@ -172,6 +172,11 @@ class ParamDict(dict):
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
             dict.__setitem__(self, "instance_uri", "{0}{1}".format(self["instance_prefix"], self["instance_id"]))
 
+        elif key == "expand_uri":
+            dict.__setitem__(self, key, value)
+            dict.__setitem__(self, 'expand_uri_keys', value)
+            dict.__setitem__(self, 'expand_uri_values', value)
+
         else:
             dict.__setitem__(self, key, value)
 
@@ -183,7 +188,10 @@ class ParamDict(dict):
     def _set_defaults(self):
         "Define a set of predefined keys that "
         self["lang"] = self.optionals.get("lang", settings.DEFAULT_LANG)
-        self["expand_uri"] = self.optionals.get("expand_uri", EXPAND_URI_BY_DEFAULT)
+
+        self["expand_uri"] = self.optionals.get("expand_uri", settings.DEFAULT_URI_EXPANSION)
+        self["expand_uri_values"] = self.optionals.get("expand_uri_values", settings.DEFAULT_URI_EXPANSION)
+        self["expand_uri_keys"] = self.optionals.get("expand_uri_keys", settings.DEFAULT_URI_EXPANSION)
 
         self._set_if_optional("context_name", self.optionals.get("context_name", "invalid_context"))
         self._set_if_optional("class_name", self.optionals.get("class_name", "invalid_class"))

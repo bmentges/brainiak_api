@@ -67,6 +67,29 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         json_received = json.loads(response.body)
         self.assertEqual(json_received['id'], u'http://semantica.globo.com/person/Gender')
 
+    def test_schema_handler_with_uri_normalization_expand_just_keys(self):
+        response = self.fetch('/person/Gender/_schema?expand_uri_keys=1')
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertIn('http://semantica.globo.com/upper/isPartOf', json_received['properties'].keys())
+        self.assertEqual(json_received['id'], u'person:Gender')
+
+    def test_schema_handler_with_uri_normalization_expand_just_values(self):
+        response = self.fetch('/person/Gender/_schema?expand_uri_values=1')
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual('http://www.w3.org/2001/XMLSchema#string', json_received['properties']['upper:description']['format'])
+        self.assertEqual(json_received['id'], u'http://semantica.globo.com/person/Gender')
+
+    def test_schema_handler_with_uri_normalization_expand_both(self):
+        response = self.fetch('/person/Gender/_schema?expand_uri_keys=1&expand_uri_values=1')
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received['id'], u'http://semantica.globo.com/person/Gender')
+        self.assertIn('http://semantica.globo.com/upper/isPartOf', json_received['properties'].keys())
+        format_value = json_received['properties']['http://semantica.globo.com/upper/description']['format']
+        self.assertEqual('http://www.w3.org/2001/XMLSchema#string', format_value)
+
     @patch("brainiak.handlers.logger")
     def test_schema_handler_with_invalid_params(self, log):
         response = self.fetch('/person/Gender/_schema?hello=world')

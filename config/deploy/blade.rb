@@ -1,8 +1,8 @@
 role :be,                       "api-semantica-dev.plataformas.glb.com"
 role :filer,                    "api-semantica-dev.plataformas.glb.com"
 
-set :sparql_port,               8890
-set :sparql_endpoint,           "http://qa1.virtuoso.globoi.com:#{sparql_port}/sparql"
+set :virtuoso_port,             8890
+set :sparql_endpoint,           "http://qa1.virtuoso.globoi.com:#{virtuoso_port}/sparql"
 set :solr_endpoint,             "http://master.solr.semantica.qa01.globoi.com"
 set :redis_endpoint,            "redis.qa1.globoi.com"
 set :redis_port,                20015

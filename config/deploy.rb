@@ -56,7 +56,7 @@ namespace :deploy do
     end
 
     task :docs, :roles => :be do
-        puts 'Gerando documentação'
+        puts 'Gerando docs'
         run_local <<-EOF
             tar chzf docs.tar.gz docs   &&
             make clean                  &&

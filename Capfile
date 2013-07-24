@@ -11,6 +11,7 @@ Dir['config/modules/*.rb'].each { |m| load m }
 
 before "deploy:update",         "tdi:all"
 before "deploy:update",         "deploy:setup"
+before "deploy:update",         "utils:version_py"
 before "deploy:update",         "deploy:filter"
 before "deploy:update",         "deploy:copy_doc"
 #before "deploy:restart",        "deploy:docs"

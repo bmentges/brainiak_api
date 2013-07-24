@@ -1,13 +1,15 @@
 Future Releases
 ===============
 
-Version 2.1.0 - 2013/07/18
+Version 2.1.0 - 2013/??/??
 --------------------------
 
 New features
 ____________
 
- - Support to multiple triplestore endpoints
+ - Support to multiple triplestore endpoints.
+ - New parameters for optional URI expansion in responses: exapnd_uri, expand_uri_keys and expand_uri_values.
+ - Root schema now have direct hyperlinks to collection and instance.
 
 
 Releases
@@ -29,7 +31,7 @@ ____________
 Refactor
 ________
 
- - Instances list (filtering) resource now applies lang to objects (?o) when 
+ - Instances list (filtering) resource now applies lang to objects (?o) when
    literals are provided
 
  - Resources URLs renamed

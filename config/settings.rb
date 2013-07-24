@@ -25,3 +25,7 @@ set :copy_exclude,          [
                             "**/*.log",
                             "**/.git", "**/.gitignore",
                             "nosetests.xml", "**/.coverage", "**/.idea" ]
+
+# Project variables
+set :redis_port,            20015
+set :log_filepath,          '/opt/logs/brainiak/gunicorn-be/gunicorn-be.log'

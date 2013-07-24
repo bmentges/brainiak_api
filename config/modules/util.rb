@@ -82,7 +82,7 @@ namespace :utils do
       return ( ENV.has_key?('OCD') and ENV['OCD'] == "1" )
     end
 
-    # Fecha todas as sessões SSH para troca de usuário.
+    # Fecha todas as sessões SSH para troca de usuario.
     def disconnect
       sessions.values.each { |session| session.close }
       sessions.clear
@@ -112,7 +112,7 @@ namespace :utils do
             if exists?(:"#{username}_pass")
                 set :password, fetch("#{username}_pass")
             else
-                set(:password) { Capistrano::CLI.password_prompt("Senha para o usuário #{username}: ") }
+                set(:password) { Capistrano::CLI.password_prompt("Senha para o usuario #{username}: ") }
                 set :"#{username}_pass", password
             end
 

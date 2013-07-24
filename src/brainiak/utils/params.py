@@ -68,17 +68,15 @@ VALID_PATTERNS = (
 )
 
 
-def matches_pattern(key):
-    return any([pattern.match(key) for pattern in VALID_PATTERNS])
-
-
 class ParamDict(dict):
     "Utility class to generate default params on demand and memoize results"
 
     def __init__(self, handler, **kw):
         dict.__init__(self)
-        # preserve the order below, defaults come first to be overriden
+        # preserve the order below, defaults are overriden first
         request = self["request"] = handler.request
+
+        self.arguments = self._make_arguments_dict()
 
         # preserve the specified optional parameters
         self.optionals = copy(kw)
@@ -105,7 +103,7 @@ class ParamDict(dict):
         # TODO: test
         unprocessed_keys = kw.keys()
         for key in unprocessed_keys:
-            if matches_pattern(key):
+            if self._matches_dynamic_pattern(key):
                 value = self.optionals[key]
                 if value is not None:
                     # the value None is used as a flag to avoid override the default value
@@ -119,28 +117,10 @@ class ParamDict(dict):
         self._override_with(handler)
         self._post_override()
 
-    @property
-    def arguments(self):
+    def _make_arguments_dict(self):
         query_string = unquote(self["request"].query)
         query_dict = parse_qs(query_string, keep_blank_values=True)
         return {key: value[0] for key, value in query_dict.items()}
-
-    def args(self, exclude_keys=None, **kw):
-        if exclude_keys is None:
-            exclude_keys = NON_ARGUMENT_PARAMS
-        else:
-            exclude_keys = []
-            exclude_keys.extend(NON_ARGUMENT_PARAMS)
-
-        effective_args = {}
-        for key in VALID_PARAMS:
-            if key in self.arguments and key not in exclude_keys:
-                value = self[key]
-                if value:
-                    effective_args[key] = value
-
-        effective_args.update(kw)
-        return urlencode(effective_args, doseq=True)
 
     def __setitem__(self, key, value):
         """Process collateral effects in params that are related.
@@ -207,18 +187,19 @@ class ParamDict(dict):
         if class_uri is not None:
             self._set_if_optional("instance_prefix", class_uri + "/")
 
+    def _matches_dynamic_pattern(self, key):
+        return any([pattern.match(key) for pattern in VALID_PATTERNS])
+
     def _override_with(self, handler):
         "Override this dictionary with values whose keys are present in the request"
-        for arg in self.arguments:
-            if (arg not in self) and (not matches_pattern(arg)):
-                raise InvalidParam(arg)
-
         # order is critical below because *_uri should be set before *_prefix
         for key in self.arguments:
-            if key in VALID_PARAMS or matches_pattern(key):
-                value = self.arguments.get(key, None)
-                if value is not None:
-                    self[key] = value
+            if (key not in self) and (not self._matches_dynamic_pattern(key)):
+                raise InvalidParam(key)
+
+            value = self.arguments.get(key, None)
+            if value is not None:
+                self[key] = value
 
     def _post_override(self):
         "This method is called after override_with() is called to do any post processing"
@@ -232,3 +213,19 @@ class ParamDict(dict):
 
         if "sort_order" in self.arguments:
             self["sort_order"] = self["sort_order"].upper()
+
+    def format_url_params(self, exclude_keys=None, **kw):
+        if exclude_keys is None:
+            exclude_keys = NON_ARGUMENT_PARAMS
+        else:
+            exclude_keys.extend(NON_ARGUMENT_PARAMS)
+
+        effective_args = {}
+        for key in VALID_PARAMS:
+            if key in self.arguments and key not in exclude_keys:
+                value = self[key]
+                if value:
+                    effective_args[key] = value
+
+        effective_args.update(kw)
+        return urlencode(effective_args, doseq=True)

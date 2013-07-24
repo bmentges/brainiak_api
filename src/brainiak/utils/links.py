@@ -100,7 +100,7 @@ def last_link(query_params, total_items):
     links = [
         {
             'rel': "last",
-            'href': "%s?%s" % (base_url, query_params.args(page=last_page, per_page=per_page)),
+            'href': "%s?%s" % (base_url, query_params.format_url_params(page=last_page, per_page=per_page)),
             'method': "GET"
         }
     ]

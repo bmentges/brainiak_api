@@ -39,16 +39,16 @@ class TestRootJsonSchema(unittest.TestCase):
                 'schema': {'properties': {'class_prefix': {'type': 'string'}}, 'type': 'object'}
             },
             {
-               'href': '/{{context_id}}/{{collection_id}}/{{resource_id}}',
+                'href': '/{{context_id}}/{{collection_id}}/{{resource_id}}',
                 'method': 'GET',
                 'rel': 'instance',
                 'schema': {
                     'properties':
-                               {
-                                   'class_prefix': {'type': 'string'},
-                                   'instance_prefix': {'type': 'string'}
-                               },
-                            'type': 'object'
+                        {
+                            'class_prefix': {'type': 'string'},
+                            'instance_prefix': {'type': 'string'}
+                        },
+                    'type': 'object'
                 }
             }
         ]

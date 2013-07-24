@@ -134,8 +134,8 @@ class BrainiakChecker(Checker):
         nose.assert_equal(solr_response.status_code, 200)
         nose.assert_in('numFound="0"', solr_response.text)
 
-        # Check if instance was written in ElasticSearch     
-        es_response = requests.get(es_url)
+        # Check if instance was written in ElasticSearch
+        #         es_response = requests.get(es_url)
         nose.assert_equal(es_response.status_code, 200)
         nose.assert_in('"total":0', es_response.text)
 

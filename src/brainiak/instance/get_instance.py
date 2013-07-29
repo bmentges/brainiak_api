@@ -21,7 +21,7 @@ def get_instance(query_params):
 
 
 def build_items_dict(context, bindings, class_uri):
-    super_predicates = get_super_properties(bindings)
+    super_predicates = get_super_properties(context, bindings)
 
     items_dict = {}
     for item in bindings:
@@ -47,11 +47,10 @@ def build_items_dict(context, bindings, class_uri):
 
 def remove_super_properties(context, items_dict, super_predicates):
     for (analyzed_predicate, value) in items_dict.items():
-        expanded_predicate = analyzed_predicate
-        if expanded_predicate in super_predicates.keys():
-            sub_predicate = super_predicates[expanded_predicate]
+        if analyzed_predicate in super_predicates.keys():
+            sub_predicate = super_predicates[analyzed_predicate]
             sub_value = items_dict[context.normalize_uri_key(sub_predicate)]
-            if value == sub_value:
+            if value == sub_value or (sub_value in value):
                 items_dict.pop(analyzed_predicate)
 
 

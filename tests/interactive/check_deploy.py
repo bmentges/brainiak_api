@@ -28,12 +28,20 @@ mercury_endpoint = {
 
 elastic_search_endpoint = {
     "dev": "http://esearch.dev.globoi.com/",
-    "local": "http://localhost:9200/"
+    "local": "http://localhost:9200/",
+    "qa01": "http://esearch.qa01.globoi.com/",
+    "qa02": "http://esearch.qa02.globoi.com/",
+    "stg": "http://esearch.globoi.com/",
+    "prod": "http://esearch.globoi.com/"
 }
 
 solr_endpoint = {
     "dev": "http://master.solr.semantica.dev.globoi.com/",
-    "local": "http://localhost:8984/"
+    "local": "http://localhost:8984/",
+    "qa01": "http://master.solr.semantica.qa01.globoi.com/",
+    "qa02": "http://master.solr.semantica.qa02.globoi.com/",
+    "stg": "http://master.solr.semantica.globoi.com/",
+    "prod": "http://master.solr.semantica.globoi.com/"
 }
 
 proxies = {
@@ -117,6 +125,7 @@ class BrainiakChecker(Checker):
 
     def check_instance_create(self):
         # Remove if instance exist
+        self.put("place/City/globoland", "new_city.json")
         self.delete("place/City/globoland")
 
         # SOLR read URL
@@ -129,22 +138,25 @@ class BrainiakChecker(Checker):
         es_host = elastic_search_endpoint[self.environ]
         es_url = "{0}{1}".format(es_host, es_relative_url)
 
+        time.sleep(3)
+
         # Check if record does not exist in Solr
         solr_response = requests.get(solr_url)
         nose.assert_equal(solr_response.status_code, 200)
         nose.assert_in('numFound="0"', solr_response.text)
 
-        # Check if instance was written in ElasticSearch
-        #         es_response = requests.get(es_url)
-        nose.assert_equal(es_response.status_code, 200)
-        nose.assert_in('"total":0', es_response.text)
+        # Check if instance does not exist in ElasticSearch
+        es_response = requests.get(es_url)
+        nose.assert_in(es_response.status_code, [200, 404])
+        if es_response.status_code == 200:
+            nose.assert_in('"total":0', es_response.text)
 
         # Add instance
         response = self.put("place/City/globoland", "new_city.json")
         nose.assert_equal(response.status_code, 201)
 
         sys.stdout.write("\n-- try changing <check_instance_create> timeout if it fails")
-        time.sleep(1)
+        time.sleep(3)
 
         # Check if instance was written in Virtuoso
         response_after = self.get("place/City/globoland")

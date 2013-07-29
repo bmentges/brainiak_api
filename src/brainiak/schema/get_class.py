@@ -392,7 +392,7 @@ def join_predicates(old, new):
 
 def convert_bindings_dict(context, bindings, cardinalities):
 
-    super_predicates = get_super_properties(bindings)
+    super_predicates = get_super_properties(context, bindings)
     assembled_predicates = {}
 
     for binding_row in bindings:

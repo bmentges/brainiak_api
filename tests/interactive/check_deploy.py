@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+
+"""
+Para executá-lo, basta rodar:
+python check_deploy.py qa01
+
+Onde <qa01> pode ser substituido por qualquer um dos ambientes:
+- local, dev, qa01, qa02, stg e prod
+"""
+
 import inspect
 import json
 import sys

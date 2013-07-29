@@ -8,6 +8,7 @@ role :filer,                'filer.dev.globoi.com'
 
 set :virtuoso_port,         8890
 set :virtuoso_host,         'localhost'
+#set :virtuoso_host,         'qa1.virtuoso.globoi.com'
 set :virtuoso_url,          "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"
 set :barramento_baas_host,  'localhost'
 set :puppetmaster_env,      'local'

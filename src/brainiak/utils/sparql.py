@@ -8,8 +8,14 @@ PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
 PATTERN_O = re.compile(r'o(?P<index>\d*)$')  # o, o1, o2, o3 ...
 
 
-def get_super_properties(bindings):
-    return {item['super_property']['value']: item['predicate']['value'] for item in bindings if 'super_property' in item}
+def get_super_properties(context, bindings):
+    super_properties = {}
+    for item in bindings:
+        if 'super_property' in item:
+            key = context.normalize_uri_key(item['super_property']['value'])
+            value = context.normalize_uri_value(item['predicate']['value'])
+            super_properties[key] = value
+    return super_properties
 
 
 def calculate_offset(query_params, default_page, default_per_page):

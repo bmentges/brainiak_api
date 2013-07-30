@@ -16,7 +16,7 @@ import time
 import nose.tools as nose
 import requests
 
-version = "master"
+version = "2.1.0"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",
@@ -57,6 +57,7 @@ solr_endpoint = {
 proxies = {
     "stg": {"http": "proxy.staging.globoi.com:3128"}
 }
+#curl -i -X GET --proxy1.0 proxy.staging.globoi.com:3128 http://api.semantica.globoi.com/_status/check_activemq
 
 
 class Checker(object):
@@ -134,6 +135,7 @@ class BrainiakChecker(Checker):
             sys.stdout.write("\ncheck_docs - pass")
 
     def check_instance_create(self):
+
         # Remove if instance exist
         self.put("place/City/globoland", "new_city.json")
         self.delete("place/City/globoland")
@@ -148,14 +150,14 @@ class BrainiakChecker(Checker):
         es_host = elastic_search_endpoint[self.environ]
         es_url = "{0}{1}".format(es_host, es_relative_url)
 
-        time.sleep(3)
+        time.sleep(5)
         # Check if record does not exist in Solr
-        solr_response = requests.get(solr_url)
+        solr_response = requests.get(solr_url, proxies=self.proxies)
         nose.assert_equal(solr_response.status_code, 200)
         nose.assert_in('numFound="0"', solr_response.text)
 
         # Check if instance does not exist in ElasticSearch
-        es_response = requests.get(es_url)
+        es_response = requests.get(es_url, proxies=self.proxies)
         nose.assert_in(es_response.status_code, [200, 404])
         if es_response.status_code == 200:
             nose.assert_in('"total":0', es_response.text)
@@ -173,13 +175,13 @@ class BrainiakChecker(Checker):
         nose.assert_in('"upper:fullName": "Globoland (RJ)"', response_after.text)
 
         # Check if instance was written in Solr
-        solr_response = requests.get(solr_url)
+        solr_response = requests.get(solr_url, proxies=self.proxies)
         nose.assert_equal(solr_response.status_code, 200)
         nose.assert_in('numFound="1"', solr_response.text)
         nose.assert_in('<str name="label">Globoland</str>', solr_response.text)
 
         # Check if instance was written in ElasticSearch
-        es_response = requests.get(es_url)
+        es_response = requests.get(es_url, proxies=self.proxies)
         nose.assert_equal(response_after.status_code, 200)
         nose.assert_in('"total":1', es_response.text)
 

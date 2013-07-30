@@ -149,7 +149,6 @@ class BrainiakChecker(Checker):
         es_url = "{0}{1}".format(es_host, es_relative_url)
 
         time.sleep(3)
-
         # Check if record does not exist in Solr
         solr_response = requests.get(solr_url)
         nose.assert_equal(solr_response.status_code, 200)

@@ -17,3 +17,4 @@ set :syslog_host,           'syslog.tcp.glog.dev.globoi.com'
 set :filer_host,            'riofd06'
 
 set :log_filepath,          '/tmp/brainiak.log'
+set :redis_password,        'ignored'

@@ -132,7 +132,6 @@ class ParamsTestCase(TestCase):
                           class_name="default_class_name",
                           class_prefix=None)
 
-
     def test_class_uri_from_context_and_class(self):
         handler = MockHandler()
         params = ParamDict(handler, context_name="dbpedia", class_name="Actor", class_uri=None)

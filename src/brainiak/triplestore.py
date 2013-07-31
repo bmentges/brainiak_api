@@ -12,19 +12,17 @@ from brainiak import settings, log
 from brainiak.greenlet_tornado import greenlet_fetch
 
 
-def _query_sparql(query, credentials):
-    # will parse the ini file to endpoint_dict
-    # will call query_sparql_to_endpoint
-    pass
+# def _query_sparql(query, credentials):
+#     # will parse the ini file to endpoint_dict
+#     # will call query_sparql_to_endpoint
+#     pass
 
 
-def query_sparql_to_endpoint(query, endpoint_dict):
-    # will send the request to the triplestore, using endpoint_dict
-    pass
+# def query_sparql_to_endpoint(query, endpoint_dict):
+#     # will send the request to the triplestore, using endpoint_dict
+#     pass
 
 
-# TODO: compute runtime
-# TODO: log query and runtime
 def query_sparql(query, *args, **kw):
     """
     Simple interface that given a SPARQL query string returns a string representing a SPARQL results bindings
@@ -88,7 +86,6 @@ def run_query(query, *args, **kw):
         "auth_mode": getattr(settings, "SPARQL_ENDPOINT_AUTH_MODE", "basic"),
     }
     request = HTTPRequest(**request_params)
-
     time_i = time.time()
     response = greenlet_fetch(request)
     time_f = time.time()

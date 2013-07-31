@@ -9,12 +9,11 @@ class ConfigParserTestCase(TestCase):
         local_ini = "config/local/triplestore.ini"
         response = parse_section(local_ini, "default")
         expected_response = {
-            'endpoint': 'http://localhost:8890',
-            'realm': 'SPARQL',
+            'url': 'http://localhost:8890/sparql-auth',
             'app_name': 'Brainiak',
             'auth_mode': 'digest',
-            'user': 'api-semantica',
-            'password': 'api-semantica'
+            'auth_username': 'api-semantica',
+            'auth_password': 'api-semantica'
         }
         self.assertEqual(response, expected_response)
 

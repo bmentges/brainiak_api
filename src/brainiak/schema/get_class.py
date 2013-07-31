@@ -9,13 +9,14 @@ from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO
 
 def get_schema(query_params):
 
-    context = MemorizeContext(query_params["expand_uri"])
+    context = MemorizeContext(normalize_keys=query_params['expand_uri_keys'],
+                              normalize_values=query_params['expand_uri_values'])
 
     class_schema = query_class_schema(query_params)
     if not class_schema["results"]["bindings"]:
         return
 
-    normalized_uri = context.normalize_uri(query_params["class_uri"])
+    normalized_uri = context.normalize_uri_value(query_params["class_uri"])
 
     query_params["superclasses"] = query_superclasses(query_params)
     predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
@@ -277,7 +278,7 @@ def _query_superclasses(query_params):
 
 
 def items_from_range(context, range_uri):
-    short_range = context.normalize_uri(range_uri)
+    short_range = context.normalize_uri_value(range_uri)
     if short_range == 'xsd:date' or short_range == 'xsd:dateTime':
         return {"type": "string", "format": "date"}
     else:
@@ -294,7 +295,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     range_label = binding_row.get('range_label', {}).get('value', "")
 
     # compression-related
-    compressed_range_uri = context.normalize_uri(range_uri)
+    compressed_range_uri = context.normalize_uri_value(range_uri)
     compressed_range_graph = context.prefix_to_slug(range_graph)
     compressed_graph = context.prefix_to_slug(predicate_graph)
 
@@ -391,12 +392,12 @@ def join_predicates(old, new):
 
 def convert_bindings_dict(context, bindings, cardinalities):
 
-    super_predicates = get_super_properties(bindings)
+    super_predicates = get_super_properties(context, bindings)
     assembled_predicates = {}
 
     for binding_row in bindings:
         predicate_uri = binding_row['predicate']['value']
-        predicate_key = context.normalize_uri(predicate_uri)
+        predicate_key = context.normalize_uri_key(predicate_uri)
         if not predicate_uri in super_predicates.keys():
             predicate = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
             existing_predicate = assembled_predicates.get(predicate_key, False)

@@ -75,5 +75,5 @@ def build_release_string():
     return "RELEASE = '%s'" % get_code_version()
 
 
-def build_next_release_string():
-    return "RELEASE = '%s'" % compute_next_git_tag()
+def build_next_release_string(release_type="micro"):
+    return "RELEASE = '%s'" % compute_next_git_tag(release_type)

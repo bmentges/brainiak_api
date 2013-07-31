@@ -3,12 +3,12 @@ from math import ceil
 from urllib import urlencode, quote
 
 
-def set_content_type_profile(handler, schema_url):
+def content_type_profile(schema_url):
     """Set header Content-Type + profile pointing to URL of the json-schema"""
     parsed_url = urlparse(schema_url)
 
-    # The escaping of parameters is to allow JsonBrowser to work, later this can be
-    # replaced by the line below:
+    # The escaping of parameters is to allow JsonBrowser to work
+    #  later this can be replaced by the line below:
     #    content_type = "application/json; profile={0}".format(quote(schema_url))
     schema_url = "{0}://{1}{2}".format(
         parsed_url.scheme,
@@ -18,10 +18,10 @@ def set_content_type_profile(handler, schema_url):
     if parsed_url.query:
         schema_url += "?{0}".format(quote(parsed_url.query))
     if parsed_url.fragment:
-        schema_url += "#{0}".format(parsed_url.fragment)
+        schema_url += "#{0}".format(quote(parsed_url.fragment))
 
     content_type = "application/json; profile={0}".format(schema_url)
-    handler.set_header("Content-Type", content_type)
+    return content_type
 
 
 def assemble_url(url, params={}):
@@ -100,7 +100,7 @@ def last_link(query_params, total_items):
     links = [
         {
             'rel': "last",
-            'href': "%s?%s" % (base_url, query_params.args(page=last_page, per_page=per_page)),
+            'href': "%s?%s" % (base_url, query_params.format_url_params(page=last_page, per_page=per_page)),
             'method': "GET"
         }
     ]
@@ -171,39 +171,6 @@ def pagination_schema(root_url, extra_url_params=''):
     return result
 
 
-# TODO: deprecate this function
-def collection_links(query_params):
-    link_params = {}
-    link_params['base_url'] = remove_last_slash(query_params.base_url)
-    link_params['page'] = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
-    link_params['per_page'] = int(query_params["per_page"])
-
-    link_params['resource_url'] = remove_last_slash(query_params.resource_url)
-
-    base_url = link_params['base_url']
-    per_page = link_params['per_page']
-
-    previous_page = get_previous_page(link_params['page'])
-    next_page = get_next_page(link_params['page'])
-
-    links = [
-        {
-            'rel': "first",
-            'href': "%s?%s" % (base_url, query_params.args(page=1, per_page=per_page)),
-            'method': "GET"
-        },
-    ]
-    if previous_page:
-        links.append({'rel': "previous",
-                      'href': "%s?%s" % (base_url, query_params.args(page=previous_page, per_page=per_page)),
-                      'method': "GET"})
-    if next_page:
-        links.append({'rel': "next",
-                      'href': "%s?%s" % (base_url, query_params.args(page=next_page, per_page=per_page)),
-                      'method': "GET"})
-    return links
-
-
 def build_class_url(query_params, include_query_string=False):
     class_url = "{0}://{1}/{2}/{3}".format(
         query_params['request'].protocol,
@@ -265,10 +232,33 @@ def add_link(link_list, rel, href, method='GET', **kw):
     link_list.append(link)
 
 
-def status_link(query_params):
-    """Build _status links"""
-    protocol = query_params['request'].protocol
-    host = query_params['request'].host
-    url = "{0}://{1}/{2}".format(protocol, host, "_status")
-
-    return [{"rel": "status", "href": url, "method": "GET"}]
+# def collection_links(query_params):
+#     link_params = {}
+#     link_params['base_url'] = remove_last_slash(query_params.base_url)
+#     link_params['page'] = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
+#     link_params['per_page'] = int(query_params["per_page"])
+#
+#     link_params['resource_url'] = remove_last_slash(query_params.resource_url)
+#
+#     base_url = link_params['base_url']
+#     per_page = link_params['per_page']
+#
+#     previous_page = get_previous_page(link_params['page'])
+#     next_page = get_next_page(link_params['page'])
+#
+#     links = [
+#         {
+#             'rel': "first",
+#             'href': "%s?%s" % (base_url, query_params.args(page=1, per_page=per_page)),
+#             'method': "GET"
+#         },
+#     ]
+#     if previous_page:
+#         links.append({'rel': "previous",
+#                       'href': "%s?%s" % (base_url, query_params.args(page=previous_page, per_page=per_page)),
+#                       'method': "GET"})
+#     if next_page:
+#         links.append({'rel': "next",
+#                       'href': "%s?%s" % (base_url, query_params.args(page=next_page, per_page=per_page)),
+#                       'method': "GET"})
+#     return links

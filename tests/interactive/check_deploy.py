@@ -1,11 +1,22 @@
+# -*- coding: utf-8 -*-
+
+"""
+Para executá-lo, basta rodar:
+python check_deploy.py qa01
+
+Onde <qa01> pode ser substituido por qualquer um dos ambientes:
+- local, dev, qa01, qa02, stg e prod
+"""
+
 import inspect
 import json
 import sys
+import time
 
 import nose.tools as nose
 import requests
 
-version = "master"
+version = "2.1.0"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",
@@ -25,9 +36,28 @@ mercury_endpoint = {
     "prod": "http://riomp40lb14.globoi.com:8036/"
 }
 
+elastic_search_endpoint = {
+    "dev": "http://esearch.dev.globoi.com/",
+    "local": "http://localhost:9200/",
+    "qa01": "http://esearch.qa01.globoi.com/",
+    "qa02": "http://esearch.qa02.globoi.com/",
+    "stg": "http://esearch.globoi.com/",
+    "prod": "http://esearch.globoi.com/"
+}
+
+solr_endpoint = {
+    "dev": "http://master.solr.semantica.dev.globoi.com/",
+    "local": "http://localhost:8984/",
+    "qa01": "http://master.solr.semantica.qa01.globoi.com/",
+    "qa02": "http://master.solr.semantica.qa02.globoi.com/",
+    "stg": "http://master.solr.semantica.globoi.com/",
+    "prod": "http://master.solr.semantica.globoi.com/"
+}
+
 proxies = {
     "stg": {"http": "proxy.staging.globoi.com:3128"}
 }
+#curl -i -X GET --proxy1.0 proxy.staging.globoi.com:3128 http://api.semantica.globoi.com/_status/check_activemq
 
 
 class Checker(object):
@@ -95,25 +125,74 @@ class BrainiakChecker(Checker):
         nose.assert_in(version, response.text)
         sys.stdout.write("\ncheck_version - pass")
 
-    # def check_docs(self):
-    #     if environ == "local":
-    #         sys.stdout.write("\ncheck_docs - ignore")
-    #     else:
-    #         response = self.get("docs/")
-    #         nose.assert_equal(response.status_code, 200)
-    #         nose.assert_in("Brainiak API documentation!", response.text)
-    #         sys.stdout.write("\ncheck_docs - pass")
+    def check_docs(self):
+        if environ == "local":
+            sys.stdout.write("\ncheck_docs - ignore")
+        else:
+            response = self.get("docs/")
+            nose.assert_equal(response.status_code, 200)
+            nose.assert_in("Brainiak API documentation!", response.text)
+            sys.stdout.write("\ncheck_docs - pass")
 
     def check_instance_create(self):
+
+        # Remove if instance exist
+        self.put("place/City/globoland", "new_city.json")
         self.delete("place/City/globoland")
+
+        # SOLR read URL
+        solr_host = solr_endpoint[self.environ]
+        solr_relative_url = 'solr/select/?q=uri%3A%22http%3A%2F%2Fsemantica.globo.com%2Fplace%2FCity%2Fgloboland%22'
+        solr_url = "{0}{1}".format(solr_host, solr_relative_url)
+
+        # ElasticSearch read URL
+        es_relative_url = 'semantica.place/_search?q=_resource_id:globoland'
+        es_host = elastic_search_endpoint[self.environ]
+        es_url = "{0}{1}".format(es_host, es_relative_url)
+
+        time.sleep(5)
+        # Check if record does not exist in Solr
+        solr_response = requests.get(solr_url, proxies=self.proxies)
+        nose.assert_equal(solr_response.status_code, 200)
+        nose.assert_in('numFound="0"', solr_response.text)
+
+        # Check if instance does not exist in ElasticSearch
+        es_response = requests.get(es_url, proxies=self.proxies)
+        nose.assert_in(es_response.status_code, [200, 404])
+        if es_response.status_code == 200:
+            nose.assert_in('"total":0', es_response.text)
+
+        # Add instance
         response = self.put("place/City/globoland", "new_city.json")
         nose.assert_equal(response.status_code, 201)
+
+        sys.stdout.write("\n-- try changing <check_instance_create> timeout if it fails")
+        time.sleep(3)
+
+        # Check if instance was written in Virtuoso
+        response_after = self.get("place/City/globoland")
+        nose.assert_equal(response_after.status_code, 200)
+        nose.assert_in('"upper:fullName": "Globoland (RJ)"', response_after.text)
+
+        # Check if instance was written in Solr
+        solr_response = requests.get(solr_url, proxies=self.proxies)
+        nose.assert_equal(solr_response.status_code, 200)
+        nose.assert_in('numFound="1"', solr_response.text)
+        nose.assert_in('<str name="label">Globoland</str>', solr_response.text)
+
+        # Check if instance was written in ElasticSearch
+        es_response = requests.get(es_url, proxies=self.proxies)
+        nose.assert_equal(response_after.status_code, 200)
+        nose.assert_in('"total":1', es_response.text)
+
         sys.stdout.write("\ncheck_instance_create - pass")
 
     def check_instance_delete(self):
         self.put("place/City/globoland", "new_city.json")
         response = self.delete("place/City/globoland")
         nose.assert_equal(response.status_code, 204)
+        response_after = self.get("place/City/globoland")
+        nose.assert_equal(response_after.status_code, 404)
         sys.stdout.write("\ncheck_instance_delete - pass")
 
 

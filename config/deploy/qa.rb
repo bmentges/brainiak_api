@@ -1,12 +1,19 @@
-role :be,               'cittavld507.globoi.com', 'cittavld797.globoi.com'
-role :filer,            'filer.qa.globoi.com'
+role :be,                   'cittavld507.globoi.com', 'cittavld797.globoi.com'
+role :filer,                'filer.qa.globoi.com'
 
-set :sparql_port,       8890
-set :sparql_endpoint,   "http://qa.virtuoso.globoi.com:#{sparql_port}/sparql-auth"
-set :event_bus_host,    'barramento.baas.qa.globoi.com'
-set :puppetmaster_env,  'qa'
-set :redis_endpoint,    'redis.api.semantica.qa.globoi.com'
-set :redis_port,        20015
-set :redis_password,    'a8pdifs2e2m9afn7tcifcea99674aad2'
+# Hosts
+set :virtuoso_host,         'qa.virtuoso.globoi.com'
+set :barramento_baas_host,  'barramento.baas.qa.globoi.com'
+set :redis_host,            'redis.api.semantica.qa.globoi.com'
+set :syslog_host,           'syslog.tcp.glog.qa.globoi.com'
+set :filer_host,            'riofd07a'
 
-set :log_filepath,      '/opt/logs/brainiak/gunicorn-be/gunicorn-be.log'
+# Ports
+set :virtuoso_port,         8890
+
+# URLs
+set :virtuoso_url,          "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"
+
+# Variables
+set :puppetmaster_env,      'qa'
+set :redis_password,        'a8pdifs2e2m9afn7tcifcea99674aad2'

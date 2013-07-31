@@ -21,12 +21,12 @@ def get_instance(query_params):
 
 
 def build_items_dict(context, bindings, class_uri):
-    super_predicates = get_super_properties(bindings)
+    super_predicates = get_super_properties(context, bindings)
 
     items_dict = {}
     for item in bindings:
-        predicate_uri = context.normalize_uri(item["predicate"]["value"])
-        value = context.normalize_uri(item["object"]["value"])
+        predicate_uri = context.normalize_uri_key(item["predicate"]["value"])
+        value = context.normalize_uri_value(item["object"]["value"])
         if predicate_uri in items_dict:
             if not isinstance(items_dict[predicate_uri], list):
                 value_list = [items_dict[predicate_uri]]
@@ -40,24 +40,24 @@ def build_items_dict(context, bindings, class_uri):
     remove_super_properties(context, items_dict, super_predicates)
 
     if not class_uri is None:
-        items_dict[context.normalize_uri("rdf:type")] = context.normalize_uri(class_uri)
+        items_dict[context.normalize_uri_key("rdf:type")] = context.normalize_uri_value(class_uri)
 
     return items_dict
 
 
 def remove_super_properties(context, items_dict, super_predicates):
     for (analyzed_predicate, value) in items_dict.items():
-        expanded_predicate = analyzed_predicate
-        if expanded_predicate in super_predicates.keys():
-            sub_predicate = super_predicates[expanded_predicate]
-            sub_value = items_dict[context.normalize_uri(sub_predicate)]
-            if value == sub_value:
+        if analyzed_predicate in super_predicates.keys():
+            sub_predicate = super_predicates[analyzed_predicate]
+            sub_value = items_dict[context.normalize_uri_key(sub_predicate)]
+            if value == sub_value or (sub_value in value):
                 items_dict.pop(analyzed_predicate)
 
 
 def assemble_instance_json(query_params, query_result_dict, context=None):
     if context is None:
-        context = MemorizeContext(normalize_uri_mode=query_params['expand_uri'])
+        context = MemorizeContext(normalize_keys=query_params['expand_uri_keys'],
+                                  normalize_values=query_params['expand_uri_values'])
 
     items = build_items_dict(context, query_result_dict['results']['bindings'], query_params["class_uri"])
     class_url = build_class_url(query_params)
@@ -66,7 +66,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     instance = {
         "_resource_id": query_params['instance_id'],
         "@id": query_params['instance_uri'],
-        "@type": context.normalize_uri(query_params["class_uri"]),
+        "@type": context.normalize_uri_value(query_params["class_uri"]),
         "@context": context.context,
     }
     instance.update(items)

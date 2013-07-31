@@ -3,15 +3,15 @@ from brainiak.utils.links import merge_schemas, pagination_schema
 
 
 def schema(context_name, class_name, class_prefix):
-    vars = (context_name, class_name, class_prefix)
+    args = (context_name, class_name, class_prefix)
     if class_prefix is not None:
-        schema_ref = "/{0}/{1}/_schema?class_prefix={2}".format(*vars)
-        href = "/{0}/{1}?class_prefix={2}".format(*vars)
-        link = "/{0}/{1}/{{resource_id}}?class_prefix={{class_prefix}}&instance_prefix={{instance_prefix}}".format(*vars)
+        schema_ref = "/{0}/{1}/_schema?class_prefix={2}".format(*args)
+        href = "/{0}/{1}?class_prefix={2}".format(*args)
+        link = "/{0}/{1}/{{resource_id}}?class_prefix={{class_prefix}}&instance_prefix={{instance_prefix}}".format(*args)
     else:
-        schema_ref = '/{0}/{1}/_schema'.format(*vars)
-        href = '/{0}/{1}'.format(*vars)
-        link = "/{0}/{1}/{{resource_id}}?class_prefix={{class_prefix}}&instance_prefix={{instance_prefix}}".format(*vars)
+        schema_ref = '/{0}/{1}/_schema'.format(*args)
+        href = '/{0}/{1}'.format(*args)
+        link = "/{0}/{1}/{{resource_id}}?class_prefix={{class_prefix}}&instance_prefix={{instance_prefix}}".format(*args)
 
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",

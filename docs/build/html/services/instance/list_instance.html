@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>List of Instances &mdash; brainiak master | d1b339e546cda522 documentation</title>
+    <title>List of Instances &mdash; brainiak 2.1.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     'master | d1b339e546cda522',
+        VERSION:     '2.1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak master | d1b339e546cda522 documentation" href="../../index.html" />
+    <link rel="top" title="brainiak 2.1.0 documentation" href="../../index.html" />
     <link rel="up" title="Managing Instances" href="instance.html" />
     <link rel="next" title="Get an Instance" href="get_instance.html" />
     <link rel="prev" title="Create a Instance" href="create_instance.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>master | d1b339e546cda522</b></span>
+      <span class="navbar-text pull-left"><b>2.1.0</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -66,10 +66,11 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../releases.html">Future Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-1-0-2013-07-18">Version 2.1.0 - 2013/07/18</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-0-2013">Version 2.2.0 - 2013/??/??</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../releases.html#releases">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-1-0-0-2013-04-24">Version 1.0.0  - 2013/04/24</a></li>
@@ -167,9 +168,16 @@ according a propert/value filter. The results are paginated.</p>
 <div class="section" id="optional-parameters">
 <h2>Optional parameters<a class="headerlink" href="#optional-parameters" title="Permalink to this headline">¶</a></h2>
 <p><strong>lang</strong>: Specify language of labels. Options: pt, en, undefined (do not filter labels)</p>
-<p><strong>expand_uri</strong>: When set to 1, this parameter implies that URIs (attribute names and values) in the response should be expanded.
-By default, this parameter is set to 0, meaning that URIs are compressed.
-<tt class="docutils literal"><span class="pre">rdfs:label</span></tt> is the compressed form <tt class="docutils literal"><span class="pre">http://www.w3.org/2000/01/rdf-schema#label</span></tt> is rendered as  .</p>
+<p><strong>expand_uri_keys</strong>: The URIs that represent <tt class="docutils literal"><span class="pre">names</span></tt> of properties in the response are either compressed (0) or expanded (1) by this parameter.</p>
+<p><strong>expand_uri_values</strong>: The URIs that represent <tt class="docutils literal"><span class="pre">values</span></tt> of properties in the response are either compressed (0) or expanded (1) by this parameter.</p>
+<p><strong>expand_uri</strong>: This parameter sets simultaneously the parameters <tt class="docutils literal"><span class="pre">expand_uri_keys</span></tt> and <tt class="docutils literal"><span class="pre">expand_uri_values</span></tt></p>
+<p>By default, this parameter is set to 0, meaning that URIs are compressed for keys and values.</p>
+<p>For example, <tt class="docutils literal"><span class="pre">rdfs:label</span></tt> is the compressed form, while <tt class="docutils literal"><span class="pre">http://www.w3.org/2000/01/rdf-schema#label</span></tt> is the respective expanded form.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">For the time being, URI expansion is not supported in resource listings.
+It is only supported while retrieving instances and class definition.</p>
+</div>
 <p><strong>page</strong>: The page to be retrieved. The default value is <tt class="docutils literal"><span class="pre">1</span></tt>, i.e. the first page.</p>
 <p><strong>per_page</strong>: Defines how many items are retrieved per page. The default value is <tt class="docutils literal"><span class="pre">10</span></tt></p>
 <p>By default, the first page containing 10 items is returned, and it could also be retrieved by:</p>

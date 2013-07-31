@@ -41,6 +41,36 @@ def schema():
                 "href": "{+id}",
                 "method": "GET",
                 "rel": "self"
+            },
+            {
+                "href": "/{{context_id}}/{{collection_id}}",
+                "method": "GET",
+                "rel": "collection",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "class_prefix": {
+                            "type": "string"
+                        }
+                    },
+                }
+            },
+            {
+                "href": "/{{context_id}}/{{collection_id}}/{{resource_id}}",
+                "method": "GET",
+                "rel": "instance",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "class_prefix": {
+                            "type": "string"
+                        },
+                        "instance_prefix": {
+                            "type": "string"
+                        },
+                    },
+                }
+
             }
         ]
     }

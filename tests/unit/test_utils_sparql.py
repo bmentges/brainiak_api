@@ -1,7 +1,7 @@
 import unittest
 import uuid
 
-from brainiak.prefixes import MemorizeContext
+from brainiak.prefixes import MemorizeContext, SHORTEN
 from brainiak.utils.params import ParamDict
 from brainiak.utils.sparql import *
 from tests.mocks import MockHandler
@@ -486,7 +486,9 @@ class SuperPropertiesTestCase(unittest.TestCase):
                 'predicate': {'value': 'grandfather'}
             }
         ]
-        computed = get_super_properties(sample_bindings)
+
+        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        computed = get_super_properties(context, sample_bindings)
         expected = {'father': 'son'}
         self.assertEqual(computed, expected)
 
@@ -504,7 +506,8 @@ class SuperPropertiesTestCase(unittest.TestCase):
                 'predicate': {'value': 'grandfather'}
             }
         ]
-        computed = get_super_properties(sample_bindings)
+        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        computed = get_super_properties(context, sample_bindings)
         expected = {'father': 'son', 'grandfather': 'father'}
         self.assertEqual(computed, expected)
 

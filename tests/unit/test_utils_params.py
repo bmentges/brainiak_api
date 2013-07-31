@@ -1,4 +1,5 @@
 from unittest import TestCase
+from brainiak import settings
 
 from brainiak.utils import params
 from brainiak.prefixes import ROOT_CONTEXT
@@ -112,9 +113,24 @@ class ParamsTestCase(TestCase):
         # The Class will be responsible to decrement the page index to be compatible with virtuoso's indexing convention
         self.assertEquals(params["page"], "2")
 
-    def test_override_with_invalid_argument(self):
+    def test_invalid_argument_in_handler(self):
         handler = MockHandler(querystring="inexistent_argument=whatever")
-        self.assertRaises(InvalidParam, ParamDict, handler, context_name='dbpedia', class_name="default_class_name", class_prefix=None)
+        self.assertRaises(InvalidParam,
+                          ParamDict,
+                          handler,
+                          inexistent_argument="whatever",
+                          context_name='dbpedia',
+                          class_name="default_class_name",
+                          class_prefix=None)
+
+    def test_invalid_argument_in_request(self):
+        handler = MockHandler(querystring="inexistent_argument=whatever")
+        self.assertRaises(InvalidParam,
+                          ParamDict,
+                          handler,
+                          context_name='dbpedia',
+                          class_name="default_class_name",
+                          class_prefix=None)
 
     def test_class_uri_from_context_and_class(self):
         handler = MockHandler()
@@ -164,21 +180,50 @@ class ParamsTestCase(TestCase):
         params = ParamDict(handler, do_item_count='1')
         self.assertEqual(params["do_item_count"], '1')
 
+    def test_pagination_validation(self):
+        self.assertTrue(valid_pagination(total=1, page=0, per_page=10))
+        self.assertTrue(valid_pagination(total=1, page=0, per_page=1))
+        self.assertFalse(valid_pagination(total=10, page=1, per_page=10))
+        self.assertFalse(valid_pagination(total=1, page=1, per_page=1))
+
+
+class ExpandUriTestCase(TestCase):
+
     def test_default_value_for_param_expand_uri(self):
         handler = MockHandler()
         params = ParamDict(handler)
-        self.assertEqual(params["expand_uri"], '0')
+        self.assertEqual(params["expand_uri"], settings.DEFAULT_URI_EXPANSION)
 
     def test_set_param_expand_uri(self):
         handler = MockHandler()
         params = ParamDict(handler, expand_uri=1)
         self.assertEqual(params["expand_uri"], 1)
 
-    def test_pagination_validation(self):
-        self.assertTrue(valid_pagination(total=1, page=0, per_page=10))
-        self.assertTrue(valid_pagination(total=1, page=0, per_page=1))
-        self.assertFalse(valid_pagination(total=10, page=1, per_page=10))
-        self.assertFalse(valid_pagination(total=1, page=1, per_page=1))
+    def test_default_value_for_param_expand_uri_values_and_keys(self):
+        handler = MockHandler()
+        params = ParamDict(handler)
+        self.assertEqual(params["expand_uri_values"], settings.DEFAULT_URI_EXPANSION)
+        self.assertEqual(params["expand_uri_keys"], settings.DEFAULT_URI_EXPANSION)
+
+    def test_set_expand_uri_reflect_in_expand_uri_values_and_keys(self):
+        handler = MockHandler()
+        params = ParamDict(handler)
+        params['expand_uri'] = '1'
+        self.assertEqual(params["expand_uri_values"], "1")
+        self.assertEqual(params["expand_uri_keys"], "1")
+
+    def test_reset_expand_uri_reflect_in_expand_uri_values_and_keys(self):
+        handler = MockHandler()
+        params = ParamDict(handler)
+        params['expand_uri'] = '1'
+        params['expand_uri'] = '0'
+        self.assertEqual(params["expand_uri_values"], "0")
+        self.assertEqual(params["expand_uri_keys"], "0")
+        params["expand_uri_keys"] = "1"
+        params["expand_uri_values"] = "1"
+        params['expand_uri'] = '0'
+        self.assertEqual(params["expand_uri_values"], "0")
+        self.assertEqual(params["expand_uri_keys"], "0")
 
 
 class OrderingTestCase(TestCase):
@@ -218,6 +263,20 @@ class OrderingTestCase(TestCase):
                            instance_uri="http://this/should/be/used",
                            instance_prefix="http://this/is/less/important/than/instance_uri")
         self.assertEquals(params["instance_uri"], "http://this/should/be/used")
+
+
+class PublicAPITestCase(TestCase):
+
+    def test_set_arguments_params(self):
+        handler = MockHandler(querystring='lang=en&expand_uri=1')
+        params = ParamDict(handler, lang='en', expand_uri='1')
+        self.assertEqual(params.arguments, {'lang': 'en', 'expand_uri': '1'})
+
+    def test_format_url_params(self):
+        handler = MockHandler(querystring='lang=en&expand_uri=1')
+        params = ParamDict(handler, lang='en', expand_uri='1')
+        computed = params.format_url_params(exclude_keys=['lang'])
+        self.assertEqual(computed, 'expand_uri=1')
 
 
 class SpecificParamsDictTestCase(TestCase):

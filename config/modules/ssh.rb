@@ -20,6 +20,23 @@ def ssh_connect(target_role)
 end
 
 namespace :ssh do
+
+    task :default do
+        tmp_roles = roles.clone
+        tmp_roles.delete(:filer) if tmp_roles.include?(:filer)
+
+        if tmp_roles.count == 1
+            target_role = tmp_roles.shift[0]
+            puts "Connecting to role " + target_role.to_s.upcase + "..."
+            ssh_connect(target_role)
+        else
+            puts <<-EOF
+                Este projeto possui mais de uma role. Por favor, especifique a role desejada.
+                Exemplo: cap <ambiente> ssh:<role>
+           EOF
+        end
+    end
+
     task :adm do
         ssh_connect(:adm)
     end

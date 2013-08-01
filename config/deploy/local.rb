@@ -3,9 +3,9 @@
 
 # Hosts
 set :barramento_baas_host,        'localhost'
-#set :filer_host,                  ''
+set :filer_host,                  ''
 set :redis_host,                  'localhost'
-#set :syslog_host,                 ''
+set :syslog_host,                 ''
 set :virtuoso_host,               'localhost'
 
 # Ports
@@ -20,7 +20,7 @@ set :puppetmaster_env,            'local'
 set :redis_password,              'ignored'
 
 # Directories
-#set :dbpasswd_dir,                ''
+set :dbpasswd_dir,                ''
 
 # Files
 set :log_filepath,                '/tmp/brainiak.log'

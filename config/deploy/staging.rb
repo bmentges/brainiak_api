@@ -6,14 +6,9 @@ set :barramento_baas_host,        'barramento.baas.globoi.com'
 set :filer_host,                  'riofb01a'
 set :redis_host,                  'redis.api.semantica.globoi.com'
 set :syslog_host,                 'syslog.tcp.glog.globoi.com'
-set :virtuoso_host,               'staging.semantica.globoi.com'
 
 # Ports
 set :redis_port,                  20015
-set :virtuoso_port,               8890
-
-# URLs
-set :virtuoso_url,                "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"
 
 # Variables
 set :puppetmaster_env,            'staging'

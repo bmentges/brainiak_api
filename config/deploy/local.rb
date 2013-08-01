@@ -6,14 +6,9 @@ set :barramento_baas_host,        'localhost'
 set :filer_host,                  ''
 set :redis_host,                  'localhost'
 set :syslog_host,                 ''
-set :virtuoso_host,               'localhost'
 
 # Ports
 set :redis_port,                  6379
-set :virtuoso_port,               8890
-
-# URLs
-set :virtuoso_url,                "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"
 
 # Variables
 set :puppetmaster_env,            'local'

@@ -8,34 +8,31 @@ import ujson as json
 from tornado.curl_httpclient import CurlError
 from tornado.httpclient import HTTPError as ClientHTTPError
 from tornado.web import HTTPError, RequestHandler, URLSpec
-from tornado_cors import custom_decorator
-from tornado_cors import CorsMixin
+from tornado_cors import CorsMixin, custom_decorator
 
 from brainiak import __version__, event_bus, triplestore, settings
-from brainiak.utils.cache import memoize
-from brainiak.log import get_logger
-from brainiak.event_bus import notify_bus, MiddlewareError
-from brainiak.greenlet_tornado import greenlet_asynchronous
+from brainiak.collection.get_collection import filter_instances
+from brainiak.collection.json_schema import schema as collection_schema
 from brainiak.context.get_context import list_classes
+from brainiak.context.json_schema import schema as context_schema
+from brainiak.event_bus import NotificationFailure, notify_bus, MiddlewareError
+from brainiak.greenlet_tornado import greenlet_asynchronous
 from brainiak.instance.create_instance import create_instance
 from brainiak.instance.delete_instance import delete_instance
 from brainiak.instance.edit_instance import edit_instance, instance_exists
 from brainiak.instance.get_instance import get_instance
-from brainiak.collection.get_collection import filter_instances
+from brainiak.log import get_logger
 from brainiak.prefix.get_prefixes import list_prefixes
 from brainiak.root.get_root import list_all_contexts
+from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
-from brainiak.utils.params import CACHE_PARAMS, ParamDict, InvalidParam, LIST_PARAMS, optionals, INSTANCE_PARAMS
-from brainiak.utils.params import CLASS_PARAMS, GRAPH_PARAMS, PAGING_PARAMS
+from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
-from brainiak.utils.resources import LazyObject
-from brainiak.utils.resources import check_messages_when_port_is_mentioned
+from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, optionals
+from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples
-from brainiak.event_bus import NotificationFailure
-from brainiak.root.json_schema import schema as root_schema
-from brainiak.context.json_schema import schema as context_schema
-from brainiak.collection.json_schema import schema as collection_schema
+
 
 logger = LazyObject(get_logger)
 

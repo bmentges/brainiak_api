@@ -7,7 +7,7 @@ def ssh_connect(target_role)
         exit 1
     end
 
-    csshbin = %x[whereis acssh bcsshX].split("\n").shift
+    csshbin = %x[whereis cssh csshX].split("\n").shift
     if roles[target_role].servers.length == 1
       run_local "ssh -l #{user} " + roles[target_role].servers.shift.to_s
     elsif not csshbin.nil? and not csshbin.empty?

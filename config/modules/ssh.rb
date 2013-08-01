@@ -1,6 +1,14 @@
 desc "SSH para os servidores do projeto"
 
-def ssh_connect(target_role)
+def ssh_connect(target_role,ssh_user=user)
+
+    if stage.eql?(:staging) or stage.eql?(:prod)
+        ssh_user = 'watcher'
+    end
+
+    if not ENV['usuario'].nil?
+        ssh_user = "#{ENV['usuario']}"
+    end
 
     if not roles.include?(target_role)
         puts "ERRO: A role '#{target_role}' não existe neste projeto."
@@ -9,12 +17,12 @@ def ssh_connect(target_role)
 
     csshbin = %x[whereis cssh csshX].split("\n").shift
     if roles[target_role].servers.length == 1
-      run_local "ssh -l #{user} " + roles[target_role].servers.shift.to_s
+      run_local "ssh -l #{ssh_user} " + roles[target_role].servers.shift.to_s
     elsif not csshbin.nil? and not csshbin.empty?
-      run_local "#{csshbin} -l #{user} " + roles[target_role].servers.join(' ')
+      run_local "#{csshbin} -l #{ssh_user} " + roles[target_role].servers.join(' ')
     else
       puts "Atenção: Não foi possível encontrar nenhum dos executáveis csshX ou cssh. O acesso será a apenas um dos servidores da role #{target_role}."
-      run_local "ssh -l #{user} " + roles[target_role].servers.shift.to_s
+      run_local "ssh -l #{ssh_user} " + roles[target_role].servers.shift.to_s
     end
 
 end

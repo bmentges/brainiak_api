@@ -1,6 +1,8 @@
-from mock import patch
 from unittest import TestCase
+
+from mock import patch
 from tornado.web import HTTPError
+
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids, LazyObject, validate_pagination_or_raise_404
 

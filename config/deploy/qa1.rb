@@ -6,14 +6,9 @@ set :barramento_baas_host,        'barramento.baas.qa01.globoi.com'
 set :filer_host,                  'riofd06'
 set :redis_host,                  'redis.qa01.globoi.com'
 set :syslog_host,                 'syslog.tcp.glog.qa01.globoi.com'
-set :virtuoso_host,               'qa1.virtuoso.globoi.com'
 
 # Ports
 set :redis_port,                  20015
-set :virtuoso_port,               8890
-
-# URLs
-set :virtuoso_url,                "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"
 
 # Variables
 set :puppetmaster_env,            'qa1'

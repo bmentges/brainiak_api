@@ -44,7 +44,7 @@ class MockSPARQLWrapper():
         pass
 
 
-class TestCaseStatus(unittest.TestCase):
+class TriplestoreTestCase(unittest.TestCase):
 
     def setUp(self):
         self.original_sparql_wrapper = SPARQLWrapper.SPARQLWrapper
@@ -95,29 +95,29 @@ class TestCaseStatus(unittest.TestCase):
         received_msg = triplestore.status("USER", "PASSWORD")
         self.assertTrue(received_msg.endswith("Mocked exception"))
 
-    @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT=None, SPARQL_ENDPOINT_HOST='HOST', SPARQL_ENDPOINT_PORT='PORT')
-    def test_endpoint_url_without_endpoint(self, settings):
-        response = triplestore.endpoint_url()
-        self.assertEqual(response, "HOST:PORT")
-
-    @patch('brainiak.triplestore.settings', SPARQL_ENDPOINT='ENDPOINT', SPARQL_ENDPOINT_HOST='HOST', SPARQL_ENDPOINT_PORT='PORT')
-    def test_endpoint_url_with_endpoint(self, settings):
-        response = triplestore.endpoint_url()
-        self.assertEqual(response, "ENDPOINT")
-
     @patch('brainiak.triplestore.run_query', side_effect=HTTPError(code=401))
     def test_query_sparql_with_http_error_401(self, run_query):
-        self.assertRaises(HTTPError, triplestore.query_sparql, "")
+        self.assertRaises(HTTPError, triplestore._query_sparql, "")
 
     @patch('brainiak.triplestore.run_query', side_effect=HTTPError(code=500))
     def test_query_sparql_with_http_error_500(self, run_query):
-        self.assertRaises(HTTPError, triplestore.query_sparql, "")
+        self.assertRaises(HTTPError, triplestore._query_sparql, "")
 
     @patch('brainiak.triplestore.run_query', side_effect=HTTPError(code=500))
     def test_query_sparql_with_http_error_500(self, run_query):
-        self.assertRaises(HTTPError, triplestore.query_sparql, "")
+        self.assertRaises(HTTPError, triplestore._query_sparql, "")
 
     @patch('brainiak.triplestore.run_query', return_value=MockResponse())
     def test_query_sparql_withouterror(self, run_query):
-        response = triplestore.query_sparql("")
+        response = triplestore._query_sparql("")
         self.assertEqual(response, {})
+
+    @patch('brainiak.triplestore.greenlet_fetch', return_value=MockResponse())
+    def test_query_sparql_with_valid_credential(self, greenlet_fetch):
+        response = triplestore.query_sparql("", credentials={"client_id": "default"})
+        self.assertEqual(greenlet_fetch.call_count, 1)
+        self.assertEqual(response, {})
+
+    @patch('brainiak.triplestore.greenlet_fetch', return_value=MockResponse())
+    def test_query_sparql_with_invalid_credential(self, greenlet_fetch):
+        self.assertRaises(Exception, triplestore.query_sparql, "", credentials={"client_id": "unknown"})

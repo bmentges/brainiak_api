@@ -1,19 +1,29 @@
 Future Releases
 ===============
 
-Version 2.1.0 - 2013/??/??
+Version 2.2.0 - 2013/??/??
 --------------------------
 
 New features
 ____________
 
  - Support to multiple triplestore endpoints.
- - New parameters for optional URI expansion in responses: exapnd_uri, expand_uri_keys and expand_uri_values.
- - Root schema now have direct hyperlinks to collection and instance.
 
 
 Releases
 ========
+
+
+Version 2.1.0 - 2013/08/01
+--------------------------
+
+New features
+____________
+
+ - New parameters for optional URI expansion in responses: exapnd_uri, expand_uri_keys and expand_uri_values.
+ - Root schema now have direct hyperlinks to collection and instance.
+ - Instances filter with PO ignores literals' type
+ - DOCs are now being deployed by default
 
 Version 2.0.0 - 2013/07/18
 --------------------------

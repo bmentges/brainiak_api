@@ -3,7 +3,7 @@ import re
 from tornado.web import HTTPError
 from brainiak.prefixes import expand_uri, is_compressed_uri, ROOT_CONTEXT
 from brainiak.utils.links import pagination_items
-from brainiak.settings import SPARQL_PORT, EVENT_BUS_PORT
+from brainiak.settings import EVENT_BUS_PORT
 
 
 class LazyObject(object):
@@ -16,7 +16,7 @@ class LazyObject(object):
 
 
 def check_messages_when_port_is_mentioned(source_message):
-    backends = {EVENT_BUS_PORT: 'ActiveMQ', SPARQL_PORT: 'Virtuoso'}
+    backends = {EVENT_BUS_PORT: 'ActiveMQ'}
     port_pattern = re.compile('(\d+)')
     result = []
     for i in port_pattern.findall(source_message):

@@ -57,7 +57,7 @@ class TriplestoreTestCase(unittest.TestCase):
         SPARQLWrapper.SPARQLWrapper.iteration = 0
         SPARQLWrapper.SPARQLWrapper.exception_iterations = []
 
-        received_msg = triplestore.status("USER", "PASSWORD")
+        received_msg = triplestore.status(user="USER", password="PASSWORD")
         msg1 = 'Virtuoso connection not-authenticated | SUCCEED | http://localhost:8890/sparql-auth'
         msg2 = 'Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | SUCCEED | http://localhost:8890/sparql-auth'
         expected_msg = "<br>".join([msg1, msg2])
@@ -66,7 +66,7 @@ class TriplestoreTestCase(unittest.TestCase):
     def test_without_auth_works_but_with_auth_doesnt(self):
         SPARQLWrapper.SPARQLWrapper.iteration = 0
         SPARQLWrapper.SPARQLWrapper.exception_iterations = [1]
-        received_msg = triplestore.status("USER", "PASSWORD")
+        received_msg = triplestore.status(user="USER", password="PASSWORD")
         msg1 = "Virtuoso connection not-authenticated | SUCCEED | http://localhost:8890/sparql-auth"
         msg2 = "Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | FAILED | http://localhost:8890/sparql-auth | ERROR 1"
         expected_msg = "<br>".join([msg1, msg2])
@@ -75,7 +75,7 @@ class TriplestoreTestCase(unittest.TestCase):
     def test_without_auth_doesnt_work_but_with_auth_works(self):
         SPARQLWrapper.SPARQLWrapper.iteration = 0
         SPARQLWrapper.SPARQLWrapper.exception_iterations = [0]
-        received_msg = triplestore.status("USER", "PASSWORD")
+        received_msg = triplestore.status(user="USER", password="PASSWORD")
         msg1 = "Virtuoso connection not-authenticated | FAILED | http://localhost:8890/sparql-auth | ERROR 0"
         msg2 = "Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | SUCCEED | http://localhost:8890/sparql-auth"
         expected_msg = "<br>".join([msg1, msg2])
@@ -84,7 +84,7 @@ class TriplestoreTestCase(unittest.TestCase):
     def test_both_without_auth_and_with_auth_dont_work(self):
         SPARQLWrapper.SPARQLWrapper.iteration = 0
         SPARQLWrapper.SPARQLWrapper.exception_iterations = [0, 1]
-        received_msg = triplestore.status("USER", "PASSWORD")
+        received_msg = triplestore.status(user="USER", password="PASSWORD")
         msg1 = "Virtuoso connection not-authenticated | FAILED | http://localhost:8890/sparql-auth | ERROR 0"
         msg2 = "Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | FAILED | http://localhost:8890/sparql-auth | ERROR 1"
         expected_msg = "<br>".join([msg1, msg2])
@@ -92,7 +92,7 @@ class TriplestoreTestCase(unittest.TestCase):
 
     @patch('brainiak.triplestore.SPARQLWrapper.SPARQLWrapper.query', side_effect=MockException())
     def test_status_default_exception_msg(self, mock_query):
-        received_msg = triplestore.status("USER", "PASSWORD")
+        received_msg = triplestore.status(user="USER", password="PASSWORD")
         self.assertTrue(received_msg.endswith("Mocked exception"))
 
     @patch('brainiak.triplestore.run_query', side_effect=HTTPError(code=401))

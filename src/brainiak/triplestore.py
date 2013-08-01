@@ -8,7 +8,7 @@ from tornado.httpclient import HTTPRequest, HTTPError
 from tornado.httputil import url_concat
 import ujson as json
 
-from brainiak import settings, log
+from brainiak import log
 from brainiak.greenlet_tornado import greenlet_fetch
 from brainiak.utils.config_parser import parse_section
 
@@ -75,11 +75,15 @@ class VirtuosoException(Exception):
     pass
 
 
-def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT_PASSWORD,
-           mode=settings.SPARQL_ENDPOINT_AUTH_MODE, realm=settings.SPARQL_ENDPOINT_REALM):
+def status(**kw):
+    endpoint_dict = parse_section()
+    user = kw.get("user") or endpoint_dict["auth_username"]
+    password = kw.get("password") or endpoint_dict["auth_password"]
+    mode = kw.get("mode") or endpoint_dict["auth_mode"]
+    url = kw.get("url") or endpoint_dict["url"]
 
     query = "SELECT COUNT(*) WHERE {?s a owl:Class}"
-    endpoint = SPARQLWrapper.SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    endpoint = SPARQLWrapper.SPARQLWrapper(url)
     endpoint.addDefaultGraph("http://semantica.globo.com/person")
     endpoint.setQuery(query)
 
@@ -88,7 +92,7 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
 
     info = {
         "type": "not-authenticated",
-        "endpoint": settings.SPARQL_ENDPOINT
+        "endpoint": url
     }
 
     try:
@@ -108,10 +112,10 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
     password_md5 = md5.new(password).digest()
     info = {
         "type": "authenticated [%s:%s]" % (user, password_md5),
-        "endpoint": settings.SPARQL_ENDPOINT
+        "endpoint": url
     }
 
-    endpoint.setCredentials(user, password, mode=mode, realm=realm)
+    endpoint.setCredentials(user, password, mode=mode, realm="SPARQL")
 
     try:
         response = endpoint.query()

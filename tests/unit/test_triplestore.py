@@ -119,11 +119,3 @@ class TriplestoreTestCase(unittest.TestCase):
         response = triplestore.query_sparql("", triplestore_config)
         self.assertEqual(greenlet_fetch.call_count, 1)
         self.assertEqual(response, {})
-
-    @patch('brainiak.triplestore.greenlet_fetch', return_value=MockResponse())
-    def test_query_sparql_with_invalid_credential(self, greenlet_fetch):
-        wrong_triplestore_config = triplestore_config.copy()
-        wrong_triplestore_config['auth_username'] = 'inexistent_user'
-        wrong_triplestore_config['auth_password'] = 'inexistent_pwd'
-        self.assertRaises(Exception, triplestore.query_sparql, "", wrong_triplestore_config)
-        # TODO: this must be tested in integration tests, withut mocking greenlet_fetch

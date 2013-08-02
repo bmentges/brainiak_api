@@ -15,7 +15,7 @@ class MockedTestCase(unittest.TestCase):
     @patch('brainiak.utils.sparql.filter_values', return_value=[])
     @patch('brainiak.root.get_root.filter_and_build_contexts', return_value=[])
     def test_raises_http_error(self, mock1, mock2, mock3):
-        self.assertRaises(HTTPError, list_all_contexts, Params())
+        self.assertRaises(HTTPError, list_all_contexts, Params({}))
 
     @patch('brainiak.triplestore.query_sparql')
     @patch('brainiak.utils.sparql.filter_values', return_value=[])

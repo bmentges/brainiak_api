@@ -33,8 +33,7 @@ def list_all_contexts(query_params):
         raise HTTPError(404, log_message="No contexts were found.")
 
     json = {
-        'id': self_url(query_params),
-        '_base_url': params.base_url,
+        '_base_url': query_params.base_url,
         'items': contexts
     }
 

@@ -14,23 +14,14 @@ from brainiak.greenlet_tornado import greenlet_fetch
 from brainiak.utils.config_parser import parse_section
 
 
-def query_sparql(query, *args, **kw):
-    # will send the request to the triplestore, using endpoint_dict
-    credentials = kw.get("credentials", {"client_id": "default"})
-    endpoint_dict = parse_section(section=credentials["client_id"])
-    endpoint_dict.pop("app_name")
-    kw["endpoint_dict"] = endpoint_dict
-    return _query_sparql(query, *args, **kw)
-
-
-def _query_sparql(query, *args, **kw):
+def query_sparql(query, query_params):
     """
     Simple interface that given a SPARQL query string returns a string representing a SPARQL results bindings
     in JSON format. For now it only works with Virtuoso, but in futurw we intend to support other databases
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
     try:
-        query_response = run_query(query, *args, **kw)
+        query_response = run_query(query, query_params)
     except ClientHTTPError as e:
         if e.code == 401:
             message = 'Check triplestore user and password.'
@@ -42,10 +33,10 @@ def _query_sparql(query, *args, **kw):
     return result_dict
 
 # This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works
-format = "POST - %(url)s - %(user_ip)s - %(auth_username)s [tempo: %(time_diff)s] - QUERY - %(query)s"
+format_post = "POST - %(url)s - %(user_ip)s - %(auth_username)s [tempo: %(time_diff)s] - QUERY - %(query)s"
 
 
-def run_query(query, *args, **kw):
+def run_query(query, query_params):
     params = {
         "query": unicode(query).encode("utf-8"),
         "format": "application/sparql-results+json"
@@ -57,7 +48,11 @@ def run_query(query, *args, **kw):
         "headers": {"Content-Type": "application/x-www-form-urlencoded"},
         "body": body
     }
-    request_params = dict(request_params.items(), **kw.get('endpoint_dict', {}))
+
+    request_params.update(query_params.triplestore_config)
+    # app_name (from triplestore.ini) must NOT be passed forward into the effective request
+    request_params.pop("app_name")
+
     request = HTTPRequest(**request_params)
     time_i = time.time()
     response = greenlet_fetch(request)
@@ -66,7 +61,7 @@ def run_query(query, *args, **kw):
     request_params["time_diff"] = time_f - time_i
     request_params["query"] = query
     request_params["user_ip"] = str(None)
-    log_msg = format % request_params
+    log_msg = format_post % request_params
     log.logger.info(log_msg)
 
     return response

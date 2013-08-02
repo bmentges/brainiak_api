@@ -24,9 +24,9 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
 
     @greenlet_tornado.greenlet_test
     def test_not_authenticated_access_to_authenticated_endpoint(self):
-        modified_dict = dict(endpoint_dict.items())
+        modified_dict = triplestore_config.copy()
         modified_dict["auth_username"] = 'inexistent'
-        self.assertRaises(HTTPError, triplestore.run_query, SIMPLE_COUNT_CLASSES_QUERY, triplestore_config)
+        self.assertRaises(HTTPError, triplestore.run_query, SIMPLE_COUNT_CLASSES_QUERY, modified_dict)
 
     @patch("brainiak.triplestore.greenlet_fetch", return_value=None)
     @patch("brainiak.triplestore.log.logger.info")

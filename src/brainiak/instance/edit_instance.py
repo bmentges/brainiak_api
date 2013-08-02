@@ -21,7 +21,12 @@ def edit_instance(query_params, instance_data):
     prefixes = instance_data.get("@context", {})
     string_prefixes = join_prefixes(prefixes)
 
-    response = modify_instance(string_triples, instance_uri, graph_uri, string_prefixes)
+    query_params.update({
+        "triples": string_triples,
+        "prefix": string_prefixes
+    })
+
+    response = modify_instance(query_params)
     if not is_modify_response_successful(response):
         raise HTTPError(500, log_message="Triplestore could not update triples.")
 
@@ -38,13 +43,8 @@ WHERE
 """
 
 
-def modify_instance(triples, instance_uri, graph_uri, string_prefixes):
-    query = MODIFY_QUERY % {
-        "triples": triples,
-        "instance_uri": instance_uri,
-        "graph_uri": graph_uri,
-        "prefix": string_prefixes
-    }
+def modify_instance(query_params):
+    query = MODIFY_QUERY % query_params
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 

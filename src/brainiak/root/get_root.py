@@ -3,7 +3,7 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql
-from brainiak.utils.links import split_into_chunks, self_url
+from brainiak.utils.links import split_into_chunks
 from brainiak.utils.resources import decorate_dict_with_pagination
 
 # Note that pagination was done outside the query
@@ -34,6 +34,7 @@ def list_all_contexts(query_params):
 
     json = {
         'id': self_url(query_params),
+        '_base_url': params.base_url,
         'items': contexts
     }
 

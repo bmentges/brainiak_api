@@ -31,8 +31,12 @@ def current_time():
     return formatdate(timeval=None, localtime=True)
 
 
-def fresh_retrieve(function, params):
-    body = function(params)
+def _fresh_retrieve(function, params):
+    if params is not None:
+        body = function(params)
+    else:
+        body = function()
+
     fresh_json = {
         "body": body,
         "meta": {
@@ -43,19 +47,19 @@ def fresh_retrieve(function, params):
     return fresh_json
 
 
-def memoize(function, params):
+def memoize(params, function, function_arguments=None):
     if settings.ENABLE_CACHE:
         url = params['request'].uri
         cached_json = retrieve(url)
         if (cached_json is None) or (params.get('purge') == '1'):
-            fresh_json = fresh_retrieve(function, params)
+            fresh_json = _fresh_retrieve(function, function_arguments)
             create(url, ujson.dumps(fresh_json))
             return fresh_json
         else:
             cached_json["meta"]["cache"] = "HIT"
             return cached_json
     else:
-        return fresh_retrieve(function, params)
+        return _fresh_retrieve(function, function_arguments)
 
 
 def safe_redis(function):

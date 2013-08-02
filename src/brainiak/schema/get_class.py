@@ -41,7 +41,7 @@ def assemble_schema_dict(query_params, normalized_uri, title, predicates, contex
     links = [
         {
             'rel': "self",
-            'href': base_url + '/{_resource_id}',  # TODO: Adicionar aqui outros parâmetros
+            'href': "{+_base_url}",
             'method': "GET"
         },
         {

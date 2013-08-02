@@ -70,7 +70,7 @@ class TestCaseInstanceResource(unittest.TestCase):
         class Params(dict):
             triplestore_config = {}
 
-        params = Params()
+        params = Params({})
         params.update({
             "instance_uri": "instance_uri",
             "class_uri": "class_uri",

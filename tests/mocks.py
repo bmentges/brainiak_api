@@ -90,5 +90,9 @@ class MockHandler():
             def uri(inner_self):
                 return self._uri
 
+            @property
+            def headers(inner_self):
+                return {}
+
         d = Dummy()
         return d

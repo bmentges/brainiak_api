@@ -50,7 +50,7 @@ def schema(context_name, class_name, class_prefix):
         },
         "links": [
             {
-                "href": "{+id}",
+                "href": "{+_base_url}",
                 "method": "GET",
                 "rel": "self"
             },

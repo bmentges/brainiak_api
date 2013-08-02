@@ -197,13 +197,13 @@ class Query(object):
 
 def query_filter_instances(query_params):
     query = Query(query_params).to_string()
-    query_response = triplestore.query_sparql(query)
+    query_response = triplestore.query_sparql(query, query_params.triplestore_config)
     return query_response
 
 
 def query_count_filter_instances(query_params):
     query = Query(query_params).to_string(count=True)
-    query_response = triplestore.query_sparql(query)
+    query_response = triplestore.query_sparql(query, query_params.triplestore_config)
     return query_response
 
 

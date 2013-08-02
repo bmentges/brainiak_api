@@ -14,14 +14,14 @@ from brainiak.greenlet_tornado import greenlet_fetch
 from brainiak.utils.config_parser import parse_section
 
 
-def query_sparql(query, query_params):
+def query_sparql(query, triplestore_config):
     """
     Simple interface that given a SPARQL query string returns a string representing a SPARQL results bindings
     in JSON format. For now it only works with Virtuoso, but in futurw we intend to support other databases
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
     try:
-        query_response = run_query(query, query_params)
+        query_response = run_query(query, triplestore_config)
     except ClientHTTPError as e:
         if e.code == 401:
             message = 'Check triplestore user and password.'
@@ -36,7 +36,7 @@ def query_sparql(query, query_params):
 format_post = "POST - %(url)s - %(user_ip)s - %(auth_username)s [tempo: %(time_diff)s] - QUERY - %(query)s"
 
 
-def run_query(query, query_params):
+def run_query(query, triplestore_config):
     params = {
         "query": unicode(query).encode("utf-8"),
         "format": "application/sparql-results+json"
@@ -49,8 +49,9 @@ def run_query(query, query_params):
         "body": body
     }
 
-    request_params.update(query_params.triplestore_config)
-    # app_name (from triplestore.ini) must NOT be passed forward into the effective request
+    request_params.update(triplestore_config)
+    # app_name (from triplestore.ini) can't be passed forward to HTTPRequest
+    # it raises exception
     request_params.pop("app_name")
 
     request = HTTPRequest(**request_params)

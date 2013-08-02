@@ -30,7 +30,7 @@ def query_dependants(instance_uri):
     query = QUERY_DEPENDANTS_TEMPLATE % {
         "instance_uri": instance_uri
     }
-    result_dict = triplestore.query_sparql(query)
+    result_dict = triplestore.query_sparql(query, query_params.triplestore_config)
     return result_dict
 
 
@@ -47,5 +47,5 @@ def query_delete(graph_uri, instance_uri):
         "graph_uri": graph_uri,
         "instance_uri": instance_uri
     }
-    result_dict = triplestore.query_sparql(query)
+    result_dict = triplestore.query_sparql(query, query_params.triplestore_config)
     return result_dict

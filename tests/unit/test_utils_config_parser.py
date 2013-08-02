@@ -1,6 +1,6 @@
 from unittest import TestCase
 from mock import patch
-from brainiak.utils.config_parser import parse_section
+from brainiak.utils.config_parser import ConfigParserNoSectionError, parse_section
 
 
 class ConfigParserTestCase(TestCase):
@@ -29,4 +29,4 @@ class ConfigParserTestCase(TestCase):
         self.assertEqual(response, expected_response)
 
     def test_parse_inexistent_section(self):
-        self.assertRaises(Exception, parse_section, "xubiru")
+        self.assertRaises(ConfigParserNoSectionError, parse_section, "xubiru")

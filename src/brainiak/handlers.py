@@ -132,6 +132,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
                 message = str(e)
                 logger.error(message)
                 self.send_error(status_code, message=message)
+            #FIXME: log when e.code= 401
 
         elif isinstance(e, HTTPError):
             if e.log_message:

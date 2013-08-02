@@ -55,7 +55,7 @@ FROM <%(graph_uri)s>
 
 def query_count_classes(query_params):
     query = QUERY_COUNT_ALL_CLASSES_OF_A_GRAPH % query_params
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 QUERY_ALL_CLASSES_OF_A_GRAPH = """
@@ -76,4 +76,4 @@ def query_classes_list(query_params):
     query_params['offset'] = offset
     query = QUERY_ALL_CLASSES_OF_A_GRAPH % query_params
     del query_params['offset']
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)

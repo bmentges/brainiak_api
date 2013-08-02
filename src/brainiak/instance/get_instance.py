@@ -87,4 +87,4 @@ FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")
 def query_all_properties_and_objects(query_params):
     query_params["ruleset"] = settings.DEFAULT_RULESET_URI
     query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % query_params
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)

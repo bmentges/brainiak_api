@@ -17,7 +17,7 @@ WHERE {GRAPH ?graph { ?s a ?o }}
 
 
 def list_all_contexts(params):
-    sparql_response = triplestore.query_sparql(QUERY_LIST_CONTEXT)
+    sparql_response = triplestore.query_sparql(QUERY_LIST_CONTEXT, query_params.triplestore_config)
     all_contexts_uris = sparql.filter_values(sparql_response, "graph")
 
     filtered_contexts = filter_and_build_contexts(all_contexts_uris)

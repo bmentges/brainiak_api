@@ -4,8 +4,9 @@ import time
 import urllib
 
 import SPARQLWrapper
-from tornado.httpclient import HTTPRequest, HTTPError
-from tornado.httputil import url_concat
+from tornado.httpclient import HTTPRequest
+from tornado.httpclient import HTTPError as ClientHTTPError
+from tornado.web import HTTPError
 import ujson as json
 
 from brainiak import log
@@ -30,12 +31,12 @@ def _query_sparql(query, *args, **kw):
     """
     try:
         query_response = run_query(query, *args, **kw)
-    except HTTPError as e:
+    except ClientHTTPError as e:
         if e.code == 401:
             message = 'Check triplestore user and password.'
-            raise HTTPError(e.code, message=message)
         else:
-            raise
+            message = e.message
+        raise HTTPError(e.code, message=message)
 
     result_dict = json.loads(query_response.body)
     return result_dict

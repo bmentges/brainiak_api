@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-import httplib
 import sys
 import traceback
 from contextlib import contextmanager
 
 import ujson as json
 from tornado.curl_httpclient import CurlError
-from tornado.httpclient import HTTPError as ClientHTTPError
 from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import CorsMixin, custom_decorator
 
@@ -105,7 +103,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             self.request.method, self.request.host, self.request.remote_ip)
 
     def _handle_request_exception(self, e):
-        if hasattr(e, "status_code") and e.status_code in httplib.responses:
+        if hasattr(e, "status_code"):  # and e.code in httplib.responses:
             status_code = e.status_code
         else:
             status_code = 500
@@ -126,13 +124,6 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
 
             logger.error(message)
             self.send_error(status_code, message=message)
-
-        if isinstance(e, ClientHTTPError):
-            if e.code == 401:
-                message = str(e)
-                logger.error(message)
-                self.send_error(status_code, message=message)
-            #FIXME: log when e.code= 401
 
         elif isinstance(e, HTTPError):
             if e.log_message:

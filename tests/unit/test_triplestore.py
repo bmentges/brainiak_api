@@ -2,7 +2,7 @@
 import unittest
 from mock import patch
 
-from tornado.httpclient import HTTPError, HTTPResponse
+from tornado.web import HTTPError
 
 from brainiak import triplestore
 import SPARQLWrapper
@@ -95,15 +95,15 @@ class TriplestoreTestCase(unittest.TestCase):
         received_msg = triplestore.status(user="USER", password="PASSWORD")
         self.assertTrue(received_msg.endswith("Mocked exception"))
 
-    @patch('brainiak.triplestore.run_query', side_effect=HTTPError(code=401))
+    @patch('brainiak.triplestore.run_query', side_effect=HTTPError(401))
     def test_query_sparql_with_http_error_401(self, run_query):
         self.assertRaises(HTTPError, triplestore._query_sparql, "")
 
-    @patch('brainiak.triplestore.run_query', side_effect=HTTPError(code=500))
+    @patch('brainiak.triplestore.run_query', side_effect=HTTPError(500))
     def test_query_sparql_with_http_error_500(self, run_query):
         self.assertRaises(HTTPError, triplestore._query_sparql, "")
 
-    @patch('brainiak.triplestore.run_query', side_effect=HTTPError(code=500))
+    @patch('brainiak.triplestore.run_query', side_effect=HTTPError(500))
     def test_query_sparql_with_http_error_500(self, run_query):
         self.assertRaises(HTTPError, triplestore._query_sparql, "")
 

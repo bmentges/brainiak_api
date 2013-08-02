@@ -1,0 +1,13 @@
+@prefix dct: <http://purl.org/dc/terms/> .  
+@prefix : <http://dados.globo.com/validation/> .    
+
+:isPartOf a owl:ObjectProperty ,
+            owl:TransitiveProperty ;
+          owl:equivalentProperty dct:isPartOf ;
+          rdfs:domain :Entity ;
+          rdfs:range :Entity ;
+
+:partOfState a owl:ObjectProperty ;
+             rdfs:subPropertyOf :isPartOf ;
+             rdfs:domain :City ;
+             rdfs:range :Place ;

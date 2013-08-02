@@ -285,7 +285,7 @@ def build_json(items_list, query_params):
     json = {
         '_schema_url': schema_url,
         '_class_prefix': query_params['class_prefix'],
-        'id': self_url(query_params),
+        '_base_url': query_params.base_url,
         'items': items_list,
         "@context": {"@language": query_params.get("lang")}
     }

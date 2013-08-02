@@ -77,7 +77,6 @@ class TestCaseInstanceResource(unittest.TestCase):
             "lang": "en"
         })
 
-
         computed = get_instance.query_all_properties_and_objects(params)
         expected = """
             DEFINE input:inference <http://semantica.globo.com/ruleset>

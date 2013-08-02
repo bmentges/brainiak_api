@@ -6,8 +6,9 @@ from brainiak.context import get_context
 from brainiak import greenlet_tornado
 from brainiak.utils.sparql import compress_keys_and_values
 
-from tests.tornado_cases import TornadoAsyncHTTPTestCase
+from tests.mocks import Params
 from tests.sparql import QueryTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
 class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
@@ -89,13 +90,13 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             {u'class': u'http://example.onto/Lugar', u'label': u'Lugar'},
             {u'class': u'http://example.onto/Place', u'label': u'Lugar'},
             {u'class': u'http://example.onto/City', u'label': u'Cidade'}]
-        query_params = {
+        query_params = Params({
             "graph_uri": self.graph_uri,
             "lang": "pt",
             "page": 0,
             "per_page": 10,
             'lang_filter_label': '\n    FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .\n'
-        }
+        })
         response = get_context.query_classes_list(query_params)
         compressed_response = compress_keys_and_values(response)
         self.assertItemsEqual(expected_classes, compressed_response)

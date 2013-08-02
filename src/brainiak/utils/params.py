@@ -3,7 +3,7 @@ from copy import copy
 from urllib import urlencode
 from urlparse import unquote, parse_qs
 
-from tornado.httpclient import HTTPError
+from tornado.web import HTTPError
 
 from brainiak import settings
 from brainiak.prefixes import safe_slug_to_prefix
@@ -79,7 +79,9 @@ class ParamDict(dict):
         dict.__init__(self)
         # preserve the order below, defaults are overriden first
         request = self["request"] = handler.request
-        self.check_authentication(request)
+
+        self.triplestore_config = None
+        self._set_triplestore_config(request)
 
         self.arguments = self._make_arguments_dict()
 
@@ -122,12 +124,12 @@ class ParamDict(dict):
         self._override_with(handler)
         self._post_override()
 
-    def check_authentication(self, request):
+    def _set_triplestore_config(self, request):
         auth_client_id = request.headers.get('X-Brainiak-Client-Id', 'default')
         try:
-            endpoint_dict = parse_section(section=auth_client_id)
+            self.triplestore_config = parse_section(section=auth_client_id)
         except ConfigParserNoSectionError:
-            raise HTTPError(401, "Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id))
+            raise HTTPError(404, "Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id))
 
     def _make_arguments_dict(self):
         query_string = unquote(self["request"].query)

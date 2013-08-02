@@ -16,7 +16,7 @@ WHERE {GRAPH ?graph { ?s a ?o }}
 """
 
 
-def list_all_contexts(params):
+def list_all_contexts(query_params):
     sparql_response = triplestore.query_sparql(QUERY_LIST_CONTEXT, query_params.triplestore_config)
     all_contexts_uris = sparql.filter_values(sparql_response, "graph")
 
@@ -24,8 +24,8 @@ def list_all_contexts(params):
     if not filtered_contexts:
         raise HTTPError(404, log_message="No contexts were found.")
 
-    page_index = int(params["page"])
-    per_page = int(params["per_page"])
+    page_index = int(query_params["page"])
+    per_page = int(query_params["per_page"])
     contexts_pages = split_into_chunks(filtered_contexts, per_page)
     try:
         contexts = contexts_pages[page_index]
@@ -33,13 +33,13 @@ def list_all_contexts(params):
         raise HTTPError(404, log_message="No contexts were found.")
 
     json = {
-        'id': self_url(params),
+        'id': self_url(query_params),
         'items': contexts
     }
 
     def calculate_total_items():
         return len(filtered_contexts)
-    decorate_dict_with_pagination(json, params, calculate_total_items)
+    decorate_dict_with_pagination(json, query_params, calculate_total_items)
 
     return json
 

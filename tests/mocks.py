@@ -111,4 +111,8 @@ class MockHandler():
 
 
 class Params(dict):
-    triplestore_config = {}
+
+    def __init__(self, params):
+        self.triplestore_config = {}
+        self.update(params)
+

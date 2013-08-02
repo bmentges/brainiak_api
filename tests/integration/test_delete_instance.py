@@ -52,8 +52,7 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
         triplestore.query_sparql = self.original_query_sparql
 
     def test_dependants_query(self):
-        params = Params()
-        params.update({
+        params = Params({
             "graph_uri": self.graph_uri,
             "instance_uri": "http://tatipedia.org/Australia"
         })
@@ -66,8 +65,7 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
             self.assertIn(item, response_bindings)
 
     def test_delete_query(self):
-        params = Params()
-        params.update({
+        params = Params({
             "graph_uri": self.graph_uri,
             "instance_uri": "http://tatipedia.org/Platypus"
         })
@@ -79,24 +77,21 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
         self.assertEqual(response, expected)
 
     def test_delete_instance_with_dependendants(self):
-        params = Params()
-        params.update({
+        params = Params({
             "graph_uri": self.graph_uri,
             "instance_uri": "http://tatipedia.org/Australia"
         })
         self.assertRaises(HTTPError, delete_instance, params)
 
     def test_delete_instance_successful(self):
-        params = Params()
-        params.update({
+        params = Params({
             "graph_uri": self.graph_uri,
             "instance_uri": "http://tatipedia.org/Platypus"
         })
         self.assertTrue(delete_instance(params))
 
     def test_delete_instance_unsuccessful(self):
-        params = Params()
-        params.update({
+        params = Params({
             "graph_uri": self.graph_uri,
             "instance_uri": "http://tatipedia.org/NonExistentURI"
         })

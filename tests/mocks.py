@@ -110,3 +110,5 @@ class MockHandler():
         return d
 
 
+class Params(dict):
+    triplestore_config = {}

@@ -15,7 +15,7 @@ class TestRootJsonSchema(unittest.TestCase):
     def test_list_contexts(self):
         computed_schema = root_schema()
         expected_links = [
-            {'href': '{+id}', 'method': 'GET', 'rel': 'self'},
+            {'href': '{+_base_url}', 'method': 'GET', 'rel': 'self'},
             {'href': '/?page=1&per_page={per_page}&do_item_count={do_item_count}', 'method': 'GET', 'rel': 'first'},
             {
                 'href': '/?page={last_page}&per_page={per_page}&do_item_count={do_item_count}',

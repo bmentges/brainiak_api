@@ -11,7 +11,7 @@ def schema():
         "properties": {
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
-            "id": {"type": "string", "format": "uri"},
+            "base_url": {"type": "string", "format": "uri"},
             "items": {
                 "type": "array",
                 "items": {
@@ -38,7 +38,7 @@ def schema():
         },
         "links": [
             {
-                "href": "{+id}",
+                "href": "{+_base_url}",
                 "method": "GET",
                 "rel": "self"
             },

@@ -29,7 +29,7 @@ def assemble_list_json(query_params, query_result_dict):
     context_section.update({"@language": query_params.get("lang")})
 
     json_dict = {
-        'id': self_url(query_params),
+        '_base_url': query_params.base_url,
         'items': items_list,
         '@context': context_section
     }

@@ -176,8 +176,15 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
 
 class RootJsonSchemaHandler(BrainiakRequestHandler):
 
+    SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
+
     def get(self):
-        self.finalize(root_schema())
+        valid_params = CACHE_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, **valid_params)
+        response = memoize(self.query_params, root_schema)
+        self.add_cache_headers(response['meta'])
+        self.finalize(response['body'])
 
 
 class RootHandler(BrainiakRequestHandler):
@@ -189,7 +196,9 @@ class RootHandler(BrainiakRequestHandler):
         valid_params = PAGING_PARAMS + CACHE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
-        response = memoize(list_all_contexts, self.query_params)
+        response = memoize(self.query_params,
+                           list_all_contexts,
+                           function_arguments=self.query_params)
         self.add_cache_headers(response['meta'])
         self.finalize(response['body'])
 

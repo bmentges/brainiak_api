@@ -34,8 +34,7 @@ class TestBuildSchema(unittest.TestCase):
         self.assertEqual(expected, computed)
 
     def test_self_url_no_host(self):
-        request = MagicMock(uri='/', host='127.0.0.1', protocol='https')
-        handler = MagicMock(request=request)
+        handler = MockHandler(uri="https://127.0.0.1/")
         query_params = ParamDict(handler)
         computed = self_url(query_params)
         expected = 'https://127.0.0.1/'

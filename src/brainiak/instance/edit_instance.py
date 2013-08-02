@@ -45,7 +45,7 @@ def modify_instance(triples, instance_uri, graph_uri, string_prefixes):
         "graph_uri": graph_uri,
         "prefix": string_prefixes
     }
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 QUERY_INSTANCE_EXISTS_TEMPLATE = """
@@ -59,5 +59,5 @@ WHERE {
 
 def instance_exists(query_params):
     query = QUERY_INSTANCE_EXISTS_TEMPLATE % query_params
-    result_dict = triplestore.query_sparql(query)
+    result_dict = triplestore.query_sparql(query, query_params.triplestore_config)
     return is_result_true(result_dict)

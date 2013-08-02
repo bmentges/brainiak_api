@@ -37,4 +37,4 @@ INSERT DATA INTO <%(graph_uri)s>
 
 def query_create_instances(triples, prefix, graph_uri):
     query = QUERY_INSERT_TRIPLES % {"triples": triples, "prefix": prefix, "graph_uri": graph_uri}
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)

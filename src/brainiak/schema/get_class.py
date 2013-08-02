@@ -98,7 +98,7 @@ def build_class_schema_query(params):
 
 def query_class_schema(query_params):
     query = build_class_schema_query(query_params)
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 def get_predicates_and_cardinalities(context, query_params):
@@ -161,7 +161,7 @@ WHERE {
 
 def query_cardinalities(query_params):
     query = QUERY_CARDINALITIES % query_params
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 def query_predicates(query_params):
@@ -216,7 +216,7 @@ def _query_predicate_with_lang(query_params):
     query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
 
     query = QUERY_PREDICATE_WITH_LANG % query_params
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 QUERY_PREDICATE_WITHOUT_LANG = """
@@ -254,7 +254,7 @@ WHERE {
 def _query_predicate_without_lang(query_params):
     query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
     query = QUERY_PREDICATE_WITHOUT_LANG % query_params
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 def query_superclasses(query_params):
@@ -274,7 +274,7 @@ WHERE {
 
 def _query_superclasses(query_params):
     query = QUERY_SUPERCLASS % query_params
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 def items_from_range(context, range_uri):

@@ -7,7 +7,7 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 import SPARQLWrapper
 from brainiak.utils.params import ParamDict
-from tests.mocks import MockHandler
+from tests.mocks import triplestore_config
 
 
 class MockException(Exception):
@@ -116,12 +116,14 @@ class TriplestoreTestCase(unittest.TestCase):
 
     @patch('brainiak.triplestore.greenlet_fetch', return_value=MockResponse())
     def test_query_sparql_with_valid_credential(self, greenlet_fetch):
-        handler = MockHandler()
-        params = ParamDict(handler)
-        response = triplestore.query_sparql("", params)
+        response = triplestore.query_sparql("", triplestore_config)
         self.assertEqual(greenlet_fetch.call_count, 1)
         self.assertEqual(response, {})
 
     @patch('brainiak.triplestore.greenlet_fetch', return_value=MockResponse())
     def test_query_sparql_with_invalid_credential(self, greenlet_fetch):
-        self.assertRaises(Exception, triplestore.query_sparql, "", credentials={"client_id": "unknown"})
+        wrong_triplestore_config = triplestore_config.copy()
+        wrong_triplestore_config['auth_username'] = 'inexistent_user'
+        wrong_triplestore_config['auth_password'] = 'inexistent_pwd'
+        self.assertRaises(Exception, triplestore.query_sparql, "", wrong_triplestore_config)
+        # TODO: this must be tested in integration tests, withut mocking greenlet_fetch

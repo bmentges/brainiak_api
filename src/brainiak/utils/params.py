@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
-from urlparse import unquote, parse_qs
-from urllib import urlencode
 from copy import copy
+from urllib import urlencode
+from urlparse import unquote, parse_qs
+
+from tornado.httpclient import HTTPError
+
 from brainiak import settings
 from brainiak.prefixes import safe_slug_to_prefix
 from brainiak.utils.sparql import PATTERN_O, PATTERN_P
+from brainiak.utils.config_parser import ConfigParserNoSectionError, parse_section
 
 
 class InvalidParam(Exception):
@@ -75,6 +79,7 @@ class ParamDict(dict):
         dict.__init__(self)
         # preserve the order below, defaults are overriden first
         request = self["request"] = handler.request
+        self.check_authentication(request)
 
         self.arguments = self._make_arguments_dict()
 
@@ -116,6 +121,13 @@ class ParamDict(dict):
         # Override params with arguments passed in the handler's request object
         self._override_with(handler)
         self._post_override()
+
+    def check_authentication(self, request):
+        auth_client_id = request.headers.get('X-Brainiak-Client-Id', 'default')
+        try:
+            endpoint_dict = parse_section(section=auth_client_id)
+        except ConfigParserNoSectionError:
+            raise HTTPError(401, "Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id))
 
     def _make_arguments_dict(self):
         query_string = unquote(self["request"].query)

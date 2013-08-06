@@ -1,8 +1,7 @@
 import unittest
 
 import redis
-
-from mock import MagicMock, patch
+from mock import patch
 
 from brainiak.utils.cache import CacheError, connect, memoize, ping, safe_redis, status
 from tests.mocks import MockRequest
@@ -30,13 +29,31 @@ class MemoizeTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
     def test_memoize_cache_disabled(self, strict_redis, redis_get, redis_set, settings):
 
-        def clean_up(params):
+        def clean_up():
             return {"status": "Laundry done"}
 
         params = {'request': MockRequest(uri="/home")}
-        answer = memoize(clean_up, params)
+        answer = memoize(params, clean_up)
 
         self.assertEqual(answer["body"], {"status": "Laundry done"})
+        self.assertTrue(answer["meta"])
+        self.assertEqual(redis_get.call_count, 0)
+        self.assertEqual(redis_set.call_count, 0)
+
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=False)
+    @patch("brainiak.utils.cache.create")
+    @patch("brainiak.utils.cache.retrieve")
+    @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
+    def test_memoize_cache_disabled_delegatee_receive_params(self, strict_redis, redis_get, redis_set, settings):
+
+        def clean_up(param_value):
+            return {"status": param_value}
+
+        params = {'request': MockRequest(uri="/home")}
+        param_to_clean_up = 'It was received by the wrapped function'
+        answer = memoize(params, clean_up, function_arguments=param_to_clean_up)
+
+        self.assertEqual(answer["body"], {"status": param_to_clean_up})
         self.assertTrue(answer["meta"])
         self.assertEqual(redis_get.call_count, 0)
         self.assertEqual(redis_set.call_count, 0)
@@ -48,11 +65,11 @@ class MemoizeTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
     def test_memoize_cache_enabled_but_without_cache(self, strict_redis, redis_get, redis_set, settings, isoformat):
 
-        def clean_up(params):
+        def clean_up():
             return {"status": "Laundry done"}
 
         params = {'request': MockRequest(uri="/home")}
-        answer = memoize(clean_up, params)
+        answer = memoize(params, clean_up)
 
         expected = {
             'body': {"status": "Laundry done"},
@@ -71,11 +88,11 @@ class MemoizeTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
     def test_memoize_cache_enabled_but_miss(self, strict_redis, redis_get, redis_set, settings):
 
-        def clean_up(params):
+        def clean_up():
             return {"status": "Laundry done"}
 
         params = {'request': MockRequest(uri="/home")}
-        answer = memoize(clean_up, params)
+        answer = memoize(params, clean_up)
 
         self.assertEqual(answer, {"status": "Dishes cleaned up", "meta": {"cache": "HIT"}})
         self.assertEqual(redis_get.call_count, 1)

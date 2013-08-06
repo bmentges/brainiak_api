@@ -1,21 +1,29 @@
-role :be,                   'cittavld44.globoi.com'
-role :filer,                'filer.dev.globoi.com'
+#role :be,                         ''
+#role :filer,                      ''
+
+# Hosts
+set :barramento_baas_host,        'localhost'
+set :filer_host,                  ''
+set :redis_host,                  'localhost'
+set :syslog_host,                 ''
+
+# Ports
+set :redis_port,                  6379
+
+# Variables
+set :puppetmaster_env,            'local'
+set :redis_password,              'ignored'
+
+# Directories
+set :dbpasswd_dir,                ''
+
+# Files
+set :log_filepath,                '/tmp/brainiak.log'
+set :triplestore_config_filepath, "config/local/triplestore.ini"
+
+
 
 # TODO:
 # DEBUG = True
 # NOTIFY_BUS = True
 # ENABLE_CACHE = True
-
-set :virtuoso_port,         8890
-set :virtuoso_host,         'localhost'
-#set :virtuoso_host,         'qa1.virtuoso.globoi.com'
-set :virtuoso_url,          "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"
-set :barramento_baas_host,  'localhost'
-set :puppetmaster_env,      'local'
-set :redis_host,            'localhost'
-set :redis_port,            6379
-set :syslog_host,           'syslog.tcp.glog.dev.globoi.com'
-set :filer_host,            'riofd06'
-
-set :log_filepath,          '/tmp/brainiak.log'
-set :redis_password,        'ignored'

@@ -17,12 +17,7 @@ else:
 REDIS_ENDPOINT = '<%= redis_host %>'
 REDIS_PORT = <%= redis_port %>
 
-SPARQL_PORT = '<%= virtuoso_port %>'
-SPARQL_ENDPOINT = '<%= virtuoso_url %>'
-SPARQL_ENDPOINT_USER = os.environ.get('GLB_API_SEMANTICA_VIRTUOSO_USR') or "api-semantica"
-SPARQL_ENDPOINT_PASSWORD = os.environ.get('GLB_API_SEMANTICA_VIRTUOSO_PWD') or "api-semantica"
-SPARQL_ENDPOINT_AUTH_MODE = "digest"
-SPARQL_ENDPOINT_REALM = "SPARQL"
+TRIPLESTORE_CONFIG_FILEPATH = '<%= triplestore_config_filepath %>'
 
 DEFAULT_LANG = "pt"
 

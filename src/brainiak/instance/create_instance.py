@@ -18,7 +18,9 @@ def create_instance(query_params, instance_data, instance_uri=None):
 
     prefixes = instance_data.get("@context", {})
     string_prefixes = join_prefixes(prefixes)
-    response = query_create_instances(string_triples, string_prefixes, query_params["graph_uri"])
+    query_params.update({"triples": string_triples, "prefix": string_prefixes})
+
+    response = query_create_instances(query_params)
     if not is_insert_response_successful(response):
         raise HTTPError(500, log_message="Triplestore could not insert triples.")
 
@@ -35,6 +37,6 @@ INSERT DATA INTO <%(graph_uri)s>
 """
 
 
-def query_create_instances(triples, prefix, graph_uri):
-    query = QUERY_INSERT_TRIPLES % {"triples": triples, "prefix": prefix, "graph_uri": graph_uri}
-    return triplestore.query_sparql(query)
+def query_create_instances(query_params):
+    query = QUERY_INSERT_TRIPLES % query_params
+    return triplestore.query_sparql(query, query_params.triplestore_config)

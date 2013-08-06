@@ -16,7 +16,8 @@ import time
 import nose.tools as nose
 import requests
 
-version = "2.1.0"
+brainiak_version = "2.1.0"
+mercury_version = "1.2.0"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",
@@ -122,7 +123,7 @@ class BrainiakChecker(Checker):
     def check_version(self):
         response = self.get("_version")
         nose.assert_equal(response.status_code, 200)
-        nose.assert_in(version, response.text)
+        nose.assert_in(brainiak_version, response.text)
         sys.stdout.write("\ncheck_version - pass")
 
     def check_docs(self):
@@ -139,7 +140,6 @@ class BrainiakChecker(Checker):
         # Remove if instance exist
         self.put("place/City/globoland", "new_city.json")
         self.delete("place/City/globoland")
-
         # SOLR read URL
         solr_host = solr_endpoint[self.environ]
         solr_relative_url = 'solr/select/?q=uri%3A%22http%3A%2F%2Fsemantica.globo.com%2Fplace%2FCity%2Fgloboland%22'
@@ -201,6 +201,12 @@ class MercuryChecker(Checker):
     def __init__(self, environ):
         Checker.__init__(self, environ)
         self.endpoint = mercury_endpoint.get(environ)
+
+    def check_version(self):
+        response = self.get("version/")
+        nose.assert_equal(response.status_code, 200)
+        nose.assert_in(mercury_version, response.text)
+        sys.stdout.write("\ncheck_version - pass")
 
     def check_healthcheck(self):
         response = self.get("healthcheck/")

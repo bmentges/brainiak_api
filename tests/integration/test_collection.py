@@ -4,8 +4,10 @@ from mock import patch
 from brainiak import triplestore, settings
 from brainiak.collection import get_collection
 from brainiak.collection.get_collection import query_filter_instances, Query
-from tests.tornado_cases import TornadoAsyncHTTPTestCase
+
+from tests.mocks import Params
 from tests.sparql import QueryTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
 class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
@@ -439,7 +441,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql
-        triplestore.query_sparql = lambda query: query
+        triplestore.query_sparql = lambda query, params: query
         self.original_query_filter_instances = get_collection.query_filter_instances
         self.original_query_count_filter_instances = get_collection.query_count_filter_instances
 
@@ -449,7 +451,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         get_collection.query_count_filter_instances = self.original_query_count_filter_instances
 
     def test_sort_by(self):
-        params = {
+        params = Params({
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": "?p",
             "o": "?o",
@@ -460,7 +462,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0",
-        }
+        })
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
         expected = [
@@ -482,7 +484,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(computed, expected)
 
     def test_sort_by_multiple_predicates(self):
-        params = {
+        params = Params({
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p1": "?p",
             "o1": u'Cruzeiro Esporte Clube',
@@ -493,7 +495,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0",
-        }
+        })
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
         expected = [
@@ -507,7 +509,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(computed, expected)
 
     def test_sort_by_exclude_empty_values(self):
-        params = {
+        params = Params({
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": "?p",
             "o": "?o",
@@ -518,7 +520,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0",
-        }
+        })
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
         expected = [
@@ -536,7 +538,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(computed, expected)
 
     def test_sort_by_p(self):
-        params = {
+        params = Params({
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": 'http://tatipedia.org/stadium',
             "o": '?o',
@@ -546,7 +548,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0",
-        }
+        })
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
         expected = [
@@ -564,7 +566,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(expected, computed)
 
     def test_sort_by_label_with_different_p(self):
-        params = {
+        params = Params({
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": 'http://tatipedia.org/stadium',
             "o": '?o',
@@ -574,7 +576,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "graph_uri": self.graph_uri,
             "per_page": "10",
             "page": "0",
-        }
+        })
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
         expected = [
@@ -592,7 +594,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(expected, computed)
 
     def test_count_query(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Species",
             "p": "http://tatipedia.org/order",
             "o": "http://tatipedia.org/Monotremata",
@@ -601,14 +603,14 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
             "sort_by": ""
-        }
+        })
         query = Query(params).to_string(count=True)
         computed = self.query(query)["results"]["bindings"]
         expected = [{u'total': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'type': u'typed-literal', u'value': u'3'}}]
         self.assertEqual(computed, expected)
 
     def test_instance_filter_query_by_predicate_and_object(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Person",
             "p": "http://tatipedia.org/likes",
             "o": "http://tatipedia.org/Capoeira",
@@ -618,7 +620,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "0",
             "sort_by": "",
             "sort_order": "asc"
-        }
+        })
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
 
@@ -628,7 +630,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(computed, expected)
 
     def test_instance_filter_query_by_object(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Person",
             "p": "?p",
             "o": "http://tatipedia.org/BungeeJump",
@@ -637,7 +639,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
             "sort_by": ""
-        }
+        })
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
 
@@ -647,7 +649,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(computed, expected)
 
     def test_instance_filter_query_by_predicate(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Person",
             "graph_uri": self.graph_uri,
             "lang": "",
@@ -656,7 +658,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "p": "http://tatipedia.org/dislikes",
             "o": "?o",
             "sort_by": "",
-        }
+        })
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
         expected = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/mary'},
@@ -666,7 +668,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(computed, expected)
 
     def test_instance_filter_query_by_predicate_with_multiple_response(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Person",
             "lang": "",
             "graph_uri": self.graph_uri,
@@ -675,7 +677,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "p": "http://tatipedia.org/likes",
             "o": "?o",
             "sort_by": ""
-        }
+        })
         query = Query(params).to_string()
         computed = self.query(query)['results']['bindings']
         expected = [
@@ -704,7 +706,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_instance_filter_query_by_object_represented_as_string(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Person",
             "p": "?p",
             "o": "Aikido",
@@ -713,7 +715,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
             "sort_by": ""
-        }
+        })
 
         query = query_filter_instances(params)
         computed = self.query(query)["results"]["bindings"]
@@ -740,7 +742,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     #     self.assertFalse(response["results"]["bindings"])
 
     def test_query_filter_instances_with_language_restriction_to_pt(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",
             "o": "Ingles",
@@ -749,7 +751,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
             "sort_by": ""
-        }
+        })
         query = query_filter_instances(params)
         computed_bindings = self.query(query)["results"]["bindings"]
         expected_bindings = [
@@ -767,7 +769,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 
     def test_query_filter_instances_with_language_restriction_to_pt_and_any(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Species",
             "p": "http://tatipedia.org/order",
             "o": "http://tatipedia.org/Monotremata",
@@ -776,7 +778,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
             "sort_by": ""
-        }
+        })
         query = query_filter_instances(params)
 
         computed_bindings = self.query(query)["results"]["bindings"]
@@ -799,7 +801,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 
     def test_query_page_0(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",
             "o": "Ingles",
@@ -808,14 +810,14 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "1",
             "page": "0",
             "sort_by": ""
-        }
+        })
         query = query_filter_instances(params)
 
         computed_bindings = self.query(query)["results"]["bindings"]
         self.assertEqual(len(computed_bindings), 1)
 
     def test_query_page_1(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",
             "o": "Ingles",
@@ -824,14 +826,14 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "1",
             "page": "1",
             "sort_by": ""
-        }
+        })
         query = query_filter_instances(params)
 
         computed_bindings = self.query(query)["results"]["bindings"]
         self.assertEqual(len(computed_bindings), 1)
 
     def test_query_filter_instances_with_language_restriction_to_en(self):
-        params = {
+        params = Params({
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",
             "o": "?test_filter_with_object_as_string",
@@ -840,7 +842,7 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "per_page": "10",
             "page": "0",
             "sort_by": ""
-        }
+        })
         query = query_filter_instances(params)
 
         computed_bindings = self.query(query)["results"]["bindings"]
@@ -864,6 +866,14 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         # mock
         get_collection.query_filter_instances = lambda params: {"results": {"bindings": []}}
         get_collection.query_count_filter_instances = lambda params: {"results": {"bindings": []}}
-        params = {"o": "", "p": "", "class_uri": "", "sort_by": "", 'offset': '0', 'page': '1', 'per_page': '10'}
+        params = Params({
+            "o": "",
+            "p": "",
+            "class_uri": "",
+            "sort_by": "",
+            'offset': '0',
+            'page': '1',
+            'per_page': '10'
+        })
         result = get_collection.filter_instances(params)
         self.assertEqual(result, None)

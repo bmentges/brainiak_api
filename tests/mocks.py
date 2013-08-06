@@ -3,6 +3,15 @@ from urlparse import urlparse
 from brainiak.utils.params import normalize_last_slash
 
 
+triplestore_config = {
+    'url': 'http://localhost:8890/sparql-auth',
+    'app_name': 'Brainiak',
+    'auth_mode': 'digest',
+    'auth_username': 'api-semantica',
+    'auth_password': 'api-semantica'
+}
+
+
 class MockSimpleRequest(object):
 
     def __init__(self, status_code, json):
@@ -46,12 +55,15 @@ class MockRequest(object):
 
 class MockHandler():
 
-    def __init__(self, uri=None, querystring="", **kw):
+    def __init__(self, uri=None, querystring="", headers=None, **kw):
         self.kw = kw
         if uri is None:
             uri = 'http://mock.test.com/'
         self._querystring = querystring
-
+        if headers is None:
+            self._headers = {}
+        else:
+            self._headers = headers
         _parsed_url = urlparse(uri)
         self._path = _parsed_url.path
         self._protocol = _parsed_url.scheme
@@ -90,5 +102,16 @@ class MockHandler():
             def uri(inner_self):
                 return self._uri
 
+            @property
+            def headers(inner_self):
+                return self._headers
+
         d = Dummy()
         return d
+
+
+class Params(dict):
+
+    def __init__(self, params):
+        self.triplestore_config = triplestore_config
+        self.update(params)

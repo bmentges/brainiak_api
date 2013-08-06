@@ -14,7 +14,7 @@ from brainiak.schema.get_class import build_class_schema_query, \
     QUERY_SUPERCLASS
 from brainiak.utils.params import ParamDict
 
-from tests.mocks import MockHandler
+from tests.mocks import MockHandler, Params
 from tests.tornado_cases import TornadoAsyncTestCase, TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -26,13 +26,13 @@ class ClassSchemaQueryTestCase(QueryTestCase):
 
     def setUp(self):
         self.original_query_sparql = triplestore.query_sparql
-        triplestore.query_sparql = lambda query: self.query(query)
+        triplestore.query_sparql = lambda query, params: self.query(query)
 
     def tearDown(self):
         triplestore.query_sparql = self.original_query_sparql
 
     def test_query_superclasses(self):
-        params = {"class_uri": "http://example.onto/City"}
+        params = Params({"class_uri": "http://example.onto/City"})
 
         expected_bindings = [{u'class': {u'type': u'uri', u'value': u'http://example.onto/City'}},
                              {u'class': {u'type': u'uri', u'value': u'http://example.onto/Place'}}]
@@ -41,7 +41,7 @@ class ClassSchemaQueryTestCase(QueryTestCase):
         self.assertEqual(response["results"]["bindings"], expected_bindings)
 
     def test_query_superclasses_result(self):
-        params = {"class_uri": "http://example.onto/City"}
+        params = Params({"class_uri": "http://example.onto/City"})
 
         expected_list = [u'http://example.onto/City',
                          u'http://example.onto/Place']

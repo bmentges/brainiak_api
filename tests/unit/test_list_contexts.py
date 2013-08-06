@@ -5,7 +5,8 @@ from mock import patch
 from brainiak import triplestore
 from brainiak.root.get_root import filter_and_build_contexts, list_all_contexts
 from brainiak.utils.params import ParamDict
-from tests.mocks import MockHandler
+
+from tests.mocks import MockHandler, Params
 
 
 class MockedTestCase(unittest.TestCase):
@@ -14,7 +15,7 @@ class MockedTestCase(unittest.TestCase):
     @patch('brainiak.utils.sparql.filter_values', return_value=[])
     @patch('brainiak.root.get_root.filter_and_build_contexts', return_value=[])
     def test_raises_http_error(self, mock1, mock2, mock3):
-        self.assertRaises(HTTPError, list_all_contexts, 'irrelevant_params')
+        self.assertRaises(HTTPError, list_all_contexts, Params({}))
 
     @patch('brainiak.triplestore.query_sparql')
     @patch('brainiak.utils.sparql.filter_values', return_value=[])
@@ -46,7 +47,7 @@ class GetContextTestCase(unittest.TestCase):
                     {"graph": {"value": "http://dbpedia.org/ontology/"}}
                 ]}
         }
-        triplestore.query_sparql = lambda query: response
+        triplestore.query_sparql = lambda query, params: response
 
     def tearDown(self):
         triplestore.query_sparql = self.original_query_sparql

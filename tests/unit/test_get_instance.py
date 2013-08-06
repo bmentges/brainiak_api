@@ -65,13 +65,18 @@ class TestCaseInstanceResource(unittest.TestCase):
         self.assertFalse(mock_assemble_instance_json.called)
 
     def test_query_all_properties_and_objects(self):
-        triplestore.query_sparql = lambda query: query
-        params = {
+        triplestore.query_sparql = lambda query, query_params: query
+
+        class Params(dict):
+            triplestore_config = {}
+
+        params = Params({})
+        params.update({
             "instance_uri": "instance_uri",
             "class_uri": "class_uri",
             "lang": "en"
+        })
 
-        }
         computed = get_instance.query_all_properties_and_objects(params)
         expected = """
             DEFINE input:inference <http://semantica.globo.com/ruleset>

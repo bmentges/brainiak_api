@@ -4,129 +4,83 @@ import time
 import urllib
 
 import SPARQLWrapper
-from tornado.httpclient import HTTPRequest, HTTPError
-from tornado.httputil import url_concat
+from tornado.httpclient import HTTPRequest
+from tornado.httpclient import HTTPError as ClientHTTPError
+from tornado.web import HTTPError
 import ujson as json
 
-from brainiak import settings, log
+from brainiak import log
 from brainiak.greenlet_tornado import greenlet_fetch
+from brainiak.utils.config_parser import parse_section
 
 
-# This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works
-format = "POST - %(url)s - %(user_ip)s - %(user_name)s [tempo: %(time_diff)s] - QUERY - %(query)s"
-
-
-# TODO: compute runtime
-# TODO: log query and runtime
-def query_sparql(query, *args, **kw):
+def query_sparql(query, triplestore_config):
     """
     Simple interface that given a SPARQL query string returns a string representing a SPARQL results bindings
     in JSON format. For now it only works with Virtuoso, but in futurw we intend to support other databases
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
-    connection = VirtuosoConnection()
     try:
-        query_response = connection.query(query, *args, **kw)
-    except HTTPError as e:
+        query_response = run_query(query, triplestore_config)
+    except ClientHTTPError as e:
         if e.code == 401:
             message = 'Check triplestore user and password.'
-            raise HTTPError(e.code, message=message)
         else:
-            raise
+            message = e.message
+        raise HTTPError(e.code, message=message)
 
     result_dict = json.loads(query_response.body)
     return result_dict
 
-
-SPARQL_RESULTS_FORMAT = {
-    "json": "application/sparql-results+json",
-    "turtle": "text/rdf+n3"
-}
-
-DEFAULT_FORMAT = SPARQL_RESULTS_FORMAT["json"]
-
-URL_ENCODED = "application/x-www-form-urlencoded"
-
-DEFAULT_CONTENT_TYPE = URL_ENCODED
+# This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works
+format_post = "POST - %(url)s - %(user_ip)s - %(auth_username)s [tempo: %(time_diff)s] - QUERY - %(query)s"
 
 
-class VirtuosoConnection(object):
+def run_query(query, triplestore_config):
+    params = {
+        "query": unicode(query).encode("utf-8"),
+        "format": "application/sparql-results+json"
+    }
+    body = urllib.urlencode(params)
 
-    def __init__(self):
-        if hasattr(settings, "SPARQL_ENDPOINT"):
-            self.endpoint_url = settings.SPARQL_ENDPOINT
-        else:
-            self.host = settings.SPARQL_ENDPOINT_HOST
-            self.port = settings.SPARQL_ENDPOINT_PORT
-            self.endpoint_url = self.host + ":" + str(self.port) + "/sparql"
+    request_params = {
+        "method": "POST",
+        "headers": {"Content-Type": "application/x-www-form-urlencoded"},
+        "body": body
+    }
 
-        self._set_credentials()
+    request_params.update(triplestore_config)
+    # app_name (from triplestore.ini) can't be passed forward to HTTPRequest
+    # it raises exception
+    request_params.pop("app_name")
 
-    def _set_credentials(self):
-        try:
-            self.user = settings.SPARQL_ENDPOINT_USER
-            self.password = settings.SPARQL_ENDPOINT_PASSWORD
-            self.auth_mode = settings.SPARQL_ENDPOINT_AUTH_MODE
-        except AttributeError:
-            self.user = self.password = None
-            self.auth_mode = "basic"
+    request = HTTPRequest(**request_params)
+    time_i = time.time()
+    response = greenlet_fetch(request)
+    time_f = time.time()
 
-    def query(self, query, *args, **kw):
-        method = kw.get("method", "POST")
-        result_format = kw.get("result_format", DEFAULT_FORMAT)
-        content_type = DEFAULT_CONTENT_TYPE
+    request_params["time_diff"] = time_f - time_i
+    request_params["query"] = query
+    request_params["user_ip"] = str(None)
+    log_msg = format_post % request_params
+    log.logger.info(log_msg)
 
-        headers = {
-            "Content-Type": content_type,
-        }
-
-        params = {
-            "query": unicode(query).encode("utf-8"),
-            "format": result_format
-        }
-
-        url = self.endpoint_url
-
-        if method == "GET":
-            url = url_concat(url, params)
-            body = None
-        elif method == "POST":
-            body = urllib.urlencode(params)
-
-        request = HTTPRequest(url=url,
-                              method=method,
-                              headers=headers,
-                              body=body,
-                              auth_username=self.user,
-                              auth_password=self.password,
-                              auth_mode=self.auth_mode)
-
-        time_i = time.time()
-        response = greenlet_fetch(request)
-        time_f = time.time()
-
-        time_diff = time_f - time_i
-        log_msg = format % {
-            'url': url,
-            'user_ip': str(None),
-            'user_name': self.user,
-            'time_diff': time_diff,
-            'query': query
-        }
-        log.logger.info(log_msg)
-
-        return response
+    return response
 
 
 class VirtuosoException(Exception):
     pass
 
 
-def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT_PASSWORD,
-           mode=settings.SPARQL_ENDPOINT_AUTH_MODE, realm=settings.SPARQL_ENDPOINT_REALM):
+def status(**kw):
+    endpoint_dict = parse_section()
+    user = kw.get("user") or endpoint_dict["auth_username"]
+    password = kw.get("password") or endpoint_dict["auth_password"]
+    mode = kw.get("mode") or endpoint_dict["auth_mode"]
+    url = kw.get("url") or endpoint_dict["url"]
 
     query = "SELECT COUNT(*) WHERE {?s a owl:Class}"
-    endpoint = SPARQLWrapper.SPARQLWrapper(settings.SPARQL_ENDPOINT)
+    endpoint = SPARQLWrapper.SPARQLWrapper(url)
     endpoint.addDefaultGraph("http://semantica.globo.com/person")
     endpoint.setQuery(query)
 
@@ -135,7 +89,7 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
 
     info = {
         "type": "not-authenticated",
-        "endpoint": settings.SPARQL_ENDPOINT
+        "endpoint": url
     }
 
     try:
@@ -155,10 +109,10 @@ def status(user=settings.SPARQL_ENDPOINT_USER, password=settings.SPARQL_ENDPOINT
     password_md5 = md5.new(password).digest()
     info = {
         "type": "authenticated [%s:%s]" % (user, password_md5),
-        "endpoint": settings.SPARQL_ENDPOINT
+        "endpoint": url
     }
 
-    endpoint.setCredentials(user, password, mode=mode, realm=realm)
+    endpoint.setCredentials(user, password, mode=mode, realm="SPARQL")
 
     try:
         response = endpoint.query()

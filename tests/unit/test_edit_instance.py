@@ -40,7 +40,7 @@ class TestCaseRaise500(unittest.TestCase):
         edit_instance.create_implicit_triples = lambda x, y: []
 
         self.original_modify_instance = edit_instance.modify_instance
-        edit_instance.modify_instance = lambda x, y, z, w: None
+        edit_instance.modify_instance = lambda params: None
 
     def tearDown(self):
         edit_instance.is_modify_response_successful = self.original_is_modify_response_successful

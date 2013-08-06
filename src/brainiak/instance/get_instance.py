@@ -64,6 +64,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
 
     instance = {
+        "_base_url": query_params.base_url,
         "_resource_id": query_params['instance_id'],
         "@id": query_params['instance_uri'],
         "@type": context.normalize_uri_value(query_params["class_uri"]),
@@ -87,4 +88,4 @@ FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")
 def query_all_properties_and_objects(query_params):
     query_params["ruleset"] = settings.DEFAULT_RULESET_URI
     query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % query_params
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)

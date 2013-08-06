@@ -7,7 +7,7 @@ import unittest
 import rdflib
 from SPARQLWrapper import Wrapper, JSON
 
-from brainiak import settings
+from brainiak.utils.config_parser import parse_section
 
 
 def strip(query_string):
@@ -241,11 +241,12 @@ class QueryTestCase(SimpleTestCase):
                 enable_inference_at_graph(graph_)
 
     def query(self, query_string, graph=None):
-        endpoint = settings.SPARQL_ENDPOINT
-        user = settings.SPARQL_ENDPOINT_USER
-        password = settings.SPARQL_ENDPOINT_PASSWORD
-        mode = settings.SPARQL_ENDPOINT_AUTH_MODE
-        realm = settings.SPARQL_ENDPOINT_REALM
+        endpoint_dict = parse_section()
+        user = endpoint_dict["auth_username"]
+        password = endpoint_dict["auth_password"]
+        mode = endpoint_dict["auth_mode"]
+        endpoint = endpoint_dict["url"]
+        realm = "SPARQL"
 
         self.process_inference_options()
 

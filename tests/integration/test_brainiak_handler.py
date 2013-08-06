@@ -108,3 +108,18 @@ class TestUnmatchedHandler(TornadoAsyncHTTPTestCase):
     def test_delete(self, log):
         response = self.fetch('/a/b/c/d/e', method='DELETE')
         self.assertEqual(response.code, 404)
+
+
+class AuthenticatedAccessTestCase(TornadoAsyncHTTPTestCase):
+
+    def test_auth_access_with_invalid_user_returns_404(self):
+        response = self.fetch("/", method='GET', headers={'X-Brainiak-Client-Id': '1'})
+        self.assertEqual(response.code, 404)
+        expected_body = {"error": u"HTTP error: 404\nClient-Id provided at 'X-Brainiak-Client-Id' (1) is not known"}
+        computed_body = json.loads(response.body)
+        self.assertEqual(computed_body, expected_body)
+
+    def test_valid_client_id_from_eureka_client(self):
+        eureka_client_id = 'YXA67LOpsLMnEeKa8nvYJ9aXRQ'
+        response = self.fetch("/", method='GET', headers={'X-Brainiak-Client-Id': eureka_client_id})
+        self.assertEqual(response.code, 200)

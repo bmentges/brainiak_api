@@ -29,7 +29,7 @@ def assemble_list_json(query_params, query_result_dict):
     context_section.update({"@language": query_params.get("lang")})
 
     json_dict = {
-        'id': self_url(query_params),
+        '_base_url': query_params.base_url,
         'items': items_list,
         '@context': context_section
     }
@@ -55,7 +55,7 @@ FROM <%(graph_uri)s>
 
 def query_count_classes(query_params):
     query = QUERY_COUNT_ALL_CLASSES_OF_A_GRAPH % query_params
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 QUERY_ALL_CLASSES_OF_A_GRAPH = """
@@ -76,4 +76,4 @@ def query_classes_list(query_params):
     query_params['offset'] = offset
     query = QUERY_ALL_CLASSES_OF_A_GRAPH % query_params
     del query_params['offset']
-    return triplestore.query_sparql(query)
+    return triplestore.query_sparql(query, query_params.triplestore_config)

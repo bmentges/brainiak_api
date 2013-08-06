@@ -1,13 +1,23 @@
 import subprocess
 import argparse
+from multiprocessing import Pool
+
+
+def spawn_client(repetitions):
+    print("Starting Client")
+    for i in range(repetitions):
+        cmd = 'curl -i -X POST -T new_city.json http://api.semantica.dev.globoi.com/v2/place/City'
+        ret = subprocess.call(cmd.split())
+        if ret != 0:
+            print "Subprocess Failed"
+    print("Finishing Client")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Create a lot of cities in DEV Brainiak')
     parser.add_argument('num_times', type=int,
                         help='an integer for the accumulator')
+    parser.add_argument('workers', type=int,
+                        help='the number of client processes')
     args = parser.parse_args()
-    for i in range(args.num_times):
-        cmd = 'curl -i -X POST -T new_city.json http://api.semantica.dev.globoi.com/v2/place/City'
-        ret = subprocess.call(cmd.split())
-        if ret != 0:
-            print "Pau!"
+    pool = Pool(args.workers)
+    pool.map(spawn_client, [args.num_times] * args.workers)

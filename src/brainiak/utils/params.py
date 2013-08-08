@@ -49,6 +49,9 @@ CLASS_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri')
 
 GRAPH_PARAMS = optionals('graph_uri')
 
+# TODO predicate, pattern are obligatory (not supported yet)
+RANGE_SEARCH_PARAMS = optionals('pattern', 'predicate', 'restrict_fields', 'restrict_classes', 'restrict_graphs')
+
 
 def normalize_last_slash(url):
     return url if url.endswith("/") else url + "/"
@@ -63,7 +66,8 @@ VALID_PARAMS = ('lang',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
                 'purge',
-                'do_item_count')
+                'do_item_count',
+                'pattern', 'predicate', 'restrict_fields', 'restrict_classes', 'restrict_graphs')
 
 
 VALID_PATTERNS = (

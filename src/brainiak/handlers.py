@@ -66,6 +66,7 @@ def get_routes():
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
         # json-schemas
         URLSpec(r'/_schema_list/?', RootJsonSchemaHandler),
+        URLSpec(r'/_range_search/?', RangeSearchHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/_schema_list/?', ContextJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema_list/?', CollectionJsonSchemaHandler),
         # resources that represents concepts
@@ -435,6 +436,13 @@ class InstanceHandler(BrainiakRequestHandler):
         elif isinstance(response, int):  # status code
             self.set_status(response)
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25
+
+
+class RangeSearchHandler(BrainiakRequestHandler):
+
+    @greenlet_asynchronous
+    def get(self):
+        pass
 
 
 class PrefixHandler(BrainiakRequestHandler):

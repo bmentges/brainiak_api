@@ -23,11 +23,6 @@ def schema():
                     },
                     "links": [
                         {
-                            "href": "{+_base_url}",
-                            "method": "GET",
-                            "rel": "self"
-                        },
-                        {
                             "href": "/{resource_id}",
                             "method": "GET",
                             "rel": "list"

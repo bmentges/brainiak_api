@@ -35,11 +35,6 @@ def schema(context_name, class_name, class_prefix):
                     },
                     "links": [
                         {
-                            "href": "{+_base_url}",
-                            "method": "GET",
-                            "rel": "self"
-                        },
-                        {
                             "href": link,
                             "method": "GET",
                             "rel": "item"

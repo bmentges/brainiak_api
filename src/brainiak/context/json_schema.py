@@ -23,11 +23,6 @@ def schema(context_name):
                     },
                     "links": [
                         {
-                            "href": "{+_base_url}",
-                            "method": "GET",
-                            "rel": "self"
-                        },
-                        {
                             "href": "/{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(context_name),
                             "method": "GET",
                             "rel": "list"

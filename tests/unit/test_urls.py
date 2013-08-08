@@ -2,7 +2,7 @@ from brainiak import handlers
 from unittest import TestCase
 
 from brainiak.handlers import ClassHandler, VersionHandler, \
-    HealthcheckHandler, VirtuosoStatusHandler, InstanceHandler
+    HealthcheckHandler, VirtuosoStatusHandler, InstanceHandler, RangeSearchHandler
 
 
 class RouteTestCase(TestCase):
@@ -20,6 +20,11 @@ class RouteTestCase(TestCase):
     def test_status_virtuoso(self):
         regex = self._regex_for(VirtuosoStatusHandler)
         VIRTUOSO_STATUS = '/_status/virtuoso'
+        self.assertTrue(regex.match(VIRTUOSO_STATUS))
+
+    def test_range_search(self):
+        regex = self._regex_for(RangeSearchHandler)
+        VIRTUOSO_STATUS = '/_range_search'
         self.assertTrue(regex.match(VIRTUOSO_STATUS))
 
     def test_schema_resource(self):

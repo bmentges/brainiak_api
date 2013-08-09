@@ -287,13 +287,16 @@ def build_json(items_list, query_params):
         '_class_prefix': query_params['class_prefix'],
         '_base_url': query_params.base_url,
         'items': items_list,
-        "@context": {"@language": query_params.get("lang")}
+        "@context": {"@language": query_params.get("lang")},
+        "prev_args": "page=1&per_page=1&sort_by=rdfs:label",
+        "next_args": "page=3&per_page=1&sort_by=rdfs:label"
     }
 
     def calculate_total_items():
         result_dict = query_count_filter_instances(query_params)
         total_items = int(get_one_value(result_dict, 'total'))
         return total_items
+
     decorate_dict_with_pagination(json, query_params, calculate_total_items)
 
     return json

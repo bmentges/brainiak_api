@@ -494,6 +494,14 @@ class BuildJSONTestCase(unittest.TestCase):
         self.assertEqual(computed["prev_args"], "page=1&per_page=1&sort_by=rdfs:label")
         self.assertEqual(computed["next_args"], "page=3&per_page=1&sort_by=rdfs:label")
 
+    def test_query_with_prev_and_next_args_with_sort_by_and_lang(self):
+        handler = MockHandler(querystring="page=1&per_page=1&sort_by=rdfs:label&lang=en")
+        params = ParamDict(handler, context_name="subject", class_name="Maths", **(LIST_PARAMS))
+        items = []
+        computed = build_json(items, params)
+        self.assertEqual(computed["prev_args"], "page=1&per_page=1&sort_by=rdfs:label&lang=en")
+        self.assertEqual(computed["next_args"], "page=3&per_page=1&sort_by=rdfs:label&lang=en")
+
     def test_query_with_extras(self):
         handler = MockHandler(querystring="class_prefix=Xubiru")
         params = ParamDict(handler,

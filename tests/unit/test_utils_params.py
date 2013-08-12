@@ -46,17 +46,17 @@ class RequiredParamsTest(TestCase):
         self.assertEquivalent(r1.required, {'a', 'b'})
         self.assertEquivalent(r2.required, {'c', 'd'})
 
-    # def test_validation_without_missing(self):
-    #     required_spec = RequiredParamsDict(pattern=1, predicate=2)
-    #     handler = MockHandler(querystring="pattern=12&predicate=Override")
-    #     param_dict = params.ParamDict(handler, **required_spec)
-    #     self.assertEqual(param_dict.validate_required(), None)
-    #
-    # def test_validation_with_missing(self):
-    #     required_spec = RequiredParamsDict(a=1, missing=2)
-    #     handler = MockHandler(querystring="pattern=1")
-    #     param_dict = params.ParamDict(handler, **required_spec)
-    #     self.assertRaises(RequiredParamMissing, param_dict.validate_required, required_spec)
+    def test_validation_with_required_present(self):
+        required_spec = RequiredParamsDict(pattern=1, predicate=2)
+        handler = MockHandler(querystring="pattern=12&predicate=Override")
+        param_dict = params.ParamDict(handler, **required_spec)
+        self.assertEqual(param_dict.validate_required(required_spec), None)
+
+    def test_validation_with_required_missing(self):
+        required_spec = RequiredParamsDict(pattern=1, predicate=2)
+        handler = MockHandler(querystring="pattern=1")
+        param_dict = params.ParamDict(handler, **required_spec)
+        self.assertRaises(RequiredParamMissing, param_dict.validate_required, required_spec)
 
 
 class ParamsTestCase(TestCase):

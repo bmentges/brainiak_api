@@ -61,7 +61,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertIn(upper_graph, body['items'])
 
         keys = body.keys()
-        self.assertIn('next_page', keys)
+        self.assertIn('next_args', keys)
         self.assertIn('page', keys)
         self.assertIn('do_item_count', keys)
         self.assertIn('page', keys)

@@ -27,7 +27,7 @@ from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
-from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, optionals
+from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, optionals, RANGE_SEARCH_PARAMS
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples
 
@@ -249,6 +249,7 @@ class ClassHandler(BrainiakRequestHandler):
                                           context_name=context_name,
                                           class_name=class_name,
                                           **valid_params)
+
         response = schema_resource.get_schema(self.query_params)
         self.finalize(response)
 
@@ -442,7 +443,14 @@ class RangeSearchHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self):
-        pass
+        valid_params = RANGE_SEARCH_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, **valid_params)
+            self.query_params.validate_required(valid_params)
+
+        response = None
+
+        self.finalize(response)
 
 
 class PrefixHandler(BrainiakRequestHandler):

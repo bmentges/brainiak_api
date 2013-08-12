@@ -4,7 +4,7 @@ from brainiak import settings
 from brainiak.utils import params
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals, RequiredParamMissing
 from brainiak.utils.resources import valid_pagination
 from tests.mocks import MockHandler
 
@@ -20,6 +20,7 @@ class DefaultParamsTest(TestCase):
         self.assertEqual(a, {"a": 1})
         self.assertEqual(b, {"b": 2})
 
+
 class RequiredParamsTest(TestCase):
 
     def assertEquivalent(self, list1, list2):
@@ -31,7 +32,7 @@ class RequiredParamsTest(TestCase):
 
     def test_required_with_optional(self):
         r = RequiredParamsDict(a=1, b=2)
-        o = optionals('c','d')
+        o = optionals('c', 'd')
         d = r + o
         self.assertEquivalent(d.required, ['a', 'b'])
         self.assertEquivalent(r.required, ['a', 'b'])
@@ -44,6 +45,18 @@ class RequiredParamsTest(TestCase):
         self.assertEquivalent(d.required, {'a', 'b', 'c', 'd'})
         self.assertEquivalent(r1.required, {'a', 'b'})
         self.assertEquivalent(r2.required, {'c', 'd'})
+
+    # def test_validation_without_missing(self):
+    #     required_spec = RequiredParamsDict(pattern=1, predicate=2)
+    #     handler = MockHandler(querystring="pattern=12&predicate=Override")
+    #     param_dict = params.ParamDict(handler, **required_spec)
+    #     self.assertEqual(param_dict.validate_required(), None)
+    #
+    # def test_validation_with_missing(self):
+    #     required_spec = RequiredParamsDict(a=1, missing=2)
+    #     handler = MockHandler(querystring="pattern=1")
+    #     param_dict = params.ParamDict(handler, **required_spec)
+    #     self.assertRaises(RequiredParamMissing, param_dict.validate_required, required_spec)
 
 
 class ParamsTestCase(TestCase):

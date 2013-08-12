@@ -35,6 +35,7 @@ def decorate_dict_with_pagination(target_dict, params, get_total_items_func):
     else:
         total_items = None
         target_dict['do_item_count'] = "0"
+
     target_dict.update(pagination_items(params, total_items))
 
 

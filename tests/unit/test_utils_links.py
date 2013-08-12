@@ -53,32 +53,39 @@ class TestLastLink(unittest.TestCase):
         self.assertEqual(computed, expected)
 
 
-class TestPaginationItems(unittest.TestCase):
+class TestPaginationItems(URLTestCase):
 
     def test_last_link(self):
         # "page" is related to Virtuoso index (starts in 0)
         params = {'page': 1, 'per_page': 2}
-        handler = MockHandler(uri="http://any.uri")
+        handler = MockHandler(uri="http://any.uri/", querystring="page=2&per_page=2")
         query_params = ParamDict(handler, **params)
         computed = pagination_items(query_params, 10)
-        expected = {'per_page': 2, 'previous_page': 1, 'page': 2, 'next_page': 3}
-        self.assertEqual(computed, expected)
+        self.assertEqual(len(computed), 4)
+        self.assertEqual(computed['page'], 2)
+        self.assertEqual(computed['per_page'], 2)
+        self.assertQueryStringArgsEqual(computed['previous_args'], 'per_page=2&page=1')
+        self.assertQueryStringArgsEqual(computed['next_args'], 'page=3&per_page=2')
 
     def test_pagination_includes_do_item_count(self):
         params = {'page': 1, 'per_page': 2, 'do_item_count': '1'}
-        handler = MockHandler(uri="http://any.uri")
+        handler = MockHandler(uri="http://any.uri/", querystring="page=2&per_page=2&do_item_count=1")
         query_params = ParamDict(handler, **params)
         computed = pagination_items(query_params, 4)
-        expected = {'per_page': 2, 'previous_page': 1, 'page': 2, 'last_page': 2}
-        self.assertEqual(computed, expected)
+        self.assertEqual(len(computed), 4)
+        self.assertEqual(computed['page'], 2)
+        self.assertEqual(computed['per_page'], 2)
+        self.assertEqual(computed['last_page'], 2)
+        self.assertQueryStringArgsEqual(computed['previous_args'], 'per_page=2&page=1&do_item_count=1')
 
     def test_pagination_without_previous_page(self):
         params = {'page': 0, 'per_page': 3}
-        handler = MockHandler(uri="http://any.uri")
+        handler = MockHandler(uri="http://any.uri/", querystring="page=1&per_page=3")
         query_params = ParamDict(handler, **params)
-        computed = pagination_items(query_params, 4)
-        expected = {'per_page': 3, 'next_page': 2, 'page': 1}
-        self.assertEqual(computed, expected)
+        computed = pagination_items(query_params, 3)
+        self.assertEqual(computed['page'], 1)
+        self.assertEqual(computed['per_page'], 3)
+        self.assertQueryStringArgsEqual(computed['next_args'], 'per_page=3&page=2')
 
 
 class TestMergeSchemas(unittest.TestCase):

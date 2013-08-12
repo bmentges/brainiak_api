@@ -2,7 +2,7 @@ import inspect
 from urllib import unquote
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import build_schema_url_for_instance, self_url
+from brainiak.utils.links import assemble_url, build_schema_url_for_instance, merge_querystring, pagination_items
 from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination
 from brainiak.utils.sparql import compress_keys_and_values, is_literal, normalize_term, calculate_offset, get_one_value, extract_po_tuples
 
@@ -288,8 +288,8 @@ def build_json(items_list, query_params):
         '_base_url': query_params.base_url,
         'items': items_list,
         "@context": {"@language": query_params.get("lang")},
-        "prev_args": "page=1&per_page=1&sort_by=rdfs:label",
-        "next_args": "page=3&per_page=1&sort_by=rdfs:label"
+        #"prev_args": "page=1&per_page=1&sort_by=rdfs:label",
+        #"next_args": "page=3&per_page=1&sort_by=rdfs:label"
     }
 
     def calculate_total_items():
@@ -297,6 +297,22 @@ def build_json(items_list, query_params):
         total_items = int(get_one_value(result_dict, 'total'))
         return total_items
 
-    decorate_dict_with_pagination(json, query_params, calculate_total_items)
+    pagination_args = {}
+    decorate_dict_with_pagination(pagination_args, query_params, calculate_total_items)
+
+    if "item_count" in pagination_args:
+        json["item_count"] = pagination_args["item_count"]
+
+    query_string = query_params["request"].query
+    pagination_dict = pagination_items(query_params)
+    original_page = pagination_dict["page"]
+
+    next_page = pagination_dict.get("next_page")
+    if next_page:
+        json["next_args"] = merge_querystring(query_string, {"page": next_page})
+
+    previous_page = pagination_dict.get("previous_page")
+    if previous_page:
+        json["prev_args"] = merge_querystring(query_string, {"page": previous_page})
 
     return json

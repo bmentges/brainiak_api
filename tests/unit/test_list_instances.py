@@ -492,7 +492,7 @@ class BuildJSONTestCase(URLTestCase):
         params = ParamDict(handler, context_name="subject", class_name="Maths", **(LIST_PARAMS))
         items = []
         computed = build_json(items, params)
-        self.assertQueryStringArgsEqual(computed["prev_args"], 'per_page=1&page=1&sort_by=rdfs%3Alabel')
+        self.assertQueryStringArgsEqual(computed["previous_args"], 'per_page=1&page=1&sort_by=rdfs%3Alabel')
         self.assertQueryStringArgsEqual(computed["next_args"], 'per_page=1&page=3&sort_by=rdfs%3Alabel')
 
     def test_query_with_prev_and_next_args_with_sort_by_and_lang(self):
@@ -500,7 +500,7 @@ class BuildJSONTestCase(URLTestCase):
         params = ParamDict(handler, context_name="subject", class_name="Maths", **(LIST_PARAMS))
         items = []
         computed = build_json(items, params)
-        self.assertQueryStringArgsEqual(computed["prev_args"], 'per_page=1&page=1&sort_by=rdfs%3Alabel&lang=en')
+        self.assertQueryStringArgsEqual(computed["previous_args"], 'per_page=1&page=1&sort_by=rdfs%3Alabel&lang=en')
         self.assertQueryStringArgsEqual(computed["next_args"], 'per_page=1&page=3&sort_by=rdfs%3Alabel&lang=en')
 
     def test_query_with_extras(self):

@@ -132,8 +132,11 @@ def pagination_items(query_params, total_items=None):
         'page': page,
         'per_page': per_page
     }
+    query_string = query_params["request"].query
+
     if previous_page:
-        result['previous_page'] = previous_page
+        #result['previous_page'] = previous_page
+        result["previous_args"] = merge_querystring(query_string, {"page": previous_page})
 
     if (query_params.get("do_item_count", None) == "1") and (total_items is not None):
         last_page = get_last_page(total_items, per_page)
@@ -142,7 +145,8 @@ def pagination_items(query_params, total_items=None):
 
     next_page = get_next_page(page, last_page)
     if next_page:
-        result['next_page'] = next_page
+        #result['next_page'] = next_page
+        result["next_args"] = merge_querystring(query_string, {"page": next_page})
 
     if last_page:
         result['last_page'] = last_page

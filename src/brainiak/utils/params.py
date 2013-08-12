@@ -16,11 +16,27 @@ class InvalidParam(Exception):
 
 
 class DefaultParamsDict(dict):
+
+    def __init__(self, **kw):
+        dict.__init__(self, **kw)
+        self.required = []
+
+    def set_required(self, required):
+        self.required = list(set(required))
+
     def __add__(self, other):
         new_dict = DefaultParamsDict()
         new_dict.update(self)
         new_dict.update(other)
+        new_dict.set_required(self.required + other.required)
         return new_dict
+
+
+class RequiredParamsDict(DefaultParamsDict):
+    "Class used to mark required parameters"
+    def __init__(self, **kw):
+        DefaultParamsDict.__init__(self, **kw)
+        self.set_required(kw.keys())
 
 
 def optionals(*args):
@@ -38,7 +54,6 @@ PAGING_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
                                   per_page=settings.DEFAULT_PER_PAGE,
                                   do_item_count="0")
 
-
 LIST_PARAMS = PAGING_PARAMS + DefaultParamsDict(sort_by="",
                                                 sort_order="ASC",
                                                 sort_include_empty="1")
@@ -49,8 +64,9 @@ CLASS_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri')
 
 GRAPH_PARAMS = optionals('graph_uri')
 
-# TODO predicate, pattern are obligatory (not supported yet)
-RANGE_SEARCH_PARAMS = optionals('pattern', 'predicate', 'restrict_fields', 'restrict_classes', 'restrict_graphs')
+RANGE_SEARCH_PARAMS = \
+    RequiredParamsDict(pattern=None, predicate=None) + \
+    optionals('restrict_fields', 'restrict_classes', 'restrict_graphs')
 
 
 def normalize_last_slash(url):
@@ -58,7 +74,7 @@ def normalize_last_slash(url):
 
 
 # Define possible params and their processing order
-VALID_PARAMS = ('lang',
+VALID_PARAMS = ['lang',
                 'expand_uri', 'expand_uri_values', 'expand_uri_keys',
                 'graph_uri',
                 'context_name', 'class_name', 'class_prefix', 'class_uri',
@@ -66,9 +82,8 @@ VALID_PARAMS = ('lang',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
                 'purge',
-                'do_item_count',
-                'pattern', 'predicate', 'restrict_fields', 'restrict_classes', 'restrict_graphs')
-
+                'do_item_count'] + \
+                RANGE_SEARCH_PARAMS.keys()
 
 VALID_PATTERNS = (
     PATTERN_P,

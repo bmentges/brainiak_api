@@ -7,10 +7,11 @@ from brainiak.collection.get_collection import query_filter_instances, Query
 
 from tests.mocks import Params
 from tests.sparql import QueryTestCase
+from tests.utils import URLTestCase
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
-class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
+class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
 
     maxDiff = None
 
@@ -68,6 +69,12 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         self.assertEqual(len(received_response['items']), 2)
         self.assertEqual(received_response['item_count'], 3)
+
+    def test_list_links_prev_and_next(self):
+        response = self.fetch('/person/Gender/?page=2&per_page=1&do_item_count=1', method='GET')
+        received_response = json.loads(response.body)
+        self.assertQueryStringArgsEqual(received_response["prev_args"], "page=1&per_page=1&do_item_count=1")
+        self.assertQueryStringArgsEqual(received_response["next_args"], "page=3&per_page=1&do_item_count=1")
 
     def test_list_by_page_sort_first_page(self):
         response = self.fetch('/person/Gender/?page=1&per_page=2&sort_by=rdfs:label', method='GET')

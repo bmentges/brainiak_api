@@ -27,7 +27,7 @@ from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
-from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, optionals, RANGE_SEARCH_PARAMS
+from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, optionals, RANGE_SEARCH_PARAMS, RequiredParamMissing
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples
 
@@ -52,6 +52,8 @@ def safe_params(valid_params=None):
             params_msg = ", ".join(valid_params.keys())
             msg += "The supported arguments are: {0}.".format(params_msg)
         raise HTTPError(400, log_message=msg)
+    except RequiredParamMissing as ex:
+        raise HTTPError(400, log_message=str(ex))
 
 
 def get_routes():
@@ -448,7 +450,7 @@ class RangeSearchHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, **valid_params)
             self.query_params.validate_required(valid_params)
 
-        response = None
+        response = {}
 
         self.finalize(response)
 

@@ -61,7 +61,7 @@ class TestPaginationItems(unittest.TestCase):
         handler = MockHandler(uri="http://any.uri")
         query_params = ParamDict(handler, **params)
         computed = pagination_items(query_params, 10)
-        expected = {'per_page': 2, 'previous_page': 1, 'page': 2, 'next_page': 3} # 
+        expected = {'per_page': 2, 'previous_page': 1, 'page': 2, 'next_page': 3}
         self.assertEqual(computed, expected)
 
     def test_pagination_includes_do_item_count(self):
@@ -305,6 +305,7 @@ class CrudLinksTestCase(unittest.TestCase):
             }
         ]
         self.assertEqual(response, expected)
+
 
 class BuildClassUrlTestCase(unittest.TestCase):
     maxDiff = None

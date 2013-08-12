@@ -15,6 +15,10 @@ class InvalidParam(Exception):
     pass
 
 
+class RequiredParamMissing(Exception):
+    pass
+
+
 class DefaultParamsDict(dict):
 
     def __init__(self, **kw):
@@ -33,7 +37,7 @@ class DefaultParamsDict(dict):
 
 
 class RequiredParamsDict(DefaultParamsDict):
-    "Class used to mark required parameters"
+    "Class used to easily mark required parameters"
     def __init__(self, **kw):
         DefaultParamsDict.__init__(self, **kw)
         self.set_required(kw.keys())
@@ -262,3 +266,11 @@ class ParamDict(dict):
 
         effective_args.update(kw)
         return urlencode(effective_args, doseq=True)
+
+    def validate_required(self, required_spec):
+        "Check if all required params specified by required_spec are indeed present in the request"
+        arguments = self._make_arguments_dict().keys()
+        for required_param in required_spec.required:
+            if not required_param in arguments:
+                msg = "Required parameter {0} is missing from [{1:s}]"
+                raise RequiredParamMissing(msg.format(required_param, arguments))

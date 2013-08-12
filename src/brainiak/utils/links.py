@@ -1,4 +1,4 @@
-from urlparse import urlparse, parse_qs
+from urlparse import parse_qs, urlparse, urlsplit, urlunsplit
 from math import ceil
 from urllib import urlencode, quote
 
@@ -17,6 +17,7 @@ def content_type_profile(schema_url):
     )
     if parsed_url.query:
         schema_url += "?{0}".format(quote(parsed_url.query))
+
     if parsed_url.fragment:
         schema_url += "#{0}".format(quote(parsed_url.fragment))
 
@@ -24,23 +25,25 @@ def content_type_profile(schema_url):
     return content_type
 
 
-def assemble_url(url, params={}):
-    parsed_url = urlparse(url)
+# todo: test
+def merge_querystring(querystring, params):
+    existing_params = parse_qs(querystring)
+    params = dict(existing_params, **params)
+    return urlencode(params, doseq=True)
+
+
+# test: order between declarations in url and in params
+def assemble_url(url="", params={}):
+    splitted_url = urlsplit(url)
 
     if isinstance(params, str):
         params = parse_qs(params)
 
-    if parsed_url.query:
-        existing_params = parse_qs(parsed_url.query)
-        params = dict(params, **existing_params)
-        url_size_minus_query_string = len(parsed_url.query) + 1
-        url = url[:-url_size_minus_query_string]
+    query = merge_querystring(splitted_url.query, params)
+    splitted_url = list(splitted_url)
+    splitted_url[3] = query
 
-    if params:
-        encoded_params = urlencode(params, doseq=True)
-        return "{0}?{1}".format(url, encoded_params)
-    else:
-        return "{0}".format(url)
+    return urlunsplit(splitted_url)
 
 
 # TODO: refactor and add to a method similar to utils.params.args
@@ -54,7 +57,10 @@ def filter_query_string_by_key_prefix(query_string, include_prefixes=[]):
 
 
 def remove_last_slash(url):
-    return url[:-1] if url.endswith("/") else url
+    if url.endswith("/"):
+        return url[:-1]
+    else:
+        return url
 
 
 def split_into_chunks(items, chunk_size):
@@ -133,6 +139,7 @@ def pagination_items(query_params, total_items=None):
         last_page = get_last_page(total_items, per_page)
     else:
         last_page = None
+
     next_page = get_next_page(page, last_page)
     if next_page:
         result['next_page'] = next_page

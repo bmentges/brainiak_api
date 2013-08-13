@@ -21,6 +21,7 @@ from brainiak.instance.edit_instance import edit_instance, instance_exists
 from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
 from brainiak.prefix.get_prefixes import list_prefixes
+from brianiak.range_search.range_search import do_range_search
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
@@ -450,7 +451,7 @@ class RangeSearchHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, **valid_params)
             self.query_params.validate_required(valid_params)
 
-        response = {}
+        response = do_range_search(self.query_params)
 
         self.finalize(response)
 

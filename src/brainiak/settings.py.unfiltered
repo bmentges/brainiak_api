@@ -19,6 +19,8 @@ REDIS_PORT = <%= redis_port %>
 
 TRIPLESTORE_CONFIG_FILEPATH = '<%= triplestore_config_filepath %>'
 
+ELASTICSEARCH_ENDPOINT = '<%= elasticsearch_host %>'
+
 DEFAULT_LANG = "pt"
 
 DEFAULT_URI_EXPANSION = "0"

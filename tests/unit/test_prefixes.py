@@ -5,7 +5,7 @@ from mock import patch
 from brainiak import prefixes
 from brainiak.prefixes import (expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri,
                                prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix,
-                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, normalize_recursively, _MAP_PREFIX_TO_SLUG, get_prefixes_dict)
+                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, normalize_recursively, get_prefixes_dict)
 
 
 class PrefixesTestCase(unittest.TestCase):
@@ -54,7 +54,7 @@ class PrefixesTestCase(unittest.TestCase):
     def test_expand_uri(self):
         self.assertEqual("http://www.w3.org/2003/01/geo/wgs84_pos#Brasil", expand_uri("geo:Brasil"))
 
-    def test_expand_uri(self):
+    def test_expand_uri_whatever(self):
         self.assertEqual("http://schema.org/whatever", expand_uri("schema:whatever"))
 
     def test_expand_uri_that_is_already_a_uri(self):
@@ -83,6 +83,7 @@ class PrefixesTestCase(unittest.TestCase):
         self.assertIn('geo', MAP_PREFIX_TO_SLUG)
         self.assertIn('organization', MAP_PREFIX_TO_SLUG)
         self.assertIn('eureka', MAP_PREFIX_TO_SLUG)
+
 
 class ExtractPrefixTestCase(unittest.TestCase):
 
@@ -186,7 +187,7 @@ EXPECTED_UNCOMPRESSED_INSTANCE_DATA = {
     'http://semantica.globo.com/place/longitude': u'-43.407133',
     'http://semantica.globo.com/place/latitude': -43.407133,
     'http://purl.org/vocab/frbr/core#summarizationOf': {
-        'http://purl.org/dc/terms/isPartOf':['http://semantica.globo.com/base/UF_RJ',
+        'http://purl.org/dc/terms/isPartOf': ['http://semantica.globo.com/base/UF_RJ',
                                              'http://semantica.globo.com/base/UF_RJ']
     },
     '@id': 'http://semantica.globo.com/place/City/173ed3bf-2863-4e4a-8d37-024f8df72aa3',
@@ -196,6 +197,7 @@ EXPECTED_UNCOMPRESSED_INSTANCE_DATA = {
 
 class ExpansionTestCase(unittest.TestCase):
     maxDiff = None
+
     def test_normalize_recusively_with_valid_input(self):
         self.assertDictEqual(normalize_recursively(VALID_COMPRESSED_INSTANCE_DATA), EXPECTED_UNCOMPRESSED_INSTANCE_DATA)
 

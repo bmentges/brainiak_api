@@ -455,6 +455,17 @@ class RangeSearchHandler(BrainiakRequestHandler):
 
         self.finalize(response)
 
+    def finalize(self, response):
+        if response is None:
+            msg = "There were no search results."
+            raise HTTPError(404, log_message=msg)
+        elif isinstance(response, dict):
+            self.write(response)
+            self.set_header("Content-Type", content_type_profile(build_schema_url_for_instance(self.query_params)))
+        elif isinstance(response, int):  # status code
+            self.set_status(response)
+            # A call to finalize() was removed from here! -- rodsenra 2013/04/25
+
 
 class PrefixHandler(BrainiakRequestHandler):
 

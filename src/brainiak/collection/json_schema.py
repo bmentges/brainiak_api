@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from brainiak.utils.links import merge_schemas, pagination_schema
+from brainiak.utils.links import merge_schemas, collection_pagination_schema
 
 
 def schema(context_name, class_name, class_prefix):
@@ -75,6 +75,6 @@ def schema(context_name, class_name, class_prefix):
 
     base_pagination_url = '/{0}/{1}'.format(context_name, class_name)
     extra_url_params = '&class_prefix={_class_prefix}'
-    pagination_dict = pagination_schema(base_pagination_url, extra_url_params)
+    pagination_dict = collection_pagination_schema(base_pagination_url, extra_url_params)
     merge_schemas(base, pagination_dict)
     return base

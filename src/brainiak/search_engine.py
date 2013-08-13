@@ -25,7 +25,7 @@ def run_search(body, indexes=None, types=None):
     request_url = _build_elasticsearch_request_url(indexes, types)
 
     request_params = {
-        "url":  request_url,
+        "url": request_url,
         "method": "POST",
         "headers": {"Content-Type": "application/x-www-form-urlencoded"},
         "body": urllib.urlencode(body)

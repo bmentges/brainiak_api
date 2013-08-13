@@ -30,4 +30,4 @@ class SearchEngineTestCase(TestCase):
     def test_build_elasticsearch_request_url(self):
         expected_url = "http://esearch.dev.globoi.com/semantica.glb/class_uri_encoded/_search"
         response = _build_elasticsearch_request_url(["semantica.glb"], ["class_uri_encoded"])
-        src/brainiak/search_engine.pyself.assertEquals(expected_url, response)
+        self.assertEquals(expected_url, response)

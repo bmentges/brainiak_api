@@ -61,9 +61,8 @@ class TestPaginationItems(URLTestCase):
         handler = MockHandler(uri="http://any.uri/", querystring="page=2&per_page=2")
         query_params = ParamDict(handler, **params)
         computed = pagination_items(query_params, 10)
-        self.assertEqual(len(computed), 4)
-        self.assertEqual(computed['page'], 2)
-        self.assertEqual(computed['per_page'], 2)
+        self.assertEqual(len(computed), 3)
+        self.assertQueryStringArgsEqual(computed['_first_args'], 'per_page=2&page=1')
         self.assertQueryStringArgsEqual(computed['_previous_args'], 'per_page=2&page=1')
         self.assertQueryStringArgsEqual(computed['_next_args'], 'page=3&per_page=2')
 
@@ -72,10 +71,9 @@ class TestPaginationItems(URLTestCase):
         handler = MockHandler(uri="http://any.uri/", querystring="page=2&per_page=2&do_item_count=1")
         query_params = ParamDict(handler, **params)
         computed = pagination_items(query_params, 4)
-        self.assertEqual(len(computed), 4)
-        self.assertEqual(computed['page'], 2)
-        self.assertEqual(computed['per_page'], 2)
-        self.assertEqual(computed['last_page'], 2)
+        self.assertEqual(len(computed), 3)
+        self.assertQueryStringArgsEqual(computed['_first_args'], 'per_page=2&page=1&do_item_count=1')
+        self.assertQueryStringArgsEqual(computed['_last_args'], 'per_page=2&page=2&do_item_count=1')
         self.assertQueryStringArgsEqual(computed['_previous_args'], 'per_page=2&page=1&do_item_count=1')
 
     def test_pagination_without_previous_page(self):
@@ -83,8 +81,8 @@ class TestPaginationItems(URLTestCase):
         handler = MockHandler(uri="http://any.uri/", querystring="page=1&per_page=3")
         query_params = ParamDict(handler, **params)
         computed = pagination_items(query_params, 3)
-        self.assertEqual(computed['page'], 1)
-        self.assertEqual(computed['per_page'], 3)
+        self.assertEqual(len(computed), 2)
+        self.assertQueryStringArgsEqual(computed['_first_args'], 'per_page=3&page=1')
         self.assertQueryStringArgsEqual(computed['_next_args'], 'per_page=3&page=2')
 
 

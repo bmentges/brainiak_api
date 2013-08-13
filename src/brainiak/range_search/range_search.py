@@ -1,6 +1,7 @@
 from brainiak.utils.sparql import add_language_support
 from brainiak import triplestore
 
+
 def do_range_search(params):
     pass
 
@@ -25,11 +26,29 @@ SELECT DISTINCT ?range ?label_range {
 """
 
 
-def build_predicate_ranges_query(query_params):
+def _build_predicate_ranges_query(query_params):
     (params, language_tag) = add_language_support(query_params, "label_range")
     return QUERY_PREDICATE_RANGES % params
 
 
-def get_predicate_ranges(params):
-    query = build_predicate_ranges_query(params)
+def _get_predicate_ranges(params):
+    query = _build_predicate_ranges_query(params)
     return triplestore.query_sparql(query, params.triplestore_config)
+
+
+def _get_search_results(params):
+    pass
+
+
+def _build_body_query(params):
+    patterns = params["pattern"].lower().split()
+    query_string = " AND ".join(patterns) + "*"
+    body = {
+        "query": {
+            "query_string": {
+                "query": query_string
+            }
+        }
+    }
+
+    return body

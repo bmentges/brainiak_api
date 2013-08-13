@@ -73,8 +73,8 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
     def test_list_links_prev_and_next(self):
         response = self.fetch('/person/Gender/?page=2&per_page=1&do_item_count=1', method='GET')
         received_response = json.loads(response.body)
-        self.assertQueryStringArgsEqual(received_response["previous_args"], "page=1&per_page=1&do_item_count=1")
-        self.assertQueryStringArgsEqual(received_response["next_args"], "page=3&per_page=1&do_item_count=1")
+        self.assertQueryStringArgsEqual(received_response["_previous_args"], "page=1&per_page=1&do_item_count=1")
+        self.assertQueryStringArgsEqual(received_response["_next_args"], "page=3&per_page=1&do_item_count=1")
 
     def test_list_by_page_sort_first_page(self):
         response = self.fetch('/person/Gender/?page=1&per_page=2&sort_by=rdfs:label', method='GET')

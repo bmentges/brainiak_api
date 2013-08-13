@@ -302,6 +302,8 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthCity'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/City'},
+                u'range_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
+                u'range_label': {u'type': u'literal', u'value': u'City'},
                 u'super_property': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'},
                 u'title': {u'type': u'literal', u'value': u'Birth city of first known member of Species'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
@@ -325,6 +327,8 @@ class PredicatesQueryTestCase(QueryTestCase):
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'},
+                u'range_label': {u'type': u'literal', u'value': u'Place'},
+                u'range_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/Place'},
                 u'title': {u'type': u'literal', u'value': u'Birth place of first known member of Species'},
@@ -465,8 +469,8 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'range': {
                     u'@id': u'http://example.onto/Place',
                     u'format': u'uri',
-                    u'graph': u'',
-                    u'title': u'',
+                    u'graph': u'http://example.onto/',
+                    u'title': u'Place',
                     u'type': u'string'
                 },
                 u'title': u'Birth place of first known member of Species',

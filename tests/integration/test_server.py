@@ -1,6 +1,6 @@
 from unittest import TestCase
 from mock import patch
-from brianiak.server import Application
+from brainiak.server import Application
 
 class ServerTestCase(TestCase):
 

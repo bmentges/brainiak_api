@@ -3,7 +3,7 @@ from brainiak import triplestore
 
 
 def do_range_search(params):
-    pass
+    return None
 
 
 QUERY_PREDICATE_RANGES = """

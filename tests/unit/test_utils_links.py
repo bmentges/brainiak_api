@@ -203,41 +203,6 @@ class LinksTestCase(URLTestCase):
         expected = {
             'links': [
                 {
-                    'href': '/?page=1&per_page={per_page}&do_item_count={do_item_count}',
-                    'method': 'GET',
-                    'rel': 'first'
-                },
-                {
-                    'href': '/?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}',
-                    'method': 'GET',
-                    'rel': 'previous'
-                },
-                {
-                    'href': '/?page={next_page}&per_page={per_page}&do_item_count={do_item_count}',
-                    'method': 'GET',
-                    'rel': 'next'
-                },
-                {
-                    'href': '/?page={last_page}&per_page={per_page}&do_item_count={do_item_count}',
-                    'method': 'GET',
-                    'rel': 'last'
-                }
-            ],
-            'properties': {
-                'last_page': {'type': 'integer'},
-                'next_page': {'type': 'integer'},
-                'page': {'minimum': 1, 'type': 'integer'},
-                'per_page': {'minimum': 1, 'type': 'integer'},
-                'previous_page': {'minimum': 1, 'type': 'integer'}
-            }
-        }
-        self.assertEqual(computed, expected)
-
-    def test_collection_pagination_schema(self):
-        computed = collection_pagination_schema("/")
-        expected = {
-            'links': [
-                {
                     'href': '?{+_first_args}',
                     'method': 'GET',
                     'rel': 'first'

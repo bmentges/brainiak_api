@@ -153,35 +153,6 @@ def pagination_schema(root_url, extra_url_params=''):
     """Json schema part that expresses pagination structure"""
     def link(rel, href):
         link_pattern = {
-            "href": ''.join((root_url, href, extra_url_params)),
-            "method": "GET",
-            "rel": rel
-        }
-        return link_pattern
-
-    result = {
-        "properties": {
-            "page": {"type": "integer", "minimum": 1},
-            "per_page": {"type": "integer", "minimum": 1},
-            "previous_page": {"type": "integer", "minimum": 1},
-            "next_page": {"type": "integer"},
-            "last_page": {"type": "integer"}
-        },
-        "links": [
-            link('first', '?page=1&per_page={per_page}&do_item_count={do_item_count}'),
-            link('previous', '?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}'),
-            link('next', '?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
-            link('last', '?page={last_page}&per_page={per_page}&do_item_count={do_item_count}')
-        ]
-    }
-    return result
-
-
-# todo: test
-def collection_pagination_schema(root_url, extra_url_params=''):
-    """Json schema part that expresses pagination structure"""
-    def link(rel, href):
-        link_pattern = {
             "href": href,
             "method": "GET",
             "rel": rel

@@ -71,7 +71,7 @@ class GetContextTestCase(unittest.TestCase):
         handler = MockHandler(uri=base_url)
         params = ParamDict(handler, **param_dict)
         computed = list_all_contexts(params)
-        self.assertEqual(int(computed["item_count"]), 1)
+        self.assertTrue("item_count" not in computed)
 
     def test_without_item_count(self):
         base_url = "http://api.semantica.dev.globoi.com"

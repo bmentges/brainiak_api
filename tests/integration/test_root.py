@@ -57,12 +57,11 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         body = json.loads(response.body)
 
         keys = body.keys()
-        self.assertEqual(len(keys), 5)
+        self.assertEqual(len(keys), 4)
         self.assertIn("items", keys)
         self.assertIn('_base_url', keys)
         self.assertIn('_first_args', keys)
         self.assertIn('_next_args', keys)
-        self.assertIn('do_item_count', keys)
 
         upper_graph = {u'resource_id': u'upper', u'@id': u'http://semantica.globo.com/upper/', u'title': u'upper'}
         self.assertIn(upper_graph, body['items'])

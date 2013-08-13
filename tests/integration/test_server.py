@@ -2,6 +2,7 @@ from unittest import TestCase
 from mock import patch
 from brainiak.server import Application
 
+
 class ServerTestCase(TestCase):
 
     @patch("brainiak.server.log.initialize", side_effect=RuntimeError())

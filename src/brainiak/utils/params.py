@@ -272,5 +272,5 @@ class ParamDict(dict):
         arguments = self._make_arguments_dict().keys()
         for required_param in required_spec.required:
             if not required_param in arguments:
-                msg = "Required parameter {0} is missing from [{1:s}]"
-                raise RequiredParamMissing(msg.format(required_param, arguments))
+                msg = "Required parameter ({0}) was not given, received just: {1:s}"
+                raise RequiredParamMissing(msg.format(required_param, ",".join(arguments)))

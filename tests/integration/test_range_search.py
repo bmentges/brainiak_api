@@ -37,14 +37,17 @@ class TestQueryPredicatesRange(QueryTestCase):
     def test_query_predicate_superclass_range(self):
         expected_classes = ["http://example.onto/Place", "http://example.onto/City"]
         expected_labels = ["Place", "City"]
+        expected_graphs = ["http://example.onto/", "http://example.onto/"]
 
         query_params = {
             "predicate": "http://example.onto/birthPlace",
-            "lang_filter_label_range": ""
+            "lang_filter_range_label": ""
         }
         query_response = self.query(QUERY_PREDICATE_RANGES % query_params)
         response_classes = filter_values(query_response, "range")
-        response_labels = filter_values(query_response, "label_range")
+        response_labels = filter_values(query_response, "range_label")
+        response_graphs = filter_values(query_response, "range_graph")
 
         self.assertEqual(expected_classes, response_classes)
         self.assertEqual(expected_labels, response_labels)
+        self.assertEqual(expected_graphs, response_graphs)

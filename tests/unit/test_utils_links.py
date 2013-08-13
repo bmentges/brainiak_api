@@ -64,8 +64,8 @@ class TestPaginationItems(URLTestCase):
         self.assertEqual(len(computed), 4)
         self.assertEqual(computed['page'], 2)
         self.assertEqual(computed['per_page'], 2)
-        self.assertQueryStringArgsEqual(computed['previous_args'], 'per_page=2&page=1')
-        self.assertQueryStringArgsEqual(computed['next_args'], 'page=3&per_page=2')
+        self.assertQueryStringArgsEqual(computed['_previous_args'], 'per_page=2&page=1')
+        self.assertQueryStringArgsEqual(computed['_next_args'], 'page=3&per_page=2')
 
     def test_pagination_includes_do_item_count(self):
         params = {'page': 1, 'per_page': 2, 'do_item_count': '1'}
@@ -76,7 +76,7 @@ class TestPaginationItems(URLTestCase):
         self.assertEqual(computed['page'], 2)
         self.assertEqual(computed['per_page'], 2)
         self.assertEqual(computed['last_page'], 2)
-        self.assertQueryStringArgsEqual(computed['previous_args'], 'per_page=2&page=1&do_item_count=1')
+        self.assertQueryStringArgsEqual(computed['_previous_args'], 'per_page=2&page=1&do_item_count=1')
 
     def test_pagination_without_previous_page(self):
         params = {'page': 0, 'per_page': 3}
@@ -85,7 +85,7 @@ class TestPaginationItems(URLTestCase):
         computed = pagination_items(query_params, 3)
         self.assertEqual(computed['page'], 1)
         self.assertEqual(computed['per_page'], 3)
-        self.assertQueryStringArgsEqual(computed['next_args'], 'per_page=3&page=2')
+        self.assertQueryStringArgsEqual(computed['_next_args'], 'per_page=3&page=2')
 
 
 class TestMergeSchemas(unittest.TestCase):
@@ -231,6 +231,40 @@ class LinksTestCase(URLTestCase):
                 'page': {'minimum': 1, 'type': 'integer'},
                 'per_page': {'minimum': 1, 'type': 'integer'},
                 'previous_page': {'minimum': 1, 'type': 'integer'}
+            }
+        }
+        self.assertEqual(computed, expected)
+
+    def test_collection_pagination_schema(self):
+        computed = collection_pagination_schema("/")
+        expected = {
+            'links': [
+                {
+                    'href': '?{+_first_args}',
+                    'method': 'GET',
+                    'rel': 'first'
+                },
+                {
+                    'href': '?{+_previous_args}',
+                    'method': 'GET',
+                    'rel': 'previous'
+                },
+                {
+                    'href': '?{+_next_args}',
+                    'method': 'GET',
+                    'rel': 'next'
+                },
+                {
+                    'href': '?{+_last_args}',
+                    'method': 'GET',
+                    'rel': 'last'
+                }
+            ],
+            'properties': {
+                '_first_args': {'type': 'string'},
+                '_next_args': {'type': 'string'},
+                '_previous_args': {'type': 'string'},
+                '_last_args': {'type': 'string'}
             }
         }
         self.assertEqual(computed, expected)

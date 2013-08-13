@@ -136,7 +136,7 @@ def pagination_items(query_params, total_items=None):
 
     if previous_page:
         #result['previous_page'] = previous_page
-        result["previous_args"] = merge_querystring(query_string, {"page": previous_page})
+        result["_previous_args"] = merge_querystring(query_string, {"page": previous_page})
 
     if (query_params.get("do_item_count", None) == "1") and (total_items is not None):
         last_page = get_last_page(total_items, per_page)
@@ -146,7 +146,7 @@ def pagination_items(query_params, total_items=None):
     next_page = get_next_page(page, last_page)
     if next_page:
         #result['next_page'] = next_page
-        result["next_args"] = merge_querystring(query_string, {"page": next_page})
+        result["_next_args"] = merge_querystring(query_string, {"page": next_page})
 
     if last_page:
         result['last_page'] = last_page
@@ -177,6 +177,34 @@ def pagination_schema(root_url, extra_url_params=''):
             link('previous', '?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}'),
             link('next', '?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
             link('last', '?page={last_page}&per_page={per_page}&do_item_count={do_item_count}')
+        ]
+    }
+    return result
+
+
+# todo: test
+def collection_pagination_schema(root_url, extra_url_params=''):
+    """Json schema part that expresses pagination structure"""
+    def link(rel, href):
+        link_pattern = {
+            "href": href,
+            "method": "GET",
+            "rel": rel
+        }
+        return link_pattern
+
+    result = {
+        "properties": {
+            "_first_args": {"type": "string"},
+            "_previous_args": {"type": "string"},
+            "_next_args": {"type": "string"},
+            "_last_args": {"type": "string"},
+        },
+        "links": [
+            link('first', '?{+_first_args}'),
+            link('previous', '?{+_previous_args}'),
+            link('next', '?{+_next_args}'),
+            link('last', '?{+_last_args}')
         ]
     }
     return result

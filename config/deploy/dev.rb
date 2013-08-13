@@ -6,6 +6,7 @@ set :barramento_baas_host,        'barramento.baas.dev.globoi.com'
 set :filer_host,                  'riofd06'
 set :redis_host,                  'redis.dev.globoi.com'
 set :syslog_host,                 'syslog.tcp.glog.dev.globoi.com'
+set :elasticsearch_host,          'esearch.dev.globoi.com'
 
 # Ports
 set :redis_port,                  20015

@@ -55,17 +55,17 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertIn("items", body.keys())
+
+        keys = body.keys()
+        self.assertEqual(len(keys), 5)
+        self.assertIn("items", keys)
+        self.assertIn('_base_url', keys)
+        self.assertIn('_first_args', keys)
+        self.assertIn('_next_args', keys)
+        self.assertIn('do_item_count', keys)
 
         upper_graph = {u'resource_id': u'upper', u'@id': u'http://semantica.globo.com/upper/', u'title': u'upper'}
         self.assertIn(upper_graph, body['items'])
-
-        keys = body.keys()
-        self.assertIn('_next_args', keys)
-        self.assertIn('page', keys)
-        self.assertIn('do_item_count', keys)
-        self.assertIn('page', keys)
-        self.assertIn('_base_url', keys)
 
     def test_200_with_pagination(self):
         # disclaimer: this test assumes there are > 2 non-empty registered graphs in Virtuoso

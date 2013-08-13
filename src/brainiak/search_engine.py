@@ -11,16 +11,6 @@ from brainiak.settings import ELASTICSEARCH_ENDPOINT
 format_post = "ELASTICSEARCH - %(url)s - %(method)s [tempo: %(time_diff)s] - QUERY - %(body)s"
 
 
-#{
-#    "query": {
-#        "query_string": {
-#            #"fields": []
-#            "query": "Rio AND Br*"
-#        }
-#    }
-#}
-
-
 def run_search(body, indexes=None, types=None):
     request_url = _build_elasticsearch_request_url(indexes, types)
 

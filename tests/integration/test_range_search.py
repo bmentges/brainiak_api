@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 
-from brainiak.handlers import HTTPError
 from brainiak.range_search.range_search import QUERY_PREDICATE_RANGES
 from brainiak.utils.sparql import filter_values
 
@@ -12,9 +11,9 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase):
 
     def test_range_search_with_required_params(self):
         response = self.fetch('/_range_search?pattern=12&predicate=Override')
-        self.assertEqual(response.code, 200)
-        json_received = json.loads(response.body)
-        self.assertEqual(json_received, {})
+        self.assertEqual(response.code, 404)
+        #json_received = json.loads(response.body)
+        #self.assertEqual(json_received, {})
 
     def test_range_search_without_required_param_predicate(self):
         response = self.fetch('/_range_search?pattern=12')

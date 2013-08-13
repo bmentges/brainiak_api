@@ -7,6 +7,7 @@ from brainiak.utils.sparql import filter_values
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
+
 class TestRangeSearch(TornadoAsyncHTTPTestCase):
 
     def test_range_search_with_required_params(self):

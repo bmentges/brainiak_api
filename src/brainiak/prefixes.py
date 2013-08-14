@@ -155,18 +155,18 @@ def normalize_uri(uri, mode, shorten_uri_function=shorten_uri):
     raise InvalidModeForNormalizeUriError('Unrecognized mode {0:s}'.format(mode))
 
 
-def normalize_recursively(instance, ctx=None):
+def expand_all_uris_recursively(instance, ctx=None):
     if isinstance(instance, basestring):
         return expand_uri(instance, ctx)
     elif isinstance(instance, list):
-        return [normalize_recursively(i, ctx) for i in instance]
+        return [expand_all_uris_recursively(i, ctx) for i in instance]
     elif isinstance(instance, dict):
         if '@context' in instance:
             if ctx is None:
                 ctx = {}
             ctx.update(instance['@context'])
             del instance['@context']
-        return {normalize_recursively(k, ctx): normalize_recursively(v, ctx) for (k, v) in instance.items()}
+        return {expand_all_uris_recursively(k, ctx): expand_all_uris_recursively(v, ctx) for (k, v) in instance.items()}
     return instance
 
 

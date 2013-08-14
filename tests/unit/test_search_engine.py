@@ -19,7 +19,6 @@ class SearchEngineTestCase(TestCase):
         response = _build_elasticsearch_request_url(None, ["class_uri_encoded"])
         self.assertEquals(expected_url, response)
 
-
     @patch("brainiak.search_engine.ELASTICSEARCH_ENDPOINT", "http://esearch.dev.globoi.com")
     def test_build_elasticsearch_request_url_types_none(self):
         expected_url = "http://esearch.dev.globoi.com/semantica.glb/_search"

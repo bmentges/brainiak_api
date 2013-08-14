@@ -21,6 +21,7 @@ from brainiak.instance.edit_instance import edit_instance, instance_exists
 from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
 from brainiak.prefix.get_prefixes import list_prefixes
+from brainiak.prefixes import expand_all_uris_recursively
 from brainiak.range_search.range_search import do_range_search
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
@@ -305,6 +306,7 @@ class CollectionHandler(BrainiakRequestHandler):
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
 
+
         (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
         instance_url = self.build_resource_url(instance_id)
 
@@ -317,6 +319,8 @@ class CollectionHandler(BrainiakRequestHandler):
 
         if settings.NOTIFY_BUS:
             try:
+                # TODO: uncomment below
+                instance_data = expand_all_uris_recursively(instance_data)
                 notify_bus(instance=instance_uri,
                            klass=self.query_params["class_uri"],
                            graph=self.query_params["graph_uri"],

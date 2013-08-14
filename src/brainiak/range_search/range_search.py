@@ -7,10 +7,11 @@ from brainiak import triplestore
 
 def do_range_search(params):
     range_result = _get_predicate_ranges(params)
-    range_result = compress_keys_and_values(range_result)
 
     classes = _validate_class_restriction(params, range_result)
     graphs = _validate_graph_restriction(params, range_result)
+
+    compressed_result = compress_keys_and_values(range_result)
     return None
 
 
@@ -61,8 +62,18 @@ def _validate_class_restriction(params, range_result):
 
     return list(classes)
 
+
 def _validate_graph_restriction(params, range_result):
-    pass
+    graphs = set(filter_values(range_result, "range_graph"))
+    if params["restrict_graphs"] is not None:
+        graphs_not_in_range = list(set(params["restrict_graphs"]).difference(graphs))
+        if graphs_not_in_range:
+            raise HTTPError(400,
+                            "Classes in the range of predicate '{0}' are not in graphs {1}".format(graphs_not_in_range, params["predicate"]))
+        graphs = params["restrict_graphs"]
+
+    return list(graphs)
+
 
 def _build_body_query(params):
     patterns = params["pattern"].lower().split()

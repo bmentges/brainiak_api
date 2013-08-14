@@ -5,7 +5,7 @@ from mock import patch
 from brainiak import prefixes
 from brainiak.prefixes import (expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri,
                                prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix,
-                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, normalize_recursively, get_prefixes_dict)
+                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, expand_all_uris_recursively, get_prefixes_dict)
 
 
 class PrefixesTestCase(unittest.TestCase):
@@ -199,6 +199,6 @@ class ExpansionTestCase(unittest.TestCase):
     maxDiff = None
 
     def test_normalize_recusively_with_valid_input(self):
-        self.assertDictEqual(normalize_recursively(VALID_COMPRESSED_INSTANCE_DATA), EXPECTED_UNCOMPRESSED_INSTANCE_DATA)
+        self.assertDictEqual(expand_all_uris_recursively(VALID_COMPRESSED_INSTANCE_DATA), EXPECTED_UNCOMPRESSED_INSTANCE_DATA)
 
 #    def test_normalize_recursively_with_invalid_type

@@ -75,7 +75,7 @@ def _validate_graph_restriction(params, range_result):
     return list(graphs)
 
 
-def _build_body_query(params):
+def _build_body_query(params, classes):
     patterns = params["pattern"].lower().split()
     query_string = " AND ".join(patterns) + "*"
     body = {
@@ -86,4 +86,18 @@ def _build_body_query(params):
         }
     }
 
+    body["filter"] = _build_type_filters(classes)
+
     return body
+
+
+def _build_type_filters(classes):
+    filter_list = []
+    for klass in classes:
+        filter_dict = {"type": {"value": klass}}
+        filter_list.append(filter_dict)
+
+    type_filters = {
+        "or": filter_list
+    }
+    return type_filters

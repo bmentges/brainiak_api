@@ -5,25 +5,27 @@ from mock import patch
 from tornado.web import HTTPError
 
 from brainiak.range_search.range_search import _build_body_query, _validate_class_restriction, \
-    _validate_graph_restriction
+    _validate_graph_restriction, _build_type_filters
 
 
 class RangeSearchTestCase(TestCase):
 
-    def test_build_query_body(self):
+    @patch("brainiak.range_search.range_search._build_type_filters", return_value={})
+    def test_build_query_body(self, mocked_build_type_filters):
         expected = {
             "query": {
                 "query_string": {
                     "query": "rio AND de AND jan*"
                 }
-            }
+            },
+            "filter": {}
         }
 
         params = {
             "pattern": "Rio De Jan"
         }
 
-        response = _build_body_query(params)
+        response = _build_body_query(params, [])
         self.assertEqual(expected, response)
 
     @patch("brainiak.range_search.range_search.filter_values", return_value=["class1", "class2"])
@@ -85,3 +87,24 @@ class RangeSearchTestCase(TestCase):
             "predicate": "predicate1"
         }
         self.assertRaises(HTTPError, _validate_graph_restriction, params, None) # None because filter_values is mocked
+
+
+    def test_build_type_filters(self):
+        expected = {
+            "or": [
+                {
+                    "type": {
+                        "value": "http://semantica.globo.com/base/Pessoa"
+                    }
+                },
+                {
+                    "type": {
+                        "value": "http://semantica.globo.com/place/City"
+                    }
+                }
+            ]
+        }
+        classes = ["http://semantica.globo.com/base/Pessoa", "http://semantica.globo.com/place/City"]
+
+        response = _build_type_filters(classes)
+        self.assertEqual(expected, response)

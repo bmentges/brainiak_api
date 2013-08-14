@@ -11,8 +11,8 @@ from brainiak.settings import ELASTICSEARCH_ENDPOINT
 format_post = "ELASTICSEARCH - %(url)s - %(method)s [tempo: %(time_diff)s] - QUERY - %(body)s"
 
 
-def run_search(body, indexes=None, types=None):
-    request_url = _build_elasticsearch_request_url(indexes, types)
+def run_search(body, indexes=None):
+    request_url = _build_elasticsearch_request_url(indexes)
 
     request_params = {
         "url": request_url,
@@ -33,7 +33,7 @@ def run_search(body, indexes=None, types=None):
     return response
 
 
-def _build_elasticsearch_request_url(indexes, types):
+def _build_elasticsearch_request_url(indexes):
     request_url = ELASTICSEARCH_ENDPOINT + "/"
 
     if indexes is not None:
@@ -41,22 +41,6 @@ def _build_elasticsearch_request_url(indexes, types):
     else:
         request_url += "semantica.*/"
 
-    if types is not None:
-        request_url += urllib.quote_plus(",".join(types)) + "/"
-
     request_url += "_search"
 
     return request_url
-
-
-if __name__ == "__main__":
-    indexes = None
-    types = None
-    body = {
-        "query": {
-            "query_string": {
-                "query": "Rio Bra*"
-            }
-        }
-    }
-    run_search(body, indexes=indexes, types=types)

@@ -6,7 +6,7 @@ from tornado.web import HTTPError
 
 from brainiak.range_search.range_search import _build_body_query, _validate_class_restriction, \
     _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
-    _build_class_label_dict
+    _build_class_label_dict, _build_items
 
 
 class RangeSearchTestCase(TestCase):
@@ -139,4 +139,45 @@ class RangeSearchTestCase(TestCase):
             }
         ]
         response = _build_class_label_dict(compressed_result)
+        self.assertEqual(expected, response)
+
+    def test_build_items(self):
+        expected = [{
+                "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
+                "title": "Globoland",
+                "@type": "http://semantica.globo.com/place/City",
+                "type_title": "Cidade",
+            }
+        ]
+
+        elasticsearch_result = {
+            "took": 256,
+            "timed_out": False,
+            "_shards": {
+                "total": 109,
+                "successful": 109,
+                "failed": 0
+            },
+            "hits": {
+                "total": 1,
+                "max_score": 1,
+                "hits": [
+                    {
+                        "_index": "semantica.place",
+                        "_type": "http://semantica.globo.com/place/City",
+                        "_id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
+                        "_score": 1,
+                        "fields": {
+                            "rdfs:label": "Globoland"
+                        }
+                    }
+                ]
+            }
+        }
+
+        class_label_dict = {
+            "http://semantica.globo.com/place/City": "Cidade"
+        }
+
+        response = _build_items(elasticsearch_result, class_label_dict)
         self.assertEqual(expected, response)

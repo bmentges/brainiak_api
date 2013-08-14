@@ -3,6 +3,7 @@ from tornado.web import HTTPError
 from brainiak.utils.sparql import add_language_support, compress_keys_and_values, \
     filter_values
 from brainiak import triplestore
+from brainiak.search_engine import run_search
 
 
 def do_range_search(params):
@@ -15,7 +16,15 @@ def do_range_search(params):
     compressed_result = compress_keys_and_values(range_result)
     class_label_dict = _build_class_label_dict(compressed_result)
 
-    return None
+    request_body = _build_body_query(params, classes)
+    elasticsearch_result = run_search(request_body, indexes=indexes)
+
+    items = _build_items(elasticsearch_result, class_label_dict)
+
+    if not items:
+        return None
+    else:
+        return None # TODO json
 
 
 QUERY_PREDICATE_RANGES = """
@@ -78,10 +87,13 @@ def _validate_graph_restriction(params, range_result):
     return list(graphs)
 
 
+# TODO restrict_fields
 def _build_body_query(params, classes):
     patterns = params["pattern"].lower().split()
     query_string = " AND ".join(patterns) + "*"
     body = {
+        #"from": calculate_offset(params, settings.DEFAULT_PAGE, settings.PER_PAGE),
+        #"size": int(params["per_page"]),
         "query": {
             "query_string": {
                 "query": query_string
@@ -112,6 +124,21 @@ def _build_class_label_dict(compressed_result):
         class_label_dict[result["range"]] = result["range_label"]
     return class_label_dict
 
+def _build_items(result, class_label_dict):
+    items = []
+    item_count = result["hits"]["total"]
+    if item_count:
+        for item in result["hits"]["hits"]:
+            item_dict = {
+                "title": item["fields"]["rdfs:label"],  # TODO upper:name, upper:fullName
+                "@id": item["_id"],
+                "@type": item["_type"],
+                "type_title": class_label_dict[item["_type"]]
+            }
+            items.append(item_dict)
+
+    # TODO pagination
+    return items
 
 GRAPH_PREFIX = "http://semantica.globo.com/"
 

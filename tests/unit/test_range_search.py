@@ -5,7 +5,8 @@ from mock import patch
 from tornado.web import HTTPError
 
 from brainiak.range_search.range_search import _build_body_query, _validate_class_restriction, \
-    _validate_graph_restriction, _build_type_filters
+    _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
+    _build_class_label_dict
 
 
 class RangeSearchTestCase(TestCase):
@@ -106,4 +107,36 @@ class RangeSearchTestCase(TestCase):
         classes = ["http://semantica.globo.com/base/Pessoa", "http://semantica.globo.com/place/City"]
 
         response = _build_type_filters(classes)
+        self.assertEqual(expected, response)
+
+    def test_graph_uri_to_index_name_base(self):
+        graph_uri = "http://semantica.globo.com/"
+        expected = "semantica.glb"
+        result = _graph_uri_to_index_name(graph_uri)
+        self.assertEqual(result, expected)
+
+    def test_graph_uri_to_index_name_place(self):
+        graph_uri = "http://semantica.globo.com/place/"
+        expected = "semantica.place"
+        result = _graph_uri_to_index_name(graph_uri)
+        self.assertEqual(result, expected)
+
+    def test_build_class_label_dict(self):
+        expected = {
+            "class1": "label1",
+            "class2": "label2"
+        }
+        compressed_result = [
+            {
+                "range": "class1",
+                "range_graph": "graph1",
+                "range_label": "label1"
+            },
+            {
+                "range": "class2",
+                "range_graph": "graph2",
+                "range_label": "label2"
+            }
+        ]
+        response = _build_class_label_dict(compressed_result)
         self.assertEqual(expected, response)

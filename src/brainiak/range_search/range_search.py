@@ -10,8 +10,11 @@ def do_range_search(params):
 
     classes = _validate_class_restriction(params, range_result)
     graphs = _validate_graph_restriction(params, range_result)
+    indexes = [_graph_uri_to_index_name(graph) for graph in graphs]
 
     compressed_result = compress_keys_and_values(range_result)
+    class_label_dict = _build_class_label_dict(compressed_result)
+
     return None
 
 
@@ -101,3 +104,20 @@ def _build_type_filters(classes):
         "or": filter_list
     }
     return type_filters
+
+
+def _build_class_label_dict(compressed_result):
+    class_label_dict = {}
+    for result in compressed_result:
+        class_label_dict[result["range"]] = result["range_label"]
+    return class_label_dict
+
+
+GRAPH_PREFIX = "http://semantica.globo.com/"
+
+def _graph_uri_to_index_name(graph_uri):
+    if graph_uri == GRAPH_PREFIX:
+        return "semantica.glb"
+    else:
+        # http://semantica.globo.com/place/ > semantica.place
+        return "semantica." + graph_uri.split("/")[-2]

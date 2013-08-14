@@ -1,7 +1,24 @@
 {
+  "fields": [
+    "rdfs:label"
+  ],
   "query": {
     "query_string": {
-      "query": "globo*"
+      "query": "maria*"
     }
+  },
+  "filter": {
+    "or": [
+      {
+        "type": {
+          "value": "http://semantica.globo.com/base/Pessoa"
+        }
+      },
+      {
+        "type": {
+          "value": "http://semantica.globo.com/place/City"
+        }
+      }
+    ]
   }
 }

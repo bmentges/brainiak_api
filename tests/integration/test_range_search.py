@@ -22,6 +22,10 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase):
         json_received = json.loads(response.body)
         self.assertEqual(json_received['error'], "HTTP error: 400\nRequired parameter (predicate) was not given, received just: pattern")
 
+    def test_range_with_real_predicate(self):
+        response = self.fetch('/_range_search?pattern=globo&predicate=http://semantica.globo.com/person/birthPlace')
+
+
     # def test_range_search_without_required_param_predicate(self):
     #     self.assertRaises(HTTPError, self.fetch, '/_range_search?pattern=12')
 

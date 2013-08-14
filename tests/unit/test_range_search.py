@@ -54,7 +54,7 @@ class RangeSearchTestCase(TestCase):
             "restrict_classes": ["class1", "class2", "class3"],
             "predicate": "predicate1"
         }
-        self.assertRaises(HTTPError, _validate_class_restriction, params, None) # None because filter_values is mocked
+        self.assertRaises(HTTPError, _validate_class_restriction, params, None)  # None because filter_values is mocked
 
     @patch("brainiak.range_search.range_search.filter_values", return_value=["graph1", "graph2"])
     def test_validate_graphs_restriction(self, mocked_filter_values):
@@ -84,4 +84,4 @@ class RangeSearchTestCase(TestCase):
             "restrict_graphs": ["graph1", "graph2", "graph3"],
             "predicate": "predicate1"
         }
-        self.assertRaises(HTTPError, _validate_graph_restriction, params, None) # None because filter_values is mocked
+        self.assertRaises(HTTPError, _validate_graph_restriction, params, None)  # None because filter_values is mocked

@@ -1,7 +1,7 @@
-{ "query": {
-      "multi_match" : {
-        "query" : "MG",
-        "fields" : [ "base:nome_completo", "upper:fullName", "upper:fullName", "rdfs:label" ]
-      }
+{
+  "query": {
+    "query_string": {
+      "query": "globo*"
     }
+  }
 }

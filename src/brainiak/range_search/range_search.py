@@ -24,7 +24,7 @@ def do_range_search(params):
     if not items:
         return None
     else:
-        return None # TODO json
+        return None  # TODO complete dict
 
 
 QUERY_PREDICATE_RANGES = """
@@ -56,6 +56,30 @@ def _build_predicate_ranges_query(query_params):
 def _get_predicate_ranges(params):
     query = _build_predicate_ranges_query(params)
     return triplestore.query_sparql(query, params.triplestore_config)
+
+
+QUERY_SUBPROPERTIES = """
+DEFINE input:inference <http://semantica.globo.com/ruleset>
+SELECT DISTINCT ?property WHERE {
+  ?property rdfs:subPropertyOf <%s>
+}
+"""
+
+
+def _get_subproperties(params, super_property):
+    query = QUERY_SUBPROPERTIES % super_property
+    result = triplestore.query_sparql(query, params.triplestore_config)
+    return filter_values(result, "property")
+
+
+def _get_search_fields(params):
+    search_fields_in_params = params.get("search_fields", ["rdfs:label"])
+    search_fields = set(search_fields_in_params)
+    for field in search_fields_in_params:
+        sub_properties = _get_subproperties(params, field)
+        search_fields.update(sub_properties)
+
+    return list(search_fields)
 
 
 # call search_engine.py
@@ -96,7 +120,8 @@ def _build_body_query(params, classes):
         #"size": int(params["per_page"]),
         "query": {
             "query_string": {
-                "query": query_string
+                "query": query_string,
+                "fields": _get_search_fields(params)
             }
         }
     }
@@ -124,6 +149,7 @@ def _build_class_label_dict(compressed_result):
         class_label_dict[result["range"]] = result["range_label"]
     return class_label_dict
 
+
 def _build_items(result, class_label_dict):
     items = []
     item_count = result["hits"]["total"]
@@ -141,6 +167,7 @@ def _build_items(result, class_label_dict):
     return items
 
 GRAPH_PREFIX = "http://semantica.globo.com/"
+
 
 def _graph_uri_to_index_name(graph_uri):
     if graph_uri == GRAPH_PREFIX:

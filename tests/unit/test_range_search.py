@@ -6,17 +6,19 @@ from tornado.web import HTTPError
 
 from brainiak.range_search.range_search import _build_body_query, _validate_class_restriction, \
     _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
-    _build_class_label_dict, _build_items
+    _build_class_label_dict, _build_items, _get_search_fields
 
 
 class RangeSearchTestCase(TestCase):
 
     @patch("brainiak.range_search.range_search._build_type_filters", return_value={})
-    def test_build_query_body(self, mocked_build_type_filters):
+    @patch("brainiak.range_search.range_search._get_search_fields", return_value=["rdfs:label", "upper:name"])
+    def test_build_query_body(self, mocked_get_search_fields, mocked_build_type_filters):
         expected = {
             "query": {
                 "query_string": {
-                    "query": "rio AND de AND jan*"
+                    "query": "rio AND de AND jan*",
+                    "fields": ["rdfs:label", "upper:name"],
                 }
             },
             "filter": {}
@@ -142,7 +144,8 @@ class RangeSearchTestCase(TestCase):
         self.assertEqual(expected, response)
 
     def test_build_items(self):
-        expected = [{
+        expected = [
+            {
                 "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
                 "title": "Globoland",
                 "@type": "http://semantica.globo.com/place/City",
@@ -181,3 +184,11 @@ class RangeSearchTestCase(TestCase):
 
         response = _build_items(elasticsearch_result, class_label_dict)
         self.assertEqual(expected, response)
+
+    @patch("brainiak.range_search.range_search._get_subproperties", return_value=["property1", "property2"])
+    def test_get_search_fields(self, mocked_get_subproperties):
+        expected = set(["property1", "property2", "rdfs:label"])
+        params = {}
+        search_fields = _get_search_fields(params)
+
+        self.assertEqual(expected, set(search_fields))

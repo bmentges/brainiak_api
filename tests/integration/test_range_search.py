@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 
-from brainiak.range_search.range_search import QUERY_PREDICATE_RANGES
+from brainiak.range_search.range_search import QUERY_PREDICATE_RANGES, \
+    QUERY_SUBPROPERTIES
 from brainiak.utils.sparql import filter_values
 
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
@@ -51,3 +52,9 @@ class TestQueryPredicatesRange(QueryTestCase):
         self.assertEqual(expected_classes, response_classes)
         self.assertEqual(expected_labels, response_labels)
         self.assertEqual(expected_graphs, response_graphs)
+
+    def test_query_subproperties(self):
+        expected = ["http://example.onto/birthCity"]
+        query_response = self.query(QUERY_SUBPROPERTIES % "http://example.onto/birthPlace")
+        response = filter_values(query_response, "property")
+        self.assertEqual(expected, response)

@@ -30,6 +30,9 @@ def optionals(*args):
 
 # The parameters below as given to ParamDict with other keyword arguments,
 # but they are not URL arguments because they are part of the URL path
+
+DEFAULT_PARAMS = optionals('lang', 'graph_uri', 'expand_uri', 'expand_uri_keys', 'expand_uri_values')
+
 NON_ARGUMENT_PARAMS = ('context_name', 'class_name', 'instance_id')
 
 CACHE_PARAMS = DefaultParamsDict(purge="0")
@@ -183,13 +186,13 @@ class ParamDict(dict):
         "Define a set of predefined keys that "
         self["lang"] = self.optionals.get("lang", settings.DEFAULT_LANG)
 
-        self["expand_uri"] = self.optionals.get("expand_uri", settings.DEFAULT_URI_EXPANSION)
-        self["expand_uri_values"] = self.optionals.get("expand_uri_values", settings.DEFAULT_URI_EXPANSION)
-        self["expand_uri_keys"] = self.optionals.get("expand_uri_keys", settings.DEFAULT_URI_EXPANSION)
-
         self._set_if_optional("context_name", self.optionals.get("context_name", "invalid_context"))
         self._set_if_optional("class_name", self.optionals.get("class_name", "invalid_class"))
         self._set_if_optional("instance_id", self.optionals.get("instance_id", "invalid_instance"))
+
+        self["expand_uri"] = self.optionals.get("expand_uri", settings.DEFAULT_URI_EXPANSION)
+        self["expand_uri_values"] = self.optionals.get("expand_uri_values", settings.DEFAULT_URI_EXPANSION)
+        self["expand_uri_keys"] = self.optionals.get("expand_uri_keys", settings.DEFAULT_URI_EXPANSION)
 
         # if the context name is defined, the graph_uri should follow it by default, but it can be overriden
         if "context_name" in self:

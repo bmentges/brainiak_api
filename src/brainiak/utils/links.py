@@ -1,4 +1,4 @@
-from urlparse import urlparse, parse_qs
+from urlparse import parse_qs, urlparse, urlsplit, urlunsplit
 from math import ceil
 from urllib import urlencode, quote
 
@@ -17,6 +17,7 @@ def content_type_profile(schema_url):
     )
     if parsed_url.query:
         schema_url += "?{0}".format(quote(parsed_url.query))
+
     if parsed_url.fragment:
         schema_url += "#{0}".format(quote(parsed_url.fragment))
 
@@ -24,23 +25,25 @@ def content_type_profile(schema_url):
     return content_type
 
 
-def assemble_url(url, params={}):
-    parsed_url = urlparse(url)
+# todo: test
+def merge_querystring(querystring, params):
+    existing_params = parse_qs(querystring)
+    params = dict(existing_params, **params)
+    return urlencode(params, doseq=True)
+
+
+# test: order between declarations in url and in params
+def assemble_url(url="", params={}):
+    splitted_url = urlsplit(url)
 
     if isinstance(params, str):
         params = parse_qs(params)
 
-    if parsed_url.query:
-        existing_params = parse_qs(parsed_url.query)
-        params = dict(params, **existing_params)
-        url_size_minus_query_string = len(parsed_url.query) + 1
-        url = url[:-url_size_minus_query_string]
+    query = merge_querystring(splitted_url.query, params)
+    splitted_url = list(splitted_url)
+    splitted_url[3] = query
 
-    if params:
-        encoded_params = urlencode(params, doseq=True)
-        return "{0}?{1}".format(url, encoded_params)
-    else:
-        return "{0}".format(url)
+    return urlunsplit(splitted_url)
 
 
 # TODO: refactor and add to a method similar to utils.params.args
@@ -54,7 +57,10 @@ def filter_query_string_by_key_prefix(query_string, include_prefixes=[]):
 
 
 def remove_last_slash(url):
-    return url[:-1] if url.endswith("/") else url
+    if url.endswith("/"):
+        return url[:-1]
+    else:
+        return url
 
 
 def split_into_chunks(items, chunk_size):
@@ -119,26 +125,26 @@ def pagination_items(query_params, total_items=None):
     """Add attributes and values related to pagination to a listing page.
     See also https://coderwall.com/p/lkcaag?i=1&p=1&q=sort%3Aupvotes+desc&t[]=algorithm&t[]=algorithms
     """
+    query_string = query_params["request"].query
     page = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
-    previous_page = get_previous_page(page)
     per_page = int(query_params["per_page"])
-    result = {
-        'page': page,
-        'per_page': per_page
-    }
-    if previous_page:
-        result['previous_page'] = previous_page
 
+    result = {
+        "_first_args": merge_querystring(query_string, {"page": 1})
+    }
+
+    last_page = None
     if (query_params.get("do_item_count", None) == "1") and (total_items is not None):
         last_page = get_last_page(total_items, per_page)
-    else:
-        last_page = None
+        result["_last_args"] = merge_querystring(query_string, {"page": last_page})
+
+    previous_page = get_previous_page(page)
+    if previous_page:
+        result["_previous_args"] = merge_querystring(query_string, {"page": previous_page})
+
     next_page = get_next_page(page, last_page)
     if next_page:
-        result['next_page'] = next_page
-
-    if last_page:
-        result['last_page'] = last_page
+        result["_next_args"] = merge_querystring(query_string, {"page": next_page})
 
     return result
 
@@ -147,7 +153,7 @@ def pagination_schema(root_url, extra_url_params=''):
     """Json schema part that expresses pagination structure"""
     def link(rel, href):
         link_pattern = {
-            "href": ''.join((root_url, href, extra_url_params)),
+            "href": href,
             "method": "GET",
             "rel": rel
         }
@@ -155,17 +161,16 @@ def pagination_schema(root_url, extra_url_params=''):
 
     result = {
         "properties": {
-            "page": {"type": "integer", "minimum": 1},
-            "per_page": {"type": "integer", "minimum": 1},
-            "previous_page": {"type": "integer", "minimum": 1},
-            "next_page": {"type": "integer"},
-            "last_page": {"type": "integer"}
+            "_first_args": {"type": "string"},
+            "_previous_args": {"type": "string"},
+            "_next_args": {"type": "string"},
+            "_last_args": {"type": "string"},
         },
         "links": [
-            link('first', '?page=1&per_page={per_page}&do_item_count={do_item_count}'),
-            link('previous', '?page={previous_page}&per_page={per_page}&do_item_count={do_item_count}'),
-            link('next', '?page={next_page}&per_page={per_page}&do_item_count={do_item_count}'),
-            link('last', '?page={last_page}&per_page={per_page}&do_item_count={do_item_count}')
+            link('first', '?{+_first_args}'),
+            link('previous', '?{+_previous_args}'),
+            link('next', '?{+_next_args}'),
+            link('last', '?{+_last_args}')
         ]
     }
     return result

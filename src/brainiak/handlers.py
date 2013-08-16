@@ -455,7 +455,10 @@ class RangeSearchHandler(BrainiakRequestHandler):
     def post(self):
         valid_params = PAGING_PARAMS
 
-        body_params = json.loads(self.request.body)
+        raw_body_params = json.loads(self.request.body)
+        body_params = expand_all_uris_recursively(raw_body_params)
+        if '@context' in body_params:
+            del body_params['@context']
 
         with safe_params(valid_params, SUGGEST_REQUIRED_PARAMS + SUGGEST_OPTIONAL_PARAMS):
             validate_body_params(body_params, SUGGEST_REQUIRED_PARAMS, SUGGEST_OPTIONAL_PARAMS)

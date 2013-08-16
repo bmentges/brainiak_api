@@ -7,10 +7,11 @@ from brainiak.collection.get_collection import query_filter_instances, Query
 
 from tests.mocks import Params
 from tests.sparql import QueryTestCase
+from tests.utils import URLTestCase
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
-class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
+class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
 
     maxDiff = None
 
@@ -64,10 +65,29 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase):
 
     def test_list_by_page_with_count(self):
         response = self.fetch('/person/Gender/?page=1&per_page=2&do_item_count=1', method='GET')
-        received_response = json.loads(response.body)
+
         self.assertEqual(response.code, 200)
+        received_response = json.loads(response.body)
+
+        self.assertEqual(len(received_response), 9)
+        keys = received_response.keys()
+        self.assertIn("items", keys)
+        self.assertIn("item_count", keys)
+        self.assertIn('_base_url', keys)
+        self.assertIn('_first_args', keys)
+        self.assertIn('_last_args', keys)
+        self.assertIn('_next_args', keys)
+        self.assertIn('_class_prefix', keys)
+        self.assertIn('_schema_url', keys)
+        self.assertIn('@context', keys)
+
         self.assertEqual(len(received_response['items']), 2)
-        self.assertEqual(received_response['item_count'], 3)
+
+    def test_list_links_prev_and_next(self):
+        response = self.fetch('/person/Gender/?page=2&per_page=1&do_item_count=1', method='GET')
+        received_response = json.loads(response.body)
+        self.assertQueryStringArgsEqual(received_response["_previous_args"], "page=1&per_page=1&do_item_count=1")
+        self.assertQueryStringArgsEqual(received_response["_next_args"], "page=3&per_page=1&do_item_count=1")
 
     def test_list_by_page_sort_first_page(self):
         response = self.fetch('/person/Gender/?page=1&per_page=2&sort_by=rdfs:label', method='GET')
@@ -239,6 +259,18 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         response = self.fetch('/dbpedia/News/?do_item_count=1&graph_uri=http://brmedia.com/politics', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
+
+        keys = body.keys()
+        self.assertEqual(len(keys), 8)
+        self.assertIn("items", keys)
+        self.assertIn("item_count", keys)
+        self.assertIn('_base_url', keys)
+        self.assertIn('_first_args', keys)
+        self.assertIn('_last_args', keys)
+        self.assertIn('_class_prefix', keys)
+        self.assertIn('_schema_url', keys)
+        self.assertIn('@context', keys)
+
         computed_items = body["items"]
         expected_items = [{
             u'resource_id': u'news_president_answer',
@@ -248,7 +280,6 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
             u'title': u"President explains the reason for the war - it is 42"
         }]
         self.assertEqual(computed_items, expected_items)
-        self.assertEqual(body['item_count'], 1)
 
 
 class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):

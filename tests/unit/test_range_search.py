@@ -36,7 +36,7 @@ class RangeSearchTestCase(TestCase):
         expected = ["class1"]
 
         params = {
-            "restrict_classes": ["class1"]
+            "search_classes": ["class1"]
         }
 
         response = _validate_class_restriction(params, None)  # None because filter_values is mocked
@@ -46,9 +46,7 @@ class RangeSearchTestCase(TestCase):
     def test_validate_classes_restriction_with_no_restriction_param(self, mocked_filter_values):
         expected = ["class1", "class2"]
 
-        params = {
-            "restrict_classes": None
-        }
+        params = {}
 
         response = _validate_class_restriction(params, None)  # None because filter_values is mocked
         self.assertListEqual(sorted(expected), sorted(response))
@@ -56,7 +54,7 @@ class RangeSearchTestCase(TestCase):
     @patch("brainiak.range_search.range_search.filter_values", return_value=["class1", "class2"])
     def test_validate_classes_restriction_raises_error(self, mocked_filter_values):
         params = {
-            "restrict_classes": ["class1", "class2", "class3"],
+            "search_classes": ["class1", "class2", "class3"],
             "predicate": "predicate1"
         }
         self.assertRaises(HTTPError, _validate_class_restriction, params, None)  # None because filter_values is mocked
@@ -66,7 +64,7 @@ class RangeSearchTestCase(TestCase):
         expected = ["graph1"]
 
         params = {
-            "restrict_graphs": ["graph1"]
+            "search_graphs": ["graph1"]
         }
 
         response = _validate_graph_restriction(params, None)  # None because filter_values is mocked
@@ -76,9 +74,7 @@ class RangeSearchTestCase(TestCase):
     def test_validate_graphs_restriction_with_no_restriction_param(self, mocked_filter_values):
         expected = ["graph1", "graph2"]
 
-        params = {
-            "restrict_graphs": None
-        }
+        params = {}
 
         response = _validate_graph_restriction(params, None)  # None because filter_values is mocked
         self.assertListEqual(sorted(expected), sorted(response))
@@ -86,7 +82,7 @@ class RangeSearchTestCase(TestCase):
     @patch("brainiak.range_search.range_search.filter_values", return_value=["graph1", "graph2"])
     def test_validate_graphs_restriction_raises_error(self, mocked_filter_values):
         params = {
-            "restrict_graphs": ["graph1", "graph2", "graph3"],
+            "search_graphs": ["graph1", "graph2", "graph3"],
             "predicate": "predicate1"
         }
         self.assertRaises(HTTPError, _validate_graph_restriction, params, None)  # None because filter_values is mocked

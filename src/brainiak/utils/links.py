@@ -209,9 +209,9 @@ def crud_links(query_params, schema_url=None):
     class_url = build_class_url(query_params)
     querystring = query_params["request"].query
     if querystring:
-        instance_url = "{0}/{{@resource_id}}?{1}".format(class_url, querystring)
+        instance_url = "{0}/{{_resource_id}}?{1}".format(class_url, querystring)
     else:
-        instance_url = "{0}/{{@resource_id}}".format(class_url)
+        instance_url = "{0}/{{_resource_id}}".format(class_url)
 
     links = [
         {'rel': "delete", 'href': instance_url, 'method': "DELETE"},

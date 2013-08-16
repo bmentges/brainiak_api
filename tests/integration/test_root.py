@@ -32,7 +32,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/?best_aikido_move=ki_projection", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
-        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_aikido_move is not supported. The supported arguments are: purge, per_page, page, do_item_count.')
+        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_aikido_move is not supported. The supported querystring arguments are: purge, per_page, page, do_item_count.')
 
     @patch("brainiak.handlers.logger")
     def test_404(self, log):

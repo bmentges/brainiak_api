@@ -459,6 +459,7 @@ class RangeSearchHandler(BrainiakRequestHandler):
 
         self.query_params.update(body_params)
         response = do_range_search(self.query_params)
+
         self.finalize(response)
 
     def finalize(self, response):

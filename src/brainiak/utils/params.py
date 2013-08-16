@@ -68,10 +68,6 @@ CLASS_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri')
 
 GRAPH_PARAMS = optionals('graph_uri')
 
-RANGE_SEARCH_PARAMS = \
-    RequiredParamsDict(pattern=None, predicate=None) + \
-    optionals('restrict_fields', 'restrict_classes', 'restrict_graphs')
-
 
 def normalize_last_slash(url):
     return url if url.endswith("/") else url + "/"
@@ -86,13 +82,26 @@ VALID_PARAMS = ['lang',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
                 'purge',
-                'do_item_count'] + \
-                RANGE_SEARCH_PARAMS.keys()
+                'do_item_count']
 
 VALID_PATTERNS = (
     PATTERN_P,
     PATTERN_O
 )
+
+
+def validate_body_params(params, required, optionals):
+
+    for key in required:
+        if not key in params:
+            raise RequiredParamMissing(key)
+
+    valid = required + optionals
+    for key in params:
+        if key not in valid:
+            raise InvalidParam(key)
+
+    return True
 
 
 class ParamDict(dict):

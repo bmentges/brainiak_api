@@ -22,14 +22,14 @@ from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
 from brainiak.prefix.get_prefixes import list_prefixes
 from brainiak.prefixes import expand_all_uris_recursively
-from brainiak.range_search.range_search import do_range_search
+from brainiak.range_search.range_search import do_range_search, SUGGEST_OPTIONAL_PARAMS, SUGGEST_REQUIRED_PARAMS
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
-from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, optionals, RANGE_SEARCH_PARAMS, RequiredParamMissing
+from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, optionals, RequiredParamMissing, validate_body_params
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples
 
@@ -320,12 +320,12 @@ class CollectionHandler(BrainiakRequestHandler):
         if settings.NOTIFY_BUS:
             try:
                 # TODO: uncomment below
-                instance_data = expand_all_uris_recursively(instance_data)
+                instance_data_for_bus = expand_all_uris_recursively(instance_data)
                 notify_bus(instance=instance_uri,
                            klass=self.query_params["class_uri"],
                            graph=self.query_params["graph_uri"],
                            action="POST",
-                           instance_data=instance_data)
+                           instance_data=instance_data_for_bus)
             except MiddlewareError:
                 # rollback data insertion
                 self.query_params['instance_id'] = instance_id
@@ -449,13 +449,17 @@ class InstanceHandler(BrainiakRequestHandler):
 class RangeSearchHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
-    def get(self):
-        valid_params = RANGE_SEARCH_PARAMS
+    def post(self):
+        valid_params = LIST_PARAMS
+
+        body_params = json.loads(self.request.body)
+
         with safe_params(valid_params):
+            validate_body_params(body_params, SUGGEST_REQUIRED_PARAMS, SUGGEST_OPTIONAL_PARAMS)
             self.query_params = ParamDict(self, **valid_params)
             self.query_params.validate_required(valid_params)
 
-        response = do_range_search(self.query_params)
+        response = None  #do_range_search(self.query_params)
 
         self.finalize(response)
 

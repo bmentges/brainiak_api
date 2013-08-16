@@ -407,6 +407,7 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
             "class_name": "klass",
             "class_uri": "test_class",
             "graph_uri": "test_graph",
+            "expand_uri": prefixes.SHORTEN,
             "lang": "en"
         }
         handler = MockHandler(uri="http://class.uri")
@@ -434,6 +435,7 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
             "class_name": "klass",
             "class_uri": "test_class",
             "graph_uri": "test_graph",
+            "expand_uri": prefixes.SHORTEN,
             "lang": "en"
         }
         handler = MockHandler(uri="http://class.uri")

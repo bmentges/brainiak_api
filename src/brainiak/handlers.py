@@ -45,17 +45,21 @@ class ListServiceParams(ParamDict):
 
 
 @contextmanager
-def safe_params(valid_params=None):
+def safe_params(valid_params=None, body_params=None):
     try:
         yield
     except InvalidParam as ex:
-        msg = "Argument {0:s} is not supported. ".format(ex)
+        msg = "Argument {0:s} is not supported.".format(ex)
         if valid_params is not None:
             params_msg = ", ".join(valid_params.keys())
-            msg += "The supported arguments are: {0}.".format(params_msg)
+            msg += " The supported querystring arguments are: {0}.".format(params_msg)
+        if body_params is not None:
+            body_msg = ", ".join(body_params)
+            msg += " The supported body arguments are: {0}.".format(body_msg)
         raise HTTPError(400, log_message=msg)
     except RequiredParamMissing as ex:
-        raise HTTPError(400, log_message=str(ex))
+        msg = "Required parameter ({0:s}) was not given.".format(ex)
+        raise HTTPError(400, log_message=str(msg))
 
 
 def get_routes():
@@ -441,17 +445,20 @@ class RangeSearchHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def post(self):
-        valid_params = LIST_PARAMS
+        valid_params = PAGING_PARAMS
 
-        body_params = json.loads(self.request.body)
+        raw_body_params = json.loads(self.request.body)
+        body_params = expand_all_uris_recursively(raw_body_params)
+        if '@context' in body_params:
+            del body_params['@context']
 
-        with safe_params(valid_params):
+        with safe_params(valid_params, SUGGEST_REQUIRED_PARAMS + SUGGEST_OPTIONAL_PARAMS):
             validate_body_params(body_params, SUGGEST_REQUIRED_PARAMS, SUGGEST_OPTIONAL_PARAMS)
             self.query_params = ParamDict(self, **valid_params)
             self.query_params.validate_required(valid_params)
 
-        response = None  # do_range_search(self.query_params)
-
+        self.query_params.update(body_params)
+        response = do_range_search(self.query_params)
         self.finalize(response)
 
     def finalize(self, response):

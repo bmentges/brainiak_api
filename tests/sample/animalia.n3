@@ -187,7 +187,8 @@
 # Instances
 ##########################################
 
-:York a :City .
+:York a :City ;
+      rdfs:label "York" .
 
 :Male a :Gender .
 :Female a :Gender .

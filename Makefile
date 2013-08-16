@@ -50,8 +50,8 @@ release:
 	@# Usage: make release type=major message="Integration to ActiveMQ" (other options: minor or micros)
 	@echo "Tagging new release..."
 	@git fetch --tags
-	@cd $(BRAINIAK_CODE); python -c "from brainiak.utils.git import build_next_release_string; print build_next_release_string('$(type)')" > brainiak/version.py
-	@cd $(BRAINIAK_CODE); git tag `python -c "from brainiak.utils.git import compute_next_git_tag; print compute_next_git_tag('$(type)')"` -m "$(message)"
+	@PYTHONPATH="$(BRAINIAK_CODE):$(NEW_PYTHONPATH)" python -c "from brainiak.utils.git import build_next_release_string; print build_next_release_string('$(type)')" > brainiak/version.py
+	@PYTHONPATH="$(BRAINIAK_CODE):$(NEW_PYTHONPATH)" git tag `python -c "from brainiak.utils.git import compute_next_git_tag; print compute_next_git_tag('$(type)')"` -m "$(message)"
 
 run: build_settings
 	@echo "Brainiak is alive!"
@@ -60,7 +60,7 @@ run: build_settings
 gunicorn: build_settings
 	@echo "Running with gunicorn..."
 	@pip install gunicorn
-	cd $(BRAINIAK_CODE); PYTHONPATH="$(NEW_PYTHONPATH)" gunicorn -k egg:gunicorn#tornado brainiak.server:application -w 10
+	PYTHONPATH="$(NEW_PYTHONPATH)" gunicorn -k egg:gunicorn#tornado brainiak.server:application -w 10
 
 nginx: build_settings
 	sudo nginx -c $(HOME_BRAINIAK)/config/local/nginx.conf # run on 0.0.0.0:80
@@ -77,4 +77,4 @@ docs:
 
 console: build_settings
 	@echo "Console Python inside Brainiak code (you must be on the correct Virtualenv)"
-	@cd $(BRAINIAK_CODE); python
+	@PYTHONPATH="$(BRAINIAK_CODE):$(NEW_PYTHONPATH)" python

@@ -310,7 +310,6 @@ class CollectionHandler(BrainiakRequestHandler):
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
 
-
         (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
         instance_url = self.build_resource_url(instance_id)
 
@@ -463,7 +462,7 @@ class RangeSearchHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, **valid_params)
             self.query_params.validate_required(valid_params)
 
-        response = None  #do_range_search(self.query_params)
+        response = None   # do_range_search(self.query_params)
 
         self.finalize(response)
 

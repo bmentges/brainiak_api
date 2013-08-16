@@ -1,0 +1,13 @@
+{
+  "pattern": "Ronaldo",
+  "predicate": "base:cita_a_entidade",
+  "search_fields": ["upper:name", "upper:fullName"],
+  "search_classes": ["esportes:Atleta"],
+  "search_graphs": ["http://semantica.globo.com/esportes/"],
+  "@context" : {
+      "esportes": "http://semantica.globo.com/esportes/",
+      "upper": "http://semantica.globo.com/upper/",
+      "base": "http://semantica.globo.com/base/"
+  }
+}
+

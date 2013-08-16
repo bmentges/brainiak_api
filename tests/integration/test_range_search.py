@@ -1,23 +1,52 @@
 # -*- coding: utf-8 -*-
 import json
+from urllib import quote_plus
+
+import requests
+
+from mock import patch
 
 from brainiak.range_search.range_search import QUERY_PREDICATE_RANGES, \
     QUERY_SUBPROPERTIES
 from brainiak.utils.sparql import filter_values
+from brainiak import settings
 
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 
-class TestRangeSearch(TornadoAsyncHTTPTestCase):
+class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
 
-    VALID_BODY_PARAMS = {'pattern': '', 'predicate': 'base:cita_a_entidade'}
+    allow_triplestore_connection = True
+    fixtures = ["tests/sample/animalia.n3"]
+    graph_uri = "http://example.onto/"
 
-    def test_without_required_params(self):
+    maxDiff = None
+
+    VALID_BODY_PARAMS = {'pattern': 'york', 'predicate': 'http://example.onto/birthPlace'}
+
+    def setUp(self):
+        super(TestRangeSearch, self).setUp()
+        # ONLY VALID FOR VALID_BODY_PARAMS
+        self.elastic_request_url = "http://" + settings.ELASTICSEARCH_ENDPOINT + "/example.onto/"
+        self.elastic_request_url += quote_plus("http://example.onto/City") + "/"
+        self.elastic_request_url += quote_plus("http://example.onto/York")
+        entry = {
+            "http://www.w3.org/2000/01/rdf-schema#label": "York"
+        }
+        requests.put(self.elastic_request_url, data=json.dumps(entry))
+
+    def tearDown(self):
+        super(TestRangeSearch, self).setUp()
+        requests.delete(self.elastic_request_url)
+
+    @patch("brainiak.range_search.range_search._graph_uri_to_index_name", return_value="example.onto")
+    def test_successful_request(self, mocked_graph_uri_to_index_name):
         response = self.fetch('/_range_search',
                               method='POST',
                               body=json.dumps(self.VALID_BODY_PARAMS))
         self.assertEqual(response.code, 200)
+        # TODO
         #json_received = json.loads(response.body)
         #self.assertEqual(json_received, {})
 
@@ -38,15 +67,6 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 400)
         json_received = json.loads(response.body)
         self.assertIn("Argument invalid is not supported", json_received['error'])
-
-
-class TestQueryPredicatesRange(QueryTestCase):
-
-    allow_triplestore_connection = True
-    fixtures = ["tests/sample/animalia.n3"]
-    graph_uri = "http://example.onto/"
-
-    maxDiff = None
 
     def test_query_predicate_superclass_range(self):
         expected_classes = ["http://example.onto/Place", "http://example.onto/City"]

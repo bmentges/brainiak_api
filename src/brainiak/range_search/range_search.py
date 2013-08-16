@@ -1,9 +1,11 @@
 from tornado.web import HTTPError
 
-from brainiak.utils.sparql import add_language_support, compress_keys_and_values, \
-    filter_values
+from brainiak.utils.sparql import add_language_support, compress_keys_and_values, filter_values
 from brainiak import triplestore
 from brainiak.search_engine import run_search
+
+SUGGEST_REQUIRED_PARAMS = ('pattern', 'predicate')
+SUGGEST_OPTIONAL_PARAMS = ('search_fields', 'search_classes', 'search_graphs')
 
 
 def do_range_search(params):

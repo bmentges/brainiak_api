@@ -462,7 +462,8 @@ class RangeSearchHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, **valid_params)
             self.query_params.validate_required(valid_params)
 
-        response = None   # do_range_search(self.query_params)
+        self.query_params.update(body_params)
+        response = do_range_search(self.query_params)
 
         self.finalize(response)
 

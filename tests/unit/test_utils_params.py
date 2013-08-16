@@ -4,7 +4,7 @@ from brainiak import settings
 from brainiak.utils import params
 from brainiak.prefixes import ROOT_CONTEXT
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals, RequiredParamMissing
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals, RequiredParamMissing, validate_body_params
 from brainiak.utils.resources import valid_pagination
 from tests.mocks import MockHandler
 
@@ -19,6 +19,27 @@ class DefaultParamsTest(TestCase):
         self.assertEqual(a_b, b_a)
         self.assertEqual(a, {"a": 1})
         self.assertEqual(b, {"b": 2})
+
+
+class ValidateBodyParamsTest(TestCase):
+
+    def test_validate_without_errors(self):
+        body_params = {'pattern': 'A', 'predicate': 'B', 'optional': 42}
+        result = validate_body_params(body_params, ['pattern', 'predicate'], ['optional'])
+        self.assertTrue(result)
+
+    def test_validate_without_errors_without_optional(self):
+        body_params = {'pattern': 'A', 'predicate': 'B'}
+        result = validate_body_params(body_params, ['pattern', 'predicate'], [])
+        self.assertTrue(result)
+
+    def test_validate_with_required_missing(self):
+        body_params = {'pattern': 'A'}
+        self.assertRaises(RequiredParamMissing, validate_body_params, body_params, ['predicate'], ['any_optional'])
+
+    def test_validate_with_invalid_optional(self):
+        body_params = {'invalid_optional': 'A'}
+        self.assertRaises(InvalidParam, validate_body_params, body_params, [], ['any_optional'])
 
 
 class RequiredParamsTest(TestCase):
@@ -45,18 +66,6 @@ class RequiredParamsTest(TestCase):
         self.assertEquivalent(d.required, {'a', 'b', 'c', 'd'})
         self.assertEquivalent(r1.required, {'a', 'b'})
         self.assertEquivalent(r2.required, {'c', 'd'})
-
-    def test_validation_with_required_present(self):
-        required_spec = RequiredParamsDict(pattern=1, predicate=2)
-        handler = MockHandler(querystring="pattern=12&predicate=Override")
-        param_dict = params.ParamDict(handler, **required_spec)
-        self.assertEqual(param_dict.validate_required(required_spec), None)
-
-    def test_validation_with_required_missing(self):
-        required_spec = RequiredParamsDict(pattern=1, predicate=2)
-        handler = MockHandler(querystring="pattern=1")
-        param_dict = params.ParamDict(handler, **required_spec)
-        self.assertRaises(RequiredParamMissing, param_dict.validate_required, required_spec)
 
 
 class ParamsTestCase(TestCase):

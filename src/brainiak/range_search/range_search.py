@@ -16,10 +16,14 @@ def do_range_search(params):
     compressed_result = compress_keys_and_values(range_result)
     class_label_dict = _build_class_label_dict(compressed_result)
 
-    request_body = _build_body_query(params, classes)
+    title_fields = _get_subproperties(params, "rdfs:label")
+    search_fields = _get_search_fields(params)
+    search_fields = list(set(search_fields + title_fields))
+
+    request_body = _build_body_query(params, classes, search_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)
 
-    items = _build_items(elasticsearch_result, class_label_dict)
+    items = _build_items(elasticsearch_result, class_label_dict, title_fields)
 
     if not items:
         return None
@@ -73,18 +77,13 @@ def _get_subproperties(params, super_property):
 
 
 def _get_search_fields(params):
-    search_fields_in_params = params.get("search_fields", ["rdfs:label"])
+    search_fields_in_params = params.get("search_fields", [])
     search_fields = set(search_fields_in_params)
     for field in search_fields_in_params:
         sub_properties = _get_subproperties(params, field)
         search_fields.update(sub_properties)
 
     return list(search_fields)
-
-
-# call search_engine.py
-def _get_search_results(params):
-    pass
 
 
 def _validate_class_restriction(params, range_result):
@@ -112,21 +111,22 @@ def _validate_graph_restriction(params, range_result):
 
 
 # TODO restrict_fields
-def _build_body_query(params, classes):
+def _build_body_query(params, classes, search_fields):
     patterns = params["pattern"].lower().split()
     query_string = " AND ".join(patterns) + "*"
+    return_fields = search_fields  # TODO return_fields in params
     body = {
         #"from": calculate_offset(params, settings.DEFAULT_PAGE, settings.PER_PAGE),
         #"size": int(params["per_page"]),
+        "fields": return_fields,
         "query": {
             "query_string": {
                 "query": query_string,
-                "fields": _get_search_fields(params)
+                "fields": search_fields
             }
-        }
+        },
+        "filter": _build_type_filters(classes)
     }
-
-    body["filter"] = _build_type_filters(classes)
 
     return body
 
@@ -150,17 +150,25 @@ def _build_class_label_dict(compressed_result):
     return class_label_dict
 
 
-def _build_items(result, class_label_dict):
+def _get_title_value(elasticsearch_fields, title_fields):
+    for field in reversed(title_fields):
+        title = elasticsearch_fields.get(field)
+        if title:
+            return title
+    raise RuntimeError("No title fields in search engine")
+
+def _build_items(result, class_label_dict, title_fields):
     items = []
     item_count = result["hits"]["total"]
     if item_count:
         for item in result["hits"]["hits"]:
             item_dict = {
-                "title": item["fields"]["rdfs:label"],  # TODO upper:name, upper:fullName
+                "title": _get_title_value(item["fields"], title_fields),
                 "@id": item["_id"],
                 "@type": item["_type"],
                 "type_title": class_label_dict[item["_type"]]
             }
+            item_dict.update(item["fields"])
             items.append(item_dict)
 
     # TODO pagination

@@ -6,6 +6,7 @@ from brainiak.search_engine import run_search
 
 SUGGEST_REQUIRED_PARAMS = ('pattern', 'predicate')
 SUGGEST_OPTIONAL_PARAMS = ('search_fields', 'search_classes', 'search_graphs')
+RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 
 def do_range_search(params):
@@ -18,7 +19,8 @@ def do_range_search(params):
     compressed_result = compress_keys_and_values(range_result)
     class_label_dict = _build_class_label_dict(compressed_result)
 
-    title_fields = _get_subproperties(params, "rdfs:label")
+    title_fields = [RDFS_LABEL]
+    title_fields += _get_subproperties(params, RDFS_LABEL)
     search_fields = _get_search_fields(params)
     search_fields = list(set(search_fields + title_fields))
 
@@ -30,7 +32,7 @@ def do_range_search(params):
     if not items:
         return None
     else:
-        return None  # TODO complete dict
+        return items  # TODO complete dict
 
 
 QUERY_PREDICATE_RANGES = """
@@ -90,29 +92,28 @@ def _get_search_fields(params):
 
 def _validate_class_restriction(params, range_result):
     classes = set(filter_values(range_result, "range"))
-    if params["restrict_classes"] is not None:
-        classes_not_in_range = list(set(params["restrict_classes"]).difference(classes))
+    if "search_classes" in params:
+        classes_not_in_range = list(set(params["search_classes"]).difference(classes))
         if classes_not_in_range:
             raise HTTPError(400,
                             "Classes {0} are not in the range of predicate '{1}'".format(classes_not_in_range, params["predicate"]))
-        classes = params["restrict_classes"]
+        classes = params["search_classes"]
 
     return list(classes)
 
 
 def _validate_graph_restriction(params, range_result):
     graphs = set(filter_values(range_result, "range_graph"))
-    if params["restrict_graphs"] is not None:
-        graphs_not_in_range = list(set(params["restrict_graphs"]).difference(graphs))
+    if "search_graphs" in params:
+        graphs_not_in_range = list(set(params["search_graphs"]).difference(graphs))
         if graphs_not_in_range:
             raise HTTPError(400,
                             "Classes in the range of predicate '{0}' are not in graphs {1}".format(graphs_not_in_range, params["predicate"]))
-        graphs = params["restrict_graphs"]
+        graphs = params["search_graphs"]
 
     return list(graphs)
 
 
-# TODO restrict_fields
 def _build_body_query(params, classes, search_fields):
     patterns = params["pattern"].lower().split()
     query_string = " AND ".join(patterns) + "*"
@@ -158,6 +159,7 @@ def _get_title_value(elasticsearch_fields, title_fields):
         if title:
             return title
     raise RuntimeError("No title fields in search engine")
+
 
 def _build_items(result, class_label_dict, title_fields):
     items = []

@@ -5,6 +5,9 @@ from tornado.testing import AsyncTestCase, AsyncHTTPTestCase
 from brainiak import server, greenlet_tornado
 
 
+TIMEOUT = 20
+
+
 class TornadoAsyncTestCase(AsyncTestCase):
 
     def setUp(self):
@@ -13,7 +16,7 @@ class TornadoAsyncTestCase(AsyncTestCase):
 
     # Disabling timeout for debugging purposes
     def wait(self, condition=None, timeout=None):
-        return super(TornadoAsyncTestCase, self).wait(condition, timeout)
+        return super(TornadoAsyncTestCase, self).wait(condition, TIMEOUT)
 
 
 class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
@@ -27,7 +30,7 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
 
     # Disabling timeout for debugging purposes
     def wait(self, condition=None, timeout=None):
-        return super(TornadoAsyncHTTPTestCase, self).wait(None, 10)
+        return super(TornadoAsyncHTTPTestCase, self).wait(None, TIMEOUT)
 
     def fetch(self, path, **kwargs):
         kwargs['url'] = self.get_url(path)

@@ -32,7 +32,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/?best_aikido_move=ki_projection", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
-        self.assertEquals(body["error"], u'HTTP error: 400\nArgument best_aikido_move is not supported. The supported arguments are: purge, per_page, page, do_item_count.')
+        self.assertIn(u'Argument best_aikido_move is not supported. The supported ', body["error"])
 
     @patch("brainiak.handlers.logger")
     def test_404(self, log):
@@ -55,17 +55,16 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertIn("items", body.keys())
+
+        keys = body.keys()
+        self.assertEqual(len(keys), 4)
+        self.assertIn("items", keys)
+        self.assertIn('_base_url', keys)
+        self.assertIn('_first_args', keys)
+        self.assertIn('_next_args', keys)
 
         upper_graph = {u'resource_id': u'upper', u'@id': u'http://semantica.globo.com/upper/', u'title': u'upper'}
         self.assertIn(upper_graph, body['items'])
-
-        keys = body.keys()
-        self.assertIn('next_page', keys)
-        self.assertIn('page', keys)
-        self.assertIn('do_item_count', keys)
-        self.assertIn('page', keys)
-        self.assertIn('_base_url', keys)
 
     def test_200_with_pagination(self):
         # disclaimer: this test assumes there are > 2 non-empty registered graphs in Virtuoso

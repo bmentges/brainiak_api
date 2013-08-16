@@ -50,6 +50,17 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         #json_received = json.loads(response.body)
         #self.assertEqual(json_received, {})
 
+    @patch("brainiak.range_search.range_search._graph_uri_to_index_name", return_value="example.onto")
+    def test_zero_results(self, mocked_graph_uri_to_index_name):
+        zero_results_parameters = {
+            "predicate": "http://example.onto/birthPlace",
+            "pattern": "non existent keywords"
+        }
+        response = self.fetch('/_range_search',
+                              method='POST',
+                              body=json.dumps(zero_results_parameters))
+        self.assertEqual(response.code, 404)
+
     def test_range_search_without_required_param_predicate(self):
         response = self.fetch('/_range_search',
                               method='POST',

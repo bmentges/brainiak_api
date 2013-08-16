@@ -3,9 +3,11 @@
 %TOC%
 
 ---++ Introdução
+
 Brainiak é uma API RESTful para dados linkados que provê acesso transparente a sistemas SPARQL.
 
 ---+++ Motivações
+
 Os seguintes tópicos motivaram o desenvolvimento do Brainiak:
 
    * Reduzir as barreiras na adoção e uso das tecnologias de semântica
@@ -14,33 +16,33 @@ Os seguintes tópicos motivaram o desenvolvimento do Brainiak:
    * Prover um único e coerente interface para outros bancos de dados, incluindo "non triple stores" (exemplo: [[http://www.elasticsearch.org][ElasticSearch]]).
 
 ---++ Ambientes
----+++ DEV - BE
+---+++ DEV
 | *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
-| cittavld44 | - | 6xIntel(R) Xeon(R) CPU L5640  @ 2.27GHz | 1 GB | 6 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
+| cittavld44 | - | 6x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 1 GB | 6 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
 
----+++ QA1 - BE
+---+++ QA1
 | *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
-| cittavld45 | - | 6xIntel(R) Xeon(R) CPU L5640  @ 2.27GHz | 1 GB | 3 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
+| cittavld45 | - | 6x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 1 GB | 3 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
 
----+++ QA2 - BE
+---+++ QA2
 | *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
-| api-semantica-be01.vb.qa02 | Dell PowerEdge M600 | 8xIntel(R) Xeon(R) CPU E5420 @ 2.50GHz | 16 GB | 145.9 GB | 1 | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5 |
-| api-semantica-be02.vb.qa02 | Dell PowerEdge M600 | 8xIntel(R) Xeon(R) CPU E5420 @ 2.50GHz | 16 GB | 145.9 GB | 1 | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5 |
+| api-semantica-be01.vb.qa02 | Dell PowerEdge M600 | 8x Intel(R) Xeon(R) CPU E5420 @ 2.50GHz | 16 GB | 145.9 GB | 1 | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5 |
+| api-semantica-be02.vb.qa02 | Dell PowerEdge M600 | 8x Intel(R) Xeon(R) CPU E5420 @ 2.50GHz | 16 GB | 145.9 GB | 1 | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5 |
 
----+++ QA - BE
+---+++ QA
 | *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
-| cittavld507 | - | 6xIntel(R) Xeon(R) CPU L5640  @ 2.27GHz | 512 MB | 6 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
-| cittavld797 | - | 6xIntel(R) Xeon(R) CPU L5640  @ 2.27GHz | 512 MB | 6 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
+| cittavld507 | - | 6x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 512 MB | 6 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
+| cittavld797 | - | 6x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 512 MB | 6 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
 
----+++ Staging - BE
+---+++ Staging
 | *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
-| riovlb160 | - | 4xIntel(R) Xeon(R) CPU E5410 @ 2.33GHz | 1 GB | 12 GB | - | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5xen |
-| riovlb161 | - | 4xIntel(R) Xeon(R) CPU E5410 @ 2.33GHz | 1 GB | 12 GB | - | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5xen |
+| riovlb160 | - | 4x Intel(R) Xeon(R) CPU E5410 @ 2.33GHz | 1 GB | 12 GB | - | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5xen |
+| riovlb161 | - | 4x Intel(R) Xeon(R) CPU E5410 @ 2.33GHz | 1 GB | 12 GB | - | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5xen |
 
----+++ Produção - BE
+---+++ Produção
 | *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
-| riomp40lb14 | Dell PowerEdge M610 | 24xIntel(R) Xeon(R) CPU L5640  @ 2.27GHz | 48 GB | 1.1 TB | 0 | Centos 5.5 - 64bits | 2.6.18-194.11.4.el5 |
-| riomp41lb14 | Dell PowerEdge M610 | 24xIntel(R) Xeon(R) CPU L5640  @ 2.27GHz | 48 GB | 1.1 TB | 0 | Centos 5.5 - 64bits | 2.6.18-194.11.4.el5 |
+| riomp40lb14 | Dell PowerEdge M610 | 24x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 48 GB | 1.1 TB | 0 | Centos 5.5 - 64bits | 2.6.18-194.11.4.el5 |
+| riomp41lb14 | Dell PowerEdge M610 | 24x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 48 GB | 1.1 TB | 0 | Centos 5.5 - 64bits | 2.6.18-194.11.4.el5 |
 
 ---++ Versões das Aplicações e portas de serviço
 
@@ -107,8 +109,8 @@ alias tail-brainiak-gunicorn-be='tail -f -n 10 /opt/logs/brainiak/gunicorn-be/*.
 
 ---+++ Back End
 | *Filer* | *Volume* | *Share* | *Mount* | *Tamanho* | *Ocupação Prevista[1]* |
-| riofb01a | /vol/vol10 | api_semantica | /mnt/projetos/deploy-be | 30G | ?????G |
-| riofb01a | /vol/vol10 | dbpasswd/api_semantica | /mnt/projetos/dbpasswd/api_semantica | 30G | ?????G |
+| riofb01a | /vol/vol10 | api_semantica | /mnt/projetos/deploy-be | 30G | - |
+| riofb01a | /vol/vol10 | dbpasswd/api_semantica | /mnt/projetos/dbpasswd/api_semantica | 30G | - |
 [1] Ocupação prevista para 1 ano nesse volume para essa aplicação.
 
 ---++ Topologia
@@ -126,7 +128,7 @@ alias tail-brainiak-gunicorn-be='tail -f -n 10 /opt/logs/brainiak/gunicorn-be/*.
 ---+++ VIPs
 
 | *Nome* | *IP* | *Tipo* | *Métrica* | *Healthcheck* | *MaxConn* | *Persistência* |
-| api.semantica.globoi.com | 10.70.130.137 | Não Cacheado | least conn | "GET /healthcheck HTTP/1.0\r\nHost: api.semantica.globoi.com\r\n\r\n" | 100 | Não |
+| api.semantica.globoi.com | 10.70.130.137 | Não Cacheado | Least-Conn | "GET /healthcheck HTTP/1.0\r\nHost: api.semantica.globoi.com\r\n\r\n" | 100 | Não |
 
 ---+++ Configuração dos VIPs
 
@@ -173,27 +175,26 @@ virtual VIP2444_10.70.130.137_80 {
 ---++ Instalação
 Para instalação basta seguir os passos abaixo:
 
-   1 Cadastrar a máquina no Foreman do ambiente correspondente.
-   1 Adicionar roles do Puppet.
+   1 Cadastrar a máquina no Foreman, no ambiente correspondente.
+   1 Associar as roles abaixo ao servidor:
       * brainiak::be
       * puppet::common
-   1 Executar Capistrano (cap <AMBIENTE> deploy)
-   1 Rodar os testes de ACL, Filer, Proxy e SSH.
+   1 Executar um deploy (cap <ambiente> deploy) ou simplesmente executar um 'puppet-setup' caso seja um novo servidor em uma farm já existente.
+   1 Executar os testes de Infraestrutura (cap <ambiente> tdi).
 
 ---++ Repositórios
 
----+++ Repositório GIT
-Todos os arquivos relacionados com a configuração desse projeto, podem ser acessados através do repositório GIT.<br />
-A URL para acessar esses arquivos é: http://ngit.globoi.com/brainiak/brainiak
+---+++ Repositório Git
+Todos os arquivos relacionados com a configuração desse projeto, podem ser acessados através do repositório [[http://ngit.globoi.com/brainiak/brainiak][Git]].
 
 ---++ Monitorações
 
 ---+++ Nagios
 | *Host* | *Services* |
-| api.semantica.globoi.com | VIP API Semantica - 80 |
-| riomp40lb14 | API Semantica - Nginx 8033 |
+| api.semantica.globoi.com | VIP API Semântica - 80 |
+| riomp40lb14 | API Semântica - Nginx 8033 |
+| riomp41lb14 | API Semântica - Nginx 8033 |
 | riomp40lb14 | Gunicorn API V2/Brainiak - 8035 |
-| riomp41lb14 | API Semantica - Nginx 8033 |
 | riomp41lb14 | Gunicorn API V2/Brainiak - 8035 |
 
 Link: [[http://smi.globoi.com/thruk/cgi-bin/status.cgi?dfl_s0_value_sel=5&dfl_s2_type=search&dfl_s2_serviceprops=0&dfl_s1_op=~&dfl_s2_servicestatustypes=31&dfl_s2_op=~&dfl_s0_val_pre=&dfl_s0_hostprops=0&nav=&dfl_s1_value_sel=5&dfl_s2_hostprops=0&dfl_s1_type=search&dfl_s1_hostprops=0&dfl_s2_value_sel=5&dfl_s0_serviceprops=0&dfl_s1_value=riomp40lb14&hidetop=&dfl_s1_servicestatustypes=31&dfl_s0_hoststatustypes=15&dfl_s0_value=api.semantica.globoi.com&dfl_s2_hoststatustypes=15&dfl_s2_value=riomp41lb14&dfl_s0_servicestatustypes=31&dfl_s0_op=~&dfl_s1_val_pre=&hidesearch=2&dfl_s1_hoststatustypes=15&style=detail&dfl_s0_type=search&dfl_s2_val_pre=&dfl_s1_serviceprops=0][Nagios]]

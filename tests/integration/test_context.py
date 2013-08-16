@@ -80,8 +80,18 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         response = self.fetch('/test/?do_item_count=1&graph_uri=' + self.graph_uri)
         self.assertEqual(response.code, 200)
         response_json_dict = json.loads(response.body)
+
+        keys = response_json_dict.keys()
+        self.assertEqual(len(keys), 6)
+
+        self.assertIn("items", keys)
+        self.assertIn('item_count', keys)
+        self.assertIn('_base_url', keys)
+        self.assertIn('_first_args', keys)
+        self.assertIn('_last_args', keys)
+        self.assertIn('@context', keys)
+
         self.assertItemsEqual(expected_items, response_json_dict["items"])
-        self.assertEqual(response_json_dict["item_count"], 4)
 
     @greenlet_tornado.greenlet_test
     def test_query(self):

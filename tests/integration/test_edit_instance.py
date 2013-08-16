@@ -26,6 +26,10 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         "tpedia:partOfContinent": "place:America"
     }
 
+    def setUp(self):
+        super(EditInstanceTestCase, self).setUp()
+        response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='DELETE')
+
     def get_app(self):
         return server.Application()
 

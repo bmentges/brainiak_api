@@ -4,6 +4,7 @@ from brainiak.collection.get_collection import Query, merge_by_id, build_json
 from brainiak.utils.params import LIST_PARAMS, ParamDict
 from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip
+from tests.utils import URLTestCase
 
 
 class MergeByIdTestCase(unittest.TestCase):
@@ -418,7 +419,7 @@ class ListQueryTestCase(unittest.TestCase):
         self.assertEqual(strip(computed), strip(expected))
 
 
-class BuildJSONTestCase(unittest.TestCase):
+class BuildJSONTestCase(URLTestCase):
 
     default_params = {
             "class_uri": "http://some.graph/SomeClass",
@@ -486,6 +487,22 @@ class BuildJSONTestCase(unittest.TestCase):
         # ]
         # self.assertEquals(sorted(links), sorted(expected_links))
 
+    def test_query_with_prev_and_next_args_with_sort_by(self):
+        handler = MockHandler(querystring="page=2&per_page=1&sort_by=rdfs:label")
+        params = ParamDict(handler, context_name="subject", class_name="Maths", **(LIST_PARAMS))
+        items = []
+        computed = build_json(items, params)
+        self.assertQueryStringArgsEqual(computed["_previous_args"], 'per_page=1&page=1&sort_by=rdfs%3Alabel')
+        self.assertQueryStringArgsEqual(computed["_next_args"], 'per_page=1&page=3&sort_by=rdfs%3Alabel')
+
+    def test_query_with_prev_and_next_args_with_sort_by_and_lang(self):
+        handler = MockHandler(querystring="page=2&per_page=1&sort_by=rdfs:label&lang=en")
+        params = ParamDict(handler, context_name="subject", class_name="Maths", **(LIST_PARAMS))
+        items = []
+        computed = build_json(items, params)
+        self.assertQueryStringArgsEqual(computed["_previous_args"], 'per_page=1&page=1&sort_by=rdfs%3Alabel&lang=en')
+        self.assertQueryStringArgsEqual(computed["_next_args"], 'per_page=1&page=3&sort_by=rdfs%3Alabel&lang=en')
+
     def test_query_with_extras(self):
         handler = MockHandler(querystring="class_prefix=Xubiru")
         params = ParamDict(handler,
@@ -493,7 +510,6 @@ class BuildJSONTestCase(unittest.TestCase):
                            class_name="Lion",
                            **(LIST_PARAMS))
         items = []
-
         something = build_json(items, params)
         self.assertEqual(something["@context"], {'@language': 'pt'})
         self.assertEqual(something["items"], [])

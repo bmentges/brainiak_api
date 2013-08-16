@@ -159,6 +159,7 @@ def _get_title_value(elasticsearch_fields, title_fields):
             return title
     raise RuntimeError("No title fields in search engine")
 
+
 def _build_items(result, class_label_dict, title_fields):
     items = []
     item_count = result["hits"]["total"]

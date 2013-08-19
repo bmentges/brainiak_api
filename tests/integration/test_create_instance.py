@@ -100,9 +100,10 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))
         self.assertTrue("/example/City" in location)
-        body = json.loads(response.body)
-        self.assertTrue('http://example.onto/name' in body)
-        self.assertInstanceExist('http://example.onto/City', "http://example.onto/City/123")
+        self.assertEqual(response.body, "")
+        # body = json.loads()
+        # self.assertTrue('http://example.onto/name' in body)
+        # self.assertInstanceExist('http://example.onto/City', "http://example.onto/City/123")
 
     def test_query(self):
         self.graph_uri = "http://fofocapedia.org/"

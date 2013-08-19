@@ -13,7 +13,7 @@ from brainiak.collection.get_collection import filter_instances
 from brainiak.collection.json_schema import schema as collection_schema
 from brainiak.context.get_context import list_classes
 from brainiak.context.json_schema import schema as context_schema
-from brainiak.event_bus import NotificationFailure, notify_bus, MiddlewareError
+from brainiak.event_bus import NotificationFailure, notify_bus
 from brainiak.greenlet_tornado import greenlet_asynchronous
 from brainiak.instance.create_instance import create_instance
 from brainiak.instance.delete_instance import delete_instance

@@ -4,7 +4,7 @@ import traceback
 from contextlib import contextmanager
 
 import ujson as json
-from tornado.curl_httpclient import CurlError
+from tornado.httpclient import HTTPError as HTTPClientError
 from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import CorsMixin, custom_decorator
 
@@ -124,12 +124,16 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             logger.error(message)
             self.send_error(status_code, message=message)
 
-        elif isinstance(e, CurlError):
+        elif isinstance(e, HTTPClientError):
             message = "Access to backend service failed.  {0:s}.".format(e)
             extra_messages = check_messages_when_port_is_mentioned(str(e))
             if extra_messages:
                 for msg in extra_messages:
                     message += msg
+
+            if settings.DEBUG:
+                # Put backend service response in error for debuggin purposes
+                message += "\nResponse:\n" + e.response.body
 
             logger.error(message)
             self.send_error(status_code, message=message)

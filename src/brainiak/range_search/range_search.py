@@ -24,8 +24,7 @@ def do_range_search(params):
 
     title_fields = [RDFS_LABEL]
     title_fields += _get_subproperties(params, RDFS_LABEL)
-    search_fields = _get_search_fields(params)
-    search_fields = list(set(search_fields + title_fields))
+    search_fields = list(set(_get_search_fields(params) + title_fields))
 
     request_body = _build_body_query(params, classes, search_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)

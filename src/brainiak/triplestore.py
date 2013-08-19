@@ -25,9 +25,9 @@ def query_sparql(query, triplestore_config):
     except ClientHTTPError as e:
         if e.code == 401:
             message = 'Check triplestore user and password.'
+            raise HTTPError(e.code, message=message)
         else:
-            message = e.message
-        raise HTTPError(e.code, message=message)
+            raise e
 
     result_dict = json.loads(query_response.body)
     return result_dict

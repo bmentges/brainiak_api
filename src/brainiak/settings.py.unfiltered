@@ -7,7 +7,7 @@ ENVIRONMENT = '<%= puppetmaster_env %>'
 
 if ENVIRONMENT == 'local':
     SERVER_PORT = 5100
-    #DEBUG = True
+    DEBUG = True
     ENABLE_CACHE = False
     REDIS_PASSWORD = None
 else:

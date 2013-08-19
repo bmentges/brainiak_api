@@ -31,10 +31,11 @@ def decorate_dict_with_pagination(target_dict, params, get_total_items_func):
         total_items = get_total_items_func()
         validate_pagination_or_raise_404(params, total_items)
         target_dict['item_count'] = total_items
-        target_dict['do_item_count'] = "1"
+        #target_dict['do_item_count'] = "1"
     else:
         total_items = None
-        target_dict['do_item_count'] = "0"
+        #target_dict['do_item_count'] = "0"
+
     target_dict.update(pagination_items(params, total_items))
 
 

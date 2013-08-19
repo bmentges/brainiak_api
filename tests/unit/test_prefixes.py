@@ -201,4 +201,7 @@ class ExpansionTestCase(unittest.TestCase):
     def test_normalize_recusively_with_valid_input(self):
         self.assertDictEqual(expand_all_uris_recursively(VALID_COMPRESSED_INSTANCE_DATA), EXPECTED_UNCOMPRESSED_INSTANCE_DATA)
 
-#    def test_normalize_recursively_with_invalid_type
+    def test_normalize_recursively_with_invalid_type(self):
+        d = {'invalid': 3}
+        self.assertDictEqual(expand_all_uris_recursively(d), d)
+

@@ -4,7 +4,8 @@ from mock import MagicMock
 from brainiak import settings
 from brainiak.utils.links import *
 from brainiak.utils.params import ParamDict, LIST_PARAMS, DefaultParamsDict
-from tests.mocks import MockHandler
+from tests.mocks import MockHandler, MockRequest
+from tests.utils import URLTestCase
 
 
 class SetContentTypeProfileTestCase(unittest.TestCase):
@@ -52,15 +53,37 @@ class TestLastLink(unittest.TestCase):
         self.assertEqual(computed, expected)
 
 
-class TestPaginationItems(unittest.TestCase):
+class TestPaginationItems(URLTestCase):
 
     def test_last_link(self):
+        # "page" is related to Virtuoso index (starts in 0)
         params = {'page': 1, 'per_page': 2}
-        handler = MockHandler(uri="http://any.uri")
+        handler = MockHandler(uri="http://any.uri/", querystring="page=2&per_page=2")
         query_params = ParamDict(handler, **params)
         computed = pagination_items(query_params, 10)
-        expected = {'per_page': 2, 'previous_page': 1, 'page': 2, 'next_page': 3}
-        self.assertEqual(computed, expected)
+        self.assertEqual(len(computed), 3)
+        self.assertQueryStringArgsEqual(computed['_first_args'], 'per_page=2&page=1')
+        self.assertQueryStringArgsEqual(computed['_previous_args'], 'per_page=2&page=1')
+        self.assertQueryStringArgsEqual(computed['_next_args'], 'page=3&per_page=2')
+
+    def test_pagination_includes_do_item_count(self):
+        params = {'page': 1, 'per_page': 2, 'do_item_count': '1'}
+        handler = MockHandler(uri="http://any.uri/", querystring="page=2&per_page=2&do_item_count=1")
+        query_params = ParamDict(handler, **params)
+        computed = pagination_items(query_params, 4)
+        self.assertEqual(len(computed), 3)
+        self.assertQueryStringArgsEqual(computed['_first_args'], 'per_page=2&page=1&do_item_count=1')
+        self.assertQueryStringArgsEqual(computed['_last_args'], 'per_page=2&page=2&do_item_count=1')
+        self.assertQueryStringArgsEqual(computed['_previous_args'], 'per_page=2&page=1&do_item_count=1')
+
+    def test_pagination_without_previous_page(self):
+        params = {'page': 0, 'per_page': 3}
+        handler = MockHandler(uri="http://any.uri/", querystring="page=1&per_page=3")
+        query_params = ParamDict(handler, **params)
+        computed = pagination_items(query_params, 3)
+        self.assertEqual(len(computed), 2)
+        self.assertQueryStringArgsEqual(computed['_first_args'], 'per_page=3&page=1')
+        self.assertQueryStringArgsEqual(computed['_next_args'], 'per_page=3&page=2')
 
 
 class TestMergeSchemas(unittest.TestCase):
@@ -73,7 +96,7 @@ class TestMergeSchemas(unittest.TestCase):
         self.assertEqual(mutable, expected)
 
 
-class LinksTestCase(unittest.TestCase):
+class LinksTestCase(URLTestCase):
     maxDiff = None
 
     def test_get_previous_page(self):
@@ -85,6 +108,9 @@ class LinksTestCase(unittest.TestCase):
 
     def test_get_next_page_direct(self):
         self.assertEqual(get_next_page(3, 4), 4)
+
+    def test_get_next_page_false(self):
+        self.assertEqual(get_next_page(3, 3), False)
 
     def test_get_last_page_exact_division(self):
         total_items = 7
@@ -161,10 +187,8 @@ class LinksTestCase(unittest.TestCase):
     def test_filter_query_string_by_key_prefix_all_two(self):
         query_string = "age=28&weight=60"
         computed = filter_query_string_by_key_prefix(query_string, include_prefixes=["a", "weight"])
-        expected_items = ["age=28", "weight=60"]
-        self.assertEqual(len(computed.split("&")), 2)
-        for item in expected_items:
-            self.assertIn(item, computed)
+        expected_items = {"age": ["28"], "weight": ["60"]}
+        self.assertQueryStringArgsEqual(computed, expected_items)
 
     def test_filter_query_string_by_key_prefix_all_three(self):
         query_string = "age_year=28&age_month=10&weight=60"
@@ -173,6 +197,58 @@ class LinksTestCase(unittest.TestCase):
         self.assertEqual(len(computed.split("&")), 3)
         for item in expected_items:
             self.assertIn(item, computed)
+
+    def test_pagination_schema(self):
+        computed = pagination_schema("/")
+        expected = {
+            'links': [
+                {
+                    'href': '?{+_first_args}',
+                    'method': 'GET',
+                    'rel': 'first'
+                },
+                {
+                    'href': '?{+_previous_args}',
+                    'method': 'GET',
+                    'rel': 'previous'
+                },
+                {
+                    'href': '?{+_next_args}',
+                    'method': 'GET',
+                    'rel': 'next'
+                },
+                {
+                    'href': '?{+_last_args}',
+                    'method': 'GET',
+                    'rel': 'last'
+                }
+            ],
+            'properties': {
+                '_first_args': {'type': 'string'},
+                '_next_args': {'type': 'string'},
+                '_previous_args': {'type': 'string'},
+                '_last_args': {'type': 'string'}
+            }
+        }
+        self.assertEqual(computed, expected)
+
+    def test_self_url(self):
+        request = MockRequest(uri="/relative_url")
+        request.host = "some.host"
+        request.protocol = "http"
+        computed = self_url({"request": request})
+        expected = 'http://some.host/relative_url'
+        self.assertEqual(computed, expected)
+
+    def test_remove_last_slash_when_it_exists(self):
+        computed = remove_last_slash("http://last.slash/")
+        expected = "http://last.slash"
+        self.assertEqual(computed, expected)
+
+    def test_remove_last_slash_when_it_doesnt_exist(self):
+        computed = remove_last_slash("http://withoutlast.slash")
+        expected = "http://withoutlast.slash"
+        self.assertEqual(computed, expected)
 
 
 class AddLinksTestCase(unittest.TestCase):
@@ -200,8 +276,8 @@ class CrudLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri/context/Class/{@resource_id}', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/context/Class/{@resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
+            {'href': 'http://any.uri/context/Class/{_resource_id}', 'method': 'DELETE', 'rel': 'delete'},
+            {'href': 'http://any.uri/context/Class/{_resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_crud_links_with_params_ok(self):
@@ -210,9 +286,29 @@ class CrudLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri/context/Class/{@resource_id}?lang=en', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/context/Class/{@resource_id}?lang=en', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
+            {'href': 'http://any.uri/context/Class/{_resource_id}?lang=en', 'method': 'DELETE', 'rel': 'delete'},
+            {'href': 'http://any.uri/context/Class/{_resource_id}?lang=en', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_crud_links_with_schema_url(self):
+        params = {'instance_id': 'instance', 'context_name': 'context', 'class_name': 'Class'}
+        handler = MockHandler(uri="/something", **params)
+        query_params = ParamDict(handler, **params)
+        response = crud_links(query_params, "/_something_schema")
+        expected = [
+            {
+                'href': ':///context/Class/{_resource_id}',
+                'method': 'DELETE',
+                'rel': 'delete'
+            },
+            {
+                'href': ':///context/Class/{_resource_id}',
+                'method': 'PUT',
+                'rel': 'replace',
+                'schema': {'$ref': '/_something_schema'}
+            }
+        ]
+        self.assertEqual(response, expected)
 
 
 class BuildClassUrlTestCase(unittest.TestCase):

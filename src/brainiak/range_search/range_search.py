@@ -1,10 +1,9 @@
 from tornado.web import HTTPError
 
-from brainiak import settings
-from brainiak import triplestore
+from brainiak import settings, triplestore
 from brainiak.search_engine import run_search
-from brainiak.utils.sparql import add_language_support, compress_keys_and_values, filter_values
-from brainiak.utils.resources import calculate_offset
+from brainiak.utils.sparql import add_language_support, compress_keys_and_values, filter_values, is_result_empty
+from brainiak.utils.resources import calculate_offset, decorate_dict_with_pagination
 
 SUGGEST_REQUIRED_PARAMS = ('pattern', 'predicate')
 SUGGEST_OPTIONAL_PARAMS = ('search_fields', 'search_classes', 'search_graphs')
@@ -13,6 +12,8 @@ RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 def do_range_search(params):
     range_result = _get_predicate_ranges(params)
+    if is_result_empty(range_result):
+        raise HTTPError(400, "Either the predicate {0} does not exists or it does not have any rdfs:range defined in the triplestore".format(params['predicate']))
 
     classes = _validate_class_restriction(params, range_result)
     graphs = _validate_graph_restriction(params, range_result)
@@ -29,12 +30,25 @@ def do_range_search(params):
     request_body = _build_body_query(params, classes, search_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)
 
-    items = _build_items(elasticsearch_result, class_label_dict, title_fields)
+    items, item_count = _build_items(elasticsearch_result, class_label_dict, title_fields)
 
     if not items:
         return None
     else:
-        return items  # TODO complete dict
+        return build_json(items, item_count, params)
+
+
+def build_json(items_list, item_count, query_params):
+
+    json = {
+        '_base_url': query_params.base_url,
+        'items': items_list,
+        "@context": {"@language": query_params.get("lang")},
+    }
+
+    decorate_dict_with_pagination(json, query_params, item_count)
+
+    return json
 
 
 QUERY_PREDICATE_RANGES = """
@@ -177,7 +191,7 @@ def _build_items(result, class_label_dict, title_fields):
             item_dict.update(item["fields"])
             items.append(item_dict)
 
-    return items
+    return items, item_count
 
 GRAPH_PREFIX = "http://semantica.globo.com/"
 

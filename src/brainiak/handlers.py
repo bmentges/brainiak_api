@@ -4,7 +4,7 @@ import traceback
 from contextlib import contextmanager
 
 import ujson as json
-from tornado.curl_httpclient import CurlError
+from tornado.httpclient import HTTPError as HTTPClientError
 from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import CorsMixin, custom_decorator
 
@@ -13,7 +13,7 @@ from brainiak.collection.get_collection import filter_instances
 from brainiak.collection.json_schema import schema as collection_schema
 from brainiak.context.get_context import list_classes
 from brainiak.context.json_schema import schema as context_schema
-from brainiak.event_bus import NotificationFailure, notify_bus, MiddlewareError
+from brainiak.event_bus import NotificationFailure, notify_bus
 from brainiak.greenlet_tornado import greenlet_asynchronous
 from brainiak.instance.create_instance import create_instance
 from brainiak.instance.delete_instance import delete_instance
@@ -124,12 +124,16 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             logger.error(message)
             self.send_error(status_code, message=message)
 
-        elif isinstance(e, CurlError):
+        elif isinstance(e, HTTPClientError):
             message = "Access to backend service failed.  {0:s}.".format(e)
             extra_messages = check_messages_when_port_is_mentioned(str(e))
             if extra_messages:
                 for msg in extra_messages:
                     message += msg
+
+            if settings.DEBUG:
+                # Put backend service response in error for debuggin purposes
+                message += "\nResponse:\n" + e.response.body
 
             logger.error(message)
             self.send_error(status_code, message=message)

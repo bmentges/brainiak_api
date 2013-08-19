@@ -12,8 +12,11 @@ from brainiak.range_search.range_search import _build_body_query, _validate_clas
 class RangeSearchTestCase(TestCase):
 
     @patch("brainiak.range_search.range_search._build_type_filters", return_value={})
-    def test_build_query_body(self, mocked_build_type_filters):
+    @patch("brainiak.range_search.range_search.calculate_offset", return_value=10)
+    def test_build_query_body(self, mocked_calculate_offset, mocked_build_type_filters):
         expected = {
+            "from": 10,
+            "size": 10,
             "fields": ["rdfs:label", "upper:name"],
             "query": {
                 "query_string": {
@@ -25,7 +28,8 @@ class RangeSearchTestCase(TestCase):
         }
 
         params = {
-            "pattern": "Rio De Jan"
+            "pattern": "Rio De Jan",
+            "page": "1"
         }
 
         response = _build_body_query(params, [], ["rdfs:label", "upper:name"])

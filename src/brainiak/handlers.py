@@ -325,7 +325,6 @@ class CollectionHandler(BrainiakRequestHandler):
         (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
         instance_url = self.build_resource_url(instance_id)
 
-        self.set_status(201)
         self.set_header("location", instance_url)
 
         self.query_params["instance_uri"] = instance_uri
@@ -336,7 +335,7 @@ class CollectionHandler(BrainiakRequestHandler):
         if settings.NOTIFY_BUS:
             self.notify_bus_after_post(instance_data)
 
-        self.finalize(instance_data)
+        self.finalize(201)
 
     def finalize(self, response):
         if response is None:
@@ -354,9 +353,12 @@ class CollectionHandler(BrainiakRequestHandler):
             self.query_params["filter_message"] = "".join(filter_message)
             msg = "Instances of class ({class_uri}) in graph ({graph_uri}){filter_message} and in language=({lang}) were not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
+        elif isinstance(response, int):  # status code
+            self.set_status(response)
         else:
             self.write(response)
-            self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
+
+        self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
 
 
 class InstanceHandler(BrainiakRequestHandler):
@@ -398,10 +400,11 @@ class InstanceHandler(BrainiakRequestHandler):
                 raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
             instance_uri, instance_id = create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
             resource_url = self.request.full_url()
-            self.set_status(201)
+            status = 201
             self.set_header("location", resource_url)
         else:
             edit_instance(self.query_params, instance_data)
+            status = 200
 
         response = get_instance(self.query_params)
         if response and settings.NOTIFY_BUS:
@@ -411,7 +414,7 @@ class InstanceHandler(BrainiakRequestHandler):
                        action="PUT",
                        instance_data=response)
 
-        self.finalize(response)
+        self.finalize(status)
 
     @greenlet_asynchronous
     def delete(self, context_name, class_name, instance_id):

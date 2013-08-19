@@ -154,6 +154,14 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         self.set_header("X-Cache", cache_msg)
         self.set_header("Last-Modified", meta['last_modified'])
 
+    def notify_bus_after_post(self, instance_data):
+        instance_data_for_bus = expand_all_uris_recursively(instance_data)
+        notify_bus(instance=self.query_params["instance_uri"],
+                   klass=self.query_params["class_uri"],
+                   graph=self.query_params["graph_uri"],
+                   action="POST",
+                   instance_data=instance_data_for_bus)
+
     def write_error(self, status_code, **kwargs):
         error_message = "HTTP error: %d" % status_code
         if "message" in kwargs and kwargs.get("message") is not None:
@@ -318,26 +326,11 @@ class CollectionHandler(BrainiakRequestHandler):
 
         self.query_params["instance_uri"] = instance_uri
         self.query_params["instance_id"] = instance_id
+
         instance_data = get_instance(self.query_params)
 
         if settings.NOTIFY_BUS:
-            try:
-                # TODO: uncomment below
-                instance_data_for_bus = expand_all_uris_recursively(instance_data)
-                notify_bus(instance=instance_uri,
-                           klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"],
-                           action="POST",
-                           instance_data=instance_data_for_bus)
-            except MiddlewareError:
-                # rollback data insertion
-                self.query_params['instance_id'] = instance_id
-                response = delete_instance(self.query_params)
-                if not response:
-                    msg = "Could not notify bus and failed to rollback insertion of {0}. ALERT: Search engines are not in sync anymore!"
-                else:
-                    msg = "Could not notify bus about insertion of {0}, rollback was successful."
-                raise NotificationFailure(msg.format(self.query_params['instance_uri']))
+            self.notify_bus_after_post(instance_data)
 
         self.finalize(instance_data)
 
@@ -390,7 +383,6 @@ class InstanceHandler(BrainiakRequestHandler):
                                           class_name=class_name,
                                           instance_id=instance_id,
                                           **valid_params)
-
         try:
             instance_data = json.loads(self.request.body)
         except ValueError:
@@ -466,7 +458,8 @@ class RangeSearchHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, **valid_params)
             self.query_params.validate_required(valid_params)
 
-        response = None   # do_range_search(self.query_params)
+        self.query_params.update(body_params)
+        response = do_range_search(self.query_params)
 
         self.finalize(response)
 

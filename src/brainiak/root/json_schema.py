@@ -66,6 +66,22 @@ def schema():
                                 "format": "uri"
                             }
                         },
+                        "search_classes": {
+                            "required": False,
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uri"
+                            }
+                        },
+                        "search_graphs": {
+                            "required": False,
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uri"
+                            }
+                        },
                     },
                 }
             },

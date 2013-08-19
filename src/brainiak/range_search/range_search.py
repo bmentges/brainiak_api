@@ -2,7 +2,7 @@ from tornado.web import HTTPError
 
 from brainiak import settings, triplestore
 from brainiak.search_engine import run_search
-from brainiak.utils.sparql import add_language_support, compress_keys_and_values, filter_values
+from brainiak.utils.sparql import add_language_support, compress_keys_and_values, filter_values, is_result_empty
 from brainiak.utils.resources import calculate_offset, decorate_dict_with_pagination
 
 SUGGEST_REQUIRED_PARAMS = ('pattern', 'predicate')
@@ -12,6 +12,8 @@ RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 def do_range_search(params):
     range_result = _get_predicate_ranges(params)
+    if is_result_empty(range_result):
+        raise HTTPError(400, "Either the predicate {0} does not exists or it does not have any rdfs:range defined in the triplestore".format(params['predicate']))
 
     classes = _validate_class_restriction(params, range_result)
     graphs = _validate_graph_restriction(params, range_result)

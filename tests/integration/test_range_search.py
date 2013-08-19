@@ -40,13 +40,22 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         super(TestRangeSearch, self).setUp()
         requests.delete(self.elastic_request_url)
 
+    def test_request_with_invalid_predicate(self):
+        INVALID_PARAMS = {'pattern': 'york', 'predicate': 'http://example.onto/invalidPredicate'}
+        response = self.fetch('/_range_search',
+                              method='POST',
+                              body=json.dumps(INVALID_PARAMS))
+        self.assertEqual(response.code, 400)
+        expected_error_msg = "HTTP error: 400\nEither the predicate http://example.onto/invalidPredicate does not exists or it does not have any rdfs:range defined in the triplestore"
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received['error'], expected_error_msg)
+
     @patch("brainiak.range_search.range_search._graph_uri_to_index_name", return_value="example.onto")
     def test_successful_request(self, mocked_graph_uri_to_index_name):
         response = self.fetch('/_range_search',
                               method='POST',
                               body=json.dumps(self.VALID_BODY_PARAMS))
         self.assertEqual(response.code, 200)
-        #json_received = json.loads(response.body)
         #self.assertEqual(json_received, {})
 
     @patch("brainiak.range_search.range_search._graph_uri_to_index_name", return_value="example.onto")

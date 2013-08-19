@@ -43,6 +43,33 @@ def schema():
                 "rel": "self"
             },
             {
+                "href": "/_range_search",
+                "method": "POST",
+                "rel": "suggest",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "pattern": {
+                            "required": True,
+                            "type": "string"
+                        },
+                        "predicate": {
+                            "required": True,
+                            "type": "string",
+                            "format": "uri"
+                        },
+                        "search_fields": {
+                            "required": False,
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uri"
+                            }
+                        },
+                    },
+                }
+            },
+            {
                 "href": "/{{context_id}}/{{collection_id}}",
                 "method": "GET",
                 "rel": "collection",

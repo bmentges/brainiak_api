@@ -20,7 +20,7 @@ set :puppetmaster_env,      'qa'
 set :redis_password,        'a8pdifs2e2m9afn7tcifcea99674aad2'
 
 # Directories
-set :dbpasswd_dir,  '/mnt/projetos/dbpasswd/#{projeto}'
+set :dbpasswd_dir,  "/mnt/projetos/dbpasswd/#{projeto}"
 
 # Files
 set :triplestore_config_filepath, "#{dbpasswd_dir}/triplestore.ini"

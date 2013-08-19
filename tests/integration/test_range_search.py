@@ -17,7 +17,7 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase):
         response = self.fetch('/_range_search',
                               method='POST',
                               body=json.dumps(self.VALID_BODY_PARAMS))
-        self.assertEqual(response.code, 200)
+        self.assertEqual(response.code, 404)
         #json_received = json.loads(response.body)
         #self.assertEqual(json_received, {})
 

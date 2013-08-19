@@ -2,7 +2,7 @@ import inspect
 from urllib import unquote
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import build_schema_url_for_instance, self_url
+from brainiak.utils.links import assemble_url, build_schema_url_for_instance, merge_querystring, pagination_items
 from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination
 from brainiak.utils.sparql import compress_keys_and_values, is_literal, normalize_term, calculate_offset, get_one_value, extract_po_tuples
 
@@ -270,30 +270,21 @@ def filter_instances(query_params):
 
 
 def build_json(items_list, query_params):
-    #query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
     schema_url = unquote(build_schema_url_for_instance(query_params))
 
-    #if query_string:
-    #    item_query_string = query_string + "&" + "instance_prefix={instance_prefix}"
-    #else:
-    #    item_query_string = query_string + "instance_prefix={instance_prefix}"
-    #item_url = "{0}/{{resource_id}}?{1}".format(base_url, item_query_string)
-
-    #add_link(links, 'item', item_url)
-    #add_link(links, 'instance', item_url)
-    #add_link(links, 'class', schema_url)
     json = {
         '_schema_url': schema_url,
         '_class_prefix': query_params['class_prefix'],
         '_base_url': query_params.base_url,
         'items': items_list,
-        "@context": {"@language": query_params.get("lang")}
+        "@context": {"@language": query_params.get("lang")},
     }
 
     def calculate_total_items():
         result_dict = query_count_filter_instances(query_params)
         total_items = int(get_one_value(result_dict, 'total'))
         return total_items
+
     decorate_dict_with_pagination(json, query_params, calculate_total_items)
 
     return json

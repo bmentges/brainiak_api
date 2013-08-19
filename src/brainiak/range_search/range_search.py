@@ -1,8 +1,10 @@
 from tornado.web import HTTPError
 
-from brainiak.utils.sparql import add_language_support, compress_keys_and_values, filter_values
+from brainiak import settings
 from brainiak import triplestore
 from brainiak.search_engine import run_search
+from brainiak.utils.sparql import add_language_support, compress_keys_and_values, filter_values
+from brainiak.utils.resources import calculate_offset
 
 SUGGEST_REQUIRED_PARAMS = ('pattern', 'predicate')
 SUGGEST_OPTIONAL_PARAMS = ('search_fields', 'search_classes', 'search_graphs')
@@ -119,8 +121,8 @@ def _build_body_query(params, classes, search_fields):
     query_string = " AND ".join(patterns) + "*"
     return_fields = search_fields  # TODO return_fields in params
     body = {
-        #"from": calculate_offset(params),
-        #"size": int(params["per_page"]),
+        "from": int(calculate_offset(params)),
+        "size": int(params.get("per_page", settings.DEFAULT_PER_PAGE)),
         "fields": return_fields,
         "query": {
             "query_string": {
@@ -175,7 +177,6 @@ def _build_items(result, class_label_dict, title_fields):
             item_dict.update(item["fields"])
             items.append(item_dict)
 
-    # TODO pagination
     return items
 
 GRAPH_PREFIX = "http://semantica.globo.com/"

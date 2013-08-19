@@ -1,9 +1,11 @@
 import json
+import StringIO
 from mock import patch as patch_mock
 
 from tornado.web import Application, HTTPError
 from tornado.curl_httpclient import CurlError
 from tornado.httpclient import HTTPError as ClientHTTPError
+from tornado.httpclient import HTTPResponse
 
 from brainiak.handlers import BrainiakRequestHandler
 
@@ -28,6 +30,11 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
         def put(self, unauthorized=False):
             if self.request.body == "unauthorized":
                 raise ClientHTTPError(401, "http error: unauthorized, back off")
+            elif self.request.body == "400":
+                _buffer = StringIO.StringIO()
+                _buffer.write("Malformed query")
+                response = HTTPResponse(self.request, 400, buffer=_buffer, effective_url="/a")
+                raise ClientHTTPError(400, message="Bad request", response=response)
             elif self.request.body == "500":
                 raise HTTPError(500, "Internal Virtuoso Error")
             else:
@@ -52,6 +59,14 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
         expected_error_json = {"error": "HTTP error: 400\ntesting"}
         self.assertEqual(response.code, 400)
         self.assertEqual(expected_error_json, json.loads(response.body))
+
+    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
+    def test_400_client_error(self, log):
+        expected_error_message = "HTTP error: 500\nAccess to backend service failed." + \
+            "  HTTP 400: Bad request.\nResponse:\nMalformed query"
+        response = self.fetch('/', method='PUT', body="400")
+        self.assertEqual(response.code, 500)
+        self.assertEqual(json.loads(response.body)["error"], expected_error_message)
 
     @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_500_error(self, log):

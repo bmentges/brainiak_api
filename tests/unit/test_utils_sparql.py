@@ -120,22 +120,6 @@ class ResultHandlerTestCase(unittest.TestCase):
         self.assertEqual(compressed_list, expected_list)
 
 
-class OffsetTestCase(unittest.TestCase):
-    def test_offset_defaults(self):
-        handler = MockHandler()
-        params = ParamDict(handler)
-        response = calculate_offset(params, default_page=2, default_per_page=10)
-        expected = '20'
-        self.assertEqual(expected, response)
-
-    def test_offset_calculation(self):
-        handler = MockHandler()
-        params = ParamDict(handler, page=3, per_page=5)
-        response = calculate_offset(params, default_page=2, default_per_page=10)
-        expected = '15'
-        self.assertEqual(expected, response)
-
-
 class GetOneTestCase(unittest.TestCase):
 
     response = {u'head': {u'link': [], u'vars': [u'graph', u'videoClass', u'program']},

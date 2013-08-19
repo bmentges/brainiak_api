@@ -1,0 +1,221 @@
+---+!! Brainiak
+
+%TOC%
+
+---++ Introdução
+
+Brainiak é uma API RESTful para dados linkados que provê acesso transparente a sistemas SPARQL.
+
+---+++ Motivações
+
+Os seguintes tópicos motivaram o desenvolvimento do Brainiak:
+
+   * Reduzir as barreiras na adoção e uso das tecnologias de semântica
+   * Encapsular o acesso a "triple stores" compatíveis com RDF/TURTLE e SPARQL (exemplos: [[http://virtuoso.openlinksw.com][OpenLink Virtuoso]], [[http://www.aduna-software.com/technology/sesame][Sesame]], [[http://www.franz.com/agraph/allegrograph][AllegroGraph]], [[http://www.ontotext.com/owlim][Ontotext OWLIM]])
+   * Melhorar o gerenciamento de dados de "triple stores"
+   * Prover um único e coerente interface para outros bancos de dados, incluindo "non triple stores" (exemplo: [[http://www.elasticsearch.org][ElasticSearch]]).
+
+---++ Ambientes
+---+++ DEV
+| *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
+| cittavld44 | - | 6x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 1 GB | 6 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
+
+---+++ QA1
+| *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
+| cittavld45 | - | 6x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 1 GB | 3 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
+
+---+++ QA2
+| *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
+| api-semantica-be01.vb.qa02 | Dell PowerEdge M600 | 8x Intel(R) Xeon(R) CPU E5420 @ 2.50GHz | 16 GB | 145.9 GB | 1 | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5 |
+| api-semantica-be02.vb.qa02 | Dell PowerEdge M600 | 8x Intel(R) Xeon(R) CPU E5420 @ 2.50GHz | 16 GB | 145.9 GB | 1 | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5 |
+
+---+++ QA
+| *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
+| cittavld507 | - | 6x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 512 MB | 6 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
+| cittavld797 | - | 6x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 512 MB | 6 GB | - | Centos 5.8 - 64bits | 2.6.18-308.el5xen |
+
+---+++ Staging
+| *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
+| riovlb160 | - | 4x Intel(R) Xeon(R) CPU E5410 @ 2.33GHz | 1 GB | 12 GB | - | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5xen |
+| riovlb161 | - | 4x Intel(R) Xeon(R) CPU E5410 @ 2.33GHz | 1 GB | 12 GB | - | Centos 5.6 - 64bits | 2.6.18-238.9.1.el5xen |
+
+---+++ Produção
+| *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
+| riomp40lb14 | Dell PowerEdge M610 | 24x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 48 GB | 1.1 TB | 0 | Centos 5.5 - 64bits | 2.6.18-194.11.4.el5 |
+| riomp41lb14 | Dell PowerEdge M610 | 24x Intel(R) Xeon(R) CPU L5640  @ 2.27GHz | 48 GB | 1.1 TB | 0 | Centos 5.5 - 64bits | 2.6.18-194.11.4.el5 |
+
+---++ Versões das Aplicações e portas de serviço
+
+| *Nome* | *Versão* | *Instalação* | *Porta* |
+| Nginx | 1.2.2 | /opt/api_semantica/nginx-be | 8033 |
+| GUnicorn | 0.14.6 | /opt/api_semantica/brainiak/gunicorn-be | 8035 |
+| Python | 2.7.2 | /opt/generic/python27 | - |
+
+---++ Localização dos Arquivos do Projeto
+
+| *Instância* | *Path* |
+| Nginx BE | /opt/api_semantica/nginx-be/conf |
+| GUnicorn BE | /opt/api_semantica/brainiak/gunicorn-be/conf |
+| Virtual Env | /opt/api_semantica/brainiak/virtualenv |
+| Logs | /opt/logs/brainiak |
+
+---++ Aliases
+
+<pre>
+alias cdapp-brainiak-be='cd /mnt/projetos/deploy-be/api_semantica/brainiak/app/current'
+alias cdconf-brainiak-gunicorn-be='cd /opt/api_semantica/brainiak/gunicorn-be/conf'
+alias cdhome-brainiak-gunicorn-be='cd /opt/api_semantica/brainiak/gunicorn-be'
+alias cdlog-brainiak-gunicorn-be='cd /opt/logs/brainiak/gunicorn-be'
+
+alias start-brainiak-gunicorn-be='sudo /etc/init.d/brainiak-gunicorn-be start'
+alias stop-brainiak-gunicorn-be='sudo /etc/init.d/brainiak-gunicorn-be stop'
+alias status-brainiak-gunicorn-be='sudo /etc/init.d/brainiak-gunicorn-be status'
+alias force-restart-brainiak-gunicorn-be='sudo /etc/init.d/brainiak-gunicorn-be force-restart'
+alias force-stop-brainiak-gunicorn-be='sudo /etc/init.d/brainiak-gunicorn-be force-stop'
+alias graceful-brainiak-gunicorn-be='sudo /etc/init.d/brainiak-gunicorn-be graceful'
+alias reload-brainiak-gunicorn-be='sudo /etc/init.d/brainiak-gunicorn-be reload'
+alias restart-brainiak-gunicorn-be='sudo /etc/init.d/brainiak-gunicorn-be restart'
+
+alias tail-brainiak-gunicorn-be='tail -f -n 10 /opt/logs/brainiak/gunicorn-be/*.log'
+</pre>
+
+---++ Recursos Externos
+
+---+++ BE
+
+| *Host* | *Porta* |
+| ipypi.globoi.com | 80 |
+| pypi.globoi.com | 80 |
+| syslog.tcp.glog.globoi.com | 514 |
+| rubygems.globoi.com | 80 |
+| puppet.globoi.com | 8140 |
+| yum.globoi.com | 80 |
+
+---+++ Banco de dados
+
+| *ambiente* | *hostname* | *porta* | *usuario* |
+| dev| dev.virtuoso.globoi.com | 8890 | api-semantica |
+| dev | redis.dev.globoi.com | 20015 | - |
+| qa1| qa1.virtuoso.globoi.com | 8890 | api-semantica |
+| qa1 | redis.qa1.globoi.com | 20015 | - |
+| qa2| qa2.virtuoso.globoi.com | 8890 | api-semantica |
+| qa2 | redis.qa2.globoi.com | 20015 | - |
+| staging | staging.semantica.globoi.com | 8890 | api-semantica |
+| staging | redis.api.semantica.globoi.com | 20015 | - |
+| produção | virtuoso.semantica.globoi.com | 80 | api-semantica |
+| produção | redis.api.semantica.globoi.com | 20015 | - |
+ 
+---++ Storage
+
+---+++ Back End
+| *Filer* | *Volume* | *Share* | *Mount* | *Tamanho* | *Ocupação Prevista[1]* |
+| riofb01a | /vol/vol10 | api_semantica | /mnt/projetos/deploy-be | 30G | - |
+| riofb01a | /vol/vol10 | dbpasswd/api_semantica | /mnt/projetos/dbpasswd/api_semantica | 30G | - |
+[1] Ocupação prevista para 1 ano nesse volume para essa aplicação.
+
+---++ Topologia
+<center>
+%TOGGLEIMG{img="%ATTACHURLPATH%/Ecossistema_do_Brainiak.png" size1="946×922" size2="1893×1845"}%
+</center>
+
+---++Diagrama de Sequência
+<center>
+%TOGGLEIMG{img="%ATTACHURLPATH%/sequence_diagram_mercury.png"  size1="946×922" size2="1893×1845"}%
+</center>
+
+---++ Telecom
+
+---+++ VIPs
+
+| *Nome* | *IP* | *Tipo* | *Métrica* | *Healthcheck* | *MaxConn* | *Persistência* |
+| api.semantica.globoi.com | 10.70.130.137 | Não Cacheado | Least-Conn | "GET /healthcheck HTTP/1.0\r\nHost: api.semantica.globoi.com\r\n\r\n" | 100 | Não |
+
+---+++ Configuração dos VIPs
+
+<pre>
+monitor MONITOR_VIP2443_10.70.130.136 {
+  defaults from http
+  recv "WORKING"
+  send "GET /healthcheck HTTP/1.0\r\nHost:api.semantica.globoi.com\r\n\r\n"
+}
+node 10.11.98.5 {
+  screen RIOMP40LB14
+}
+node 10.11.98.6 {
+  screen RIOMP41LB14
+}
+pool VIP2444_10.70.130.137_8033 {
+  lb method least conn
+  min active members 1
+  monitor all MONITOR_VIP2443_10.70.130.136
+  members {
+    10.11.98.5:8033 {
+      limit 100
+      priority 1
+    }
+    10.11.98.6:8033 {
+      limit 100
+      priority 1
+    }
+  }
+}
+virtual VIP2444_10.70.130.137_80 {
+  snat automap
+  pool VIP2444_10.70.130.137_8033
+  destination 10.70.130.137:80
+  ip protocol 6
+  rules X_Forwarded_For
+  profiles {
+    http_sem_one_connect {}
+    tcp {}
+  }
+}
+</pre>
+
+---++ Instalação
+Para instalação basta seguir os passos abaixo:
+
+   1 Cadastrar a máquina no Foreman, no ambiente correspondente.
+   1 Associar as roles abaixo ao servidor:
+      * brainiak::be
+      * puppet::common
+   1 Executar um deploy (cap <ambiente> deploy) ou simplesmente executar um 'puppet-setup' caso seja um novo servidor em uma farm já existente.
+   1 Executar os testes de Infraestrutura (cap <ambiente> tdi).
+
+---++ Repositórios
+
+---+++ Repositório Git
+Todos os arquivos relacionados com a configuração desse projeto, podem ser acessados através do repositório [[http://ngit.globoi.com/brainiak/brainiak][Git]].
+
+---++ Monitorações
+
+---+++ Nagios
+| *Host* | *Services* |
+| api.semantica.globoi.com | VIP API Semântica - 80 |
+| riomp40lb14 | API Semântica - Nginx 8033 |
+| riomp41lb14 | API Semântica - Nginx 8033 |
+| riomp40lb14 | Gunicorn API V2/Brainiak - 8035 |
+| riomp41lb14 | Gunicorn API V2/Brainiak - 8035 |
+
+Link: [[http://smi.globoi.com/thruk/cgi-bin/status.cgi?dfl_s0_value_sel=5&dfl_s2_type=search&dfl_s2_serviceprops=0&dfl_s1_op=~&dfl_s2_servicestatustypes=31&dfl_s2_op=~&dfl_s0_val_pre=&dfl_s0_hostprops=0&nav=&dfl_s1_value_sel=5&dfl_s2_hostprops=0&dfl_s1_type=search&dfl_s1_hostprops=0&dfl_s2_value_sel=5&dfl_s0_serviceprops=0&dfl_s1_value=riomp40lb14&hidetop=&dfl_s1_servicestatustypes=31&dfl_s0_hoststatustypes=15&dfl_s0_value=api.semantica.globoi.com&dfl_s2_hoststatustypes=15&dfl_s2_value=riomp41lb14&dfl_s0_servicestatustypes=31&dfl_s0_op=~&dfl_s1_val_pre=&hidesearch=2&dfl_s1_hoststatustypes=15&style=detail&dfl_s0_type=search&dfl_s2_val_pre=&dfl_s1_serviceprops=0][Nagios]]
+
+---+++ Cricket
+
+---++++ BE
+| Sessões | [[http://datacenter.globoi.com/balanceador.cgi?targets=b09a,b10a:b10.70.130.137]] |
+| riomp40lb14 | [[http://datacenter.globoi.com/server.cgi?targets=riomp40lb14]] |
+| riomp41lb14 | [[http://datacenter.globoi.com/server.cgi?targets=riomp41lb14]] |
+| Todos | [[http://datacenter.globoi.com/server.cgi?targets=riomp40lb14,riomp41lb14&mode=grouped][http://datacenter.globoi.com/server.cgi?targets=riomp40lb14,riomp41lb14&amp;mode=grouped]] |
+
+---++ Foreman Puppet Classes
+* Relação completa e atualizada de máquinas para cada ambiente, passando por DEV, QA1, QA2, Staging e Prod:
+<br />
+* [[http://puppet.globoi.com/puppetclasses?search=%3Dbrainiak%3A%3Abe][Lista de servidores]]
+
+---++ EXTRA
+
+---+++ Infra Brainiak (docs.google)
+[[https://docs.google.com/a/corp.globo.com/drawings/d/19NgAKaZGgpNnSQagKOFc8_vytp_baVTtiIjZGbVrY9g/edit?usp=sharing][Diagrama de Infraestrutura do Brainiak]]
+
+---++ FAQ
+[[https://globo.service-now.com/kb_list.do?jvar_view_topic=XXXX][Knowledge Base sobre o Brainiak]]

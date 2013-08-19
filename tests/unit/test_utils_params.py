@@ -2,7 +2,7 @@ from unittest import TestCase
 from brainiak import settings
 
 from brainiak.utils import params
-from brainiak.prefixes import ROOT_CONTEXT
+from brainiak.prefixes import ROOT_CONTEXT, SHORTEN
 from brainiak.settings import URI_PREFIX
 from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals, RequiredParamMissing, validate_body_params
 from brainiak.utils.resources import valid_pagination
@@ -262,7 +262,7 @@ class ExpandUriTestCase(TestCase):
 
     def test_default_value_for_param_expand_uri(self):
         handler = MockHandler()
-        params = ParamDict(handler)
+        params = ParamDict(handler, expand_uri=SHORTEN)
         self.assertEqual(params["expand_uri"], settings.DEFAULT_URI_EXPANSION)
 
     def test_set_param_expand_uri(self):
@@ -272,7 +272,7 @@ class ExpandUriTestCase(TestCase):
 
     def test_default_value_for_param_expand_uri_values_and_keys(self):
         handler = MockHandler()
-        params = ParamDict(handler)
+        params = ParamDict(handler, expand_uri=settings.DEFAULT_URI_EXPANSION)
         self.assertEqual(params["expand_uri_values"], settings.DEFAULT_URI_EXPANSION)
         self.assertEqual(params["expand_uri_keys"], settings.DEFAULT_URI_EXPANSION)
 

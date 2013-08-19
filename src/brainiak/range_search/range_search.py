@@ -119,7 +119,7 @@ def _build_body_query(params, classes, search_fields):
     query_string = " AND ".join(patterns) + "*"
     return_fields = search_fields  # TODO return_fields in params
     body = {
-        #"from": calculate_offset(params, settings.DEFAULT_PAGE, settings.PER_PAGE),
+        #"from": calculate_offset(params),
         #"size": int(params["per_page"]),
         "fields": return_fields,
         "query": {

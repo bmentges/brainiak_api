@@ -4,6 +4,7 @@ from tornado.web import HTTPError
 from brainiak.prefixes import expand_uri, is_compressed_uri, ROOT_CONTEXT
 from brainiak.utils.links import pagination_items
 from brainiak.settings import EVENT_BUS_PORT
+from brainiak import settings
 
 
 class LazyObject(object):
@@ -24,6 +25,13 @@ def check_messages_when_port_is_mentioned(source_message):
         if port in backends:
             result.append(" Check {0}".format(backends[port]))
     return result
+
+
+def calculate_offset(query_params):
+    "Calculate offset for paginated queries given page and per_page parameters"
+    page = int(query_params.get("page", settings.DEFAULT_PAGE))
+    per_page = int(query_params.get("per_page", settings.DEFAULT_PER_PAGE))
+    return str(page * per_page)
 
 
 def decorate_dict_with_pagination(target_dict, params, get_total_items_func):

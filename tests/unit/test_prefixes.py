@@ -204,4 +204,3 @@ class ExpansionTestCase(unittest.TestCase):
     def test_normalize_recursively_with_invalid_type(self):
         d = {'invalid': 3}
         self.assertDictEqual(expand_all_uris_recursively(d), d)
-

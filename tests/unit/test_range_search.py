@@ -145,15 +145,13 @@ class RangeSearchTestCase(TestCase):
 
     @patch("brainiak.range_search.range_search._get_title_value", return_value="Globoland")
     def test_build_items(self, mocked_get_title_value):
-        expected = [
-            {
+        expected = {
                 "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
                 "title": "Globoland",
                 "@type": "http://semantica.globo.com/place/City",
                 "type_title": "Cidade",
                 "rdfs:label": "Globoland"
-            }
-        ]
+        }
 
         elasticsearch_result = {
             "took": 256,
@@ -183,13 +181,12 @@ class RangeSearchTestCase(TestCase):
         class_label_dict = {
             "http://semantica.globo.com/place/City": "Cidade"
         }
-
-        response = _build_items(elasticsearch_result, class_label_dict, [])
-        self.assertEqual(expected, response)
+        items_response, item_count = _build_items(elasticsearch_result, class_label_dict, [])
+        self.assertDictEqual(expected, items_response[0])
 
     @patch("brainiak.range_search.range_search._get_subproperties", return_value=["property1", "property2"])
     def test_get_search_fields(self, mocked_get_subproperties):
-        expected = set(["property1", "property2", "rdfs:label"])
+        expected = {"property1", "property2", "rdfs:label"}
         params = {
             "search_fields": ["rdfs:label"]
         }

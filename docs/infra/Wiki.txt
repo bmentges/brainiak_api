@@ -77,6 +77,17 @@ alias reload-brainiak-gunicorn-be='sudo /etc/init.d/brainiak-gunicorn-be reload'
 alias restart-brainiak-gunicorn-be='sudo /etc/init.d/brainiak-gunicorn-be restart'
 
 alias tail-brainiak-gunicorn-be='tail -f -n 10 /opt/logs/brainiak/gunicorn-be/*.log'
+
+alias start-nginx-be-api_semantica='sudo /etc/init.d/nginx-api_semantica-be start'
+alias stop-nginx-be-api_semantica='sudo /etc/init.d/nginx-api_semantica-be stop'
+alias restart-nginx-be-api_semantica='sudo /etc/init.d/nginx-api_semantica-be restart'
+alias status-nginx-be-api_semantica='sudo /etc/init.d/nginx-api_semantica-be status'
+alias reload-nginx-be-api_semantica='sudo /etc/init.d/nginx-api_semantica-be reload'
+alias relog-nginx-be-api_semantica='sudo /etc/init.d/nginx-api_semantica-be relog'
+
+alias tail-access-nginx-be-api_semantica='tail -n 20 -F /opt/logs/api_semantica/nginx-be/nginx-api_semantica-be_access.log'
+alias tail-error-nginx-be-api_semantica='tail -n 20 -F /opt/logs/api_semantica/nginx-be/nginx-api_semantica-be_error.log'
+alias tail-proxy-nginx-be-api_semantica='tail -n 20 -F /opt/logs/api_semantica/nginx-be/nginx-api_semantica-be_proxy.log'
 </pre>
 
 ---++ Recursos Externos
@@ -218,4 +229,6 @@ Link: [[http://smi.globoi.com/thruk/cgi-bin/status.cgi?dfl_s0_value_sel=5&dfl_s2
 [[https://docs.google.com/a/corp.globo.com/drawings/d/19NgAKaZGgpNnSQagKOFc8_vytp_baVTtiIjZGbVrY9g/edit?usp=sharing][Diagrama de Infraestrutura do Brainiak]]
 
 ---++ FAQ
-[[https://globo.service-now.com/kb_list.do?jvar_view_topic=XXXX][Knowledge Base sobre o Brainiak]]
+[[https://globo.service-now.com/kb_view.do?sys_kb_id=86c1ece1a9d305805a48c3babec7513d][O que fazer caso o VIP do Brainiak não responda o healthcheck adequadamente?]]
+[[https://globo.service-now.com/kb_view.do?sys_kb_id=958e9421a9d305805a48c3babec751f6][Reinício do Ngnix BE do Brainiak]]
+[[https://globo.service-now.com/kb_view.do?sys_kb_id=c89c98ada99305805a48c3babec7513f][Reinício do GUnicorn BE do Brainiak]]

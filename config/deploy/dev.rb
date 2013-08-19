@@ -20,4 +20,4 @@ set :dbpasswd_dir,                '/mnt/projetos/dbpasswd/brainiak'
 
 # Files
 set :log_filepath,                '/opt/logs/brainiak/gunicorn-be/gunicorn-be.log'
-set :triplestore_config_filepath, "#{dbpasswd_dir}/config.ini"
+set :triplestore_config_filepath, "#{dbpasswd_dir}/triplestore.ini"

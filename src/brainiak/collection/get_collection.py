@@ -1,10 +1,10 @@
 import inspect
 from urllib import unquote
-from brainiak import settings, triplestore
+from brainiak import triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import assemble_url, build_schema_url_for_instance, merge_querystring, pagination_items
-from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination
-from brainiak.utils.sparql import compress_keys_and_values, is_literal, normalize_term, calculate_offset, get_one_value, extract_po_tuples
+from brainiak.utils.links import build_schema_url_for_instance
+from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination, calculate_offset
+from brainiak.utils.sparql import compress_keys_and_values, is_literal, normalize_term, get_one_value, extract_po_tuples
 
 
 class Query(object):
@@ -138,7 +138,7 @@ class Query(object):
 
     @property
     def offset(self):
-        return calculate_offset(self.params, settings.DEFAULT_PAGE, settings.DEFAULT_PER_PAGE)
+        return calculate_offset(self.params)
 
     def get_sort_variable(self):
         sort_predicate = self.params["sort_by"]

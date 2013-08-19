@@ -101,7 +101,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(location.startswith("http://localhost:"))
         self.assertTrue("/example/City" in location)
         body = json.loads(response.body)
-        self.assertTrue("http://example.onto/name" in body)
+        self.assertTrue('http://example.onto/name' in body)
         self.assertInstanceExist('http://example.onto/City', "http://example.onto/City/123")
 
     def test_query(self):

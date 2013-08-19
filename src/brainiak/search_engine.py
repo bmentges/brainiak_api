@@ -1,5 +1,6 @@
 import time
-import urllib
+
+import json
 
 from tornado.httpclient import HTTPRequest
 
@@ -18,7 +19,7 @@ def run_search(body, indexes=None):
         "url": request_url,
         "method": "POST",
         "headers": {"Content-Type": "application/x-www-form-urlencoded"},
-        "body": urllib.urlencode(body)
+        "body": json.dumps(body)
     }
 
     request = HTTPRequest(**request_params)
@@ -30,11 +31,11 @@ def run_search(body, indexes=None):
     log_msg = format_post % request_params
     log.logger.info(log_msg)
 
-    return response
+    return json.loads(response.body)
 
 
 def _build_elasticsearch_request_url(indexes):
-    request_url = ELASTICSEARCH_ENDPOINT + "/"
+    request_url = "http://" + ELASTICSEARCH_ENDPOINT + "/"
 
     if indexes is not None:
         request_url += ",".join(indexes) + "/"

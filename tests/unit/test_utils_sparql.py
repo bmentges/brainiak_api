@@ -2,9 +2,7 @@ import unittest
 import uuid
 
 from brainiak.prefixes import MemorizeContext, SHORTEN
-from brainiak.utils.params import ParamDict
 from brainiak.utils.sparql import *
-from tests.mocks import MockHandler
 
 
 class ResultHandlerTestCase(unittest.TestCase):

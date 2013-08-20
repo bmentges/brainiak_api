@@ -14,7 +14,7 @@ def schema(context_name, class_name, class_prefix):
         link = "/{0}/{1}/{{resource_id}}?class_prefix={{class_prefix}}&instance_prefix={{instance_prefix}}".format(*args)
 
     base = {
-        "$schema": "http://json-schema.org/draft-04/schema#",
+        "$schema": "http://json-schema.org/draft-03/schema#",
         "title": "Collection Schema",
         "type": "object",
         "properties": {

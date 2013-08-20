@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Suggest &mdash; brainiak dev_10222 | cf0c4721d1e86 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-2.3.0/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-2.3.0/css/bootstrap-responsive.min.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'dev_10222 | cf0c4721d1e86',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="brainiak dev_10222 | cf0c4721d1e86 documentation" href="../../index.html" />
+    <link rel="up" title="Services" href="../../services.html" />
+    <link rel="next" title="Overriding URIs" href="../parameters.html" />
+    <link rel="prev" title="Edit a Instance" href="../instance/edit_instance.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+<div class="container">
+  
+  <div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+      <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+      <a class="brand" href="../../index.html">Brainiak</a>
+      <span class="navbar-text pull-left"><b>dev_10222 | cf0c4721d1e86</b></span>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+          <li class="divider-vertical"></li>
+          
+            <li class="dropdown globaltoc-container">
+  <a href="../../index.html"
+     class="dropdown-toggle"
+     data-toggle="dropdown">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+    ><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../releases.html">Future Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-0-2013">Version 2.2.0 - 2013/??/??</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases.html#releases">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-1-0-0-2013-04-24">Version 1.0.0  - 2013/04/24</a></li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/resources.html">Ubiquitous Language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/rest_verbs.html">Using HTTP methods in a RESTful way</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/hypermedia.html">Hypermedia Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/modeling.html">Modeling and Ontology Engineering</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../services.html">Services</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../context/context.html">Managing Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../prefix/prefix.html">Managing Prefixes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../collection/collection.html">Managing Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schema/schema.html">Managing Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../instance/instance.html">Managing Instances</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Suggest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameters.html">Overriding URIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../links.html">Hypermap of Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../links.html#links-specification">Links Specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../links.html#rel-vocabulary">Rel Vocabulary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pagination.html">Pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../errors.html">Handling Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cache.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../i18n.html">Internationalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../services.html#convention-for-url-resources">Convention for URL Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../services.html#service-examples">Service Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/building_local_dev_environment.html">Building Brainiak in your local environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#when-filtering-instances-using-p-and-o-i-only-get-http-error-404-but-when-i-only-use-p-it-lists-items-containing-the-o-i-defined-what-am-i-doing-wrong">When filtering instances using <tt class="docutils literal"><span class="pre">p</span></tt> and <tt class="docutils literal"><span class="pre">o</span></tt> I only get &#8220;HTTP error: 404&#8221;. But when I only use <tt class="docutils literal"><span class="pre">p</span></tt>, it lists items containing the <tt class="docutils literal"><span class="pre">o</span></tt> I defined. What am I doing wrong?</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+            <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"><ul>
+<li><a class="reference internal" href="#">Suggest</a></li>
+</ul>
+</ul>
+</li>
+          
+          
+            
+  <li><a href="../instance/edit_instance.html"
+         title="previous chapter">&laquo; Edit a Instance</a></li>
+  <li><a href="../parameters.html"
+         title="next chapter">Overriding URIs &raquo;</a></li>
+          
+          
+            <li>
+  <a href="../../_sources/services/suggest/suggest.txt"
+     rel="nofollow">Source</a></li>
+          
+        </ul>
+
+        
+          
+<form class="navbar-search pull-right" style="margin-bottom:-3px;" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="section" id="suggest">
+<h1>Suggest<a class="headerlink" href="#suggest" title="Permalink to this headline">¶</a></h1>
+<p>The suggest service searchs, for a given predicate, instances that could be
+added to the predicate value, in the case of object properties.
+The instances must have a match to a pattern passed in the request in order to be retrieved.</p>
+<p><strong>Basic usage</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -XPOST <span class="s1">&#39;http://api.semantica.dev.globoi.com/_suggest&#39;</span> -T <span class="s2">&quot;suggest_search.json&quot;</span>
+</pre></div>
+</div>
+<p>A JSON must be passed in the request body. The minimal JSON is shown below:</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/partOfCity&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;globo&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">predicate</span></tt> paramater indicates the target predicate.
+For example, the predicate in the example above is <tt class="docutils literal"><span class="pre">place:partOfCity</span></tt>.
+The range (types of possible values) of this predicate is <tt class="docutils literal"><span class="pre">place:City</span></tt>.
+Therefore, the <tt class="docutils literal"><span class="pre">_suggest</span></tt> service will try to match instance of type <tt class="docutils literal"><span class="pre">place:City</span></tt>.</p>
+<p>The <tt class="docutils literal"><span class="pre">pattern</span></tt> paramater indicates the search keyword used to match instances.
+Usually, the pattern must occur in the label of the instances, but one might want to search in other properties as well.</p>
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Globo.com.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

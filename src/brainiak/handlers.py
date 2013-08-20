@@ -158,13 +158,14 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         self.set_header("X-Cache", cache_msg)
         self.set_header("Last-Modified", meta['last_modified'])
 
-    def notify_bus_after_post(self, instance_data):
-        instance_data_for_bus = expand_all_uris_recursively(instance_data)
+    def _notify_bus(self, **kwargs):
+        if kwargs.get("instance_data"):
+            kwargs["instance_data"] = expand_all_uris_recursively(kwargs["instance_data"])
+        #action="POST", instance_data=instance_data
         notify_bus(instance=self.query_params["instance_uri"],
                    klass=self.query_params["class_uri"],
                    graph=self.query_params["graph_uri"],
-                   action="POST",
-                   instance_data=instance_data_for_bus)
+                   **kwargs)
 
     def write_error(self, status_code, **kwargs):
         error_message = "HTTP error: %d" % status_code
@@ -325,7 +326,6 @@ class CollectionHandler(BrainiakRequestHandler):
         (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
         instance_url = self.build_resource_url(instance_id)
 
-        self.set_status(201)
         self.set_header("location", instance_url)
 
         self.query_params["instance_uri"] = instance_uri
@@ -334,9 +334,9 @@ class CollectionHandler(BrainiakRequestHandler):
         instance_data = get_instance(self.query_params)
 
         if settings.NOTIFY_BUS:
-            self.notify_bus_after_post(instance_data)
+            self._notify_bus(action="POST", instance_data=instance_data)
 
-        self.finalize(instance_data)
+        self.finalize(201)
 
     def finalize(self, response):
         if response is None:
@@ -354,9 +354,12 @@ class CollectionHandler(BrainiakRequestHandler):
             self.query_params["filter_message"] = "".join(filter_message)
             msg = "Instances of class ({class_uri}) in graph ({graph_uri}){filter_message} and in language=({lang}) were not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
+        elif isinstance(response, int):  # status code
+            self.set_status(response)
         else:
             self.write(response)
-            self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
+
+        self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
 
 
 class InstanceHandler(BrainiakRequestHandler):
@@ -398,20 +401,19 @@ class InstanceHandler(BrainiakRequestHandler):
                 raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
             instance_uri, instance_id = create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
             resource_url = self.request.full_url()
-            self.set_status(201)
+            status = 201
             self.set_header("location", resource_url)
         else:
             edit_instance(self.query_params, instance_data)
+            status = 200
 
-        response = get_instance(self.query_params)
-        if response and settings.NOTIFY_BUS:
-            notify_bus(instance=response["@id"],
-                       klass=self.query_params["class_uri"],
-                       graph=self.query_params["graph_uri"],
-                       action="PUT",
-                       instance_data=response)
+        instance_data = get_instance(self.query_params)
 
-        self.finalize(response)
+        if instance_data and settings.NOTIFY_BUS:
+            self.query_params["instance_uri"] = instance_data["@id"]
+            self._notify_bus(action="PUT", instance_data=instance_data)
+
+        self.finalize(status)
 
     @greenlet_asynchronous
     def delete(self, context_name, class_name, instance_id):
@@ -427,8 +429,7 @@ class InstanceHandler(BrainiakRequestHandler):
         if deleted:
             response = 204
             if settings.NOTIFY_BUS:
-                notify_bus(instance=self.query_params["instance_uri"], klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"], action="DELETE")
+                self._notify_bus(action="DELETE")
         else:
             response = None
         self.finalize(response)

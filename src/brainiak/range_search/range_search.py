@@ -45,7 +45,8 @@ def build_json(items_list, item_count, query_params):
         "@context": {"@language": query_params.get("lang")},
     }
 
-    decorate_dict_with_pagination(json, query_params, lambda x: item_count)
+    calculate_total_items = lambda: item_count
+    decorate_dict_with_pagination(json, query_params, calculate_total_items)
 
     return json
 

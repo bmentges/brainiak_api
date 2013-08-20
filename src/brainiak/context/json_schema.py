@@ -4,7 +4,7 @@ from brainiak.utils.links import merge_schemas, pagination_schema
 
 def schema(context_name):
     base = {
-        "$schema": "http://json-schema.org/draft-04/schema#",
+        "$schema": "http://json-schema.org/draft-03/schema#",
         "title": "Context Schema",
         "type": "object",
         "properties": {

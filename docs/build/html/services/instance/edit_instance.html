@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Edit a Instance &mdash; brainiak 2.1.0 documentation</title>
+    <title>Edit a Instance &mdash; brainiak dev_10222 | cf0c4721d1e86 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2.1.0',
+        VERSION:     'dev_10222 | cf0c4721d1e86',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,9 +30,9 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.1.0 documentation" href="../../index.html" />
+    <link rel="top" title="brainiak dev_10222 | cf0c4721d1e86 documentation" href="../../index.html" />
     <link rel="up" title="Managing Instances" href="instance.html" />
-    <link rel="next" title="Overriding URIs" href="../parameters.html" />
+    <link rel="next" title="Suggest" href="../suggest/suggest.html" />
     <link rel="prev" title="Delete a Instance" href="delete_instance.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.1.0</b></span>
+      <span class="navbar-text pull-left"><b>dev_10222 | cf0c4721d1e86</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -91,6 +91,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../collection/collection.html">Managing Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schema/schema.html">Managing Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="instance.html">Managing Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../suggest/suggest.html">Suggest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../parameters.html">Overriding URIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html">Hypermap of Resources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html#links-specification">Links Specification</a></li>
@@ -133,8 +134,8 @@
             
   <li><a href="delete_instance.html"
          title="previous chapter">&laquo; Delete a Instance</a></li>
-  <li><a href="../parameters.html"
-         title="next chapter">Overriding URIs &raquo;</a></li>
+  <li><a href="../suggest/suggest.html"
+         title="next chapter">Suggest &raquo;</a></li>
           
           
             <li>
@@ -259,7 +260,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
 <p>If there are unknown parameters in the request, the response status code
 is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;error&quot;: &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported arguments are: graph_uri, class_prefix, class_uri, instance_uri, instance_prefix.&quot;
+    &quot;error&quot;: &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang.&quot;
 }
 </pre></div>
 </div>

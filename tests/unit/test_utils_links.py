@@ -155,7 +155,7 @@ class LinksTestCase(URLTestCase):
         url = "http://dot.com"
         params = {"some_url": "http://some.url"}
         computed = assemble_url(url, params)
-        expected = "http://dot.com?some_url=http%3A%2F%2Fsome.url"
+        expected = 'http://dot.com?some_url=http://some.url'
         self.assertEqual(computed, expected)
 
     def test_assemble_url_with_dict_and_literal_key(self):

@@ -25,5 +25,5 @@ class ResultHandlerTestCase(unittest.TestCase):
         self.validate_draft3(schema)
 
     def test_valid_json_schema_for_collection(self):
-        schema = collection_json_schema.schema('glb','Materia','http://semantica.globo.com/base/')
+        schema = collection_json_schema.schema('glb', 'Materia', 'http://semantica.globo.com/base/')
         self.validate_draft3(schema)

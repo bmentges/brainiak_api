@@ -41,3 +41,5 @@ NOTIFY_BUS = True
 DEFAULT_RULESET_URI = "http://semantica.globo.com/ruleset"
 
 CORS_HEADERS = 'Content-Type, Authorization'
+
+GRAPHS_WITHOUT_INSTANCES = ["http://semantica.globo.com/upper/"]

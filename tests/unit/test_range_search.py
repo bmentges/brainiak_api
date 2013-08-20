@@ -91,7 +91,7 @@ class RangeSearchTestCase(TestCase):
             "predicate": "predicate1"
         }
         try:
-           _validate_graph_restriction(params, None)  # None because filter_values is mocked
+            _validate_graph_restriction(params, None)  # None because filter_values is mocked
         except HTTPError as e:
             self.assertEqual(e.status_code, 400)
             self.assertEqual(e.log_message, expected_message)

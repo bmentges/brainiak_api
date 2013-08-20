@@ -31,10 +31,17 @@ class TestRootJsonSchema(unittest.TestCase):
                         'predicate': {'format': 'uri',
                                       'required': True,
                                       'type': 'string'},
-                        'search_fields': {'items': {'format': 'uri',
-                                                    'type': 'string'},
-                                                    'required': False,
-                                                    'type': 'array'}},
+                        'search_classes': {'items': {'format': 'uri', 'type': 'string'},
+                                           'required': False,
+                                           'type': 'array'},
+                        'search_fields': {'items': {'format': 'uri', 'type': 'string'},
+                                          'required': False,
+                                          'type': 'array'},
+                        'search_graphs': {'items': {'format': 'uri', 'type': 'string'},
+                                          'required': False,
+                                          'type': 'array'}
+
+                    }
                 }
             },
             {

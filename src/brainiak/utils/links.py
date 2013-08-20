@@ -1,6 +1,6 @@
-from urlparse import parse_qs, urlparse, urlsplit, urlunsplit
+from urlparse import parse_qs, urlparse, urlsplit, urlunsplit, parse_qsl
 from math import ceil
-from urllib import urlencode, quote
+from urllib import urlencode, quote, unquote
 
 
 def content_type_profile(schema_url):
@@ -29,7 +29,7 @@ def content_type_profile(schema_url):
 def merge_querystring(querystring, params):
     existing_params = parse_qs(querystring)
     params = dict(existing_params, **params)
-    return urlencode(params, doseq=True)
+    return unquote(urlencode(params, doseq=True))
 
 
 # test: order between declarations in url and in params

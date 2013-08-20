@@ -173,7 +173,6 @@ class RangeSearchTestCase(TestCase):
                 "title": "Globoland",
                 "@type": "http://semantica.globo.com/place/City",
                 "type_title": "Cidade",
-                "rdfs:label": "Globoland"
         }
 
         elasticsearch_result = {

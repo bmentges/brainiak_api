@@ -85,11 +85,34 @@ class RangeSearchTestCase(TestCase):
 
     @patch("brainiak.range_search.range_search.filter_values", return_value=["graph1", "graph2"])
     def test_validate_graphs_restriction_raises_error(self, mocked_filter_values):
+        expected_message = "Classes in the range of predicate 'predicate1' are not in graphs ['graph3']"
         params = {
             "search_graphs": ["graph1", "graph2", "graph3"],
             "predicate": "predicate1"
         }
-        self.assertRaises(HTTPError, _validate_graph_restriction, params, None)  # None because filter_values is mocked
+        try:
+           _validate_graph_restriction(params, None)  # None because filter_values is mocked
+        except HTTPError as e:
+            self.assertEqual(e.status_code, 400)
+            self.assertEqual(e.log_message, expected_message)
+        else:
+            self.fail("a HTTPError should be raised")
+
+    @patch("brainiak.range_search.range_search.filter_values", return_value=["graph_without_instances1", "graph_without_instances2"])
+    @patch("brainiak.range_search.range_search.settings", GRAPHS_WITHOUT_INSTANCES=["graph_without_instances1", "graph_without_instances2"])
+    def test_validate_graphs_restriction_raises_error_for_graphs_without_instances(self, mocked_settings, mocked_filter_values):
+        expected_message = "Classes in the range of predicate 'predicate1' are in graphs without instances," + \
+            " such as: ['graph_without_instances1', 'graph_without_instances2']"
+        params = {
+            "predicate": "predicate1"
+        }
+        try:
+            _validate_graph_restriction(params, None)  # None because filter_values is mocked
+        except HTTPError as e:
+            self.assertEqual(e.status_code, 400)
+            self.assertEqual(e.log_message, expected_message)
+        else:
+            self.fail("a HTTPError should be raised")
 
     def test_build_type_filters(self):
         expected = {

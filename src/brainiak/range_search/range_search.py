@@ -121,12 +121,19 @@ def _validate_class_restriction(params, range_result):
 def _validate_graph_restriction(params, range_result):
     graphs = set(filter_values(range_result, "range_graph"))
     if "search_graphs" in params:
-        graphs_not_in_range = list(set(params["search_graphs"]).difference(graphs))
+        graphs_set = set(params["search_graphs"])
+        graphs_not_in_range = list(graphs_set.difference(graphs))
         if graphs_not_in_range:
             raise HTTPError(400,
-                            "Classes in the range of predicate '{0}' are not in graphs {1}".format(graphs_not_in_range, params["predicate"]))
-        graphs = params["search_graphs"]
+                            "Classes in the range of predicate '{0}' are not in graphs {1}".format(params["predicate"], graphs_not_in_range))
+        graphs = graphs_set
 
+    graphs = graphs.difference(set(settings.GRAPHS_WITHOUT_INSTANCES))
+
+    if not graphs:
+        raise HTTPError(400,
+                        "Classes in the range of predicate '{0}' are in graphs without instances, such as: {1}".format(
+                            params["predicate"], settings.GRAPHS_WITHOUT_INSTANCES))
     return list(graphs)
 
 
@@ -188,7 +195,8 @@ def _build_items(result, class_label_dict, title_fields):
                 "@type": item["_type"],
                 "type_title": class_label_dict[item["_type"]]
             }
-            item_dict.update(item["fields"])
+            # return other fields only when return_fields is specified
+            # item_dict.update(item["fields"])
             items.append(item_dict)
 
     return items, item_count

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Managing Contexts &mdash; brainiak dev_10222 | cf0c4721d1e86 documentation</title>
+    <title>Suggest &mdash; brainiak dev_10222 | cf0c4721d1e86 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -32,8 +32,8 @@
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="brainiak dev_10222 | cf0c4721d1e86 documentation" href="../../index.html" />
     <link rel="up" title="Services" href="../../services.html" />
-    <link rel="next" title="List of Contexts" href="list_contexts.html" />
-    <link rel="prev" title="Services" href="../../services.html" />
+    <link rel="next" title="Overriding URIs" href="../parameters.html" />
+    <link rel="prev" title="Edit a Instance" href="../instance/edit_instance.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -86,12 +86,12 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../services.html">Services</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">Managing Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../context/context.html">Managing Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../prefix/prefix.html">Managing Prefixes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../collection/collection.html">Managing Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schema/schema.html">Managing Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../instance/instance.html">Managing Instances</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../suggest/suggest.html">Suggest</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Suggest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../parameters.html">Overriding URIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html">Hypermap of Resources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html#links-specification">Links Specification</a></li>
@@ -121,23 +121,21 @@
             <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
-<li><a class="reference internal" href="#">Managing Contexts</a><ul>
-</ul>
-</li>
+<li><a class="reference internal" href="#">Suggest</a></li>
 </ul>
 </ul>
 </li>
           
           
             
-  <li><a href="../../services.html"
-         title="previous chapter">&laquo; Services</a></li>
-  <li><a href="list_contexts.html"
-         title="next chapter">List of Contexts &raquo;</a></li>
+  <li><a href="../instance/edit_instance.html"
+         title="previous chapter">&laquo; Edit a Instance</a></li>
+  <li><a href="../parameters.html"
+         title="next chapter">Overriding URIs &raquo;</a></li>
           
           
             <li>
-  <a href="../../_sources/services/context/context.txt"
+  <a href="../../_sources/services/suggest/suggest.txt"
      rel="nofollow">Source</a></li>
           
         </ul>
@@ -155,19 +153,28 @@
   </div>
 
   
-  <div class="section" id="managing-contexts">
-<h1>Managing Contexts<a class="headerlink" href="#managing-contexts" title="Permalink to this headline">¶</a></h1>
-<p>Graphs (or contexts) can be retrieved, added, edited, removed, and so on.</p>
-<p>Services available for managing contexts:</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="list_contexts.html">List of Contexts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="list_contexts.html#optional-parameters">Optional parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="list_contexts.html#possible-responses">Possible responses</a></li>
-</ul>
-</li>
-</ul>
+  <div class="section" id="suggest">
+<h1>Suggest<a class="headerlink" href="#suggest" title="Permalink to this headline">¶</a></h1>
+<p>The suggest service searchs, for a given predicate, instances that could be
+added to the predicate value, in the case of object properties.
+The instances must have a match to a pattern passed in the request in order to be retrieved.</p>
+<p><strong>Basic usage</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -XPOST <span class="s1">&#39;http://api.semantica.dev.globoi.com/_suggest&#39;</span> -T <span class="s2">&quot;suggest_search.json&quot;</span>
+</pre></div>
 </div>
+<p>A JSON must be passed in the request body. The minimal JSON is shown below:</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/partOfCity&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;globo&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">predicate</span></tt> paramater indicates the target predicate.
+For example, the predicate in the example above is <tt class="docutils literal"><span class="pre">place:partOfCity</span></tt>.
+The range (types of possible values) of this predicate is <tt class="docutils literal"><span class="pre">place:City</span></tt>.
+Therefore, the <tt class="docutils literal"><span class="pre">_suggest</span></tt> service will try to match instance of type <tt class="docutils literal"><span class="pre">place:City</span></tt>.</p>
+<p>The <tt class="docutils literal"><span class="pre">pattern</span></tt> paramater indicates the search keyword used to match instances.
+Usually, the pattern must occur in the label of the instances, but one might want to search in other properties as well.</p>
 </div>
 
 

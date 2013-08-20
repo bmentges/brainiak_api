@@ -7,12 +7,12 @@ def schema(context_name):
         "$schema": "http://json-schema.org/draft-04/schema#",
         "title": "Context Schema",
         "type": "object",
-        "required": ["items"],
         "properties": {
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
             "id": {"type": "string", "format": "uri"},
             "items": {
+                "required": True,
                 "type": "array",
                 "items": {
                     "type": "object",

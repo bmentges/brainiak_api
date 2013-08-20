@@ -158,13 +158,14 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         self.set_header("X-Cache", cache_msg)
         self.set_header("Last-Modified", meta['last_modified'])
 
-    def notify_bus_after_post(self, instance_data):
-        instance_data_for_bus = expand_all_uris_recursively(instance_data)
+    def _notify_bus(self, **kwargs):
+        if kwargs.get("instance_data"):
+            kwargs["instance_data"] = expand_all_uris_recursively(kwargs["instance_data"])
+        #action="POST", instance_data=instance_data
         notify_bus(instance=self.query_params["instance_uri"],
                    klass=self.query_params["class_uri"],
                    graph=self.query_params["graph_uri"],
-                   action="POST",
-                   instance_data=instance_data_for_bus)
+                   **kwargs)
 
     def write_error(self, status_code, **kwargs):
         error_message = "HTTP error: %d" % status_code
@@ -333,7 +334,7 @@ class CollectionHandler(BrainiakRequestHandler):
         instance_data = get_instance(self.query_params)
 
         if settings.NOTIFY_BUS:
-            self.notify_bus_after_post(instance_data)
+            self._notify_bus(action="POST", instance_data=instance_data)
 
         self.finalize(201)
 
@@ -406,13 +407,11 @@ class InstanceHandler(BrainiakRequestHandler):
             edit_instance(self.query_params, instance_data)
             status = 200
 
-        response = get_instance(self.query_params)
-        if response and settings.NOTIFY_BUS:
-            notify_bus(instance=response["@id"],
-                       klass=self.query_params["class_uri"],
-                       graph=self.query_params["graph_uri"],
-                       action="PUT",
-                       instance_data=response)
+        instance_data = get_instance(self.query_params)
+
+        if instance_data and settings.NOTIFY_BUS:
+            self.query_params["instance_uri"] = instance_data["@id"]
+            self._notify_bus(action="PUT", instance_data=instance_data)
 
         self.finalize(status)
 
@@ -430,8 +429,7 @@ class InstanceHandler(BrainiakRequestHandler):
         if deleted:
             response = 204
             if settings.NOTIFY_BUS:
-                notify_bus(instance=self.query_params["instance_uri"], klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"], action="DELETE")
+                self._notify_bus(action="DELETE")
         else:
             response = None
         self.finalize(response)

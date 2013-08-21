@@ -1,4 +1,5 @@
 from brainiak import triplestore, settings
+from brainiak.utils.links import remove_last_slash
 from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, decorate_dict_with_pagination
 from brainiak.utils.sparql import add_language_support, compress_keys_and_values, get_one_value
 from brainiak.utils.resources import compress_duplicated_ids, calculate_offset
@@ -27,7 +28,7 @@ def assemble_list_json(query_params, query_result_dict):
     context_section.update({"@language": query_params.get("lang")})
 
     json_dict = {
-        '_base_url': query_params.base_url,
+        '_base_url': remove_last_slash(query_params.base_url),
         'items': items_list,
         '@context': context_section
     }

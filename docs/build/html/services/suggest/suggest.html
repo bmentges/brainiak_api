@@ -121,7 +121,11 @@
             <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
-<li><a class="reference internal" href="#">Suggest</a></li>
+<li><a class="reference internal" href="#">Suggest</a><ul>
+<li><a class="reference internal" href="#optional-body-parameters">Optional body parameters</a></li>
+<li><a class="reference internal" href="#optional-query-string-parameters">Optional query string parameters</a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -155,9 +159,9 @@
   
   <div class="section" id="suggest">
 <h1>Suggest<a class="headerlink" href="#suggest" title="Permalink to this headline">¶</a></h1>
-<p>The suggest service searchs, for a given predicate, instances that could be
-added to the predicate value, in the case of object properties.
-The instances must have a match to a pattern passed in the request in order to be retrieved.</p>
+<p>The suggest service searchs, for a given object property (a predicate whose value is a object, a URI),
+instances that could be added to the predicate value.</p>
+<p>The instances must also match a pattern passed in request to be retrieved.</p>
 <p><strong>Basic usage</strong></p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -XPOST <span class="s1">&#39;http://api.semantica.dev.globoi.com/_suggest&#39;</span> -T <span class="s2">&quot;suggest_search.json&quot;</span>
 </pre></div>
@@ -169,12 +173,39 @@ The instances must have a match to a pattern passed in the request in order to b
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The <tt class="docutils literal"><span class="pre">predicate</span></tt> paramater indicates the target predicate.
+<p>The <tt class="docutils literal"><span class="pre">predicate</span></tt> parameter represents the target predicate.
 For example, the predicate in the example above is <tt class="docutils literal"><span class="pre">place:partOfCity</span></tt>.
 The range (types of possible values) of this predicate is <tt class="docutils literal"><span class="pre">place:City</span></tt>.
-Therefore, the <tt class="docutils literal"><span class="pre">_suggest</span></tt> service will try to match instance of type <tt class="docutils literal"><span class="pre">place:City</span></tt>.</p>
-<p>The <tt class="docutils literal"><span class="pre">pattern</span></tt> paramater indicates the search keyword used to match instances.
-Usually, the pattern must occur in the label of the instances, but one might want to search in other properties as well.</p>
+Therefore, the <tt class="docutils literal"><span class="pre">_suggest</span></tt> service will try to match instances of <tt class="docutils literal"><span class="pre">place:City</span></tt>.</p>
+<p>The <tt class="docutils literal"><span class="pre">pattern</span></tt> parameter indicates the search keyword used to match instances.
+Usually, the pattern must occur in the label of the instances, but one might want to search in other properties as well,
+using the <tt class="docutils literal"><span class="pre">search_fields</span></tt> optional parameter (see in <a class="reference internal" href="#optional-body-parameters"><em>Optional body parameters</em></a>).</p>
+<div class="section" id="optional-body-parameters">
+<span id="id1"></span><h2>Optional body parameters<a class="headerlink" href="#optional-body-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Some optional parameters can be passed in request body:</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;upper:isPartOf&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;Globoland&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;search_fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;upper:name&quot;</span><span class="p">,</span> <span class="s2">&quot;upper:fullName&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;search_classes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;place:City&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;search_graphs&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;http://semantica.globo.com/place/&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;@context&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;place&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;upper&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/upper/&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">search_fields</span></tt> indicates optional fields to search on. Without this parameter, we match for values in <tt class="docutils literal"><span class="pre">rdfs:label</span></tt> and its subproperties.</p>
+<p><tt class="docutils literal"><span class="pre">search_classes</span></tt> indicates the classes in which we search instances, thus restricting the result of the predicate range.</p>
+<p>If this parameter has classes that are not in the predicate range, a 400 error is returned.</p>
+<p><tt class="docutils literal"><span class="pre">search_graphs</span></tt> indicates the graphs in which we look for instances, thus restricting the result of the graphs in which the classes in the predicate ranges are in.</p>
+<p>If this parameter has graphs that the classes in the predicate range are not in, a 400 error is returned.</p>
+</div>
+<div class="section" id="optional-query-string-parameters">
+<h2>Optional query string parameters<a class="headerlink" href="#optional-query-string-parameters" title="Permalink to this headline">¶</a></h2>
+<p>alalalal</p>
+</div>
 </div>
 
 

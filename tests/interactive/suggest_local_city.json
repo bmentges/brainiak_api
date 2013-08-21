@@ -1,6 +1,6 @@
 {
   "pattern": "Globoland",
-  "predicate": "place:partOfCity",
+  "predicate": "upper:isPartOf",
   "search_fields": ["upper:name", "upper:fullName"],
   "search_classes": ["place:City"],
   "search_graphs": ["http://semantica.globo.com/place/"],

@@ -62,7 +62,6 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
     items = build_items_dict(context, query_result_dict['results']['bindings'], query_params["class_uri"])
     class_url = build_class_url(query_params)
     query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
-
     instance = {
         "_base_url": query_params.base_url,
         "_resource_id": query_params['instance_id'],
@@ -70,6 +69,9 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
         "@type": context.normalize_uri_value(query_params["class_uri"]),
         "@context": context.context,
     }
+    if 'instance_prefix' in query_params:
+        instance["_instance_prefix"] = query_params['instance_prefix']
+
     instance.update(items)
     return instance
 

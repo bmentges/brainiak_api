@@ -72,4 +72,4 @@ class GetContextTestCase(unittest.TestCase):
 
         self.assertEqual(computed['@context'], expected_context)
         self.assertEqual(computed['items'], expected_items)
-        self.assertEqual("http://poke.oioi/company/", computed['_base_url'])
+        self.assertEqual("http://poke.oioi/company", computed['_base_url'])

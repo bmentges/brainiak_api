@@ -2,7 +2,7 @@ import inspect
 from urllib import unquote
 from brainiak import triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import build_schema_url_for_instance
+from brainiak.utils.links import build_schema_url_for_instance, remove_last_slash
 from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination, calculate_offset
 from brainiak.utils.sparql import compress_keys_and_values, is_literal, normalize_term, get_one_value, extract_po_tuples
 
@@ -275,7 +275,7 @@ def build_json(items_list, query_params):
     json = {
         '_schema_url': schema_url,
         '_class_prefix': query_params['class_prefix'],
-        '_base_url': query_params.base_url,
+        '_base_url': remove_last_slash(query_params.base_url),
         'items': items_list,
         "@context": {"@language": query_params.get("lang")},
     }

@@ -1,4 +1,4 @@
-from urlparse import parse_qs, urlparse, urlsplit, urlunsplit, parse_qsl
+from urlparse import parse_qs, urlparse, urlsplit, urlunsplit
 from math import ceil
 from urllib import urlencode, quote, unquote
 
@@ -209,7 +209,7 @@ def crud_links(query_params, schema_url=None):
     class_url = build_class_url(query_params)
     querystring = query_params["request"].query
     if querystring:
-        instance_url = "{0}/{{_resource_id}}?{1}".format(class_url, querystring)
+        instance_url = "{0}/{{_resource_id}}?instance_prefix={{_instance_prefix}}&{1}".format(class_url, querystring)
     else:
         instance_url = "{0}/{{_resource_id}}".format(class_url)
 

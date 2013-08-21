@@ -4,6 +4,8 @@ BRAINIAK_CODE=$(HOME_BRAINIAK)/src
 NEW_PYTHONPATH=$(BRAINIAK_CODE):$(PYTHONPATH)
 EXTRA_NOSE_PARAMS ?= $(NOSE_PARAMS)
 
+.PHONY: docs
+
 clean:
 	@find . -name "*.pyc" -delete
 	@find . -name "__pycache__" -delete
@@ -73,7 +75,7 @@ supervisor: build_settings
 
 docs:
 	@echo "Compiling and opening documentation..."
-	@cd $(HOME_BRAINIAK)/docs; make html
+	@cd $(HOME_BRAINIAK)/docs; make run
 
 console: build_settings
 	@echo "Console Python inside Brainiak code (you must be on the correct Virtualenv)"

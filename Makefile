@@ -75,7 +75,7 @@ supervisor: build_settings
 
 docs:
 	@echo "Compiling and opening documentation..."
-	@cd $(HOME_BRAINIAK)/docs; make run
+	@cd $(HOME_BRAINIAK)/docs; make html
 
 console: build_settings
 	@echo "Console Python inside Brainiak code (you must be on the correct Virtualenv)"

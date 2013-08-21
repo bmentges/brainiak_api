@@ -3,7 +3,8 @@ Suggest
 
 The suggest service searchs, for a given object property (a predicate whose value is a object, a URI),
 instances that could be added to the predicate value.
-The instances must match a pattern passed in request to be retrieved.
+
+The instances must also match a pattern passed in request to be retrieved.
 
 **Basic usage**
 
@@ -34,9 +35,22 @@ using the ``search_fields`` optional parameter (see in :ref:`optional_body_param
 Optional body parameters
 ------------------------
 
+Some optional parameters can be passed in request body:
+
+.. include :: examples/suggest_full_example_payload.rst
+
+``search_fields`` indicates optional fields to search on. Without this parameter, we match for values in ``rdfs:label`` and its subproperties.
+
+``search_classes`` indicates the classes in which we search instances, thus restricting the result of the predicate range.
+
+If this parameter has classes that are not in the predicate range, a 400 error is returned.
+
+``search_graphs`` indicates the graphs in which we look for instances, thus restricting the result of the graphs in which the classes in the predicate ranges are in.
+
+If this parameter has graphs that the classes in the predicate range are not in, a 400 error is returned.
 
 
 Optional query string parameters
 --------------------------------
 
-
+alalalal

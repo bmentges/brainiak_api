@@ -37,7 +37,7 @@ For example:
         "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
         "method": "PUT",
         "schema": {"$ref": "http://api.semantica.dev.globoi.com/person/Gender/_schema"}
-        "rel": "replace"
+        "rel": "update"
       },
       {
         "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
@@ -126,11 +126,11 @@ Refers to a resource that can be used to edit incrementally the target.
 Method: PATCH
 
 
-replace
+update
 ...........
 
 Refers to a resource that can be used to edit the target by entirely redefining its content.
-When using ``replace``, the target will be removed and inserted again.
+When using ``update``, the target will be removed and inserted again.
 
 Method: PUT
 

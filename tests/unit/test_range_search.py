@@ -4,15 +4,15 @@ from mock import patch
 
 from tornado.web import HTTPError
 
-from brainiak.range_search.range_search import _build_body_query, _validate_class_restriction, \
+from brainiak.suggest.suggest import _build_body_query, _validate_class_restriction, \
     _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
     _build_class_label_dict, _build_items, _get_search_fields, _get_title_value
 
 
 class RangeSearchTestCase(TestCase):
 
-    @patch("brainiak.range_search.range_search._build_type_filters", return_value={})
-    @patch("brainiak.range_search.range_search.calculate_offset", return_value=10)
+    @patch("brainiak.suggest.suggest._build_type_filters", return_value={})
+    @patch("brainiak.suggest.suggest.calculate_offset", return_value=10)
     def test_build_query_body(self, mocked_calculate_offset, mocked_build_type_filters):
         expected = {
             "from": 10,
@@ -35,7 +35,7 @@ class RangeSearchTestCase(TestCase):
         response = _build_body_query(params, [], ["rdfs:label", "upper:name"])
         self.assertEqual(expected, response)
 
-    @patch("brainiak.range_search.range_search.filter_values", return_value=["class1", "class2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])
     def test_validate_classes_restriction(self, mocked_filter_values):
         expected = ["class1"]
 
@@ -46,7 +46,7 @@ class RangeSearchTestCase(TestCase):
         response = _validate_class_restriction(params, None)  # None because filter_values is mocked
         self.assertEqual(expected, response)
 
-    @patch("brainiak.range_search.range_search.filter_values", return_value=["class1", "class2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])
     def test_validate_classes_restriction_with_no_restriction_param(self, mocked_filter_values):
         expected = ["class1", "class2"]
 
@@ -55,7 +55,7 @@ class RangeSearchTestCase(TestCase):
         response = _validate_class_restriction(params, None)  # None because filter_values is mocked
         self.assertListEqual(sorted(expected), sorted(response))
 
-    @patch("brainiak.range_search.range_search.filter_values", return_value=["class1", "class2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])
     def test_validate_classes_restriction_raises_error(self, mocked_filter_values):
         params = {
             "search_classes": ["class1", "class2", "class3"],
@@ -63,7 +63,7 @@ class RangeSearchTestCase(TestCase):
         }
         self.assertRaises(HTTPError, _validate_class_restriction, params, None)  # None because filter_values is mocked
 
-    @patch("brainiak.range_search.range_search.filter_values", return_value=["graph1", "graph2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["graph1", "graph2"])
     def test_validate_graphs_restriction(self, mocked_filter_values):
         expected = ["graph1"]
 
@@ -74,7 +74,7 @@ class RangeSearchTestCase(TestCase):
         response = _validate_graph_restriction(params, None)  # None because filter_values is mocked
         self.assertEqual(expected, response)
 
-    @patch("brainiak.range_search.range_search.filter_values", return_value=["graph1", "graph2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["graph1", "graph2"])
     def test_validate_graphs_restriction_with_no_restriction_param(self, mocked_filter_values):
         expected = ["graph1", "graph2"]
 
@@ -83,7 +83,7 @@ class RangeSearchTestCase(TestCase):
         response = _validate_graph_restriction(params, None)  # None because filter_values is mocked
         self.assertListEqual(sorted(expected), sorted(response))
 
-    @patch("brainiak.range_search.range_search.filter_values", return_value=["graph1", "graph2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["graph1", "graph2"])
     def test_validate_graphs_restriction_raises_error(self, mocked_filter_values):
         expected_message = "Classes in the range of predicate 'predicate1' are not in graphs ['graph3']"
         params = {
@@ -98,8 +98,8 @@ class RangeSearchTestCase(TestCase):
         else:
             self.fail("a HTTPError should be raised")
 
-    @patch("brainiak.range_search.range_search.filter_values", return_value=["graph_without_instances1", "graph_without_instances2"])
-    @patch("brainiak.range_search.range_search.settings", GRAPHS_WITHOUT_INSTANCES=["graph_without_instances1", "graph_without_instances2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["graph_without_instances1", "graph_without_instances2"])
+    @patch("brainiak.suggest.suggest.settings", GRAPHS_WITHOUT_INSTANCES=["graph_without_instances1", "graph_without_instances2"])
     def test_validate_graphs_restriction_raises_error_for_graphs_without_instances(self, mocked_settings, mocked_filter_values):
         expected_message = "Classes in the range of predicate 'predicate1' are in graphs without instances," + \
             " such as: ['graph_without_instances1', 'graph_without_instances2']"
@@ -166,7 +166,7 @@ class RangeSearchTestCase(TestCase):
         response = _build_class_label_dict(compressed_result)
         self.assertEqual(expected, response)
 
-    @patch("brainiak.range_search.range_search._get_title_value", return_value="Globoland")
+    @patch("brainiak.suggest.suggest._get_title_value", return_value="Globoland")
     def test_build_items(self, mocked_get_title_value):
         expected = {
                 "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
@@ -206,7 +206,7 @@ class RangeSearchTestCase(TestCase):
         items_response, item_count = _build_items(elasticsearch_result, class_label_dict, [])
         self.assertDictEqual(expected, items_response[0])
 
-    @patch("brainiak.range_search.range_search._get_subproperties", return_value=["property1", "property2"])
+    @patch("brainiak.suggest.suggest._get_subproperties", return_value=["property1", "property2"])
     def test_get_search_fields(self, mocked_get_subproperties):
         expected = {"property1", "property2", "rdfs:label"}
         params = {

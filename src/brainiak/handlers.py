@@ -4,6 +4,7 @@ import traceback
 from contextlib import contextmanager
 
 import ujson as json
+from urllib import unquote
 from tornado.httpclient import HTTPError as HTTPClientError
 from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import CorsMixin, custom_decorator
@@ -22,7 +23,7 @@ from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
 from brainiak.prefix.get_prefixes import list_prefixes
 from brainiak.prefixes import expand_all_uris_recursively
-from brainiak.range_search.range_search import do_range_search, SUGGEST_OPTIONAL_PARAMS, SUGGEST_REQUIRED_PARAMS
+from brainiak.suggest.suggest import do_range_search, SUGGEST_OPTIONAL_PARAMS, SUGGEST_REQUIRED_PARAMS
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
@@ -74,7 +75,7 @@ def get_routes():
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
         # json-schemas
         URLSpec(r'/_schema_list/?', RootJsonSchemaHandler),
-        URLSpec(r'/_range_search/?', RangeSearchHandler),
+        URLSpec(r'/_suggest/?', SuggestHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/_schema_list/?', ContextJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema_list/?', CollectionJsonSchemaHandler),
         # resources that represents concepts
@@ -264,6 +265,10 @@ class ClassHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
+        # We are encoding all query parameters because JsonBrowser cannot handle undencoded query strings in
+        # the profile attribute
+        self.request.query = unquote(self.request.query)
+
         valid_params = {}
         with safe_params(valid_params):
             self.query_params = ParamDict(self,
@@ -440,13 +445,15 @@ class InstanceHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         elif isinstance(response, dict):
             self.write(response)
-            self.set_header("Content-Type", content_type_profile(build_schema_url_for_instance(self.query_params)))
+            schema_url = build_schema_url_for_instance(self.query_params)
+            header_value = content_type_profile(schema_url)
+            self.set_header("Content-Type", header_value)
         elif isinstance(response, int):  # status code
             self.set_status(response)
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25
 
 
-class RangeSearchHandler(BrainiakRequestHandler):
+class SuggestHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def post(self):

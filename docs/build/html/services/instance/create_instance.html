@@ -166,11 +166,11 @@
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 201 Created
 Server: nginx
-Date: Thu, 22 Aug 2013 18:09:48 GMT
+Date: Thu, 22 Aug 2013 19:06:29 GMT
 Content-Type: application/json; profile=http://api.semantica.dev.globoi.com/place/City/_schema_list
 Content-Length: 0
 Connection: keep-alive
-Location: http://api.semantica.dev.globoi.com/place/City/b7683ad5-6359-4782-90ce-36d663c4012f
+Location: http://api.semantica.dev.globoi.com/place/City/aff758bb-2963-4069-9849-2ff8764b3098
 Access-Control-Allow-Origin: *
 </pre></div>
 </div>
@@ -232,7 +232,7 @@ is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 <p>The 400 status may also happen when the JSON provided is invalid:</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
 
-    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;HTTP error: 400\nNo JSON object could be decoded&quot;</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 400\nNo JSON object could be decoded&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>

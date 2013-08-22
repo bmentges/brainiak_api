@@ -26,9 +26,8 @@ The ``pattern`` parameter indicates the search keyword used to match instances.
 Usually, the pattern must occur in the label of the instances, but one might want to search in other properties as well,
 using the ``search_fields`` optional parameter (see in :ref:`optional_body_parameters`).
 
-..
-  aprogram-output:: curl -s 'http://api.semantica.dev.globoi.com/place/City/_class' | python -mjson.tool .
-..  :shell: .
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/_suggest' -T "services/suggest/examples/suggest_minimal_example.json" | python -mjson.tool .
+  :shell: .
 
 .. _optional_body_parameters:
 
@@ -49,7 +48,17 @@ If this parameter has classes that are not in the predicate range, a 400 error i
 
 If this parameter has graphs that the classes in the predicate range are not in, a 400 error is returned.
 
+
 Optional query string parameters
 --------------------------------
 
-alalalal
+.. include :: ../params/item_count.rst
+.. include :: ../params/pages.rst
+
+
+Possible responses
+------------------
+
+**Status 200**
+
+If the search is successfull a response JSON is returned, showing the matched instances.

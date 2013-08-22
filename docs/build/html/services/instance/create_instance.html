@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Create a Instance &mdash; brainiak 2.1.0 documentation</title>
+    <title>Create a Instance &mdash; brainiak dev_10222 | cf0c4721d1e86 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2.1.0',
+        VERSION:     'dev_10222 | cf0c4721d1e86',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.1.0 documentation" href="../../index.html" />
+    <link rel="top" title="brainiak dev_10222 | cf0c4721d1e86 documentation" href="../../index.html" />
     <link rel="up" title="Managing Instances" href="instance.html" />
     <link rel="next" title="List of Instances" href="list_instance.html" />
     <link rel="prev" title="Managing Instances" href="instance.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.1.0</b></span>
+      <span class="navbar-text pull-left"><b>dev_10222 | cf0c4721d1e86</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -91,6 +91,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../collection/collection.html">Managing Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schema/schema.html">Managing Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="instance.html">Managing Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../suggest/suggest.html">Suggest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../parameters.html">Overriding URIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html">Hypermap of Resources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html#links-specification">Links Specification</a></li>
@@ -165,14 +166,12 @@
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 201 Created
 Server: nginx
-Date: Wed, 31 Jul 2013 14:54:37 GMT
+Date: Thu, 22 Aug 2013 19:06:29 GMT
 Content-Type: application/json; profile=http://api.semantica.dev.globoi.com/place/City/_schema_list
-Content-Length: 823
+Content-Length: 0
 Connection: keep-alive
-Location: http://api.semantica.dev.globoi.com/place/City/710fbcb6-8a7d-4552-9bcd-ce4eb7cb898c
+Location: http://api.semantica.dev.globoi.com/place/City/aff758bb-2963-4069-9849-2ff8764b3098
 Access-Control-Allow-Origin: *
-
-{&quot;rdf:type&quot;: &quot;place:City&quot;, &quot;upper:name&quot;: &quot;Globoland&quot;, &quot;place:longitude&quot;: &quot;-43.407133&quot;, &quot;rdfs:comment&quot;: &quot;City of Globo&#39;s companies. Historically known as PROJAC.&quot;, &quot;_resource_id&quot;: &quot;710fbcb6-8a7d-4552-9bcd-ce4eb7cb898c&quot;, &quot;place:latitude&quot;: &quot;-22.958314&quot;, &quot;@context&quot;: {&quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;, &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;, &quot;rdf&quot;: &quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;, &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;, &quot;base&quot;: &quot;http://semantica.globo.com/base/&quot;, &quot;dbpedia&quot;: &quot;http://dbpedia.org/ontology/&quot;, &quot;dct&quot;: &quot;http://purl.org/dc/terms/&quot;, &quot;schema&quot;: &quot;http://schema.org/&quot;}, &quot;place:partOfState&quot;: &quot;base:UF_RJ&quot;, &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/710fbcb6-8a7d-4552-9bcd-ce4eb7cb898c&quot;, &quot;@type&quot;: &quot;place:City&quot;, &quot;upper:fullName&quot;: &quot;Globoland (RJ)&quot;, &quot;dct:isPartOf&quot;: &quot;base:UF_RJ&quot;}
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -226,14 +225,14 @@ a instance from the API. For retrieving it, use the retrieve instance primitive 
 <p>If there are unknown parameters in the request, the response status code
 is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;error&quot;: &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported arguments are: graph_uri, class_prefix, class_uri, instance_uri, instance_prefix.&quot;
+    &quot;error&quot;: &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang.&quot;
 }
 </pre></div>
 </div>
 <p>The 400 status may also happen when the JSON provided is invalid:</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
 
-    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;HTTP error: 400\nNo JSON object could be decoded&quot;</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 400\nNo JSON object could be decoded&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -246,7 +245,7 @@ is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 </div>
 <p><strong>Status 500</strong></p>
 <p>Internal server error. Please, contact the team &lt;<a class="reference external" href="mailto:semantica&#37;&#52;&#48;corp&#46;globo&#46;com">semantica<span>&#64;</span>corp<span>&#46;</span>globo<span>&#46;</span>com</a>&gt;
-and provide the URL, JSON and error messaage.</p>
+and provide the URL, JSON and error message.</p>
 </div>
 </div>
 

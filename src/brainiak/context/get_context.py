@@ -1,9 +1,8 @@
 from brainiak import triplestore, settings
-from brainiak.utils.links import self_url
+from brainiak.utils.links import remove_last_slash
 from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, decorate_dict_with_pagination
-from brainiak.utils.sparql import add_language_support, calculate_offset
-from brainiak.utils.sparql import compress_keys_and_values, get_one_value
-from brainiak.utils.resources import compress_duplicated_ids
+from brainiak.utils.sparql import add_language_support, compress_keys_and_values, get_one_value
+from brainiak.utils.resources import compress_duplicated_ids, calculate_offset
 from brainiak.prefixes import MemorizeContext
 
 
@@ -29,7 +28,7 @@ def assemble_list_json(query_params, query_result_dict):
     context_section.update({"@language": query_params.get("lang")})
 
     json_dict = {
-        '_base_url': query_params.base_url,
+        '_base_url': remove_last_slash(query_params.base_url),
         'items': items_list,
         '@context': context_section
     }
@@ -72,7 +71,7 @@ OFFSET %(offset)s
 
 
 def query_classes_list(query_params):
-    offset = calculate_offset(query_params, settings.DEFAULT_PAGE, settings.DEFAULT_PER_PAGE)
+    offset = calculate_offset(query_params)
     query_params['offset'] = offset
     query = QUERY_ALL_CLASSES_OF_A_GRAPH % query_params
     del query_params['offset']

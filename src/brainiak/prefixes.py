@@ -78,9 +78,9 @@ def safe_slug_to_prefix(prefix):
     return _MAP_SLUG_TO_PREFIX.get(prefix, prefix)
 
 
-def slug_to_prefix(slug):
+def slug_to_prefix(slug, translation_map=_MAP_SLUG_TO_PREFIX):
     try:
-        prefix = _MAP_SLUG_TO_PREFIX[slug]
+        prefix = translation_map[slug]
     except KeyError:
         raise PrefixError("Prefix is not defined for slug {0}".format(slug))
     return prefix
@@ -136,12 +136,12 @@ def is_compressed_uri(candidate, extra_prefixes=None):
     return False
 
 
-def expand_uri(short_uri):
+def expand_uri(short_uri, translation_map=_MAP_SLUG_TO_PREFIX):
     if is_uri(short_uri):
         return short_uri
     try:
         slug, item = short_uri.split(":")
-        prefix = slug_to_prefix(slug)
+        prefix = slug_to_prefix(slug, translation_map)
         return "{0}{1}".format(prefix, item)
     except ValueError:
         return short_uri
@@ -153,6 +153,24 @@ def normalize_uri(uri, mode, shorten_uri_function=shorten_uri):
     elif mode == EXPAND:
         return expand_uri(uri)
     raise InvalidModeForNormalizeUriError('Unrecognized mode {0:s}'.format(mode))
+
+
+def expand_all_uris_recursively(instance, ctx=_MAP_SLUG_TO_PREFIX):
+    if isinstance(instance, basestring):
+        return expand_uri(instance, ctx)
+    elif isinstance(instance, list):
+        return [expand_all_uris_recursively(i, ctx) for i in instance]
+    elif isinstance(instance, dict):
+        if '@context' in instance:
+            new_ctx = {}
+            new_ctx.update(instance['@context'])
+            new_ctx.update(ctx)
+            del instance['@context']
+        else:
+            new_ctx = ctx
+        return {expand_all_uris_recursively(k, new_ctx): expand_all_uris_recursively(v, new_ctx)
+                for (k, v) in instance.items()}
+    return instance
 
 
 def get_prefixes_dict():

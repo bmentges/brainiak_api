@@ -1,5 +1,5 @@
 {
-  "pattern": "Unkown pattern",
+  "pattern": "Globoland",
   "predicate": "upper:isPartOf",
   "search_fields": ["upper:name", "upper:fullName"],
   "search_classes": ["place:City"],

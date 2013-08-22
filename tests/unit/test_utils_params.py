@@ -4,7 +4,7 @@ from brainiak import settings
 from brainiak.utils import params
 from brainiak.prefixes import ROOT_CONTEXT, SHORTEN
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals, RequiredParamMissing, validate_body_params
 from brainiak.utils.resources import valid_pagination
 from tests.mocks import MockHandler
 
@@ -19,6 +19,53 @@ class DefaultParamsTest(TestCase):
         self.assertEqual(a_b, b_a)
         self.assertEqual(a, {"a": 1})
         self.assertEqual(b, {"b": 2})
+
+
+class ValidateBodyParamsTest(TestCase):
+
+    def test_validate_without_errors(self):
+        body_params = {'pattern': 'A', 'predicate': 'B', 'optional': 42}
+        result = validate_body_params(body_params, ['pattern', 'predicate'], ['optional'])
+        self.assertTrue(result)
+
+    def test_validate_without_errors_without_optional(self):
+        body_params = {'pattern': 'A', 'predicate': 'B'}
+        result = validate_body_params(body_params, ['pattern', 'predicate'], [])
+        self.assertTrue(result)
+
+    def test_validate_with_required_missing(self):
+        body_params = {'pattern': 'A'}
+        self.assertRaises(RequiredParamMissing, validate_body_params, body_params, ['predicate'], ['any_optional'])
+
+    def test_validate_with_invalid_optional(self):
+        body_params = {'invalid_optional': 'A'}
+        self.assertRaises(InvalidParam, validate_body_params, body_params, [], ['any_optional'])
+
+
+class RequiredParamsTest(TestCase):
+
+    def assertEquivalent(self, list1, list2):
+        self.assertEqual(set(list1), set(list2))
+
+    def test_set_required(self):
+        d = RequiredParamsDict(a=1, b=2)
+        self.assertEquivalent(d.required, ['a', 'b'])
+
+    def test_required_with_optional(self):
+        r = RequiredParamsDict(a=1, b=2)
+        o = optionals('c', 'd')
+        d = r + o
+        self.assertEquivalent(d.required, ['a', 'b'])
+        self.assertEquivalent(r.required, ['a', 'b'])
+        self.assertEquivalent(o.required, [])
+
+    def test_required_add_required(self):
+        r1 = RequiredParamsDict(a=1, b=2)
+        r2 = RequiredParamsDict(c=3, d=4)
+        d = r1 + r2
+        self.assertEquivalent(d.required, {'a', 'b', 'c', 'd'})
+        self.assertEquivalent(r1.required, {'a', 'b'})
+        self.assertEquivalent(r2.required, {'c', 'd'})
 
 
 class ParamsTestCase(TestCase):

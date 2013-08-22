@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Suggest &mdash; brainiak dev_10222 | cf0c4721d1e86 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-2.3.0/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-2.3.0/css/bootstrap-responsive.min.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'dev_10222 | cf0c4721d1e86',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="brainiak dev_10222 | cf0c4721d1e86 documentation" href="../../index.html" />
+    <link rel="up" title="Services" href="../../services.html" />
+    <link rel="next" title="Overriding URIs" href="../parameters.html" />
+    <link rel="prev" title="Edit a Instance" href="../instance/edit_instance.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+<div class="container">
+  
+  <div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+      <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+      <a class="brand" href="../../index.html">Brainiak</a>
+      <span class="navbar-text pull-left"><b>dev_10222 | cf0c4721d1e86</b></span>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+          <li class="divider-vertical"></li>
+          
+            <li class="dropdown globaltoc-container">
+  <a href="../../index.html"
+     class="dropdown-toggle"
+     data-toggle="dropdown">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+    ><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../releases.html">Future Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-0-2013">Version 2.2.0 - 2013/??/??</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases.html#releases">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-1-0-0-2013-04-24">Version 1.0.0  - 2013/04/24</a></li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/resources.html">Ubiquitous Language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/rest_verbs.html">Using HTTP methods in a RESTful way</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/hypermedia.html">Hypermedia Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../concepts/modeling.html">Modeling and Ontology Engineering</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../services.html">Services</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../context/context.html">Managing Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../prefix/prefix.html">Managing Prefixes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../collection/collection.html">Managing Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schema/schema.html">Managing Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../instance/instance.html">Managing Instances</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Suggest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameters.html">Overriding URIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../links.html">Hypermap of Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../links.html#links-specification">Links Specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../links.html#rel-vocabulary">Rel Vocabulary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pagination.html">Pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../errors.html">Handling Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cache.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../i18n.html">Internationalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../services.html#convention-for-url-resources">Convention for URL Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../services.html#service-examples">Service Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/building_local_dev_environment.html">Building Brainiak in your local environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#when-filtering-instances-using-p-and-o-i-only-get-http-error-404-but-when-i-only-use-p-it-lists-items-containing-the-o-i-defined-what-am-i-doing-wrong">When filtering instances using <tt class="docutils literal"><span class="pre">p</span></tt> and <tt class="docutils literal"><span class="pre">o</span></tt> I only get &#8220;HTTP error: 404&#8221;. But when I only use <tt class="docutils literal"><span class="pre">p</span></tt>, it lists items containing the <tt class="docutils literal"><span class="pre">o</span></tt> I defined. What am I doing wrong?</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+            <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"><ul>
+<li><a class="reference internal" href="#">Suggest</a><ul>
+<li><a class="reference internal" href="#optional-body-parameters">Optional body parameters</a></li>
+<li><a class="reference internal" href="#optional-query-string-parameters">Optional query string parameters</a></li>
+<li><a class="reference internal" href="#possible-responses">Possible responses</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+          
+          
+            
+  <li><a href="../instance/edit_instance.html"
+         title="previous chapter">&laquo; Edit a Instance</a></li>
+  <li><a href="../parameters.html"
+         title="next chapter">Overriding URIs &raquo;</a></li>
+          
+          
+            <li>
+  <a href="../../_sources/services/suggest/suggest.txt"
+     rel="nofollow">Source</a></li>
+          
+        </ul>
+
+        
+          
+<form class="navbar-search pull-right" style="margin-bottom:-3px;" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="section" id="suggest">
+<h1>Suggest<a class="headerlink" href="#suggest" title="Permalink to this headline">¶</a></h1>
+<p>Given a predicate (an object property whose value is a object, a URI), the suggest service searches instances that could be added as the predicate&#8217;s object.</p>
+<p>A JSON must be passed in the request body. There are two required parameters:</p>
+<p><strong>predicate</strong></p>
+<p>The <tt class="docutils literal"><span class="pre">predicate</span></tt> parameter represents the target predicate.</p>
+<p>For example, the predicate in the example below is <tt class="docutils literal"><span class="pre">place:partOfCity</span></tt>.
+The range (types of possible values) of this predicate is <tt class="docutils literal"><span class="pre">place:City</span></tt>.
+Therefore, the <tt class="docutils literal"><span class="pre">_suggest</span></tt> service will only try to match instances of <tt class="docutils literal"><span class="pre">place:City</span></tt>.</p>
+<p><strong>pattern</strong></p>
+<p>The <tt class="docutils literal"><span class="pre">pattern</span></tt> parameter indicates the search keyword used to match instances.
+Usually, the pattern must occur in the <tt class="docutils literal"><span class="pre">rdfs:label</span></tt> of the instances, but one might want to search in other properties as well,
+using the <tt class="docutils literal"><span class="pre">search_fields</span></tt> optional parameter (see in <a class="reference internal" href="#optional-body-parameters"><em>Optional body parameters</em></a>).</p>
+<p>Here is an example of request body:</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/partOfCity&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;globo&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Basic usage</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -XPOST <span class="s1">&#39;http://api.semantica.dev.globoi.com/_suggest&#39;</span> -T <span class="s2">&quot;suggest_search.json&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;@context&quot;: {
+        &quot;@language&quot;: &quot;pt&quot;
+    },
+    &quot;_base_url&quot;: &quot;http://api.semantica.dev.globoi.com/_suggest/&quot;,
+    &quot;_first_args&quot;: &quot;page=1&quot;,
+    &quot;_next_args&quot;: &quot;page=2&quot;,
+    &quot;items&quot;: [
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/7462a739-030e-4b7d-acaf-1f755f14a001&quot;,
+            &quot;@type&quot;: &quot;http://semantica.globo.com/place/City&quot;,
+            &quot;title&quot;: &quot;Globolandia&quot;,
+            &quot;type_title&quot;: &quot;Cidade&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/897990dd-07c8-4041-a30c-f646dfde070a&quot;,
+            &quot;@type&quot;: &quot;http://semantica.globo.com/place/City&quot;,
+            &quot;title&quot;: &quot;Globolandia&quot;,
+            &quot;type_title&quot;: &quot;Cidade&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/4f6dc8cc-64ad-4338-b39e-fea5d2db2270&quot;,
+            &quot;@type&quot;: &quot;http://semantica.globo.com/place/City&quot;,
+            &quot;title&quot;: &quot;Globolandia&quot;,
+            &quot;type_title&quot;: &quot;Cidade&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/30a7296b-e871-4503-bdcc-6101e2892158&quot;,
+            &quot;@type&quot;: &quot;http://semantica.globo.com/place/City&quot;,
+            &quot;title&quot;: &quot;Globolandia&quot;,
+            &quot;type_title&quot;: &quot;Cidade&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/fc8b8232-3867-4bc3-ac6d-caedcade8559&quot;,
+            &quot;@type&quot;: &quot;http://semantica.globo.com/place/City&quot;,
+            &quot;title&quot;: &quot;Globolandia&quot;,
+            &quot;type_title&quot;: &quot;Cidade&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/6341e4f5-0a81-48f4-b8ef-25b7e13f197b&quot;,
+            &quot;@type&quot;: &quot;http://semantica.globo.com/place/City&quot;,
+            &quot;title&quot;: &quot;Globolandia&quot;,
+            &quot;type_title&quot;: &quot;Cidade&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/4d068707-4e0a-4390-8b9f-0da2f99ab812&quot;,
+            &quot;@type&quot;: &quot;http://semantica.globo.com/place/City&quot;,
+            &quot;title&quot;: &quot;Globolandia&quot;,
+            &quot;type_title&quot;: &quot;Cidade&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/5182dc9e-197a-4dae-a88e-ad2e60c92f5b&quot;,
+            &quot;@type&quot;: &quot;http://semantica.globo.com/place/City&quot;,
+            &quot;title&quot;: &quot;Globolandia&quot;,
+            &quot;type_title&quot;: &quot;Cidade&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/5fae148b-e079-418a-83a5-f4025741eb1e&quot;,
+            &quot;@type&quot;: &quot;http://semantica.globo.com/place/City&quot;,
+            &quot;title&quot;: &quot;Globolandia&quot;,
+            &quot;type_title&quot;: &quot;Cidade&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/6fa55998-5809-492f-b0f7-bba95cec5f12&quot;,
+            &quot;@type&quot;: &quot;http://semantica.globo.com/place/City&quot;,
+            &quot;title&quot;: &quot;Globolandia&quot;,
+            &quot;type_title&quot;: &quot;Cidade&quot;
+        }
+    ]
+}
+</pre></div>
+</div>
+<div class="section" id="optional-body-parameters">
+<span id="id1"></span><h2>Optional body parameters<a class="headerlink" href="#optional-body-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Some optional parameters can be passed in request body:</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;upper:isPartOf&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;Globoland&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;search_fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;upper:name&quot;</span><span class="p">,</span> <span class="s2">&quot;upper:fullName&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;search_classes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;place:City&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;search_graphs&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;http://semantica.globo.com/place/&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;@context&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;place&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;upper&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/upper/&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">search_fields</span></tt> indicates optional fields to search on. Without this parameter, only <tt class="docutils literal"><span class="pre">rdfs:label</span></tt> and its subproperties are matched.</p>
+<p><tt class="docutils literal"><span class="pre">search_classes</span></tt> indicates the classes in which we search instances, thus restricting the result of the predicate range.</p>
+<p>If this parameter has classes that are not in the predicate range, a 400 error is returned.</p>
+<p><tt class="docutils literal"><span class="pre">search_graphs</span></tt> indicates the graphs in which we look for instances, thus restricting the result of the graphs in which the classes in the predicate ranges are in.</p>
+<p>If this parameter has graphs that the classes in the predicate range are not in, a 400 error is returned.</p>
+</div>
+<div class="section" id="optional-query-string-parameters">
+<h2>Optional query string parameters<a class="headerlink" href="#optional-query-string-parameters" title="Permalink to this headline">¶</a></h2>
+<p><strong>do_item_count</strong>: If set to 1 determines that the resulting page will compute the property <tt class="docutils literal"><span class="pre">ìtem_count</span></tt> with total number of items.
+When set, this parameter also has the side effect of including the URL for the <tt class="docutils literal"><span class="pre">last</span></tt> page in the links section.
+By default <tt class="docutils literal"><span class="pre">do_item_count</span></tt> is set to 0 for performance&#8217;s sake and can be omitted.</p>
+<p><strong>page</strong>: The page to be retrieved. The default value is <tt class="docutils literal"><span class="pre">1</span></tt>, i.e. the first page.</p>
+<p><strong>per_page</strong>: Defines how many items are retrieved per page. The default value is <tt class="docutils literal"><span class="pre">10</span></tt></p>
+<blockquote>
+<div>By default, the first page containing 10 items is returned. It could also be retrieved by:</div></blockquote>
+<div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/?page=1&amp;per_page=10'</pre>
+</div>
+</div>
+<div class="section" id="possible-responses">
+<h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>
+<p><strong>Status 200</strong></p>
+<p>If the search is successfull, a response JSON is returned, showing the matched instances.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -XPOST <span class="s1">&#39;http://api.semantica.dev.globoi.com/_suggest&#39;</span> -T <span class="s2">&quot;suggest_search.json&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;@context&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;@language&quot;</span><span class="p">:</span> <span class="s2">&quot;pt&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;_base_url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:5100/_range_search/&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;_first_args&quot;</span><span class="p">:</span> <span class="s2">&quot;page=1&amp;do_item_count=1&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;_last_args&quot;</span><span class="p">:</span> <span class="s2">&quot;page=1&amp;do_item_count=1&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;item_count&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/City/6c1aedb7-4526-4796-b8b8-ad2d87655572&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/City&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Globoland&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;type_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Cidade&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/City/191ee05a-f53e-4880-a791-ff40d81c1edf&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/City&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Globoland&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;type_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Cidade&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/City/c77de78a-b034-4664-a991-c85095c2e8cc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/City&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Globoland&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;type_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Cidade&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/City/0e4c671f-1b22-4ede-9023-716de095f2a5&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/City&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Globoland&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;type_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Cidade&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/City/9d812e40-b726-4c2a-b43e-9ff1404c5481&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/City&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Globolandia&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;type_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Cidade&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Status 400</strong></p>
+<p>If the request is malformed due to with invalid parameters, a 400 HTTP error is returned.</p>
+<p>This is due to the following reasons:</p>
+<ul class="simple">
+<li>Missing required parameters. If the request body does not have the keys <tt class="docutils literal"><span class="pre">predicate</span></tt> or <tt class="docutils literal"><span class="pre">pattern</span></tt>.</li>
+</ul>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 400\nRequired parameter (pattern) was not given.&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Unknown predicate. If a predicate is not found in the ontology or does not have a declared <tt class="docutils literal"><span class="pre">rdfs:range</span></tt>.</li>
+</ul>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 400\nEither the predicate http://semantica.globo.com/base/unknownPredicate does not exists or it does not have any rdfs:range defined in the triplestore&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Classes not in range. If the <tt class="docutils literal"><span class="pre">search_classes</span></tt> parameter has any class that is not in the range of <tt class="docutils literal"><span class="pre">predicate</span></tt>.</li>
+</ul>
+<p>For example, if we pass in the request body <tt class="docutils literal"><span class="pre">&quot;predicate&quot;:</span> <span class="pre">&quot;place:partOfContinent&quot;</span></tt> and <tt class="docutils literal"><span class="pre">&quot;search_classes&quot;:</span> <span class="pre">[&quot;place:City&quot;]</span></tt>.</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 400\nClasses [&#39;http://semantica.globo.com/place/City&#39;] are not in the range of predicate &#39;http://semantica.globo.com/place/partOfContinent&#39;&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Graphs not in range. If the <tt class="docutils literal"><span class="pre">search_graphs</span></tt> parameter has any graphs that classes in the range of <tt class="docutils literal"><span class="pre">predicate</span></tt> are not in.</li>
+</ul>
+<p>For example, if we pass in the request body <tt class="docutils literal"><span class="pre">&quot;predicate&quot;:</span> <span class="pre">&quot;place:partOfCity&quot;</span></tt> and <tt class="docutils literal"><span class="pre">&quot;search_graphs&quot;:</span> <span class="pre">[&quot;http://semantica.globo.com/person/&quot;]</span></tt>.</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 400\nClasses in the range of predicate &#39;http://semantica.globo.com/place/partOfCity&#39; are not in graphs [u&#39;http://semantica.globo.com/person/&#39;]&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Graphs without instances. If the predicate&#8217;s ranges are only classes in graphs without instances, such as <tt class="docutils literal"><span class="pre">http://semantica.globo.com/upper/</span></tt>.</li>
+</ul>
+<p>For example, if we pass in the request body <tt class="docutils literal"><span class="pre">&quot;predicate&quot;:</span> <span class="pre">&quot;upper:isPartOf&quot;</span></tt> and restrict graphs to <tt class="docutils literal"><span class="pre">&quot;search_graphs&quot;:</span> <span class="pre">[&quot;http://semantica.globo.com/upper/&quot;]</span></tt>.</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 400\nClasses in the range of predicate &#39;http://semantica.globo.com/upper/isPartOf&#39; are in graphs without instances, such as: [&#39;http://semantica.globo.com/upper/&#39;]&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Status 404</strong></p>
+<p>If there are no matches in the search engine, a 404 HTTP error is returned.</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 404\nThere were no search results.&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Status 500</strong></p>
+<p>Internal server error. Please, contact the team &lt;<a class="reference external" href="mailto:semantica&#37;&#52;&#48;corp&#46;globo&#46;com">semantica<span>&#64;</span>corp<span>&#46;</span>globo<span>&#46;</span>com</a>&gt;
+and provide the URL, JSON and error message.</p>
+</div>
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Globo.com.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -13,6 +13,9 @@ The instances must also match a pattern passed in request to be retrieved.
 
   $ curl -s -XPOST 'http://api.semantica.dev.globoi.com/_suggest' -T "suggest_search.json"
 
+.. program-output:: curl -s -X POST 'http://api.semantica.dev.globoi.com/_suggest' -T "services/suggest/examples/suggest_minimal_example.json" | python -mjson.tool
+  :shell:
+
 A JSON must be passed in the request body. The minimal JSON is shown below:
 
 .. include :: examples/suggest_minimal_example_payload.rst
@@ -25,9 +28,6 @@ Therefore, the ``_suggest`` service will try to match instances of ``place:City`
 The ``pattern`` parameter indicates the search keyword used to match instances.
 Usually, the pattern must occur in the label of the instances, but one might want to search in other properties as well,
 using the ``search_fields`` optional parameter (see in :ref:`optional_body_parameters`).
-
-.. program-output:: curl -s -X POST 'http://api.semantica.dev.globoi.com/_suggest' -T "services/suggest/examples/suggest_minimal_example.json" | python -mjson.tool .
-  :shell: .
 
 .. _optional_body_parameters:
 
@@ -63,4 +63,51 @@ Possible responses
 
 If the search is successfull a response JSON is returned, showing the matched instances.
 
+.. code-block:: bash
+
+  $ curl -s -XPOST 'http://api.semantica.dev.globoi.com/_suggest' -T "suggest_search.json"
+
 .. include :: examples/suggest_response.rst
+
+**Status 400**
+
+If the request is malformed, with invalid parameters, a 400 HTTP error is returned.
+
+This is due to the following reasons:
+
+* Missing required parameters. If the request body does not have the keys ``predicate`` or ``pattern``.
+
+.. include :: examples/suggest_400_missing_parameter.rst
+
+* Unknown predicate. If a predicate is not found in the ontology or does not have a declared ``rdfs:range``.
+
+.. include :: examples/suggest_400_unknown_predicate.rst
+
+* Classes not in range. If the ``search_classes`` parameter has any class that is not in the range of ``predicate``.
+
+For example, if we pass in the request body ``"predicate": "place:partOfContinent"`` and ``"search_classes": ["place:City"]``.
+
+.. include :: examples/suggest_400_classes_not_in_range.rst
+
+* Graphs not in range. If the ``search_graphs`` parameter has any graphs that classes in the range of ``predicate`` are not in.
+
+For example, if we pass in the request body ``"predicate": "place:partOfCity"`` and ``"search_graphs": ["http://semantica.globo.com/person/"]``.
+
+.. include :: examples/suggest_400_graphs_not_in_range.rst
+
+* Graphs without instances. If the predicate's ranges are only classes in graphs without instances, such as ``http://semantica.globo.com/upper/``.
+
+For example, if we pass in the request body ``"predicate": "upper:isPartOf"`` and restrict graphs to ``"search_graphs": ["http://semantica.globo.com/upper/"]``.
+
+.. include :: examples/suggest_400_graphs_without_instances.rst
+
+**Status 404**
+
+If there are no matches in the search engine, a 404 HTTP error is returned.
+
+.. include :: examples/suggest_404.rst
+
+**Status 500**
+
+Internal server error. Please, contact the team <semantica@corp.globo.com>
+and provide the URL, JSON and error message.

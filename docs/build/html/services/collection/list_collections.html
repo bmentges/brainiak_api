@@ -249,7 +249,8 @@ It is only supported while retrieving instances and class definition.</p>
 <p><strong>graph_uri</strong>: Set the graph URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME</span></tt></p>
 <p><strong>page</strong>: The page to be retrieved. The default value is <tt class="docutils literal"><span class="pre">1</span></tt>, i.e. the first page.</p>
 <p><strong>per_page</strong>: Defines how many items are retrieved per page. The default value is <tt class="docutils literal"><span class="pre">10</span></tt></p>
-<p>By default, the first page containing 10 items is returned, and it could also be retrieved by:</p>
+<blockquote>
+<div>By default, the first page containing 10 items is returned. It could also be retrieved by:</div></blockquote>
 <div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/?page=1&amp;per_page=10'</pre>
 </div>
 <p><strong>do_item_count</strong>: If set to 1 determines that the resulting page will compute the property <tt class="docutils literal"><span class="pre">ìtem_count</span></tt> with total number of items.
@@ -342,7 +343,7 @@ A JSON containing both the wrong parameters and the accepted ones is returned.</
 <p><strong>Status 404</strong></p>
 <p>If there are no instances, the response status code is a 404.</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;HTTP error: 404\nNo classes found in graph (http://empty-graph.com).&quot;</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 404\nNo classes found in graph (http://empty-graph.com).&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>

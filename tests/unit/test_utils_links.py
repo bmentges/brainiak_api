@@ -277,7 +277,7 @@ class CrudLinksTestCase(unittest.TestCase):
         computed = crud_links(query_params)
         expected = [
             {'href': 'http://any.uri/context/Class/{_resource_id}', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/context/Class/{_resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
+            {'href': 'http://any.uri/context/Class/{_resource_id}', 'method': 'PUT', 'rel': 'update', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_crud_links_with_params_ok(self):
@@ -287,7 +287,7 @@ class CrudLinksTestCase(unittest.TestCase):
         computed = crud_links(query_params)
         expected = [
             {'href': 'http://any.uri/context/Class/{_resource_id}?instance_prefix={_instance_prefix}&lang=en', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/context/Class/{_resource_id}?instance_prefix={_instance_prefix}&lang=en', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
+            {'href': 'http://any.uri/context/Class/{_resource_id}?instance_prefix={_instance_prefix}&lang=en', 'method': 'PUT', 'rel': 'update', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_crud_links_with_schema_url(self):
@@ -304,7 +304,7 @@ class CrudLinksTestCase(unittest.TestCase):
             {
                 'href': ':///context/Class/{_resource_id}',
                 'method': 'PUT',
-                'rel': 'replace',
+                'rel': 'update',
                 'schema': {'$ref': '/_something_schema'}
             }
         ]

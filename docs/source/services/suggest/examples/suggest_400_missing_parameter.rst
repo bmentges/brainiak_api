@@ -3,5 +3,5 @@
 ::
 
     {
-        "error": "HTTP error: 400\nRequired parameter (pattern) was not given."
+        "errors": ["HTTP error: 400\nRequired parameter (pattern) was not given."]
     }

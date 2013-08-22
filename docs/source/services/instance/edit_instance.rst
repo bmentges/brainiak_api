@@ -47,7 +47,7 @@ This service allows the edition of an instance, provided its context, class name
             {
                 "href": "http://api.semantica.dev.globoi.com/person/Gender/Female",
                 "method": "PUT",
-                "rel": "replace"
+                "rel": "update"
             }
         ],
         "rdf:type": "person:Gender",

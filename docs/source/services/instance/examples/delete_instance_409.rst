@@ -3,12 +3,5 @@
 ::
 
   {
-    "error": "The URI cannot be deleted because there are other instances referring to it",
-    links": [
-        {
-        "href": "http://exemple/graph/Class/UUI/_dependencies",
-        "method": "GET",
-        "rel": "dependencies"
-        }
-    ]
+    "errors": ["Cannot exclude instance because of the dependencies: http://semantica.globo.com/esportes/MateriaEsporte/239172, http://semantica.globo.com/esportes/MateriaEsporte/233213"]
   }

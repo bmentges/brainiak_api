@@ -3,7 +3,7 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql
-from brainiak.utils.links import split_into_chunks
+from brainiak.utils.links import split_into_chunks, remove_last_slash
 from brainiak.utils.resources import decorate_dict_with_pagination
 
 # Note that pagination was done outside the query
@@ -33,7 +33,7 @@ def list_all_contexts(query_params):
         raise HTTPError(404, log_message="No contexts were found.")
 
     json = {
-        '_base_url': query_params.base_url,
+        '_base_url': remove_last_slash(query_params.base_url),
         'items': contexts
     }
 

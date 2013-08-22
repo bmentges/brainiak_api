@@ -4,6 +4,8 @@ BRAINIAK_CODE=$(HOME_BRAINIAK)/src
 NEW_PYTHONPATH=$(BRAINIAK_CODE):$(PYTHONPATH)
 EXTRA_NOSE_PARAMS ?= $(NOSE_PARAMS)
 
+.PHONY: docs
+
 clean:
 	@find . -name "*.pyc" -delete
 	@find . -name "__pycache__" -delete

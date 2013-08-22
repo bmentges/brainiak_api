@@ -4,7 +4,10 @@ from mock import patch
 from tornado.web import HTTPError
 
 from brainiak.prefixes import ROOT_CONTEXT
-from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids, LazyObject, validate_pagination_or_raise_404
+from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids, LazyObject, validate_pagination_or_raise_404, calculate_offset
+from brainiak.utils.params import ParamDict
+
+from tests.mocks import MockHandler
 
 
 class TestLazyObject(TestCase):
@@ -111,3 +114,22 @@ class ResourceUtilsTestCase(TestCase):
                 "class_prefix": "http://xubiru/"}
         ]
         self.assertEqual(list_of_dicts, expected)
+
+
+class OffsetTestCase(TestCase):
+
+    @patch("brainiak.utils.resources.settings", DEFAULT_PAGE=2, DEFAULT_PER_PAGE=10)
+    def test_offset_defaults(self, mocked_settings):
+        handler = MockHandler()
+        params = ParamDict(handler)
+        response = calculate_offset(params)
+        expected = '20'
+        self.assertEqual(expected, response)
+
+    @patch("brainiak.utils.resources.settings", DEFAULT_PAGE=2, DEFAULT_PER_PAGE=10)
+    def test_offset_calculation(self, mocked_settings):
+        handler = MockHandler()
+        params = ParamDict(handler, page=3, per_page=5)
+        response = calculate_offset(params)
+        expected = '15'
+        self.assertEqual(expected, response)

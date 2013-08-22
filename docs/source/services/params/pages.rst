@@ -2,7 +2,7 @@
 
 **per_page**: Defines how many items are retrieved per page. The default value is ``10``
 
-By default, the first page containing 10 items is returned, and it could also be retrieved by:
+ By default, the first page containing 10 items is returned. It could also be retrieved by:
 
 .. code-block:: http
 

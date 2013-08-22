@@ -1,9 +1,6 @@
 import unittest
-from urllib import urlencode
-from mock import MagicMock
-from brainiak import settings
 from brainiak.utils.links import *
-from brainiak.utils.params import ParamDict, LIST_PARAMS, DefaultParamsDict
+from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler, MockRequest
 from tests.utils import URLTestCase
 
@@ -155,7 +152,7 @@ class LinksTestCase(URLTestCase):
         url = "http://dot.com"
         params = {"some_url": "http://some.url"}
         computed = assemble_url(url, params)
-        expected = "http://dot.com?some_url=http%3A%2F%2Fsome.url"
+        expected = 'http://dot.com?some_url=http://some.url'
         self.assertEqual(computed, expected)
 
     def test_assemble_url_with_dict_and_literal_key(self):
@@ -277,7 +274,7 @@ class CrudLinksTestCase(unittest.TestCase):
         computed = crud_links(query_params)
         expected = [
             {'href': 'http://any.uri/context/Class/{_resource_id}', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/context/Class/{_resource_id}', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
+            {'href': 'http://any.uri/context/Class/{_resource_id}', 'method': 'PUT', 'rel': 'update', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_crud_links_with_params_ok(self):
@@ -286,8 +283,8 @@ class CrudLinksTestCase(unittest.TestCase):
         query_params = ParamDict(handler, **params)
         computed = crud_links(query_params)
         expected = [
-            {'href': 'http://any.uri/context/Class/{_resource_id}?lang=en', 'method': 'DELETE', 'rel': 'delete'},
-            {'href': 'http://any.uri/context/Class/{_resource_id}?lang=en', 'method': 'PUT', 'rel': 'replace', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
+            {'href': 'http://any.uri/context/Class/{_resource_id}?instance_prefix={_instance_prefix}&lang=en', 'method': 'DELETE', 'rel': 'delete'},
+            {'href': 'http://any.uri/context/Class/{_resource_id}?instance_prefix={_instance_prefix}&lang=en', 'method': 'PUT', 'rel': 'update', 'schema': {'$ref': 'http://any.uri/context/Class/_schema'}}]
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_crud_links_with_schema_url(self):
@@ -304,7 +301,7 @@ class CrudLinksTestCase(unittest.TestCase):
             {
                 'href': ':///context/Class/{_resource_id}',
                 'method': 'PUT',
-                'rel': 'replace',
+                'rel': 'update',
                 'schema': {'$ref': '/_something_schema'}
             }
         ]
@@ -363,51 +360,3 @@ class BuildClassUrlTestCase(unittest.TestCase):
         computed = build_schema_url_for_instance(query_params)
         expected = "https://dot.net/place/City/_schema?class_prefix=include_me"
         self.assertEqual(computed, expected)
-
-
-# class CollectionLinksTestCase(unittest.TestCase):
-#     maxDiff = None
-#
-#     def test_build_links_without_previous_with_next(self):
-#         params = {'page': 1, 'per_page': 1}
-#         handler = MockHandler(uri="http://class.uri", querystring="page=1&per_page=1")
-#         query_params = ParamDict(handler, **params)
-#         computed = collection_links(query_params)
-#         expected = [
-#             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
-#             {'href': 'http://class.uri?per_page=1&page=2', 'method': 'GET', 'rel': 'next'}]
-#         self.assertEqual(sorted(computed), sorted(expected))
-#
-#     def test_build_links_with_previous_with_next(self):
-#         params = {'page': 2, 'per_page': 1}
-#         handler = MockHandler(uri="http://class.uri", querystring="page=2&per_page=1")
-#         query_params = ParamDict(handler, **params)
-#         computed = collection_links(query_params)
-#         expected = [
-#             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'first'},
-#             {'href': 'http://class.uri?per_page=1&page=3', 'method': 'GET', 'rel': 'next'},
-#             {'href': 'http://class.uri?per_page=1&page=1', 'method': 'GET', 'rel': 'previous'}]
-#         self.assertEqual(sorted(computed), sorted(expected))
-#
-#     def test_build_links_with_param_instance_prefix(self):
-#         url_params = DefaultParamsDict(instance_prefix='http://semantica.globo.com/base/')
-#         params = DefaultParamsDict(context_name='dbpedia',
-#                                    class_name='People',
-#                                    instance_id='inst')
-#         handler = MockHandler(uri="http://class.uri", querystring="instance_prefix=http://semantica.globo.com/base/")
-#         query_params = ParamDict(handler, **(LIST_PARAMS + url_params + params))
-#         computed = collection_links(query_params)
-#         first_all_args = {'per_page': settings.DEFAULT_PER_PAGE,
-#                           'page': '1'}
-#         first_all_args.update(url_params)
-#         first_all_args_str = urlencode(first_all_args, doseq=True)
-#
-#         next_all_args = {'per_page': settings.DEFAULT_PER_PAGE,
-#                          'page': '2'}
-#         next_all_args.update(url_params)
-#         next_all_args_str = urlencode(next_all_args, doseq=True)
-#         expected = [
-#             {'href': 'http://class.uri?{0}'.format(first_all_args_str), 'method': 'GET', 'rel': 'first'},
-#             {'href': 'http://class.uri?{0}'.format(next_all_args_str), 'method': 'GET', 'rel': 'next'}]
-#
-#         self.assertEqual(sorted(computed), sorted(expected))

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>List of Prefixes &mdash; brainiak 2.1.0 documentation</title>
+    <title>List of Prefixes &mdash; brainiak dev_10222 | cf0c4721d1e86 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2.1.0',
+        VERSION:     'dev_10222 | cf0c4721d1e86',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.1.0 documentation" href="../../index.html" />
+    <link rel="top" title="brainiak dev_10222 | cf0c4721d1e86 documentation" href="../../index.html" />
     <link rel="up" title="Managing Prefixes" href="prefix.html" />
     <link rel="next" title="Managing Collections" href="../collection/collection.html" />
     <link rel="prev" title="Managing Prefixes" href="prefix.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.1.0</b></span>
+      <span class="navbar-text pull-left"><b>dev_10222 | cf0c4721d1e86</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -91,6 +91,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../collection/collection.html">Managing Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schema/schema.html">Managing Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../instance/instance.html">Managing Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../suggest/suggest.html">Suggest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../parameters.html">Overriding URIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html">Hypermap of Resources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html#links-specification">Links Specification</a></li>
@@ -167,7 +168,8 @@
 <h2>Optional parameters<a class="headerlink" href="#optional-parameters" title="Permalink to this headline">¶</a></h2>
 <p><strong>page</strong>: The page to be retrieved. The default value is <tt class="docutils literal"><span class="pre">1</span></tt>, i.e. the first page.</p>
 <p><strong>per_page</strong>: Defines how many items are retrieved per page. The default value is <tt class="docutils literal"><span class="pre">10</span></tt></p>
-<p>By default, the first page containing 10 items is returned, and it could also be retrieved by:</p>
+<blockquote>
+<div>By default, the first page containing 10 items is returned. It could also be retrieved by:</div></blockquote>
 <div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/?page=1&amp;per_page=10'</pre>
 </div>
 </div>
@@ -178,31 +180,31 @@
 and the root context, which is a context whose name is not in the prefix URI.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;@context&quot;: {
-        &quot;G1&quot;: &quot;http://semantica.globo.com/G1/&quot;, 
-        &quot;base&quot;: &quot;http://semantica.globo.com/base/&quot;, 
-        &quot;dbpedia&quot;: &quot;http://dbpedia.org/ontology/&quot;, 
-        &quot;dc&quot;: &quot;http://purl.org/dc/elements/1.1/&quot;, 
-        &quot;dct&quot;: &quot;http://purl.org/dc/terms/&quot;, 
-        &quot;ego&quot;: &quot;http://semantica.globo.com/ego/&quot;, 
-        &quot;esportes&quot;: &quot;http://semantica.globo.com/esportes/&quot;, 
-        &quot;eureka&quot;: &quot;http://semantica.globo.com/eureka/&quot;, 
-        &quot;event&quot;: &quot;http://purl.org/NET/c4dm/event.owl#&quot;, 
-        &quot;foaf&quot;: &quot;http://xmlns.com/foaf/0.1/&quot;, 
-        &quot;geo&quot;: &quot;http://www.w3.org/2003/01/geo/wgs84_pos#&quot;, 
-        &quot;glb&quot;: &quot;http://semantica.globo.com/&quot;, 
-        &quot;nodeID&quot;: &quot;nodeID&quot;, 
-        &quot;organization&quot;: &quot;http://semantica.globo.com/organization/&quot;, 
-        &quot;owl&quot;: &quot;http://www.w3.org/2002/07/owl#&quot;, 
-        &quot;person&quot;: &quot;http://semantica.globo.com/person/&quot;, 
-        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;, 
-        &quot;rdf&quot;: &quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;, 
-        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;, 
-        &quot;schema&quot;: &quot;http://schema.org/&quot;, 
-        &quot;time&quot;: &quot;http://www.w3.org/2006/time#&quot;, 
-        &quot;tvg&quot;: &quot;http://semantica.globo.com/tvg/&quot;, 
-        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;, 
+        &quot;G1&quot;: &quot;http://semantica.globo.com/G1/&quot;,
+        &quot;base&quot;: &quot;http://semantica.globo.com/base/&quot;,
+        &quot;dbpedia&quot;: &quot;http://dbpedia.org/ontology/&quot;,
+        &quot;dc&quot;: &quot;http://purl.org/dc/elements/1.1/&quot;,
+        &quot;dct&quot;: &quot;http://purl.org/dc/terms/&quot;,
+        &quot;ego&quot;: &quot;http://semantica.globo.com/ego/&quot;,
+        &quot;esportes&quot;: &quot;http://semantica.globo.com/esportes/&quot;,
+        &quot;eureka&quot;: &quot;http://semantica.globo.com/eureka/&quot;,
+        &quot;event&quot;: &quot;http://purl.org/NET/c4dm/event.owl#&quot;,
+        &quot;foaf&quot;: &quot;http://xmlns.com/foaf/0.1/&quot;,
+        &quot;geo&quot;: &quot;http://www.w3.org/2003/01/geo/wgs84_pos#&quot;,
+        &quot;glb&quot;: &quot;http://semantica.globo.com/&quot;,
+        &quot;nodeID&quot;: &quot;nodeID&quot;,
+        &quot;organization&quot;: &quot;http://semantica.globo.com/organization/&quot;,
+        &quot;owl&quot;: &quot;http://www.w3.org/2002/07/owl#&quot;,
+        &quot;person&quot;: &quot;http://semantica.globo.com/person/&quot;,
+        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;,
+        &quot;rdf&quot;: &quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;,
+        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;,
+        &quot;schema&quot;: &quot;http://schema.org/&quot;,
+        &quot;time&quot;: &quot;http://www.w3.org/2006/time#&quot;,
+        &quot;tvg&quot;: &quot;http://semantica.globo.com/tvg/&quot;,
+        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;,
         &quot;xsd&quot;: &quot;http://www.w3.org/2001/XMLSchema#&quot;
-    }, 
+    },
     &quot;root_context&quot;: &quot;glb&quot;
 }
 </pre></div>
@@ -211,7 +213,7 @@ and the root context, which is a context whose name is not in the prefix URI.</p
 <p>If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;error&quot;: &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported arguments are: sort_order, sort_include_empty, per_page, graph_uri, page, do_item_count, sort_by.&quot;
+    &quot;error&quot;: &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: do_item_count, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, lang, page, per_page, sort_by, sort_include_empty, sort_order.&quot;
 }
 </pre></div>
 </div>

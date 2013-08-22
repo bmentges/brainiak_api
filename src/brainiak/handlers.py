@@ -265,7 +265,7 @@ class ClassHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-        # We are encoding all query parameters because JsonBrowser cannot handle undencoded query strings in
+        # We are encoding all query parameters because JsonBrowser cannot handle unencoded query strings in
         # the profile attribute
         self.request.query = unquote(self.request.query)
 

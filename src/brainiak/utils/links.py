@@ -215,7 +215,7 @@ def crud_links(query_params, schema_url=None):
 
     links = [
         {'rel': "delete", 'href': instance_url, 'method': "DELETE"},
-        {'rel': "replace", 'href': instance_url, 'method': "PUT", 'schema': {'$ref': schema_url}}
+        {'rel': "update", 'href': instance_url, 'method': "PUT", 'schema': {'$ref': schema_url}}
     ]
     return links
 

@@ -10,23 +10,27 @@ In this service, we can get a class defined in some context.
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/place/City/_class'
+  $ curl -s 'http://api.semantica.dev.globoi.com/place/City/_schema'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/City/_class' | python -mjson.tool
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/City/_schema' | python -mjson.tool
   :shell:
 
-Why _class? In our data model we have a clear distinction between class
+Why _schema? In our data model we have a clear distinction between class
 (structure of data) and instances (the data content itself), and by using a request like
 GET <context>/<class> we could not have a clear distinction whether we want
 the whole collection of instances or we want the definition of this class.
 
-Thus, the _class suffix is used to distinguish the latter case from the former.
+Thus, the _schema suffix is used to distinguish the latter case from the former.
+It also serves to inform that the class definition will be given in json-schema format.
+
+
 
 Optional parameters
 -------------------
 
 .. include :: ../params/default.rst
 .. include :: ../params/graph_uri.rst
+.. include :: ../params/class.rst
 
 
 Possible responses
@@ -40,9 +44,9 @@ If the class exists, the response body is a JSON representing the class definiti
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/place/Country/_class'
+  $ curl -s 'http://api.semantica.dev.globoi.com/place/Country/_schema'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Country/_class' | python -mjson.tool
+.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Country/_schema' | python -mjson.tool
   :shell:
 
 

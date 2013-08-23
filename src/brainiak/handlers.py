@@ -176,7 +176,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             exception_msg = '\n'.join(traceback.format_exception(etype, value, tb))
             error_message += "\nException:\n{0}".format(exception_msg)
 
-        error_json = {"error": error_message}
+        error_json = {"errors": [error_message]}
         self.finish(error_json)
 
     def build_resource_url(self, resource_id):

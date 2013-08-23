@@ -10,7 +10,7 @@ def schema(context_name):
         "properties": {
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
-            "id": {"type": "string", "format": "uri"},
+            "@id": {"type": "string", "format": "uri"},
             "items": {
                 "required": True,
                 "type": "array",

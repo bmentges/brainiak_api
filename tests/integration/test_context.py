@@ -82,7 +82,7 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         response_json_dict = json.loads(response.body)
 
         keys = response_json_dict.keys()
-        self.assertEqual(len(keys), 6)
+        self.assertEqual(len(keys), 7)
 
         self.assertIn("items", keys)
         self.assertIn('item_count', keys)
@@ -90,6 +90,7 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertIn('_first_args', keys)
         self.assertIn('_last_args', keys)
         self.assertIn('@context', keys)
+        self.assertIn('@id', keys)
 
         self.assertItemsEqual(expected_items, response_json_dict["items"])
 

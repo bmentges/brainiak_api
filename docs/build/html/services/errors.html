@@ -194,16 +194,10 @@ Content-Length → 73
 Content-Length → 30
 </pre></div>
 </div>
-<div class="highlight-json"><pre>{
-  "error": "The URI cannot be deleted because there are other instances referring to it",
-  links": [
-      {
-      "href": "http://exemple/graph/Class/UUI/_dependencies",
-      "method": "GET",
-      "rel": "dependencies"
-      }
-  ]
-}</pre>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+  <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Cannot exclude instance because of the dependencies: http://semantica.globo.com/esportes/MateriaEsporte/239172, http://semantica.globo.com/esportes/MateriaEsporte/233213&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
 </div>
 <p>All error objects have resource and field properties so that your client can tell what the problem is. There’s also an error code to let you know what is wrong with the field. These are the possible validation error codes:</p>
 </div>

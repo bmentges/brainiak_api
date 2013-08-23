@@ -101,6 +101,11 @@ class ParamsTestCase(TestCase):
         params = ParamDict(handler, context_name=ROOT_CONTEXT)
         self.assertEquals(URI_PREFIX, params.get("graph_uri"))
 
+    def test_class_uri(self):
+        handler = MockHandler()
+        params = ParamDict(handler, class_uri="dbpedia:Python")
+        self.assertEquals("http://dbpedia.org/ontology/Python", params.get("class_uri"))
+
     def test_has_default_triplestore_config(self):
         handler = MockHandler()
         params = ParamDict(handler)

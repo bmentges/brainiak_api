@@ -44,6 +44,10 @@ class brainiak::be {
   include supso::ldap
   realize Supso::Ldap::Projeto[$projeto]
 
+  # Filer
+  include supso::filer
+  Supso::Filer::Mount <| projeto == 'brainiak' and tipo == 'dbpasswd' |>
+
   virtualenv { $python_virtualenv_dir:
     ensure              => present,
     projeto             => $projeto,

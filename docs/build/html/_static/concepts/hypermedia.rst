@@ -57,7 +57,7 @@ We give an example of a link section below:
       {
         "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
         "method": "PUT",
-        "rel": "replace"
+        "rel": "update"
       },
       {
         "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",

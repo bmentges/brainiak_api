@@ -62,7 +62,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             body=json.dumps({}))
         self.assertEqual(response.code, 500)
         body = json.loads(response.body)
-        self.assertIn("HTTP error: 500\nException:\n", body["error"])
+        self.assertIn("HTTP error: 500\nException:\n", body["errors"][0])
 
     @patch("brainiak.handlers.logger")
     def test_create_instance_400_invalid_json(self, log):
@@ -71,7 +71,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             body="invalid input")
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
-        self.assertEquals(body["error"], 'HTTP error: 400\nNo JSON object could be decoded')
+        self.assertEquals(body["errors"], ['HTTP error: 400\nNo JSON object could be decoded'])
 
     @patch("brainiak.handlers.logger")
     def test_create_instance_404_inexistant_class(self, log):
@@ -81,7 +81,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             body=json.dumps(payload))
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
-        self.assertEqual(body["error"], u"HTTP error: 404\nClass X doesn't exist in context xubiru.")
+        self.assertEqual(body["errors"], [u"HTTP error: 404\nClass X doesn't exist in context xubiru."])
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")

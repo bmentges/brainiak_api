@@ -21,7 +21,7 @@ def schema(context_name, class_name, class_prefix):
             "_class_prefix": {"type": "string", "required": True},
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
-            "id": {"type": "string", "format": "uri", "required": True},
+            "@id": {"type": "string", "format": "uri", "required": True},
             "items": {
                 "required": True,
                 "type": "array",

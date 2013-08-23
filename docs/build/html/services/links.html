@@ -131,7 +131,7 @@
 <li><a class="reference internal" href="#crud-contract">CRUD contract</a><ul>
 <li><a class="reference internal" href="#create">create</a></li>
 <li><a class="reference internal" href="#edit">edit</a></li>
-<li><a class="reference internal" href="#replace">replace</a></li>
+<li><a class="reference internal" href="#update">update</a></li>
 <li><a class="reference internal" href="#delete">delete</a></li>
 <li><a class="reference internal" href="#describedby">describedBy</a></li>
 </ul>
@@ -215,7 +215,7 @@ For more about this concept, see <a class="reference internal" href="../concepts
       "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
       "method": "PUT",
       "schema": {"$ref": "http://api.semantica.dev.globoi.com/person/Gender/_schema"}
-      "rel": "replace"
+      "rel": "update"
     },
     {
       "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
@@ -276,10 +276,10 @@ We call this groups <tt class="docutils literal"><span class="pre">contracts</sp
 <p>Refers to a resource that can be used to edit incrementally the target.</p>
 <p>Method: PATCH</p>
 </div>
-<div class="section" id="replace">
-<h3>replace<a class="headerlink" href="#replace" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="update">
+<h3>update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h3>
 <p>Refers to a resource that can be used to edit the target by entirely redefining its content.
-When using <tt class="docutils literal"><span class="pre">replace</span></tt>, the target will be removed and inserted again.</p>
+When using <tt class="docutils literal"><span class="pre">update</span></tt>, the target will be removed and inserted again.</p>
 <p>Method: PUT</p>
 <p>More about the <a class="reference external" href="http://tools.ietf.org/html/rfc5789">difference between HTTP PUT and PATCH</a>.</p>
 </div>

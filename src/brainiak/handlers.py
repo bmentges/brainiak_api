@@ -162,7 +162,6 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     def _notify_bus(self, **kwargs):
         if kwargs.get("instance_data"):
             kwargs["instance_data"] = expand_all_uris_recursively(kwargs["instance_data"])
-        #action="POST", instance_data=instance_data
         notify_bus(instance=self.query_params["instance_uri"],
                    klass=self.query_params["class_uri"],
                    graph=self.query_params["graph_uri"],
@@ -265,7 +264,7 @@ class ClassHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-        # We are encoding all query parameters because JsonBrowser cannot handle undencoded query strings in
+        # We are encoding all query parameters because JsonBrowser cannot handle unencoded query strings in
         # the profile attribute
         self.request.query = unquote(self.request.query)
 

@@ -94,10 +94,10 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_with_invalid_params(self, log):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
-        self.assertEqual(response.body, '{"error": "HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, expand_uri_keys, expand_uri_values, graph_uri, lang."}')
+        self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, expand_uri_keys, expand_uri_values, graph_uri, lang."]}')
 
     @patch("brainiak.handlers.logger")
     def test_schema_handler_class_undefined(self, log):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nClass (animalsOrnithorhynchus) in graph (animals) was not found."}')
+        self.assertEqual(response.body, '{"errors": ["HTTP error: 404\\nClass (animalsOrnithorhynchus) in graph (animals) was not found."]}')

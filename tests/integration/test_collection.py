@@ -215,8 +215,8 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
         expected_body = {
-            u'error':
-            u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with o=(Xubiru) and in language=(pt) were not found.'
+            u'errors':
+            [u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with o=(Xubiru) and in language=(pt) were not found.']
         }
         self.assertEqual(body, expected_body)
 
@@ -227,7 +227,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
         expected_body = {
-            u'error': u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1) and in language=(pt) were not found.'
+            u'errors': [u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1) and in language=(pt) were not found.']
         }
         self.assertEqual(body, expected_body)
 

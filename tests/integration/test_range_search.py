@@ -48,7 +48,7 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 400)
         expected_error_msg = "HTTP error: 400\nEither the predicate http://example.onto/invalidPredicate does not exists or it does not have any rdfs:range defined in the triplestore"
         json_received = json.loads(response.body)
-        self.assertEqual(json_received['error'], expected_error_msg)
+        self.assertIn(expected_error_msg, json_received['errors'])
 
     @patch("brainiak.suggest.suggest._graph_uri_to_index_name", return_value="example.onto")
     def test_successful_request(self, mocked_graph_uri_to_index_name):
@@ -75,7 +75,7 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
                               body=json.dumps({'pattern': 1}))
         self.assertEqual(response.code, 400)
         json_received = json.loads(response.body)
-        self.assertEqual(json_received['error'], "HTTP error: 400\nRequired parameter (predicate) was not given.")
+        self.assertEqual(json_received['errors'][0], "HTTP error: 400\nRequired parameter (predicate) was not given.")
 
     def test_suggest_with_invalid_body_param(self):
         d = {'invalid': 3}
@@ -85,7 +85,7 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
                               body=json.dumps(d))
         self.assertEqual(response.code, 400)
         json_received = json.loads(response.body)
-        self.assertIn("Argument invalid is not supported", json_received['error'])
+        self.assertIn("Argument invalid is not supported", json_received['errors'][0])
 
     def test_query_predicate_superclass_range(self):
         expected_classes = ["http://example.onto/Place", "http://example.onto/City"]

@@ -17,7 +17,7 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
     def test_get_instance_with_nonexistent_uri(self, log):
         response = self.fetch('/person/Gender/Alien')
         self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nInstance (http://semantica.globo.com/person/Gender/Alien) of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) was not found."}')
+        self.assertEqual(response.body, '{"errors": ["HTTP error: 404\\nInstance (http://semantica.globo.com/person/Gender/Alien) of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) was not found."]}')
 
     def test_get_instance(self):
         response = self.fetch('/person/Gender/Male')

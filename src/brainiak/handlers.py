@@ -162,7 +162,6 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     def _notify_bus(self, **kwargs):
         if kwargs.get("instance_data"):
             kwargs["instance_data"] = expand_all_uris_recursively(kwargs["instance_data"])
-        #action="POST", instance_data=instance_data
         notify_bus(instance=self.query_params["instance_uri"],
                    klass=self.query_params["class_uri"],
                    graph=self.query_params["graph_uri"],

@@ -248,7 +248,7 @@ see <a class="reference internal" href="concepts/resources.html#concept-context"
 <li class="toctree-l2"><a class="reference internal" href="services/links.html#crud-contract">CRUD contract</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="services/links.html#create">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="services/links.html#edit">edit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="services/links.html#replace">replace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="services/links.html#update">update</a></li>
 <li class="toctree-l3"><a class="reference internal" href="services/links.html#delete">delete</a></li>
 <li class="toctree-l3"><a class="reference internal" href="services/links.html#describedby">describedBy</a></li>
 </ul>
@@ -307,7 +307,7 @@ see <a class="reference internal" href="concepts/resources.html#concept-context"
 <tr class="row-even"><td><a class="reference external" href="http:/">http:/</a>/&lt;domain&gt;/&lt;context_id&gt;/&lt;class_id&gt;</td>
 <td>A collection of instances having the same class in the same context</td>
 </tr>
-<tr class="row-odd"><td><a class="reference external" href="http:/">http:/</a>/&lt;domain&gt;/&lt;context_id&gt;/&lt;class_id&gt;/_class</td>
+<tr class="row-odd"><td><a class="reference external" href="http:/">http:/</a>/&lt;domain&gt;/&lt;context_id&gt;/&lt;class_id&gt;/_schema</td>
 <td>The definition of a class given by class_id
 in the context given by context_id</td>
 </tr>
@@ -355,9 +355,9 @@ These conventions can be overriden by optional parameters described in <a class=
 <div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/place/Country'</pre>
 </div>
 <p><strong>Get a class associated with a collection</strong></p>
-<div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/place/Country/_class'</pre>
+<div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/place/Country/_schema'</pre>
 </div>
-<p>Try it yourself: <a class="reference external" href="forCountry:http://api.semantica.dev.globoi.com/place/Country/_class">Class for Country</a></p>
+<p>Try it yourself: <a class="reference external" href="forCountry:http://api.semantica.dev.globoi.com/place/Country/_schema">Class for Country</a></p>
 <p><strong>Get a instance of a collection</strong></p>
 <div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/place/Country/Brazil'</pre>
 </div>

@@ -40,7 +40,7 @@ We use the following convention for resources:
 +---------------------------------------------------------+-----------------------------------------------------------------------+
 | http://<domain>/<context_id>/<class_id>                 | A collection of instances having the same class in the same context   |
 +---------------------------------------------------------+-----------------------------------------------------------------------+
-| http://<domain>/<context_id>/<class_id>/_class          | The definition of a class given by class_id                           |
+| http://<domain>/<context_id>/<class_id>/_schema         | The definition of a class given by class_id                           |
 |                                                         | in the context given by context_id                                    |
 +---------------------------------------------------------+-----------------------------------------------------------------------+
 | http://<domain>/<context_id>/<class_id>/<instance_id>   | A instance identified by instance_id having the schema given by       |
@@ -86,11 +86,11 @@ Service Examples
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/place/Country/_class'
+  GET 'http://api.semantica.dev.globoi.com/place/Country/_schema'
 
 Try it yourself: `Class for Country`_
 
-.. _Class for Country: for Country: http://api.semantica.dev.globoi.com/place/Country/_class
+.. _Class for Country: for Country: http://api.semantica.dev.globoi.com/place/Country/_schema
 
 **Get a instance of a collection**
 

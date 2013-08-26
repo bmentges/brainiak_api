@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Delete a Instance &mdash; brainiak 2.1.0 documentation</title>
+    <title>Delete a Instance &mdash; brainiak dev_10222 | cf0c4721d1e86 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2.1.0',
+        VERSION:     'dev_10222 | cf0c4721d1e86',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.1.0 documentation" href="../../index.html" />
+    <link rel="top" title="brainiak dev_10222 | cf0c4721d1e86 documentation" href="../../index.html" />
     <link rel="up" title="Managing Instances" href="instance.html" />
     <link rel="next" title="Edit a Instance" href="edit_instance.html" />
     <link rel="prev" title="Get an Instance" href="get_instance.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.1.0</b></span>
+      <span class="navbar-text pull-left"><b>dev_10222 | cf0c4721d1e86</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -91,6 +91,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../collection/collection.html">Managing Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schema/schema.html">Managing Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="instance.html">Managing Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../suggest/suggest.html">Suggest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../parameters.html">Overriding URIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html">Hypermap of Resources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html#links-specification">Links Specification</a></li>
@@ -194,7 +195,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
 <p>If there are unknown parameters in the request, the response is a 400
 with a JSON informing the wrong parameters and the accepted ones.</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;HTTP error: 400\nArgument wrong_param is not supported&quot;</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 400\nArgument wrong_param is not supported&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -202,7 +203,7 @@ with a JSON informing the wrong parameters and the accepted ones.</p>
 <p id="instance-exists">If the instance does not exist, the response is a 404 with a JSON
 informing the error</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-  <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;HTTP error: 404\nInstance (NonExistent) of class (Country) in graph (place) was not found.&quot;</span>
+  <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 404\nInstance (NonExistent) of class (Country) in graph (place) was not found.&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -211,16 +212,10 @@ informing the error</p>
 therefore, the instance cannot be deleted, for consistency. To delete an instance you should first delete
 instances that depend on it.</p>
 <p>The response status is 409 and a JSON informing the dependants is returned.</p>
-<div class="highlight-json"><pre>{
-  "error": "The URI cannot be deleted because there are other instances referring to it",
-  links": [
-      {
-      "href": "http://exemple/graph/Class/UUI/_dependencies",
-      "method": "GET",
-      "rel": "dependencies"
-      }
-  ]
-}</pre>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+  <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Cannot exclude instance because of the dependencies: http://semantica.globo.com/esportes/MateriaEsporte/239172, http://semantica.globo.com/esportes/MateriaEsporte/233213&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
 </div>
 </div>
 </div>

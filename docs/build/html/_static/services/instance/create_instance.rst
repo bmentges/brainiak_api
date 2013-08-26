@@ -74,4 +74,4 @@ If the class does not exist, the response status code is 404.
 **Status 500**
 
 Internal server error. Please, contact the team <semantica@corp.globo.com>
-and provide the URL, JSON and error messaage.
+and provide the URL, JSON and error message.

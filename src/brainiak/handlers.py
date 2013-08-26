@@ -4,7 +4,8 @@ import traceback
 from contextlib import contextmanager
 
 import ujson as json
-from tornado.curl_httpclient import CurlError
+from urllib import unquote
+from tornado.httpclient import HTTPError as HTTPClientError
 from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import CorsMixin, custom_decorator
 
@@ -13,7 +14,7 @@ from brainiak.collection.get_collection import filter_instances
 from brainiak.collection.json_schema import schema as collection_schema
 from brainiak.context.get_context import list_classes
 from brainiak.context.json_schema import schema as context_schema
-from brainiak.event_bus import NotificationFailure, notify_bus, MiddlewareError
+from brainiak.event_bus import NotificationFailure, notify_bus
 from brainiak.greenlet_tornado import greenlet_asynchronous
 from brainiak.instance.create_instance import create_instance
 from brainiak.instance.delete_instance import delete_instance
@@ -21,13 +22,15 @@ from brainiak.instance.edit_instance import edit_instance, instance_exists
 from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
 from brainiak.prefix.get_prefixes import list_prefixes
+from brainiak.prefixes import expand_all_uris_recursively
+from brainiak.suggest.suggest import do_range_search, SUGGEST_OPTIONAL_PARAMS, SUGGEST_REQUIRED_PARAMS
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
-from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, DEFAULT_PARAMS
+from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, DEFAULT_PARAMS, RequiredParamMissing, validate_body_params
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples
 
@@ -43,15 +46,21 @@ class ListServiceParams(ParamDict):
 
 
 @contextmanager
-def safe_params(valid_params=None):
+def safe_params(valid_params=None, body_params=None):
     try:
         yield
     except InvalidParam as ex:
-        msg = "Argument {0:s} is not supported. ".format(ex)
+        msg = "Argument {0:s} is not supported.".format(ex)
         if valid_params is not None:
             params_msg = ", ".join(sorted(valid_params.keys() + DEFAULT_PARAMS.keys()))
-            msg += "The supported arguments are: {0}.".format(params_msg)
+            msg += " The supported querystring arguments are: {0}.".format(params_msg)
+        if body_params is not None:
+            body_msg = ", ".join(body_params)
+            msg += " The supported body arguments are: {0}.".format(body_msg)
         raise HTTPError(400, log_message=msg)
+    except RequiredParamMissing as ex:
+        msg = "Required parameter ({0:s}) was not given.".format(ex)
+        raise HTTPError(400, log_message=str(msg))
 
 
 def get_routes():
@@ -66,6 +75,7 @@ def get_routes():
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
         # json-schemas
         URLSpec(r'/_schema_list/?', RootJsonSchemaHandler),
+        URLSpec(r'/_suggest/?', SuggestHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/_schema_list/?', ContextJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema_list/?', CollectionJsonSchemaHandler),
         # resources that represents concepts
@@ -115,12 +125,16 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             logger.error(message)
             self.send_error(status_code, message=message)
 
-        elif isinstance(e, CurlError):
+        elif isinstance(e, HTTPClientError):
             message = "Access to backend service failed.  {0:s}.".format(e)
             extra_messages = check_messages_when_port_is_mentioned(str(e))
             if extra_messages:
                 for msg in extra_messages:
                     message += msg
+
+            if settings.DEBUG:
+                # Put backend service response in error for debuggin purposes
+                message += "\nResponse:\n" + e.response.body
 
             logger.error(message)
             self.send_error(status_code, message=message)
@@ -145,6 +159,14 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         self.set_header("X-Cache", cache_msg)
         self.set_header("Last-Modified", meta['last_modified'])
 
+    def _notify_bus(self, **kwargs):
+        if kwargs.get("instance_data"):
+            kwargs["instance_data"] = expand_all_uris_recursively(kwargs["instance_data"])
+        notify_bus(instance=self.query_params["instance_uri"],
+                   klass=self.query_params["class_uri"],
+                   graph=self.query_params["graph_uri"],
+                   **kwargs)
+
     def write_error(self, status_code, **kwargs):
         error_message = "HTTP error: %d" % status_code
         if "message" in kwargs and kwargs.get("message") is not None:
@@ -154,7 +176,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             exception_msg = '\n'.join(traceback.format_exception(etype, value, tb))
             error_message += "\nException:\n{0}".format(exception_msg)
 
-        error_json = {"error": error_message}
+        error_json = {"errors": [error_message]}
         self.finish(error_json)
 
     def build_resource_url(self, resource_id):
@@ -242,12 +264,17 @@ class ClassHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
+        # We are encoding all query parameters because JsonBrowser cannot handle unencoded query strings in
+        # the profile attribute
+        self.request.query = unquote(self.request.query)
+
         valid_params = {}
         with safe_params(valid_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
                                           **valid_params)
+
         response = schema_resource.get_schema(self.query_params)
         self.finalize(response)
 
@@ -303,31 +330,17 @@ class CollectionHandler(BrainiakRequestHandler):
         (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
         instance_url = self.build_resource_url(instance_id)
 
-        self.set_status(201)
         self.set_header("location", instance_url)
 
         self.query_params["instance_uri"] = instance_uri
         self.query_params["instance_id"] = instance_id
+
         instance_data = get_instance(self.query_params)
 
         if settings.NOTIFY_BUS:
-            try:
-                notify_bus(instance=instance_uri,
-                           klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"],
-                           action="POST",
-                           instance_data=instance_data)
-            except MiddlewareError:
-                # rollback data insertion
-                self.query_params['instance_id'] = instance_id
-                response = delete_instance(self.query_params)
-                if not response:
-                    msg = "Could not notify bus and failed to rollback insertion of {0}. ALERT: Search engines are not in sync anymore!"
-                else:
-                    msg = "Could not notify bus about insertion of {0}, rollback was successful."
-                raise NotificationFailure(msg.format(self.query_params['instance_uri']))
+            self._notify_bus(action="POST", instance_data=instance_data)
 
-        self.finalize(instance_data)
+        self.finalize(201)
 
     def finalize(self, response):
         if response is None:
@@ -345,9 +358,12 @@ class CollectionHandler(BrainiakRequestHandler):
             self.query_params["filter_message"] = "".join(filter_message)
             msg = "Instances of class ({class_uri}) in graph ({graph_uri}){filter_message} and in language=({lang}) were not found."
             raise HTTPError(404, log_message=msg.format(**self.query_params))
+        elif isinstance(response, int):  # status code
+            self.set_status(response)
         else:
             self.write(response)
-            self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
+
+        self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
 
 
 class InstanceHandler(BrainiakRequestHandler):
@@ -378,7 +394,6 @@ class InstanceHandler(BrainiakRequestHandler):
                                           class_name=class_name,
                                           instance_id=instance_id,
                                           **valid_params)
-
         try:
             instance_data = json.loads(self.request.body)
         except ValueError:
@@ -390,20 +405,19 @@ class InstanceHandler(BrainiakRequestHandler):
                 raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
             instance_uri, instance_id = create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
             resource_url = self.request.full_url()
-            self.set_status(201)
+            status = 201
             self.set_header("location", resource_url)
         else:
             edit_instance(self.query_params, instance_data)
+            status = 200
 
-        response = get_instance(self.query_params)
-        if response and settings.NOTIFY_BUS:
-            notify_bus(instance=response["@id"],
-                       klass=self.query_params["class_uri"],
-                       graph=self.query_params["graph_uri"],
-                       action="PUT",
-                       instance_data=response)
+        instance_data = get_instance(self.query_params)
 
-        self.finalize(response)
+        if instance_data and settings.NOTIFY_BUS:
+            self.query_params["instance_uri"] = instance_data["@id"]
+            self._notify_bus(action="PUT", instance_data=instance_data)
+
+        self.finalize(status)
 
     @greenlet_asynchronous
     def delete(self, context_name, class_name, instance_id):
@@ -419,8 +433,7 @@ class InstanceHandler(BrainiakRequestHandler):
         if deleted:
             response = 204
             if settings.NOTIFY_BUS:
-                notify_bus(instance=self.query_params["instance_uri"], klass=self.query_params["class_uri"],
-                           graph=self.query_params["graph_uri"], action="DELETE")
+                self._notify_bus(action="DELETE")
         else:
             response = None
         self.finalize(response)
@@ -431,7 +444,43 @@ class InstanceHandler(BrainiakRequestHandler):
             raise HTTPError(404, log_message=msg.format(**self.query_params))
         elif isinstance(response, dict):
             self.write(response)
-            self.set_header("Content-Type", content_type_profile(build_schema_url_for_instance(self.query_params)))
+            schema_url = build_schema_url_for_instance(self.query_params)
+            header_value = content_type_profile(schema_url)
+            self.set_header("Content-Type", header_value)
+        elif isinstance(response, int):  # status code
+            self.set_status(response)
+            # A call to finalize() was removed from here! -- rodsenra 2013/04/25
+
+
+class SuggestHandler(BrainiakRequestHandler):
+
+    @greenlet_asynchronous
+    def post(self):
+        valid_params = PAGING_PARAMS
+
+        with safe_params(valid_params, SUGGEST_REQUIRED_PARAMS + SUGGEST_OPTIONAL_PARAMS):
+
+            raw_body_params = json.loads(self.request.body)
+            body_params = expand_all_uris_recursively(raw_body_params)
+            if '@context' in body_params:
+                del body_params['@context']
+
+            validate_body_params(body_params, SUGGEST_REQUIRED_PARAMS, SUGGEST_OPTIONAL_PARAMS)
+            self.query_params = ParamDict(self, **valid_params)
+            self.query_params.validate_required(valid_params)
+
+        self.query_params.update(body_params)
+        response = do_range_search(self.query_params)
+
+        self.finalize(response)
+
+    def finalize(self, response):
+        if response is None:
+            msg = "There were no search results."
+            raise HTTPError(404, log_message=msg)
+        elif isinstance(response, dict):
+            self.write(response)
+            self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
         elif isinstance(response, int):  # status code
             self.set_status(response)
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25

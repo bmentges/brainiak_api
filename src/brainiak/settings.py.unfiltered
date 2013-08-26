@@ -7,7 +7,7 @@ ENVIRONMENT = '<%= puppetmaster_env %>'
 
 if ENVIRONMENT == 'local':
     SERVER_PORT = 5100
-    #DEBUG = True
+    DEBUG = True
     ENABLE_CACHE = False
     REDIS_PASSWORD = None
 else:
@@ -18,6 +18,8 @@ REDIS_ENDPOINT = '<%= redis_host %>'
 REDIS_PORT = <%= redis_port %>
 
 TRIPLESTORE_CONFIG_FILEPATH = '<%= triplestore_config_filepath %>'
+
+ELASTICSEARCH_ENDPOINT = '<%= elasticsearch_host %>'
 
 DEFAULT_LANG = "pt"
 
@@ -39,3 +41,5 @@ NOTIFY_BUS = True
 DEFAULT_RULESET_URI = "http://semantica.globo.com/ruleset"
 
 CORS_HEADERS = 'Content-Type, Authorization'
+
+GRAPHS_WITHOUT_INSTANCES = ["http://semantica.globo.com/upper/"]

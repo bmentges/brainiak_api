@@ -4,16 +4,16 @@ from brainiak.utils.links import merge_schemas, pagination_schema
 
 def schema():
     base = {
-        "$schema": "http://json-schema.org/draft-04/schema#",
+        "$schema": "http://json-schema.org/draft-03/schema#",
         "title": "Context List Schema",
         "type": "object",
-        "required": ["items"],
         "properties": {
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
             "base_url": {"type": "string", "format": "uri"},
             "items": {
                 "type": "array",
+                "required": True,
                 "items": {
                     "type": "object",
                     "properties": {
@@ -41,6 +41,49 @@ def schema():
                 "href": "{+_base_url}",
                 "method": "GET",
                 "rel": "self"
+            },
+            {
+                "href": "/_range_search",
+                "method": "POST",
+                "rel": "suggest",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "pattern": {
+                            "required": True,
+                            "type": "string"
+                        },
+                        "predicate": {
+                            "required": True,
+                            "type": "string",
+                            "format": "uri"
+                        },
+                        "search_fields": {
+                            "required": False,
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uri"
+                            }
+                        },
+                        "search_classes": {
+                            "required": False,
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uri"
+                            }
+                        },
+                        "search_graphs": {
+                            "required": False,
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uri"
+                            }
+                        },
+                    },
+                }
             },
             {
                 "href": "/{{context_id}}/{{collection_id}}",

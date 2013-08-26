@@ -1,0 +1,15 @@
+.. highlight:: json
+
+::
+
+    {
+        "predicate": "upper:isPartOf",
+        "pattern": "Globoland",
+        "search_fields": ["upper:name", "upper:fullName"],
+        "search_classes": ["place:City"],
+        "search_graphs": ["http://semantica.globo.com/place/"],
+        "@context" : {
+            "place": "http://semantica.globo.com/place/",
+            "upper": "http://semantica.globo.com/upper/"
+        }
+    }

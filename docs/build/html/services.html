@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Services &mdash; brainiak 2.1.0 documentation</title>
+    <title>Services &mdash; brainiak dev_10222 | cf0c4721d1e86 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '2.1.0',
+        VERSION:     'dev_10222 | cf0c4721d1e86',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.1.0 documentation" href="index.html" />
+    <link rel="top" title="brainiak dev_10222 | cf0c4721d1e86 documentation" href="index.html" />
     <link rel="next" title="Managing Contexts" href="services/context/context.html" />
     <link rel="prev" title="Modeling and Ontology Engineering" href="concepts/modeling.html" />
 <meta charset='utf-8'>
@@ -52,7 +52,7 @@
       </button>
 
       <a class="brand" href="index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.1.0</b></span>
+      <span class="navbar-text pull-left"><b>dev_10222 | cf0c4721d1e86</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -90,6 +90,7 @@
 <li class="toctree-l2"><a class="reference internal" href="services/collection/collection.html">Managing Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="services/schema/schema.html">Managing Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="services/instance/instance.html">Managing Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/suggest/suggest.html">Suggest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="services/parameters.html">Overriding URIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="services/links.html">Hypermap of Resources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="services/links.html#links-specification">Links Specification</a></li>
@@ -225,6 +226,12 @@ see <a class="reference internal" href="concepts/resources.html#concept-context"
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="services/suggest/suggest.html">Suggest</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="services/suggest/suggest.html#optional-body-parameters">Optional body parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/suggest/suggest.html#optional-query-string-parameters">Optional query string parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services/suggest/suggest.html#possible-responses">Possible responses</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="services/parameters.html">Overriding URIs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="services/parameters.html#overriding-the-uri-for-the-context">Overriding the URI for the context</a></li>
 <li class="toctree-l2"><a class="reference internal" href="services/parameters.html#overriding-the-uri-for-the-collection-class">Overriding the URI for the collection+class</a></li>
@@ -241,7 +248,7 @@ see <a class="reference internal" href="concepts/resources.html#concept-context"
 <li class="toctree-l2"><a class="reference internal" href="services/links.html#crud-contract">CRUD contract</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="services/links.html#create">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="services/links.html#edit">edit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="services/links.html#replace">replace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="services/links.html#update">update</a></li>
 <li class="toctree-l3"><a class="reference internal" href="services/links.html#delete">delete</a></li>
 <li class="toctree-l3"><a class="reference internal" href="services/links.html#describedby">describedBy</a></li>
 </ul>
@@ -300,7 +307,7 @@ see <a class="reference internal" href="concepts/resources.html#concept-context"
 <tr class="row-even"><td><a class="reference external" href="http:/">http:/</a>/&lt;domain&gt;/&lt;context_id&gt;/&lt;class_id&gt;</td>
 <td>A collection of instances having the same class in the same context</td>
 </tr>
-<tr class="row-odd"><td><a class="reference external" href="http:/">http:/</a>/&lt;domain&gt;/&lt;context_id&gt;/&lt;class_id&gt;/_class</td>
+<tr class="row-odd"><td><a class="reference external" href="http:/">http:/</a>/&lt;domain&gt;/&lt;context_id&gt;/&lt;class_id&gt;/_schema</td>
 <td>The definition of a class given by class_id
 in the context given by context_id</td>
 </tr>
@@ -348,9 +355,9 @@ These conventions can be overriden by optional parameters described in <a class=
 <div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/place/Country'</pre>
 </div>
 <p><strong>Get a class associated with a collection</strong></p>
-<div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/place/Country/_class'</pre>
+<div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/place/Country/_schema'</pre>
 </div>
-<p>Try it yourself: <a class="reference external" href="forCountry:http://api.semantica.dev.globoi.com/place/Country/_class">Class for Country</a></p>
+<p>Try it yourself: <a class="reference external" href="forCountry:http://api.semantica.dev.globoi.com/place/Country/_schema">Class for Country</a></p>
 <p><strong>Get a instance of a collection</strong></p>
 <div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/place/Country/Brazil'</pre>
 </div>

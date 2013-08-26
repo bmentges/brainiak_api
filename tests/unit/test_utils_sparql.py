@@ -2,9 +2,7 @@ import unittest
 import uuid
 
 from brainiak.prefixes import MemorizeContext, SHORTEN
-from brainiak.utils.params import ParamDict
 from brainiak.utils.sparql import *
-from tests.mocks import MockHandler
 
 
 class ResultHandlerTestCase(unittest.TestCase):
@@ -118,22 +116,6 @@ class ResultHandlerTestCase(unittest.TestCase):
         compressed_list = compress_keys_and_values(trilogy_from_virtuoso, context=context)
         expected_list = [{'key': 'http://xmlns.com/foaf/0.1/value'}]
         self.assertEqual(compressed_list, expected_list)
-
-
-class OffsetTestCase(unittest.TestCase):
-    def test_offset_defaults(self):
-        handler = MockHandler()
-        params = ParamDict(handler)
-        response = calculate_offset(params, default_page=2, default_per_page=10)
-        expected = '20'
-        self.assertEqual(expected, response)
-
-    def test_offset_calculation(self):
-        handler = MockHandler()
-        params = ParamDict(handler, page=3, per_page=5)
-        response = calculate_offset(params, default_page=2, default_per_page=10)
-        expected = '15'
-        self.assertEqual(expected, response)
 
 
 class GetOneTestCase(unittest.TestCase):

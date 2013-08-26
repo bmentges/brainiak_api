@@ -143,6 +143,7 @@ alias tail-proxy-nginx-be-api_semantica='tail -n 20 -F /opt/logs/api_semantica/n
 
 ---+++ Configuração dos VIPs
 
+---++++api.semantica.globoi.com
 <pre>
 monitor MONITOR_VIP2443_10.70.130.136 {
   defaults from http
@@ -179,6 +180,33 @@ virtual VIP2444_10.70.130.137_80 {
   profiles {
     http_sem_one_connect {}
     tcp {}
+  }
+}
+</pre>
+
+---++++redis.api.semantica.globoi.com
+<pre>
+virtual VIP2950_10.70.2.193_20015 {
+  snat automap
+  pool VIP2950_10.70.2.193_20015
+  destination 10.70.2.193:20015
+  ip protocol 6
+  profiles fastL4 {}
+}
+
+pool VIP2950_10.70.2.193_20015 {
+  lb method least conn
+  min active members 1
+  monitor all tcp
+  members {
+    10.10.4.6:20015 {
+      limit 1000
+      priority 1
+    }
+    10.10.4.8:20015 {
+      limit 1000
+      priority 2
+    }
   }
 }
 </pre>

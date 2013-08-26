@@ -6,7 +6,7 @@ from urlparse import unquote, parse_qs
 from tornado.web import HTTPError
 
 from brainiak import settings
-from brainiak.prefixes import safe_slug_to_prefix
+from brainiak.prefixes import expand_uri, safe_slug_to_prefix, extract_prefix
 from brainiak.utils.sparql import PATTERN_O, PATTERN_P
 from brainiak.utils.config_parser import ConfigParserNoSectionError, parse_section
 
@@ -15,12 +15,32 @@ class InvalidParam(Exception):
     pass
 
 
+class RequiredParamMissing(Exception):
+    pass
+
+
 class DefaultParamsDict(dict):
+
+    def __init__(self, **kw):
+        dict.__init__(self, **kw)
+        self.required = []
+
+    def set_required(self, required):
+        self.required = list(set(required))
+
     def __add__(self, other):
         new_dict = DefaultParamsDict()
         new_dict.update(self)
         new_dict.update(other)
+        new_dict.set_required(self.required + other.required)
         return new_dict
+
+
+class RequiredParamsDict(DefaultParamsDict):
+    "Class used to easily mark required parameters"
+    def __init__(self, **kw):
+        DefaultParamsDict.__init__(self, **kw)
+        self.set_required(kw.keys())
 
 
 def optionals(*args):
@@ -41,7 +61,6 @@ PAGING_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
                                   per_page=settings.DEFAULT_PER_PAGE,
                                   do_item_count="0")
 
-
 LIST_PARAMS = PAGING_PARAMS + DefaultParamsDict(sort_by="",
                                                 sort_order="ASC",
                                                 sort_include_empty="1")
@@ -58,7 +77,7 @@ def normalize_last_slash(url):
 
 
 # Define possible params and their processing order
-VALID_PARAMS = ('lang',
+VALID_PARAMS = ['lang',
                 'expand_uri', 'expand_uri_values', 'expand_uri_keys',
                 'graph_uri',
                 'context_name', 'class_name', 'class_prefix', 'class_uri',
@@ -66,13 +85,26 @@ VALID_PARAMS = ('lang',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
                 'purge',
-                'do_item_count')
-
+                'do_item_count']
 
 VALID_PATTERNS = (
     PATTERN_P,
     PATTERN_O
 )
+
+
+def validate_body_params(params, required, optionals):
+
+    for key in required:
+        if not key in params:
+            raise RequiredParamMissing(key)
+
+    valid = required + optionals
+    for key in params:
+        if key not in valid:
+            raise InvalidParam(key)
+
+    return True
 
 
 class ParamDict(dict):
@@ -144,8 +176,11 @@ class ParamDict(dict):
         Changes in *_prefix should reflect in *_uri.
         Changes in expand_uri should reflect in expand_uri_values and expand_uri_keys.
         """
-        if key in ('graph_uri', 'class_uri'):
+        if key == 'graph_uri':
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
+
+        elif key == 'class_uri':
+            dict.__setitem__(self, key, expand_uri(value))
 
         elif key == "context_name":
             dict.__setitem__(self, key, value)
@@ -168,6 +203,10 @@ class ParamDict(dict):
         elif key == "instance_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
             dict.__setitem__(self, "instance_uri", "{0}{1}".format(self["instance_prefix"], self["instance_id"]))
+
+        elif key == "instance_uri":
+            dict.__setitem__(self, key, value)
+            dict.__setitem__(self, "instance_prefix", extract_prefix(value))
 
         elif key == "expand_uri":
             dict.__setitem__(self, key, value)
@@ -246,3 +285,10 @@ class ParamDict(dict):
 
         effective_args.update(kw)
         return urlencode(effective_args, doseq=True)
+
+    def validate_required(self, required_spec):
+        "Check if all required params specified by required_spec are indeed present in the request"
+        arguments = self._make_arguments_dict().keys()
+        for required_param in required_spec.required:
+            if not required_param in arguments:
+                raise RequiredParamMissing(required_param)

@@ -32,7 +32,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/?best_aikido_move=ki_projection", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
-        self.assertIn(u'Argument best_aikido_move is not supported. The supported ', body["error"])
+        self.assertIn(u'Argument best_aikido_move is not supported. The supported ', body["errors"][0])
 
     @patch("brainiak.handlers.logger")
     def test_404(self, log):
@@ -40,7 +40,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
-        self.assertEquals(body["error"], u'HTTP error: 404\nNo contexts were found.')
+        self.assertEquals(body["errors"], [u'HTTP error: 404\nNo contexts were found.'])
 
     @patch("brainiak.handlers.logger")
     def test_500(self, log):
@@ -48,7 +48,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 500)
         body = json.loads(response.body)
-        self.assertIn("raise Exception\n\nException\n", body["error"])
+        self.assertIn("raise Exception\n\nException\n", body["errors"][0])
 
     def test_200(self):
         # disclaimer: this test assumes UPPER graph exists in Virtuoso and contains triples
@@ -108,7 +108,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/", method='PURGE')
         self.assertEqual(response.code, 405)
         received = json.loads(response.body)
-        expected = {u'error': u"HTTP error: 405\nCache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"}
+        expected = {u'errors': [u"HTTP error: 405\nCache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"]}
         self.assertEqual(received, expected)
 
     @patch("brainiak.utils.cache.delete")

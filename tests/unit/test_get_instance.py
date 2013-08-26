@@ -104,6 +104,7 @@ class AssembleTestCase(unittest.TestCase):
     def prepare_params(self, instance_uri="http://mock.test.com/schema/klass/instance"):
         param_dict = {'context_name': 'schema',
                       'class_name': 'klass',
+                      'instance_prefix': 'http://schema.org/klass/',
                       'instance_id': 'instance',
                       'expand_uri': SHORTEN}
         handler = MockHandler(uri=instance_uri, **param_dict)

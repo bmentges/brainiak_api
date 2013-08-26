@@ -69,7 +69,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 200)
         received_response = json.loads(response.body)
 
-        self.assertEqual(len(received_response), 9)
+        self.assertEqual(len(received_response), 10)
         keys = received_response.keys()
         self.assertIn("items", keys)
         self.assertIn("item_count", keys)
@@ -80,6 +80,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertIn('_class_prefix', keys)
         self.assertIn('_schema_url', keys)
         self.assertIn('@context', keys)
+        self.assertIn('@id', keys)
 
         self.assertEqual(len(received_response['items']), 2)
 
@@ -215,8 +216,8 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
         expected_body = {
-            u'error':
-            u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with o=(Xubiru) and in language=(pt) were not found.'
+            u'errors':
+            [u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with o=(Xubiru) and in language=(pt) were not found.']
         }
         self.assertEqual(body, expected_body)
 
@@ -227,7 +228,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
         expected_body = {
-            u'error': u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1) and in language=(pt) were not found.'
+            u'errors': [u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1) and in language=(pt) were not found.']
         }
         self.assertEqual(body, expected_body)
 
@@ -261,7 +262,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         body = json.loads(response.body)
 
         keys = body.keys()
-        self.assertEqual(len(keys), 8)
+        self.assertEqual(len(keys), 9)
         self.assertIn("items", keys)
         self.assertIn("item_count", keys)
         self.assertIn('_base_url', keys)
@@ -270,6 +271,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertIn('_class_prefix', keys)
         self.assertIn('_schema_url', keys)
         self.assertIn('@context', keys)
+        self.assertIn('@id', keys)
 
         computed_items = body["items"]
         expected_items = [{

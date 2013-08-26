@@ -21,6 +21,30 @@ class TestRootJsonSchema(unittest.TestCase):
             {'href': '?{+_previous_args}', 'method': 'GET', 'rel': 'previous'},
             {'href': '{+_base_url}', 'method': 'GET', 'rel': 'self'},
             {
+                'href': '/_range_search',
+                'method': 'POST',
+                'rel': 'suggest',
+                'schema': {
+                    'type': 'object',
+                    'properties': {
+                        'pattern': {'required': True, 'type': 'string'},
+                        'predicate': {'format': 'uri',
+                                      'required': True,
+                                      'type': 'string'},
+                        'search_classes': {'items': {'format': 'uri', 'type': 'string'},
+                                           'required': False,
+                                           'type': 'array'},
+                        'search_fields': {'items': {'format': 'uri', 'type': 'string'},
+                                          'required': False,
+                                          'type': 'array'},
+                        'search_graphs': {'items': {'format': 'uri', 'type': 'string'},
+                                          'required': False,
+                                          'type': 'array'}
+
+                    }
+                }
+            },
+            {
                 'href': '/{{context_id}}/{{collection_id}}',
                 'method': 'GET',
                 'rel': 'collection',

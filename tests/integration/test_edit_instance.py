@@ -92,9 +92,10 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                                        method='PUT',
                                        body=json.dumps(actual_new_york_dict))
         self.assertEqual(modified_new_york.code, 200)
-        modified_new_york_dict = json.loads(modified_new_york.body)
-        self.assertIn("rdfs:label", modified_new_york_dict)
-        self.assertIn("rdfs:comment", modified_new_york_dict)
+        self.assertEqual(modified_new_york.body, "")
+        # modified_new_york_dict = json.loads(modified_new_york.body)
+        # self.assertIn("rdfs:label", modified_new_york_dict)
+        # self.assertIn("rdfs:comment", modified_new_york_dict)
 
 
 class EditInstanceResourceTestCase(QueryTestCase):

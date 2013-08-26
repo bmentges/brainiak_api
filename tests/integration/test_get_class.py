@@ -16,7 +16,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
             {u'href': u'http://localhost:10023/person/Gender/{_resource_id}?lang=pt', u'method': u'GET', u'rel': u'self'},
             {u'href': u'http://localhost:10023/person/Gender/_schema?lang=pt', u'method': u'GET', u'rel': u'class'},
             {u'href': u'http://localhost:10023/person/Gender/{@resource_id}?lang=pt', u'method': u'DELETE', u'rel': u'delete'},
-            {u'href': u'http://localhost:10023/person/Gender/{@resource_id}?lang=pt', u'method': u'PUT', u'rel': u'replace', u'schema': {u'$ref': u'http://localhost:10023/person/Gender/_schema'}},
+            {u'href': u'http://localhost:10023/person/Gender/{@resource_id}?lang=pt', u'method': u'PUT', u'rel': u'update', u'schema': {u'$ref': u'http://localhost:10023/person/Gender/_schema'}},
             {u'href': u'http://localhost:10023/person/Gender?class_prefix=http%3A%2F%2Fsemantica.globo.com%2Fperson%2F', u'method': u'GET', u'rel': u'collection'}],
         u'properties': {},
         u'title': u"Gênero da Pessoa",
@@ -46,7 +46,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         received_rels = [link['rel'] for link in json_received['links']]
-        self.assertListEqual(received_rels, ['self', 'class', 'collection', 'delete', 'replace'])
+        self.assertListEqual(received_rels, ['self', 'class', 'collection', 'delete', 'update'])
         # TODO: test the URLs of the links
 
     def test_schema_handler_with_default_uri_normalization(self):
@@ -93,11 +93,11 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
     @patch("brainiak.handlers.logger")
     def test_schema_handler_with_invalid_params(self, log):
         response = self.fetch('/person/Gender/_schema?hello=world')
-        #self.assertEqual(response.code, 400)
-        self.assertEqual(response.body, '{"error": "HTTP error: 400\\nArgument hello is not supported. The supported arguments are: expand_uri, expand_uri_keys, expand_uri_values, graph_uri, lang."}')
+        self.assertEqual(response.code, 400)
+        self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, expand_uri_keys, expand_uri_values, graph_uri, lang."]}')
 
     @patch("brainiak.handlers.logger")
     def test_schema_handler_class_undefined(self, log):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, '{"error": "HTTP error: 404\\nClass (animalsOrnithorhynchus) in graph (animals) was not found."}')
+        self.assertEqual(response.body, '{"errors": ["HTTP error: 404\\nClass (animalsOrnithorhynchus) in graph (animals) was not found."]}')

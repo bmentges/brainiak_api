@@ -4,5 +4,5 @@
 
     {
 
-        "error": "HTTP error: 400\nNo JSON object could be decoded"
+        "errors": ["HTTP error: 400\nNo JSON object could be decoded"]
     }

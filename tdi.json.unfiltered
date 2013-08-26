@@ -14,11 +14,23 @@
       "<%=redis_host%>"             :   { "port": <%=redis_port%> }
     },
     "file": {
-      "user": "busca",
-      "perm": "rw",
       "/mnt/projetos/deploy-be/api_semantica": {
           "type": "directory",
-          "location": "nfs"
+          "location": "nfs",
+          "user": "busca",
+          "perm": "rw"
+      },
+      "/mnt/projetos/dbpasswd/api_semantica": {
+          "type": "directory",
+          "location": "nfs",
+          "user": "root",
+          "perm": "ro"
+      },
+      "/mnt/projetos/dbpasswd/brainiak": {
+          "type": "directory",
+          "location": "nfs",
+          "user": "root",
+          "perm": "ro"
       }
     }
   }

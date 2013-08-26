@@ -5,10 +5,12 @@ from mock import patch
 from brainiak import prefixes
 from brainiak.prefixes import (expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri,
                                prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix,
-                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError)
+                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, expand_all_uris_recursively, get_prefixes_dict)
 
 
 class PrefixesTestCase(unittest.TestCase):
+
+    maxDiff = None
 
     def test_prefix_contains_obligatory_keys(self):
         existing_keys = sorted(prefixes._MAP_SLUG_TO_PREFIX.keys())
@@ -52,7 +54,7 @@ class PrefixesTestCase(unittest.TestCase):
     def test_expand_uri(self):
         self.assertEqual("http://www.w3.org/2003/01/geo/wgs84_pos#Brasil", expand_uri("geo:Brasil"))
 
-    def test_expand_uri(self):
+    def test_expand_uri_whatever(self):
         self.assertEqual("http://schema.org/whatever", expand_uri("schema:whatever"))
 
     def test_expand_uri_that_is_already_a_uri(self):
@@ -75,6 +77,12 @@ class PrefixesTestCase(unittest.TestCase):
 
     def test_is_compressed_uri_given_a_compressed_and_prefixes(self):
         self.assertEqual(is_compressed_uri("newslug:xubiru", {"newslug": "http://newslug.com"}), True)
+
+    def test_get_prefixes_dict(self):
+        MAP_PREFIX_TO_SLUG = get_prefixes_dict()
+        self.assertIn('geo', MAP_PREFIX_TO_SLUG)
+        self.assertIn('organization', MAP_PREFIX_TO_SLUG)
+        self.assertIn('eureka', MAP_PREFIX_TO_SLUG)
 
 
 class ExtractPrefixTestCase(unittest.TestCase):
@@ -145,3 +153,54 @@ class NormalizationTestCase(unittest.TestCase):
     def test_normalize_uri_value_invalid_mode(self):
         context = MemorizeContext(normalize_keys='INVALID_MODE')
         self.assertRaises(InvalidModeForNormalizeUriError, context.normalize_uri_value, "rdf:type")
+
+
+VALID_COMPRESSED_INSTANCE_DATA = {
+    'rdf:type': 'place:City',
+    'upper:name': u'Globoland',
+    '_base_url': 'http://localhost:5100/place/City/',
+    '_resource_id': '173ed3bf-2863-4e4a-8d37-024f8df72aa3',
+    'rdfs:comment': u"City of Globo's companies. Ação is to test the preservation of special characters.",
+    'place:longitude': u'-43.407133',
+    'place:latitude': -43.407133,
+    'frbr:summarizationOf': {'dct:isPartOf': ['base:UF_RJ', 'base:UF_RJ']},
+    '@context': {
+        'upper': 'http://semantica.globo.com/upper/',
+        'base': "http://semantica.globo.com/base/",
+        'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
+        'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+        'place': 'http://semantica.globo.com/place/',
+        'dct': 'http://purl.org/dc/terms/',
+        'schema': 'http://schema.org/',
+        'frbr': 'http://purl.org/vocab/frbr/core#',
+    },
+    '@id': 'http://semantica.globo.com/place/City/173ed3bf-2863-4e4a-8d37-024f8df72aa3',
+    '@type': 'place:City'
+}
+
+EXPECTED_UNCOMPRESSED_INSTANCE_DATA = {
+    'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://semantica.globo.com/place/City',
+    'http://semantica.globo.com/upper/name': u'Globoland',
+    '_base_url': 'http://localhost:5100/place/City/',
+    '_resource_id': '173ed3bf-2863-4e4a-8d37-024f8df72aa3',
+    'http://www.w3.org/2000/01/rdf-schema#comment': u"City of Globo's companies. Ação is to test the preservation of special characters.",
+    'http://semantica.globo.com/place/longitude': u'-43.407133',
+    'http://semantica.globo.com/place/latitude': -43.407133,
+    'http://purl.org/vocab/frbr/core#summarizationOf': {
+        'http://purl.org/dc/terms/isPartOf': ['http://semantica.globo.com/base/UF_RJ',
+                                             'http://semantica.globo.com/base/UF_RJ']
+    },
+    '@id': 'http://semantica.globo.com/place/City/173ed3bf-2863-4e4a-8d37-024f8df72aa3',
+    '@type': 'http://semantica.globo.com/place/City'
+}
+
+
+class ExpansionTestCase(unittest.TestCase):
+    maxDiff = None
+
+    def test_normalize_recusively_with_valid_input(self):
+        self.assertDictEqual(expand_all_uris_recursively(VALID_COMPRESSED_INSTANCE_DATA), EXPECTED_UNCOMPRESSED_INSTANCE_DATA)
+
+    def test_normalize_recursively_with_invalid_type(self):
+        d = {'invalid': 3}
+        self.assertDictEqual(expand_all_uris_recursively(d), d)

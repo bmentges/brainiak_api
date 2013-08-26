@@ -75,11 +75,13 @@
 
 
 # http://example.onto/Place
-:Place a owl:Class .
+:Place a owl:Class ;
+       rdfs:label "Place" .
 
 # http://example.onto/City
 :City a owl:Class ;
-  rdfs:subClassOf :Place .
+      rdfs:subClassOf :Place ;
+      rdfs:label "City" .
 
 # http://example.onto/Gender
 :Gender a owl:Class .
@@ -185,7 +187,8 @@
 # Instances
 ##########################################
 
-:York a :City .
+:York a :City ;
+      rdfs:label "York" .
 
 :Male a :Gender .
 :Female a :Gender .

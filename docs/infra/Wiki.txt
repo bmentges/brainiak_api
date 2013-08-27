@@ -143,6 +143,7 @@ alias tail-proxy-nginx-be-api_semantica='tail -n 20 -F /opt/logs/api_semantica/n
 
 ---+++ Configuração dos VIPs
 
+---++++api.semantica.globoi.com
 <pre>
 monitor MONITOR_VIP2443_10.70.130.136 {
   defaults from http
@@ -183,6 +184,33 @@ virtual VIP2444_10.70.130.137_80 {
 }
 </pre>
 
+---++++redis.api.semantica.globoi.com
+<pre>
+virtual VIP2950_10.70.2.193_20015 {
+  snat automap
+  pool VIP2950_10.70.2.193_20015
+  destination 10.70.2.193:20015
+  ip protocol 6
+  profiles fastL4 {}
+}
+
+pool VIP2950_10.70.2.193_20015 {
+  lb method least conn
+  min active members 1
+  monitor all tcp
+  members {
+    10.10.4.6:20015 {
+      limit 1000
+      priority 1
+    }
+    10.10.4.8:20015 {
+      limit 1000
+      priority 2
+    }
+  }
+}
+</pre>
+
 ---++ Instalação
 Para instalação basta seguir os passos abaixo:
 
@@ -208,7 +236,7 @@ Todos os arquivos relacionados com a configuração desse projeto, podem ser ace
 | riomp40lb14 | Gunicorn API V2/Brainiak - 8035 |
 | riomp41lb14 | Gunicorn API V2/Brainiak - 8035 |
 
-Link: [[http://smi.globoi.com/thruk/cgi-bin/status.cgi?dfl_s0_value_sel=5&dfl_s2_type=search&dfl_s2_serviceprops=0&dfl_s1_op=~&dfl_s2_servicestatustypes=31&dfl_s2_op=~&dfl_s0_val_pre=&dfl_s0_hostprops=0&nav=&dfl_s1_value_sel=5&dfl_s2_hostprops=0&dfl_s1_type=search&dfl_s1_hostprops=0&dfl_s2_value_sel=5&dfl_s0_serviceprops=0&dfl_s1_value=riomp40lb14&hidetop=&dfl_s1_servicestatustypes=31&dfl_s0_hoststatustypes=15&dfl_s0_value=api.semantica.globoi.com&dfl_s2_hoststatustypes=15&dfl_s2_value=riomp41lb14&dfl_s0_servicestatustypes=31&dfl_s0_op=~&dfl_s1_val_pre=&hidesearch=2&dfl_s1_hoststatustypes=15&style=detail&dfl_s0_type=search&dfl_s2_val_pre=&dfl_s1_serviceprops=0][Nagios]]
+Link: [[http://smi.globoi.com/thruk/cgi-bin/status.cgi?nav=&hidesearch=2&hidetop=&dfl_s0_hoststatustypes=15&dfl_s0_servicestatustypes=31&dfl_s0_hostprops=0&dfl_s0_serviceprops=0&style=detail&update.x=7&update.y=7&dfl_s0_type=search&dfl_s0_val_pre=&dfl_s0_op=~&dfl_s0_value=api.semantica.globoi.com&dfl_s0_value_sel=5&dfl_s1_hoststatustypes=15&dfl_s1_servicestatustypes=31&dfl_s1_hostprops=0&dfl_s1_serviceprops=0&dfl_s1_type=service&dfl_s1_val_pre=&dfl_s1_op=~&dfl_s1_value=brainiak&dfl_s1_value_sel=5&dfl_s2_hoststatustypes=15&dfl_s2_servicestatustypes=31&dfl_s2_hostprops=0&dfl_s2_serviceprops=0&dfl_s2_type=service&dfl_s2_val_pre=&dfl_s2_op=%3D&dfl_s2_value=API+Semantica+-+Nginx+8033&dfl_s2_value_sel=5][Nagios]]
 
 ---+++ Cricket
 
@@ -229,6 +257,8 @@ Link: [[http://smi.globoi.com/thruk/cgi-bin/status.cgi?dfl_s0_value_sel=5&dfl_s2
 [[https://docs.google.com/a/corp.globo.com/drawings/d/19NgAKaZGgpNnSQagKOFc8_vytp_baVTtiIjZGbVrY9g/edit?usp=sharing][Diagrama de Infraestrutura do Brainiak]]
 
 ---++ FAQ
-[[https://globo.service-now.com/kb_view.do?sys_kb_id=86c1ece1a9d305805a48c3babec7513d][O que fazer caso o VIP do Brainiak não responda o healthcheck adequadamente?]]
-[[https://globo.service-now.com/kb_view.do?sys_kb_id=958e9421a9d305805a48c3babec751f6][Reinício do Ngnix BE do Brainiak]]
-[[https://globo.service-now.com/kb_view.do?sys_kb_id=c89c98ada99305805a48c3babec7513f][Reinício do GUnicorn BE do Brainiak]]
+[[https://globo.service-now.com/kb_view.do?sys_kb_id=86c1ece1a9d305805a48c3babec7513d][O que fazer caso o VIP do Brainiak não responda o healthcheck adequadamente? ]]<br />
+[[https://globo.service-now.com/kb_view.do?sys_kb_id=958e9421a9d305805a48c3babec751f6][Recarga do Ngnix BE do Brainiak]]<br />
+[[https://globo.service-now.com/kb_view.do?sys_kb_id=c89c98ada99305805a48c3babec7513f][Recarga do GUnicorn BE do Brainiak]]<br />
+[[https://globo.service-now.com/kb_view.do?sys_kb_id=09d4c706a99f85805a48c3babec7518d][Error: "HTTP error: 404\nClient-Id provided at 'X-Brainiak-Client-Id' (default) is not known"]]<br />
+[[https://globo.service-now.com/kb_view.do?sys_kb_id=ab1cc4f3d11781001fd7654dfa473e43][Operação no caso do Redis utilizado pelo Brainiak apresentar instabilidade]]

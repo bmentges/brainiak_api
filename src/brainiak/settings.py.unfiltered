@@ -34,7 +34,7 @@ LOG_NAME = "brainiak"
 
 URI_PREFIX = "http://semantica.globo.com/"
 
-EVENT_BUS_HOST = '<%= barramento_baas_host %>'
+EVENT_BUS_HOST = '<%= barramento_backstage_host %>'
 EVENT_BUS_PORT = 61613
 NOTIFY_BUS = True
 

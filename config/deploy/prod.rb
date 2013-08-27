@@ -2,7 +2,7 @@ role :be,                         'riomp40lb14.globoi.com','riomp41lb14.globoi.c
 role :filer,                      'filer.globoi.com'
 
 # Hosts
-set :barramento_baas_host,        'barramento.baas.globoi.com'
+set :barramento_backstage_host,        'barramento.baas.globoi.com'
 set :filer_host,                  'riofb01a'
 set :redis_host,                  'redis.api.semantica.globoi.com'
 set :syslog_host,                 'syslog.tcp.glog.globoi.com'

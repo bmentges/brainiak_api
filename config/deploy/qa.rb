@@ -3,7 +3,7 @@ role :filer,                'filer.qa.globoi.com'
 
 # Hosts
 set :virtuoso_host,         'qa.virtuoso.globoi.com'
-set :barramento_baas_host,  'barramento.baas.qa.globoi.com'
+set :barramento_backstage_host,  'barramento.baas.qa.globoi.com'
 set :redis_host,            'redis.api.semantica.qa.globoi.com'
 set :syslog_host,           'syslog.tcp.glog.qa.globoi.com'
 set :filer_host,            'riofd07a'

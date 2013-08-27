@@ -2,7 +2,7 @@ role :be,                         'cittavld45.globoi.com'
 role :filer,                      'filer.qa01.globoi.com'
 
 # Hosts
-set :barramento_baas_host,        'barramento.baas.qa01.globoi.com'
+set :barramento_backstage_host,        'barramento.baas.qa01.globoi.com'
 set :filer_host,                  'riofd06'
 set :redis_host,                  'redis.qa01.globoi.com'
 set :syslog_host,                 'syslog.tcp.glog.qa01.globoi.com'

@@ -3,7 +3,7 @@ role :be,                         'api-semantica-be01.vb.qa02.globoi.com'
 role :filer,                      'filer.qa02.globoi.com'
 
 # Hosts
-set :barramento_backstage_host,        'barramento.backstage.qa02.globoi.com'
+set :barramento_backstage_host,   'barramento.backstage.qa02.globoi.com'
 set :filer_host,                  'ho.riofd02'
 set :redis_host,                  'redis.qa02.globoi.com'
 set :syslog_host,                 'syslog.tcp.glog.qa02.globoi.com'

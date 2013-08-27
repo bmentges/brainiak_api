@@ -30,7 +30,8 @@ def assemble_list_json(query_params, query_result_dict):
     json_dict = {
         '_base_url': remove_last_slash(query_params.base_url),
         'items': items_list,
-        '@context': context_section
+        '@context': context_section,
+        '@id': query_params['graph_uri']
     }
 
     def calculate_total_items():

@@ -6,7 +6,7 @@ from urlparse import unquote, parse_qs
 from tornado.web import HTTPError
 
 from brainiak import settings
-from brainiak.prefixes import expand_uri, safe_slug_to_prefix
+from brainiak.prefixes import expand_uri, safe_slug_to_prefix, extract_prefix
 from brainiak.utils.sparql import PATTERN_O, PATTERN_P
 from brainiak.utils.config_parser import ConfigParserNoSectionError, parse_section
 
@@ -176,7 +176,7 @@ class ParamDict(dict):
         Changes in *_prefix should reflect in *_uri.
         Changes in expand_uri should reflect in expand_uri_values and expand_uri_keys.
         """
-        if key  == 'graph_uri':
+        if key == 'graph_uri':
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
 
         elif key == 'class_uri':
@@ -203,6 +203,10 @@ class ParamDict(dict):
         elif key == "instance_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
             dict.__setitem__(self, "instance_uri", "{0}{1}".format(self["instance_prefix"], self["instance_id"]))
+
+        elif key == "instance_uri":
+            dict.__setitem__(self, key, value)
+            dict.__setitem__(self, "instance_prefix", extract_prefix(value))
 
         elif key == "expand_uri":
             dict.__setitem__(self, key, value)

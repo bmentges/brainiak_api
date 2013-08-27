@@ -2,7 +2,7 @@
 #role :filer,                      ''
 
 # Hosts
-set :barramento_baas_host,        'localhost'
+set :barramento_backstage_host,        'localhost'
 set :filer_host,                  ''
 set :redis_host,                  'localhost'
 set :syslog_host,                 ''

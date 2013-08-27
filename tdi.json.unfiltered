@@ -10,7 +10,7 @@
       "rubygems.globoi.com"         :   { "port": 80 },
       "<%=syslog_host%>"            :   { "port": 514 },
       "<%=filer_host%>"             :   { "port": [111,2049] },
-      "<%=barramento_baas_host%>"   :   { "port": [61613,61616] },
+      "<%=barramento_backstage_host%>"   :   { "port": [61613,61616] },
       "<%=redis_host%>"             :   { "port": <%=redis_port%> }
     },
     "file": {

@@ -78,6 +78,26 @@ class ParamsTestCase(TestCase):
         self.assertEquals("context_name", params.get("context_name"))
         self.assertEquals("class_name", params.get("class_name"))
 
+    def test_instance_prefix_is_created_from_instance_id(self):
+        handler = MockHandler()
+        params = {
+            'class_uri': None,
+            'instance_prefix': None,
+            'class_name': u'Activity',
+            'class_prefix': None,
+            'instance_id': u'AdministrationAndSupportService',
+            'context_name': u'organization',
+            'graph_uri': None,
+            'instance_uri': None
+        }
+        response = ParamDict(handler, **params)
+
+        self.assertEqual(response['class_uri'], 'http://semantica.globo.com/organization/Activity')
+        self.assertEqual(response['instance_prefix'], 'http://semantica.globo.com/organization/')
+        self.assertEqual(response['class_prefix'], 'http://semantica.globo.com/organization/')
+        self.assertEqual(response['instance_id'], u'AdministrationAndSupportService')
+        self.assertEqual(response['instance_uri'], 'http://semantica.globo.com/organization/Activity/AdministrationAndSupportService')
+
     def test_arguments_o(self):
         handler = MockHandler(querystring="o=Conan%20Doyle&o=Agatha%20Christie")
         param_dict = params.ParamDict(handler, o="Aldous Huxley")

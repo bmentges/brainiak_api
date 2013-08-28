@@ -157,7 +157,11 @@ def normalize_uri(uri, mode, shorten_uri_function=shorten_uri):
 
 def expand_all_uris_recursively(instance, ctx=_MAP_SLUG_TO_PREFIX):
     if isinstance(instance, basestring):
-        return expand_uri(instance, ctx)
+        try:
+            response = expand_uri(instance, ctx)
+        except PrefixError:
+            response = instance
+        return response
     elif isinstance(instance, list):
         return [expand_all_uris_recursively(i, ctx) for i in instance]
     elif isinstance(instance, dict):

@@ -16,8 +16,8 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.1.0"
-mercury_version = "1.2.0"
+brainiak_version = "2.2.0"
+mercury_version = "1.2.2"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",
@@ -113,7 +113,7 @@ class BrainiakChecker(Checker):
         sys.stdout.write("\ncheck_redis - pass")
 
     def check_root(self):
-        response = self.get()
+        response = self.get("?per_page=100")
         nose.assert_equal(response.status_code, 200)
         body = json.loads(response.text)
         expected_piece = {"resource_id": "upper", "@id": "http://semantica.globo.com/upper/", "title": "upper"}

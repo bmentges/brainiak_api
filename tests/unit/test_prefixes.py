@@ -204,3 +204,8 @@ class ExpansionTestCase(unittest.TestCase):
     def test_normalize_recursively_with_invalid_type(self):
         d = {'invalid': 3}
         self.assertDictEqual(expand_all_uris_recursively(d), d)
+
+    def test_real_resource(self):
+        input_data = {'rdfs:comment': u'Some kind of monster.'}
+        expected_output = {'http://www.w3.org/2000/01/rdf-schema#comment': u'Some kind of monster.'}
+        self.assertDictEqual(expand_all_uris_recursively(input_data), expected_output)

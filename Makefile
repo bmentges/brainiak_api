@@ -52,8 +52,8 @@ release:
 	@# Usage: make release type=major message="Integration to ActiveMQ" (other options: minor or micros)
 	@echo "Tagging new release..."
 	@git fetch --tags
-	@PYTHONPATH="$(BRAINIAK_CODE):$(NEW_PYTHONPATH)" python -c "from brainiak.utils.git import build_next_release_string; print build_next_release_string('$(type)')" > brainiak/version.py
-	@PYTHONPATH="$(BRAINIAK_CODE):$(NEW_PYTHONPATH)" git tag `python -c "from brainiak.utils.git import compute_next_git_tag; print compute_next_git_tag('$(type)')"` -m "$(message)"
+	@cd src; python -c "from brainiak.utils.git import build_next_release_string; print build_next_release_string('$(type)')" > brainiak/version.py
+	@cd src; git tag `python -c "from brainiak.utils.git import compute_next_git_tag; print compute_next_git_tag('$(type)')"` -m "$(message)"
 
 run: build_settings
 	@echo "Brainiak is alive!"
@@ -73,7 +73,7 @@ test-nginx: build_settings
 supervisor: build_settings
 	PYTHONPATH="$(NEW_PYTHONPATH)" supervisord -c config/local/supervisord.conf -n -edebug
 
-docs:
+docs: clean
 	@echo "Compiling and opening documentation..."
 	@cd $(HOME_BRAINIAK)/docs; make html
 

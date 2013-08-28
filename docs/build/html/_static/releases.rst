@@ -1,17 +1,37 @@
-Future Releases
-===============
+Releases
+========
 
-Version 2.2.0 - 2013/??/??
+Version 2.2.0 - 2013/08/29
 --------------------------
 
 New features
 ____________
+ - Suggest resource (_suggest) with pagination (uses ElasticSearch)
+ - Support to multiple triplestore endpoints
 
- - Support to multiple triplestore endpoints.
+Refactor
+________
+ - Add @id to context and collection
+ - Rename hosts barramento.baas -> barramento.backstage
+ - Refactor error messages to adhere to CPM2
+ - PUT and POST <instance> response do not have body anymore
+ - Removed transactional behavior of POST <instance> regarding ActiveMQ
+ - Fix inconsistent resource_id in <instance> JSON Schema
+ - Refactor rel=self to always represent base_url for other relative links
+ - Root/json_schema is now cached
+
+Fixes
+_____
+ - Fix at GET <instance>: instance_prefix == null
+ - Fix at PUT <instance> expansion URI not being applied to string literals
+ - Fix double unicode escaping, so we can use JSON Browser
+ - Fix collection pagination JSON Schema rels, so they work when filters "p" and "o" are used. For this purpose, collections now have "previous_args", "next_args", "first_args" and "last_args".
 
 
-Releases
-========
+Developers' notes
+_________________
+ - Add automate tests to check compliance to JSON-Schema Version 3
+ - query_sparql interface was refactored
 
 
 Version 2.1.0 - 2013/08/01

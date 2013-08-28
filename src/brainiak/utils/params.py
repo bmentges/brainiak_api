@@ -195,6 +195,7 @@ class ParamDict(dict):
         elif key == "instance_id":
             dict.__setitem__(self, key, value)
             dict.__setitem__(self, "instance_uri", "{0}{1}/{2}".format(self["class_prefix"], self["class_name"], self["instance_id"]))
+            dict.__setitem__(self, "instance_prefix", extract_prefix(self["instance_uri"]))
 
         elif key == "class_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
@@ -239,7 +240,7 @@ class ParamDict(dict):
 
         self._set_if_optional("class_prefix", self.optionals.get("graph_uri", ''))
 
-        class_uri = self.optionals.get("class_uri", "")
+        class_uri = self.optionals.get("class_uri")
         if class_uri is not None:
             self._set_if_optional("instance_prefix", class_uri + "/")
 

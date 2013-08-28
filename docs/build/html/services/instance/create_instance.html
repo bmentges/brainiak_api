@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Create a Instance &mdash; brainiak dev_10222 | cf0c4721d1e86 documentation</title>
+    <title>Create a Instance &mdash; brainiak 2.2.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     'dev_10222 | cf0c4721d1e86',
+        VERSION:     '2.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak dev_10222 | cf0c4721d1e86 documentation" href="../../index.html" />
+    <link rel="top" title="brainiak 2.2.0 documentation" href="../../index.html" />
     <link rel="up" title="Managing Instances" href="instance.html" />
     <link rel="next" title="List of Instances" href="list_instance.html" />
     <link rel="prev" title="Managing Instances" href="instance.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>dev_10222 | cf0c4721d1e86</b></span>
+      <span class="navbar-text pull-left"><b>2.2.0</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -65,11 +65,8 @@
      data-toggle="dropdown">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
     ><ul>
-<li class="toctree-l1"><a class="reference internal" href="../../releases.html">Future Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-0-2013">Version 2.2.0 - 2013/??/??</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../releases.html#releases">Releases</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../releases.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-0-2013-08-29">Version 2.2.0 - 2013/08/29</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
@@ -166,11 +163,11 @@
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 201 Created
 Server: nginx
-Date: Fri, 23 Aug 2013 13:13:52 GMT
+Date: Wed, 28 Aug 2013 18:37:05 GMT
 Content-Type: application/json; profile=http://api.semantica.dev.globoi.com/place/City/_schema_list
 Content-Length: 0
 Connection: keep-alive
-Location: http://api.semantica.dev.globoi.com/place/City/90522bf8-91d4-4330-9046-33bd27ee5920
+Location: http://api.semantica.dev.globoi.com/place/City/b2906002-2827-4abc-8f17-3e51c2f60221
 Access-Control-Allow-Origin: *
 </pre></div>
 </div>
@@ -225,7 +222,9 @@ a instance from the API. For retrieving it, use the retrieve instance primitive 
 <p>If there are unknown parameters in the request, the response status code
 is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;error&quot;: &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang.&quot;
+    &quot;errors&quot;: [
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang.&quot;
+    ]
 }
 </pre></div>
 </div>
@@ -239,7 +238,9 @@ is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 <p><strong>Status 404</strong></p>
 <p>If the class does not exist, the response status code is 404.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;error&quot;: &quot;HTTP error: 404\nClass Person doesn&#39;t exist in context place.&quot;
+    &quot;errors&quot;: [
+        &quot;HTTP error: 404\nClass Person doesn&#39;t exist in context place.&quot;
+    ]
 }
 </pre></div>
 </div>

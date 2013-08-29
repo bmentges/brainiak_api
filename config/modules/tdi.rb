@@ -10,7 +10,6 @@ namespace :tdi do
 
     task :be, :roles => :be do
         utils.askpass("puppet")
-        run("sudo /opt/local/bin/puppet-setup --tags tdi")
         tdi_permission = capture("sudo -l | grep /opt/local/bin/tdi -q && echo true || echo false").chomp
         if tdi_permission == "true"
             deploy.filter

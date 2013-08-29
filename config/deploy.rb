@@ -15,6 +15,9 @@ namespace :deploy do
     end
 
     task :hacks do
+
+        utils.askpass("busca")
+
         update_code_task = find_task('update_code')
         update_code_task.options[:roles] = :filer
 

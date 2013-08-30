@@ -16,8 +16,8 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.2.0"
-mercury_version = "1.2.2"
+brainiak_version = "2.2.2"
+mercury_version = "1.2.3"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",
@@ -200,6 +200,7 @@ class MercuryChecker(Checker):
 
     def __init__(self, environ):
         Checker.__init__(self, environ)
+        self.proxies = {}
         self.endpoint = mercury_endpoint.get(environ)
 
     def check_version(self):

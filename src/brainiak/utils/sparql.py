@@ -48,6 +48,10 @@ def is_literal(term):
     return (not term.startswith("?")) and (not ":" in term)
 
 
+def is_url(term):
+    return term.startswith("http")
+
+
 def has_lang(literal):
     return literal[-3:].startswith("@")
 

@@ -75,6 +75,7 @@ class Query(object):
             ("rdfs:label", "?label")
         ]
         variable_index = 0
+        union_tuples = []
         for predicate, object_, index in self.po_tuples:
             if self.should_add_predicate_and_object(predicate, object_):
                 predicate = normalize_term(predicate, self.params["lang"])
@@ -84,8 +85,16 @@ class Query(object):
                     variable_name = self.next_variable(variable_index)
                     tuples.append((predicate, variable_name))
                 else:
-                    object_ = normalize_term(object_, self.params["lang"])
-                    tuples.append((predicate, object_))
+                    if object_.startswith("http"):
+                        uri_or_string = {
+                            "uri": normalize_term(object_, self.params["lang"]),
+                             "string": '"%s"' % object_,
+                             "predicate": predicate
+                        }
+                        union_tuples.append(uri_or_string)
+                    else:
+                        object_ = normalize_term(object_, self.params["lang"])
+                        tuples.append((predicate, object_))
 
         sort_object = self.get_sort_variable()
         sort_sufix = ""
@@ -98,9 +107,11 @@ class Query(object):
 
         tuples_strings = ["%s %s" % each_tuple for each_tuple in tuples]
         statement = "?subject " + " ;\n".join(tuples_strings) + " .\n" + sort_sufix
+        union_pattern = "{?subject %(predicate)s %(string)s} UNION {?subject %(predicate)s %(uri)s} ."
+        union_statements = "\n".join([union_pattern % data for data in union_tuples])
         statements = statement % self.params
 
-        return 'GRAPH ?g { %s }' % statements
+        return 'GRAPH ?g { %s %s }' % (statements, union_statements)
 
     @property
     def filter(self):

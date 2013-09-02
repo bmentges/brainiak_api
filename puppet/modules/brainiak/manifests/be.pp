@@ -1,64 +1,56 @@
 # = Class: brainiak::be
 #
-# TODO: Cria o ambiente API para o BRAINIAK de SEMANTICA
-#       A missao dele eh receber os request HTTP e conversar com o virtuoso. Sera uma framework
-#       OBS: Ele utiliza o nginx do modulo api_semantica. Com isso eu forco a importacao desse modulos
+# Cria o ambiente API para o Brainiak de Semântica.
+# É uma API REST que serve como camada de abstração para acesso ao Virtuoso.
 #
-# Author: Jefferson Braga (jefferson@corp.globo.com) e TimeInfra
+# Author: Jefferson Braga <jefferson@corp.globo.com>, Diogo Kiss <diogokiss@corp.globo.com> e Marcelo Monteiro <m.monteiro@corp.globo.com>.
 #
 # == Parameters:
 #
-#   Nenhum parametro eh necessario para esta class.
+#   Nenhum parametro é necessário para esta classe.
 #
 # == Actions:
 #
-#   Criar toda a environment para o projeto
-#   - Instala RPMs
-#   - Criar usuarios, diretorios, links, initscripts e Alias
-#   - Monta filer
+#   Implementa toda a configuração de ambiente necessária ao projeto.
+#   - Instalar RPMs.
+#   - Criar usuarios, diretorios, links, initscripts e aliases.
+#   - Montar filer.
 #
 # == Sample Usage:
 #
 #   include brainiak::be
 #
 
-#
-# Aqui eu crio apenas o virtualenv com seus requirements específicos
-#
-# O gunicorn e nginx estão definidos no módulo api_semantica
-#
+class brainiak::be inherits brainiak::params {
 
-class brainiak::be {
+    include supso::dir_opt
 
-  include supso::dir_opt
-  include api_semantica::defs
+    include supso::users
+    realize Supso::Users::Create['suporte']
+    realize Supso::Users::Create['watcher']
+    realize Supso::Users::Create[$usuario]
 
-  #$projeto = 'brainiak'
-  $projeto = 'api_semantica'
-  $usuario = $api_semantica::defs::usuario
-  #$basedir = "${supso::dir_opt::dir}/${projeto}"
-  $basedir = "${supso::dir_opt::dir}/${projeto}/brainiak"
-  $python_virtualenv_dir  = "${basedir}/virtualenv"
-  $git_projeto            = 'http://ngit.globoi.com/brainiak'
+    include supso::ldap
+    realize Supso::Ldap::Projeto[$projeto]
 
-  include supso::ldap
-  realize Supso::Ldap::Projeto[$projeto]
+    include supso::filer
+    Supso::Filer::Mount <| projeto == 'brainiak' and tipo == 'dbpasswd' |>
 
-  # Filer
-  include supso::filer
-  Supso::Filer::Mount <| projeto == 'brainiak' and tipo == 'dbpasswd' |>
+    virtualenv { $virtualenv_dir:
+        ensure              => present,
+        projeto             => $projeto,
+        usuario             => $usuario,
+        grupo               => $grupo,
+        python_prefix       => '/opt/generic/python27',
+        requirements_file   => 'requirements.txt',
+        file_search_dir     => $projeto,
+        require             => Package['python27-virtualenv_generic_globo'],
+    }
 
-  virtualenv { $python_virtualenv_dir:
-    ensure              => present,
-    projeto             => $projeto,
-    usuario             => $usuario,
-    grupo               => $usuario,
-    use_nodeps          => false, ## A equipe prefere nao usar.
-    python_prefix       => '/opt/generic/python27',
-    requirements_file   => "requirements.txt",
-    file_search_dir     => "brainiak",
-    require             => Package['python27-virtualenv_generic_globo'],
-  }
+    # TODO: GUnicor
+    # TODO: Nginx
+    # TODO: Checar expurgo e rotacionamento de logs
+
 }
 
 # EOF

@@ -4,7 +4,7 @@ set :default_stage,         "dev"
 set :application,           "brainiak"
 set :projeto,               "#{application}"
 set :user,                  "brainiak"
-set :deploy_to,             "/mnt/projetos/deploy-be/api_semantica/#{projeto}/app"
+set :deploy_to,             "/mnt/projetos/deploy-be/#{projeto}/app"
 set :docs_html,             "#{deploy_to}/current/docs"
 set :use_sudo,              false
 set :via,                   :scp
@@ -43,7 +43,7 @@ namespace :deploy do
 
     task :hacks do
 
-        utils.askpass("busca")
+        utils.askpass("brainiak")
 
         update_code_task = find_task('update_code')
         update_code_task.options[:roles] = :filer
@@ -67,7 +67,7 @@ namespace :deploy do
         puppet.all
 
         dirs = [deploy_to, releases_path, shared_path]
-        utils.askpass("busca")
+        utils.askpass("brainiak")
         run "#{try_sudo} mkdir -p #{dirs.join(' ')} && #{try_sudo} chmod g+w #{dirs.join(' ')}", :roles => :filer
     end
 
@@ -95,12 +95,12 @@ namespace :deploy do
             cd ..                       &&
             git checkout -- .
         EOF
-        utils.askpass("busca")
+        utils.askpass("brainiak")
         put File.read("docs.tar.gz"), "/tmp/docs.tar.gz", :via => :scp
         run_once <<-EOF
             cd /tmp && tar xzf docs.tar.gz                                          &&
             cd /tmp/docs                                                            &&
-            export PATH="/opt/api_semantica/brainiak/virtualenv/bin:$PATH"          &&
+            export PATH="/opt/brainiak/virtualenv/bin:$PATH"          &&
             export PYTHONPATH="#{deploy_to}/current:$PYTHONPATH"                    &&
             make html                                                               &&
             rsync -ac --delay-updates --stats /tmp/docs/build/html/ #{docs_html}/   &&

@@ -118,7 +118,6 @@ class Query(object):
             if is_literal(object_) or is_url(object_):
                 variable_index += 1
                 variable_name = self.next_variable(variable_index)
-                translatables.append(variable_name)
                 literal_filter = 'FILTER(str({0}) = "{1}") .'.format(variable_name, object_)
                 if literal_filter not in filter_list:
                     filter_list.append(literal_filter)

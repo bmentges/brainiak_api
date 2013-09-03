@@ -39,6 +39,10 @@ class brainiak::be inherits brainiak::params {
 
     include supso::filer
     Supso::Filer::Mount <| projeto == 'brainiak' and tipo == 'dbpasswd' |>
+    Supso::Filer::Mount <| projeto == 'brainiak' and tipo == 'be' |>
+
+    include brainiak::dirs
+    include brainiak::rpms
 
     virtualenv { $virtualenv_dir:
         ensure              => present,
@@ -73,7 +77,8 @@ class brainiak::be inherits brainiak::params {
         require                 => Virtualenv[$virtualenv_dir]
     }
 
-    infra::nginx {
+    include infra::nginx::vars
+    infra::nginx { "Nginx - Brainiak":
         projeto                 => $projeto,
         instancia               => 'be',
         rpm                     => 'nginx_generic_globo',

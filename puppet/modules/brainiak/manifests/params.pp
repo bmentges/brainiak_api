@@ -19,11 +19,16 @@
 
 class brainiak::params {
 
-    $projeto            = 'brainiak'
-    $usuario            = 'brainiak'
-    $grupo              = 'brainiak'
-    $projeto_home_dir   = "${supso::dir_opt::dir}/${projeto}"
-    $virtualenv_dir     = "${projeto_home_dir}/virtualenv"
-    $git_projeto        = 'http://ngit.globoi.com/brainiak'
+    $projeto                = 'brainiak'
+    $usuario                = 'brainiak'
+    $grupo                  = 'brainiak'
+    $projeto_home_dir       = "${supso::dir_opt::dir}/${projeto}"
+    $virtualenv_dir         = "${projeto_home_dir}/virtualenv"
+    $projeto_deploybe_dir   = "/mnt/projetos/deploy-be/${projeto}"
+    $projeto_logsunix_dir   = $::zone ? { prod => "/mnt/logsunix/${projeto}", default => 'purge' }
+
+    $gunicorn_num_processes = $::zone ? { /(prod|qa2)/    => 5, default => 2 }
+    $gunicorn_loglevel      = $::zone ? { /(prod|qa2)/ => 'INFO', default => 'DEBUG' }
+    $gunicorn_log_keep      = $::zone ? { prod => 7, default => 1 }
     
 }

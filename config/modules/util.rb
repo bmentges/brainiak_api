@@ -139,7 +139,7 @@ namespace :utils do
     end
 
     task :pdb_hunter do
-        run_local "./scripts/pdb_hunter.sh ."
+        run_local "./tools/pdb_hunter.sh ."
     end
 
     task :submodules do

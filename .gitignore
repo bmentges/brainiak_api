@@ -49,3 +49,4 @@ dump.rdb
 
 # Brainiak
 src/brainiak/settings.py
+config/gunicorn-api_semantica-be-logging.config

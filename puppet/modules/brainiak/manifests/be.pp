@@ -51,34 +51,43 @@ class brainiak::be inherits brainiak::params {
         require             => Package['python27-virtualenv_generic_globo'],
     }
 
-    # TODO: GUnicorn  
     infra::gunicorn { "GUnicorn - Brainiak":
-        projeto             => $projeto,
-        instancia           => 'be',
-        dir                 => "${projeto_home_dir}/gunicorn-be",
-        projeto_usuario     => $usuario,
-        projeto_grupo       => $grupo,
-        instancia_usuario   => $usuario,
-        instancia_grupo     => $grupo,
-        app_dir             => "${projeto_deploybe_dir}/app/current",
-        python_prefix       => $virtualenv_dir,
-        log_dest_dir        => $projeto_logsunix_dir,
-        log_keep            => $gunicorn_log_keep,
-        gunicorn_bin        => 'gunicorn',
-        gunicorn_processes  => $gunicorn_num_processes,
-        gunicorn_loglevel   => $gunicorn_loglevel,
-        gunicorn_debug      => $gunicorn_debug,
+        projeto                 => $projeto,
+        instancia               => 'be',
+        dir                     => "${projeto_home_dir}/gunicorn-be",
+        projeto_usuario         => $usuario,
+        projeto_grupo           => $grupo,
+        instancia_usuario       => $usuario,
+        instancia_grupo         => $grupo,
+        app_dir                 => "${projeto_deploybe_dir}/app/current",
+        python_prefix           => $virtualenv_dir,
+        log_dest_dir            => $projeto_logsunix_dir,
+        log_keep                => $log_keep,
+        gunicorn_bin            => 'gunicorn',
+        gunicorn_processes      => $gunicorn_num_processes,
+        gunicorn_loglevel       => $gunicorn_loglevel,
+        gunicorn_debug          => $gunicorn_debug,
         gunicorn_cmd_parameters => '-k tornado brainiak.server:application',
-        settings_file       => 'settings',
-        dbpasswd            => true,
-        use_mount_virtual   => $projeto,
-        gunicorn_dbpasswd_conf => $dbpasswd_conf_file,
-        sudoers             => $api_semantica::defs::sudoers,
-        autostart           => true,
-        require             => Virtualenv[$python_virtualenv_dir]
+        dbpasswd                => true,
+        # gunicorn_dbpasswd_conf  => $dbpasswd_conf_file,
+        require                 => Virtualenv[$virtualenv_dir]
+    }
+
+    infra::nginx {
+        projeto                 => $projeto,
+        instancia               => 'be',
+        rpm                     => 'nginx_generic_globo',
+        rpm_dir                 => '/opt/generic/nginx',
+        rpm_versao              => '1.2.8-0.el5',
+        instancia_usuario       => 'nobody',
+        instancia_grupo         => 'nobody',
+        projeto_usuario         => $usuario,
+        projeto_grupo           => $grupo,
+        log_dest_dir            => $projeto_logsunix_dir,
+        log_filer               => "riofb18a:/vol/vol20/logsunix/${projeto}", # TODO: Criar filer
+        log_keep                => $log_keep
     }
     
-    # TODO: Nginx
     # TODO: Checar expurgo e rotacionamento de logs
 
 }

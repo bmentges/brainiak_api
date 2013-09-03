@@ -45,6 +45,7 @@ nosetests.xml
 dump.rdb
 
 .DS_Store
+.project
 
 # Brainiak
 src/brainiak/settings.py

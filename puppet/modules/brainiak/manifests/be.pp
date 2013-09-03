@@ -43,6 +43,7 @@ class brainiak::be inherits brainiak::params {
 
     include brainiak::dirs
     include brainiak::rpms
+    include tdi
 
     virtualenv { $virtualenv_dir:
         ensure              => present,

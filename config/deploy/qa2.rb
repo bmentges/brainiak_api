@@ -1,5 +1,4 @@
-role :be,                         'api-semantica-be01.vb.qa02.globoi.com'
-#role :be,                         'api-semantica-be01.vb.qa02.globoi.com', 'api-semantica-be02.vb.qa02.globoi.com'
+role :be,                         'brainiak-be01.vb.qa02.globoi.com'
 role :filer,                      'filer.qa02.globoi.com'
 
 # Hosts

@@ -13,6 +13,7 @@ set :scm,                   :none
 set :deploy_via,            :copy
 set :copy_dir,              "/tmp"
 set :keep_releases,         4
+set :projeto_log_dir,       "/opt/logs/#{projeto}/#{projeto}.log"
 set :copy_exclude,          [
                                 "*.pyc",
                                 "**/*.pyc",

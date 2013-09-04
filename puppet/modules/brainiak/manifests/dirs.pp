@@ -1,7 +1,7 @@
 # = Class: brainiak::dirs
 #
 #   Esta classe contém as definições de diretórios e suas respectivas permissões.
-# 
+#
 # == Authors
 #
 #   Diogo Kiss <diogokiss@corp.globo.com>
@@ -28,7 +28,7 @@ class brainiak::dirs {
         ensure  => directory,
         owner   => 'root',
         group   => 'root',
-        mode    => 0755,
+        mode    => '0755',
         require => File["${supso::dir_opt::dir}/logs"]
     }
 
@@ -36,14 +36,14 @@ class brainiak::dirs {
         ensure  => directory,
         owner   => $brainiak::params::usuario,
         group   => $brainiak::params::grupo,
-        mode    => 0755
+        mode    => '0755'
     }
 
     file { $brainiak::params::nginx_home_dir:
         ensure  => directory,
         owner   => root,
         group   => root,
-        mode    => 0755,
+        mode    => '0755',
         require => File[$brainiak::params::projeto_home_dir]
     }
 
@@ -51,7 +51,7 @@ class brainiak::dirs {
         ensure  => directory,
         owner   => nobody,
         group   => nobody,
-        mode    => 0755,
+        mode    => '0755',
         require => File[$brainiak::params::nginx_home_dir]
     }
 
@@ -59,7 +59,7 @@ class brainiak::dirs {
         ensure  => directory,
         owner   => nobody,
         group   => nobody,
-        mode    => 0755,
+        mode    => '0755',
         require => File[$brainiak::params::nginx_home_dir]
     }
 
@@ -67,8 +67,8 @@ class brainiak::dirs {
         ensure  => directory,
         owner   => nobody,
         group   => nobody,
-        mode    => 0755,
+        mode    => '0755',
         require => File[$brainiak::params::nginx_home_dir]
     }
-    
+
 }

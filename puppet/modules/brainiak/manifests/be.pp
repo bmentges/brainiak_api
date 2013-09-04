@@ -32,10 +32,10 @@ class brainiak::be inherits brainiak::params {
     include supso::users
     realize Supso::Users::Create['suporte']
     realize Supso::Users::Create['watcher']
-    realize Supso::Users::Create[$usuario]
+    realize Supso::Users::Create[$brainiak::params::usuario]
 
     include supso::ldap
-    realize Supso::Ldap::Projeto[$projeto]
+    realize Supso::Ldap::Projeto[$brainiak::params::projeto]
 
     include supso::filer
     Supso::Filer::Mount <| projeto == 'brainiak' and tipo == 'dbpasswd' |>
@@ -45,55 +45,54 @@ class brainiak::be inherits brainiak::params {
     include brainiak::rpms
     include tdi
 
-    virtualenv { $virtualenv_dir:
+    virtualenv { $brainiak::params::virtualenv_dir:
         ensure              => present,
-        projeto             => $projeto,
-        usuario             => $usuario,
-        grupo               => $grupo,
+        projeto             => $brainiak::params::projeto,
+        usuario             => $brainiak::params::usuario,
+        grupo               => $brainiak::params::grupo,
         python_prefix       => '/opt/generic/python27',
         requirements_file   => 'requirements.txt',
-        file_search_dir     => $projeto,
+        file_search_dir     => $brainiak::params::projeto,
         require             => Package['python27-virtualenv_generic_globo'],
     }
 
-    infra::gunicorn { "GUnicorn - Brainiak":
-        projeto                 => $projeto,
+    infra::gunicorn { 'GUnicorn - Brainiak':
+        projeto                 => $brainiak::params::projeto,
         instancia               => 'be',
-        dir                     => "${projeto_home_dir}/gunicorn-be",
-        projeto_usuario         => $usuario,
-        projeto_grupo           => $grupo,
-        instancia_usuario       => $usuario,
-        instancia_grupo         => $grupo,
-        app_dir                 => "${projeto_deploybe_dir}/app/current",
-        python_prefix           => $virtualenv_dir,
-        log_dest_dir            => $projeto_logsunix_dir,
-        log_keep                => $log_keep,
+        dir                     => "${brainiak::params::projeto_home_dir}/gunicorn-be",
+        projeto_usuario         => $brainiak::params::usuario,
+        projeto_grupo           => $brainiak::params::grupo,
+        instancia_usuario       => $brainiak::params::usuario,
+        instancia_grupo         => $brainiak::params::grupo,
+        app_dir                 => "${brainiak::params::projeto_deploybe_dir}/app/current",
+        python_prefix           => $brainiak::params::virtualenv_dir,
+        log_dest_dir            => $brainiak::params::projeto_logsunix_dir,
+        log_keep                => $brainiak::params::log_keep,
         gunicorn_bin            => 'gunicorn',
-        gunicorn_processes      => $gunicorn_num_processes,
-        gunicorn_loglevel       => $gunicorn_loglevel,
-        gunicorn_debug          => $gunicorn_debug,
-        settings_file           => "${projeto}/settings",
+        gunicorn_processes      => $brainiak::params::gunicorn_num_processes,
+        gunicorn_loglevel       => $brainiak::params::gunicorn_loglevel,
+        gunicorn_debug          => $brainiak::params::gunicorn_debug,
+        settings_file           => "${brainiak::params::projeto}/settings",
         gunicorn_cmd_parameters => '-k tornado brainiak.server:application',
-        # gunicorn_dbpasswd_conf  => $dbpasswd_conf_file,
-        require                 => Virtualenv[$virtualenv_dir]
+        require                 => Virtualenv[$brainiak::params::virtualenv_dir]
     }
 
     include infra::nginx::vars
-    infra::nginx { "Nginx - Brainiak":
-        projeto                 => $projeto,
+    infra::nginx { 'Nginx - Brainiak':
+        projeto                 => $brainiak::params::projeto,
         instancia               => 'be',
         rpm                     => 'nginx_generic_globo',
         rpm_dir                 => '/opt/generic/nginx',
         rpm_versao              => '1.2.8-0.el5',
         instancia_usuario       => 'nobody',
         instancia_grupo         => 'nobody',
-        projeto_usuario         => $usuario,
-        projeto_grupo           => $grupo,
-        log_dest_dir            => $projeto_logsunix_dir,
-        log_filer               => "riofb18a:/vol/vol20/logsunix/${projeto}",
-        log_keep                => $log_keep
+        projeto_usuario         => $brainiak::params::usuario,
+        projeto_grupo           => $brainiak::params::grupo,
+        log_dest_dir            => $brainiak::params::projeto_logsunix_dir,
+        log_filer               => "riofb18a:/vol/vol20/logsunix/${brainiak::params::projeto}",
+        log_keep                => $brainiak::params::log_keep
     }
-    
+
 }
 
 # EOF

@@ -39,7 +39,7 @@ namespace :deploy do
     task :unfilter do
         Dir["**/*.unfiltered"].each do |file_in|
             puts "Removendo arquivo '" + file_in.chomp(".unfiltered") + "'..."
-            run_local "rm " + file_in.chomp(".unfiltered")
+            run_local "rm -f" + file_in.chomp(".unfiltered")
         end
     end
 

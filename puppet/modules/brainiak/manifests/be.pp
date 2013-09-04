@@ -72,7 +72,7 @@ class brainiak::be inherits brainiak::params {
         gunicorn_processes      => $brainiak::params::gunicorn_num_processes,
         gunicorn_loglevel       => $brainiak::params::gunicorn_loglevel,
         gunicorn_debug          => $brainiak::params::gunicorn_debug,
-        gunicorn_bind_port      => $brainiak::params::gunicorn_bind_port,
+        gunicorn_bind_porta     => $brainiak::params::gunicorn_bind_port,
         settings_file           => "${brainiak::params::projeto}/settings",
         gunicorn_cmd_parameters => '-k tornado brainiak.server:application',
         require                 => Virtualenv[$brainiak::params::virtualenv_dir]

@@ -26,6 +26,8 @@ class brainiak::params {
     $grupo                      = $projeto
     $projeto_host               = "${projeto}.semantica.${supso::vars::dns_interno}"
     $projeto_home_dir           = "${supso::dir_opt::dir}/${projeto}"
+    $projeto_log_dir            = "${supso::dir_opt::dir}/logs/${projeto}"
+    $app_log_dir                = "${projeto_log_dir}/app"
     $projeto_deploybe_dir       = "/mnt/projetos/deploy-be/${projeto}"
     $virtualenv_dir             = "${projeto_home_dir}/virtualenv"
     $projeto_logsunix_dir       = $::zone ? { prod => "/mnt/logsunix/${projeto}", default => 'purge' }

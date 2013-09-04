@@ -22,6 +22,24 @@
 
 class brainiak::dirs {
 
+    include supso::dir_opt_logs
+
+    file { $brainiak::params::projeto_log_dir:
+        ensure  => directory,
+        owner   => 'root',
+        group   => 'root',
+        mode    => 0755,
+        require => File["${supso::dir_opt::dir}/logs"]
+    }
+
+    file { $brainiak::params::app_log_dir:
+        ensure  => directory,
+        owner   => $brainiak::params::usuario,
+        group   => $brainiak::params::grupo,
+        mode    => 0755,
+        require => File[$brainiak::params::projeto_log_dir]
+    }
+
     file { $brainiak::params::projeto_home_dir:
         ensure  => directory,
         owner   => $brainiak::params::usuario,

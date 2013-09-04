@@ -114,6 +114,7 @@ namespace :deploy do
     end
 
     task :restart, :roles => :be do
+        run "sudo /etc/init.d/brainiak-nginx-be restart"
         run "sudo /etc/init.d/brainiak-gunicorn-be restart"
     end
 

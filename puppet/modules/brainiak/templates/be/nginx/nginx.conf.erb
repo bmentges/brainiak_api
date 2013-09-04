@@ -81,6 +81,11 @@ http {
 
         server_name <%=scope.lookupvar('brainiak::params::projeto_host')%>;
 
+        # Doc
+        location /docs {
+            alias <%=scope.lookupvar('brainiak::params::projeto_deploybe_dir')%>/app/current/docs;
+        }
+
         # Rotas dinâmicas
         location / {
             proxy_pass  http://localhost:8090;

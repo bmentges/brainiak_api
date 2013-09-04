@@ -23,7 +23,8 @@ set :copy_exclude,          [
                                 "**/.gitignore",
                                 "nosetests.xml",
                                 "**/.coverage",
-                                "**/.idea"
+                                "**/.idea",
+                                "**/*.unfiltered"
                              ]
 
 namespace :deploy do

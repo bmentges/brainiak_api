@@ -90,12 +90,10 @@ class brainiak::be inherits brainiak::params {
         projeto_usuario         => $usuario,
         projeto_grupo           => $grupo,
         log_dest_dir            => $projeto_logsunix_dir,
-        log_filer               => "riofb18a:/vol/vol20/logsunix/${projeto}", # TODO: Criar filer
+        log_filer               => "riofb18a:/vol/vol20/logsunix/${projeto}",
         log_keep                => $log_keep
     }
     
-    # TODO: Checar expurgo e rotacionamento de logs
-
 }
 
 # EOF

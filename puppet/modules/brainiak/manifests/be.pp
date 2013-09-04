@@ -101,9 +101,10 @@ class brainiak::be inherits brainiak::params {
     }
 
     monit_globo::http_server { "${brainiak::params::projeto}-nginx-be":
-      pidfile => "/opt/logs/${brainiak::params::projeto}/nginx-be/nginx-be.pid",
-      uri     => '/healthcheck',
-      port    => $brainiak::params::nginx_bind_port,
+      pidfile   => "/opt/logs/${brainiak::params::projeto}/nginx-be/nginx-be.pid",
+      uri       => '/healthcheck',
+      port      => $brainiak::params::nginx_bind_port,
+      hostname  => $brainiak::params::projeto_host,
     }
 
 }

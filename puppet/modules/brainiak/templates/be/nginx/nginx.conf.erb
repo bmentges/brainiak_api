@@ -77,7 +77,7 @@ http {
 
     server {
 
-        listen *:8080;
+        listen *:<%=scope.lookupvar('brainiak::params::nginx_bind_port')%>;
 
         server_name <%=scope.lookupvar('brainiak::params::projeto_host')%>;
 
@@ -97,7 +97,7 @@ http {
     # Virtual host para negar requisicao
     server {
 
-        listen  *:8080 default_server;
+        listen  *:<%=scope.lookupvar('brainiak::params::nginx_bind_port')%> default_server;
 
         # Allowed HTTP Methods
         if ($request_method !~ "(GET|HEAD|POST)") {

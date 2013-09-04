@@ -36,9 +36,11 @@ class brainiak::params {
     $nginx_proxycache_dir       = "${projeto_home_dir}/nginx-be/proxy_cache"
     $nginx_proxytemp_dir        = "${projeto_home_dir}/nginx-be/proxy_temp"
     $nginx_clientbodytemp_dir   = "${projeto_home_dir}/nginx-be/client_body_temp"
+    $nginx_bind_port            = 8080
 
     $gunicorn_num_processes     = $::zone ? { /(prod|qa2)/ => 5, default => 2 }
     $gunicorn_debug             = $::zone ? { /(dev|qa1)/ => 'True', default => 'False' }
     $gunicorn_loglevel          = $::zone ? { /(prod|qa2)/ => 'INFO', default => 'DEBUG' }
+    $gunicorn_bind_port         = 8090
 
 }

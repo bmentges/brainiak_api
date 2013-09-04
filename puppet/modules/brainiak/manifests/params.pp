@@ -1,7 +1,7 @@
 # = Class: brainiak::params
 #
 # Esta classe contém as variáveis globais do projeto.
-# 
+#
 # == Author: Diogo Kiss <diogokiss@corp.globo.com> e Marcelo Monteiro <m.monteiro@corp.globo.com>.
 #
 # == Parameters:

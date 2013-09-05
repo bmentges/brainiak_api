@@ -8,7 +8,10 @@
       "pypi.globoi.com"                 :   { "port": 80 },
       "ipypi.globoi.com"                :   { "port": 80 },
       "rubygems.globoi.com"             :   { "port": 80 },
-      "<%=syslog_host%>"                :   { "port": 514 },
+      "<%=syslog_host%>"                :   {
+        "port"      : 514,
+        "timeout"   : 5
+      },
       "<%=filer_host%>"                 :   { "port": [111,2049] },
       "<%=barramento_backstage_host%>"  :   { "port": 61613 },
       "<%=redis_host%>"                 :   { "port": <%=redis_port%> }

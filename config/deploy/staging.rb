@@ -1,4 +1,4 @@
-role :be,                         'riovlb160.globoi.com', 'riovlb161.globoi.com'
+role :be,                         'riovlb244.globoi.com', 'riovlb245.globoi.com'
 role :filer,                      'filer.staging.globoi.com'
 
 # Hosts

@@ -43,6 +43,7 @@ class brainiak::be inherits brainiak::params {
 
     include brainiak::dirs
     include brainiak::rpms
+    include brainiak::monit
     include tdi
 
     virtualenv { $brainiak::params::virtualenv_dir:
@@ -92,19 +93,6 @@ class brainiak::be inherits brainiak::params {
         log_dest_dir            => $brainiak::params::projeto_logsunix_dir,
         log_filer               => "riofb18a:/vol/vol20/logsunix/${brainiak::params::projeto}",
         log_keep                => $brainiak::params::log_keep
-    }
-
-    monit_globo::http_server { "${brainiak::params::projeto}-gunicorn-be":
-      pidfile => "/opt/logs/${brainiak::params::projeto}/gunicorn-be/gunicorn-be.pid",
-      uri     => '/healthcheck',
-      port    => $brainiak::params::gunicorn_bind_port,
-    }
-
-    monit_globo::http_server { "${brainiak::params::projeto}-nginx-be":
-      pidfile   => "/opt/logs/${brainiak::params::projeto}/nginx-be/nginx-be.pid",
-      uri       => '/healthcheck',
-      port      => $brainiak::params::nginx_bind_port,
-      hostname  => $brainiak::params::projeto_host,
     }
 
 }

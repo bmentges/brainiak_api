@@ -32,6 +32,14 @@ class brainiak::dirs {
         require => File["${supso::dir_opt::dir}/logs"]
     }
 
+    file { $brainiak::params::projeto_deploybe_dir:
+        ensure  => directory,
+        owner   => $brainiak::params::usuario,
+        group   => $brainiak::params::grupo,
+        mode    => '0755',
+        require => Mount[$brainiak::params::projeto_deploybe_dir]
+    }
+
     file { $brainiak::params::projeto_home_dir:
         ensure  => directory,
         owner   => $brainiak::params::usuario,

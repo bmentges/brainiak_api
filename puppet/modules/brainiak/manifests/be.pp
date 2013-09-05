@@ -91,7 +91,7 @@ class brainiak::be inherits brainiak::params {
         projeto_usuario         => $brainiak::params::usuario,
         projeto_grupo           => $brainiak::params::grupo,
         log_dest_dir            => $brainiak::params::projeto_logsunix_dir,
-        log_filer               => "riofb18a:/vol/vol20/logsunix/${brainiak::params::projeto}",
+        log_filer               => "riofb18a:/vol/vol3/glb_${projeto}",
         log_keep                => $brainiak::params::log_keep
     }
 

@@ -31,6 +31,10 @@ class brainiak::params {
     $virtualenv_dir             = "${projeto_home_dir}/virtualenv"
     $projeto_logsunix_dir       = $::zone ? { prod => "/mnt/logsunix/${projeto}", default => 'purge' }
     $log_keep                   = $::zone ? { prod => 7, default => 1 }
+    $monit_notification_mail    = $::zone ? {
+        staging => [ 'semantica@corp.globo.com', 'suporte.mudancas@corp.globo.com' ],
+        default => ['semantica@corp.globo.com']
+    }
 
     $nginx_home_dir             = "${projeto_home_dir}/nginx-be"
     $nginx_proxycache_dir       = "${projeto_home_dir}/nginx-be/proxy_cache"

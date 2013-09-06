@@ -4,7 +4,7 @@ from brainiak import triplestore
 from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import build_schema_url_for_instance, remove_last_slash
 from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination, calculate_offset
-from brainiak.utils.sparql import compress_keys_and_values, is_literal, normalize_term, get_one_value, extract_po_tuples
+from brainiak.utils.sparql import compress_keys_and_values, is_literal, is_url, normalize_term, get_one_value, extract_po_tuples
 
 
 class Query(object):
@@ -75,17 +75,19 @@ class Query(object):
             ("rdfs:label", "?label")
         ]
         variable_index = 0
+        union_tuples = []
         for predicate, object_, index in self.po_tuples:
             if self.should_add_predicate_and_object(predicate, object_):
                 predicate = normalize_term(predicate, self.params["lang"])
-                if is_literal(object_):
+                if is_literal(object_) or is_url(object_):
                     # this is used to escape the datatype when filtering objects that are literals
                     variable_index += 1
                     variable_name = self.next_variable(variable_index)
                     tuples.append((predicate, variable_name))
                 else:
-                    object_ = normalize_term(object_, self.params["lang"])
-                    tuples.append((predicate, object_))
+                    if not is_url(object_):
+                        object_ = normalize_term(object_, self.params["lang"])
+                        tuples.append((predicate, object_))
 
         sort_object = self.get_sort_variable()
         sort_sufix = ""
@@ -113,10 +115,9 @@ class Query(object):
         # this is used to escape the datatype when filtering objects that are literals
         variable_index = 0
         for predicate, object_, index in self.po_tuples:
-            if is_literal(object_):
+            if is_literal(object_) or is_url(object_):
                 variable_index += 1
                 variable_name = self.next_variable(variable_index)
-                translatables.append(variable_name)
                 literal_filter = 'FILTER(str({0}) = "{1}") .'.format(variable_name, object_)
                 if literal_filter not in filter_list:
                     filter_list.append(literal_filter)

@@ -306,7 +306,6 @@ class ListQueryTestCase(unittest.TestCase):
                      }
             FILTER(str(?literal1) = "Xubiru") .
             FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .
-            FILTER(langMatches(lang(?literal1), "pt") OR langMatches(lang(?literal1), "")) .
             FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10

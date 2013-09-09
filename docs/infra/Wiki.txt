@@ -147,7 +147,43 @@ tail-brainiak-nginx-be-error
 
 ---++++brainiak.semantica.globoi.com
 <pre>
-TODO
+virtual VIP5258_10.70.2.165_80 {
+snat automap
+pool VIP5258_10.70.2.165_8080
+destination 10.70.2.165:http
+ip protocol tcp
+rules X_Forwarded_For
+profiles {
+http_sem_one_connect {}
+tcp {}
+}
+}
+
+
+pool VIP5258_10.70.2.165_8080 {
+lb method least conn
+min active members 1
+monitor all MONITOR_VIP5258_10.70.2.165
+members {
+10.11.98.17:webcache {
+limit 100
+session user disabled
+}
+10.11.98.18:webcache {
+limit 100
+session user disabled
+}
+}
+}
+
+
+monitor MONITOR_VIP5258_10.70.2.165 {
+defaults from http
+recv "WORKING"
+send "GET /healthcheck HTTP/1.0\r\nHost: brainiak.semantica.globoi.com\r\n\r\n"
+}
+
+
 </pre>
 
 ---++++redis.api.semantica.globoi.com

@@ -256,7 +256,7 @@ Link: [[http://smi.globoi.com/thruk/cgi-bin/status.cgi?nav=&hidesearch=2&hidetop
 ---+++ Infra Brainiak (docs.google)
 [[https://docs.google.com/a/corp.globo.com/drawings/d/19NgAKaZGgpNnSQagKOFc8_vytp_baVTtiIjZGbVrY9g/edit?usp=sharing][Diagrama de Infraestrutura do Brainiak]]
 
----++ FAQ (TODO)
+---++ FAQ
 [[https://globo.service-now.com/kb_view.do?sys_kb_id=86c1ece1a9d305805a48c3babec7513d][O que fazer caso o VIP do Brainiak não responda o healthcheck adequadamente? ]]<br />
 [[https://globo.service-now.com/kb_view.do?sys_kb_id=958e9421a9d305805a48c3babec751f6][Recarga do Ngnix BE do Brainiak]]<br />
 [[https://globo.service-now.com/kb_view.do?sys_kb_id=c89c98ada99305805a48c3babec7513f][Recarga do GUnicorn BE do Brainiak]]<br />

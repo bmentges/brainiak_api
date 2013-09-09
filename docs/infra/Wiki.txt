@@ -176,14 +176,11 @@ session user disabled
 }
 }
 
-
 monitor MONITOR_VIP5258_10.70.2.165 {
 defaults from http
 recv "WORKING"
 send "GET /healthcheck HTTP/1.0\r\nHost: brainiak.semantica.globoi.com\r\n\r\n"
 }
-
-
 </pre>
 
 ---++++redis.api.semantica.globoi.com

@@ -43,7 +43,7 @@ def schema():
                 "rel": "self"
             },
             {
-                "href": "/_range_search",
+                "href": "/_suggest",
                 "method": "POST",
                 "rel": "suggest",
                 "schema": {

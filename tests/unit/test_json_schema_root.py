@@ -21,7 +21,7 @@ class TestRootJsonSchema(unittest.TestCase):
             {'href': '?{+_previous_args}', 'method': 'GET', 'rel': 'previous'},
             {'href': '{+_base_url}', 'method': 'GET', 'rel': 'self'},
             {
-                'href': '/_range_search',
+                'href': '/_suggest',
                 'method': 'POST',
                 'rel': 'suggest',
                 'schema': {

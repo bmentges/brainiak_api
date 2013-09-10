@@ -53,6 +53,7 @@ class brainiak::be inherits brainiak::params {
         grupo               => $brainiak::params::grupo,
         python_prefix       => '/opt/generic/python27',
         requirements_file   => 'requirements.txt',
+        use_nodeps          => false, # With great power comes great responsibility.
         file_search_dir     => $brainiak::params::projeto,
         require             => Package['python27-virtualenv_generic_globo'],
     }

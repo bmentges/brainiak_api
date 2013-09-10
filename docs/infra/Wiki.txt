@@ -236,7 +236,7 @@ Todos os arquivos relacionados com a configuração desse projeto, podem ser ace
 | riomp90lb11 | Gunicorn Brainiak - 8090 |
 
 TODO:
-Link: [[http://smi.globoi.com/thruk/cgi-bin/status.cgi?nav=&hidesearch=2&hidetop=&dfl_s0_hoststatustypes=15&dfl_s0_servicestatustypes=31&dfl_s0_hostprops=0&dfl_s0_serviceprops=0&style=detail&update.x=7&update.y=7&dfl_s0_type=search&dfl_s0_val_pre=&dfl_s0_op=~&dfl_s0_value=api.semantica.globoi.com&dfl_s0_value_sel=5&dfl_s1_hoststatustypes=15&dfl_s1_servicestatustypes=31&dfl_s1_hostprops=0&dfl_s1_serviceprops=0&dfl_s1_type=service&dfl_s1_val_pre=&dfl_s1_op=~&dfl_s1_value=brainiak&dfl_s1_value_sel=5&dfl_s2_hoststatustypes=15&dfl_s2_servicestatustypes=31&dfl_s2_hostprops=0&dfl_s2_serviceprops=0&dfl_s2_type=service&dfl_s2_val_pre=&dfl_s2_op=%3D&dfl_s2_value=API+Semantica+-+Nginx+8033&dfl_s2_value_sel=5][Nagios]]
+Link: [[http://smi.globoi.com/thruk/#cgi-bin/status.cgi?servicegroup=Brainiak&style=detail][Nagios]]
 
 ---+++ Cricket
 

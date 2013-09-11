@@ -15,6 +15,10 @@ Os seguintes tópicos motivaram o desenvolvimento do Brainiak:
    * Melhorar o gerenciamento de dados de "triple stores"
    * Prover um único e coerente interface para outros bancos de dados, incluindo "non triple stores" (exemplo: [[http://www.elasticsearch.org][ElasticSearch]]).
 
+---++ Usuário do projeto
+
+   * <b>brainiak</b>
+
 ---++ Ambientes
 ---+++ DEV
 | *Servidor* | *HW* | *CPU* | *Mem* | *Discos* | *Raid* | *SO* | *Kernel* |
@@ -262,3 +266,4 @@ Link: [[http://smi.globoi.com/thruk/#cgi-bin/status.cgi?servicegroup=Brainiak&st
 [[https://globo.service-now.com/kb_view.do?sys_kb_id=c89c98ada99305805a48c3babec7513f][Recarga do GUnicorn BE do Brainiak]]<br />
 [[https://globo.service-now.com/kb_view.do?sys_kb_id=09d4c706a99f85805a48c3babec7518d][Error: "HTTP error: 404\nClient-Id provided at 'X-Brainiak-Client-Id' (default) is not known"]]<br />
 [[https://globo.service-now.com/kb_view.do?sys_kb_id=ab1cc4f3d11781001fd7654dfa473e43][Operação no caso do Redis utilizado pelo Brainiak apresentar instabilidade]]
+

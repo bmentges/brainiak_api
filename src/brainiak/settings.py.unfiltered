@@ -29,7 +29,7 @@ DEFAULT_PER_PAGE = "10"
 DEFAULT_PAGE = "0"
 
 LOG_FILEPATH = '<%= log_filepath %>'
-LOG_LEVEL = logging.DEBUG
+LOG_LEVEL = logging.ERROR
 LOG_NAME = "brainiak"
 
 URI_PREFIX = "http://semantica.globo.com/"

@@ -85,7 +85,6 @@ class brainiak::be inherits brainiak::params {
         projeto                 => $brainiak::params::projeto,
         instancia               => 'be',
         rpm                     => 'nginx_generic_globo',
-        rpm_dir                 => '/opt/generic/nginx',
         rpm_versao              => '1.2.8-0.el5',
         instancia_usuario       => 'nobody',
         instancia_grupo         => 'nobody',

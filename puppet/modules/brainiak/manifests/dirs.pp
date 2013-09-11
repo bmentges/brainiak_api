@@ -47,36 +47,4 @@ class brainiak::dirs {
         mode    => '0755'
     }
 
-    file { $brainiak::params::nginx_home_dir:
-        ensure  => directory,
-        owner   => root,
-        group   => root,
-        mode    => '0755',
-        require => File[$brainiak::params::projeto_home_dir]
-    }
-
-    file { $brainiak::params::nginx_proxycache_dir:
-        ensure  => directory,
-        owner   => nobody,
-        group   => nobody,
-        mode    => '0755',
-        require => File[$brainiak::params::nginx_home_dir]
-    }
-
-    file { $brainiak::params::nginx_proxytemp_dir:
-        ensure  => directory,
-        owner   => nobody,
-        group   => nobody,
-        mode    => '0755',
-        require => File[$brainiak::params::nginx_home_dir]
-    }
-
-    file { $brainiak::params::nginx_clientbodytemp_dir:
-        ensure  => directory,
-        owner   => nobody,
-        group   => nobody,
-        mode    => '0755',
-        require => File[$brainiak::params::nginx_home_dir]
-    }
-
 }

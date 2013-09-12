@@ -54,10 +54,10 @@ http {
     client_header_buffer_size 6k;
     large_client_header_buffers 6 6k;
     client_max_body_size 20m;
-    client_body_temp_path       <%=scope.lookupvar('brainiak::params::nginx_clientbodytemp_dir')%> 2 2;
+    client_body_temp_path       <%=clientbody_temp_dir%> 2 2;
 
-    proxy_temp_path             <%=scope.lookupvar('brainiak::params::nginx_proxytemp_dir')%> 2 2;
-    proxy_cache_path            <%=scope.lookupvar('brainiak::params::nginx_proxycache_dir')%>  levels=2:2  keys_zone=<%=cache_zone_name%>:<%=scope.lookupvar('infra::nginx::vars::nginx_cache_keys_zone')%>  max_size=<%=scope.lookupvar('infra::nginx::vars::nginx_cache_max_size')%> inactive=7d;
+    proxy_temp_path             <%=proxytemp_dir%> 2 2;
+    proxy_cache_path            <%=instancia_cache_dir%>  levels=2:2  keys_zone=<%=cache_zone_name%>:<%=scope.lookupvar('infra::nginx::vars::nginx_cache_keys_zone')%>  max_size=<%=scope.lookupvar('infra::nginx::vars::nginx_cache_max_size')%> inactive=7d;
     proxy_cache_key             "$uri$is_args$args";
     proxy_cache_valid           200 302 1m;
     proxy_cache_use_stale       error timeout updating invalid_header http_500 http_502 http_503 http_504;

@@ -27,15 +27,13 @@ http {
     log_format main '$remote_addr - $remote_user [$time_local] $host "$request" '
                     '$status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" '
                     'request_time[$request_time] Proxy_subrequest[$proxy_host$uri$is_args$args] '
-                    'Proxy: $upstream_cache_status $upstream_status $upstream_response_time'
-                    'Cache-Control: $upstream_http_cache_control '
+                    'Proxy: $upstream_status $upstream_response_time'
                     'Expires: $upstream_http_expires $request_length';
 
     log_format syslog '$remote_addr - $remote_user $host "$request" '
                       '$status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" '
                       'request_time[$request_time] Proxy_subrequest[$proxy_host$uri$is_args$args] '
-                      'Proxy: $upstream_cache_status $upstream_status $upstream_response_time'
-                      'Cache-Control: $upstream_http_cache_control '
+                      'Proxy: $upstream_status $upstream_response_time'
                       'Expires: $upstream_http_expires $request_length';
 
     access_log <%=access_log_file%>  main;
@@ -57,10 +55,6 @@ http {
     client_body_temp_path       <%=clientbody_temp_dir%> 2 2;
 
     proxy_temp_path             <%=proxytemp_dir%> 2 2;
-    proxy_cache_path            <%=instancia_cache_dir%>  levels=2:2  keys_zone=<%=cache_zone_name%>:<%=scope.lookupvar('infra::nginx::vars::nginx_cache_keys_zone')%>  max_size=<%=scope.lookupvar('infra::nginx::vars::nginx_cache_max_size')%> inactive=7d;
-    proxy_cache_key             "$uri$is_args$args";
-    proxy_cache_valid           200 302 1m;
-    proxy_cache_use_stale       error timeout updating invalid_header http_500 http_502 http_503 http_504;
     proxy_redirect              off;
     proxy_set_header            Host $host;
     proxy_set_header            X-Real-IP $remote_addr;
@@ -89,7 +83,6 @@ http {
         # Rotas dinâmicas
         location / {
             proxy_pass  http://localhost:8090;
-            proxy_cache <%=cache_zone_name%>;
         }
 
     }

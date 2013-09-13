@@ -28,6 +28,16 @@ brainiak_endpoint = {
     "prod": "http://api.semantica.globoi.com/"
 }
 
+brainiak_new_endpoint = {
+    "local": "http://0.0.0.0:5100/",
+    "dev": "http://brainiak.semantica.dev.globoi.com/",
+    "qa01": "http://brainiak.semantica.qa01.globoi.com/",
+    "qa02": "http://brainiak.semantica.qa01.globoi.com/",
+    "stg": "http://brainiak.semantica.globoi.com/",
+    "prod": "http://brainiak.semantica.globoi.com/"
+}
+
+
 mercury_endpoint = {
     "local": "http://0.0.0.0:5200/",
     "dev": "http://cittavld44.globoi.com:8036/",
@@ -196,6 +206,13 @@ class BrainiakChecker(Checker):
         sys.stdout.write("\ncheck_instance_delete - pass")
 
 
+class NewBrainiakChecker(BrainiakChecker):
+
+    def __init__(self, environ):
+        Checker.__init__(self, environ)
+        self.endpoint = brainiak_new_endpoint.get(environ)
+
+
 class MercuryChecker(Checker):
 
     def __init__(self, environ):
@@ -232,6 +249,11 @@ if __name__ == "__main__":
 
     sys.stdout.write("[Checking Brainiak]")
     brainiak = BrainiakChecker(environ)
+    brainiak_functions = [function() for name, function in inspect.getmembers(brainiak) if name.startswith("check")]
+    sys.stdout.write("\n")
+
+    sys.stdout.write("[Checking New Brainiak]")
+    brainiak = NewBrainiakChecker(environ)
     brainiak_functions = [function() for name, function in inspect.getmembers(brainiak) if name.startswith("check")]
     sys.stdout.write("\n")
 

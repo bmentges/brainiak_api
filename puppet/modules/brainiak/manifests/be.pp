@@ -90,6 +90,7 @@ class brainiak::be inherits brainiak::params {
         instancia_grupo         => 'nobody',
         projeto_usuario         => $brainiak::params::usuario,
         projeto_grupo           => $brainiak::params::grupo,
+        proxy_cache             => false,
         log_dest_dir            => $brainiak::params::projeto_logsunix_dir,
         log_filer               => "riofb18a:/vol/vol3/glb_${projeto}",
         log_keep                => $brainiak::params::log_keep

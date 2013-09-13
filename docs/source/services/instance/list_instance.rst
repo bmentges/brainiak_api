@@ -24,6 +24,7 @@ Optional parameters
 .. include :: ../params/class.rst
 .. include :: ../params/po.rst
 .. include :: ../params/sort.rst
+.. include :: ../params/direct_instances_only.rst
 
 
 Possible responses

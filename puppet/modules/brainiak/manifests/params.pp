@@ -37,7 +37,6 @@ class brainiak::params {
     }
 
     $nginx_home_dir             = "${projeto_home_dir}/nginx-be"
-    $nginx_proxycache_dir       = "${projeto_home_dir}/nginx-be/proxy_cache"
     $nginx_proxytemp_dir        = "${projeto_home_dir}/nginx-be/proxy_temp"
     $nginx_clientbodytemp_dir   = "${projeto_home_dir}/nginx-be/client_body_temp"
     $nginx_bind_port            = 8080

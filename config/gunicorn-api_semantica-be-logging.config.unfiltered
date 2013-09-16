@@ -18,7 +18,7 @@ handlers=watchedFileHandler
 [handler_watchedFileHandler]
 class=handlers.WatchedFileHandler
 formatter=simpleFormatter
-args=('/opt/logs/api_semantica/api-semantica.log',)
+args=('<%=projeto_log_dir%>,)
 
 [formatter_simpleFormatter]
 format=%(asctime)s - %(name)s - %(levelname)s - %(message)s

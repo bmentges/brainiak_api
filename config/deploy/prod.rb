@@ -1,4 +1,4 @@
-role :be,                         'riomp40lb14.globoi.com','riomp41lb14.globoi.com'
+role :be,                         'riomp89lb11.globoi.com','riomp90lb11.globoi.com'
 role :filer,                      'filer.globoi.com'
 
 # Hosts

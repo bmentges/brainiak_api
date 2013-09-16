@@ -935,7 +935,7 @@ class GetCollectionDirectObjectTestCase(TornadoAsyncHTTPTestCase, QueryTestCase)
         ]
         self.assertEqual(computed_items, expected_items)
 
-    # @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://example.onto/ruleset")
-    # def test_get_collection_includes_only_direct_instances(self, settings):
-    #     response = self.fetch('/_/_/?graph_uri=http://example.onto/&class_uri=http://example.onto/Animal&direct_instances_only=1', method='GET')
-    #     self.assertEqual(response.code, 404)
+    @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://example.onto/ruleset")
+    def test_get_collection_includes_only_direct_instances(self, settings):
+        response = self.fetch('/_/_/?graph_uri=http://example.onto/&class_uri=http://example.onto/Animal&direct_instances_only=1', method='GET')
+        self.assertEqual(response.code, 404)

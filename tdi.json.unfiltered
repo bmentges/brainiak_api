@@ -2,29 +2,26 @@
   "brainiak": {
     "desc": "Teste de Infraestrutura",
     "acl": {
-      "puppet.globoi.com"           :   { "port": 8140 },
-      "ldap.globoi.com"             :   { "port": 636 },
-      "yum.globoi.com"              :   { "port": 80 },
-      "pypi.globoi.com"             :   { "port": 80 },
-      "ipypi.globoi.com"            :   { "port": 80 },
-      "rubygems.globoi.com"         :   { "port": 80 },
-      "<%=syslog_host%>"            :   { "port": 514 },
-      "<%=filer_host%>"             :   { "port": [111,2049] },
-      "<%=barramento_backstage_host%>"   :   { "port": 61613 },
-      "<%=redis_host%>"             :   { "port": <%=redis_port%> }
+      "puppet.globoi.com"               :   { "port": 8140 },
+      "ldap.globoi.com"                 :   { "port": 636 },
+      "yum.globoi.com"                  :   { "port": 80 },
+      "pypi.globoi.com"                 :   { "port": 80 },
+      "ipypi.globoi.com"                :   { "port": 80 },
+      "rubygems.globoi.com"             :   { "port": 80 },
+      "<%=syslog_host%>"                :   {
+        "port"      : 514,
+        "timeout"   : 5
+      },
+      "<%=filer_host%>"                 :   { "port": [111,2049] },
+      "<%=barramento_backstage_host%>"  :   { "port": 61613 },
+      "<%=redis_host%>"                 :   { "port": <%=redis_port%> }
     },
     "file": {
-      "/mnt/projetos/deploy-be/api_semantica": {
+      "/mnt/projetos/deploy-be/brainiak": {
           "type": "directory",
           "location": "nfs",
-          "user": "busca",
+          "user": "brainiak",
           "perm": "rw"
-      },
-      "/mnt/projetos/dbpasswd/api_semantica": {
-          "type": "directory",
-          "location": "nfs",
-          "user": "root",
-          "perm": "ro"
       },
       "/mnt/projetos/dbpasswd/brainiak": {
           "type": "directory",

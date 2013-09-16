@@ -1,6 +1,6 @@
 import inspect
 from urllib import unquote
-from brainiak import triplestore
+from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import build_schema_url_for_instance, remove_last_slash
 from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination, calculate_offset
@@ -30,7 +30,7 @@ class Query(object):
     """
 
     skeleton = """
-        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        DEFINE input:inference <%(inference_graph)s>
         SELECT DISTINCT %(variables)s
         WHERE {
             %(triples)s
@@ -42,7 +42,7 @@ class Query(object):
     """
 
     skeleton_count = """
-        DEFINE input:inference <http://semantica.globo.com/ruleset>
+        DEFINE input:inference <%(inference_graph)s>
         SELECT count(DISTINCT ?subject) as ?total
         WHERE {
             %(triples)s
@@ -60,6 +60,10 @@ class Query(object):
         rdfs_repetition = (predicate == "rdfs:label") and object_.startswith("?")
 
         return not generic_po and not rdfs_repetition
+
+    @property
+    def inference_graph(self):
+        return settings.DEFAULT_RULESET_URI
 
     @property
     def po_tuples(self):
@@ -102,7 +106,7 @@ class Query(object):
         statement = "?subject " + " ;\n".join(tuples_strings) + " .\n" + sort_sufix
         statements = statement % self.params
 
-        return 'GRAPH ?g { %s }' % statements
+        return 'GRAPH <%(graph_uri)s> { %(statements)s }' % {"statements": statements, 'graph_uri': self.params['graph_uri']}
 
     @property
     def filter(self):
@@ -131,7 +135,6 @@ class Query(object):
                 }
                 filter_list.append(statement)
 
-        filter_list.append("FILTER(?g = <%(graph_uri)s>) ." % self.params)
         if filter_list:
             statement = "\n".join(filter_list)
 

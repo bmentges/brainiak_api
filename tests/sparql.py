@@ -62,6 +62,7 @@ ISQL_UP = "DB.DBA.TTLP_MT_LOCAL_FILE('%(ttl)s', '', '%(graph)s');"
 ISQL_DOWN = "SPARQL CLEAR GRAPH <%(graph)s>;"
 ISQL_SERVER = "select server_root();"
 ISQL_INFERENCE = "rdfs_rule_set('%(graph_uri)sruleset', '%(graph_uri)s');"
+ISQL_REMOVE_INFERENCE = "rdfs_rule_set('%(graph_uri)sruleset', '%(graph_uri)s', 1);"
 
 
 def mocked_query(self):
@@ -149,6 +150,11 @@ def enable_inference_at_graph(graph_uri):
     virtuoso_response = run_isql(cmd)
 
 
+def disable_inference_at_graph(graph_uri):
+    cmd = ISQL_REMOVE_INFERENCE % {"graph_uri": graph_uri}
+    virtuoso_response = run_isql(cmd)
+
+
 class QueryTestCase(SimpleTestCase):
     """
     Used for testing SPARQL queries.
@@ -195,11 +201,12 @@ class QueryTestCase(SimpleTestCase):
         run_isql(isql_up)
 
     def _pre_setup(self):
+        self.remove_inference_options()
         self._drop_graph_from_triplestore(self.graph_uri)
+
         if self.allow_triplestore_connection:
             setup = self._setup_triplestore
             load = self._load_fixture_to_triplestore
-            self.process_inference_options()
         else:
             setup = self._setup_mocked_triplestore
             load = self._load_fixture_to_memory
@@ -214,6 +221,8 @@ class QueryTestCase(SimpleTestCase):
                 for fixture in fixtures:
                     load(fixture, graph)
 
+        self.process_inference_options()
+
     def _drop_graph_from_triplestore(self, graph):
         isql_down = ISQL_DOWN % {"graph": graph}
         run_isql(isql_down)
@@ -225,6 +234,7 @@ class QueryTestCase(SimpleTestCase):
 
     def _post_teardown(self):
         self._restore_triplestore()
+        self.remove_inference_options()
         if not self.fixtures_by_graph:
             if self.allow_triplestore_connection:
                 self._drop_graph_from_triplestore(self.graph_uri)
@@ -233,12 +243,20 @@ class QueryTestCase(SimpleTestCase):
                 self._drop_graph_from_triplestore(graph)
 
     def process_inference_options(self):
+        #if self.allow_inference:
         if not self.fixtures_by_graph:
-            if self.allow_inference:
-                enable_inference_at_graph(self.graph_uri)
+            enable_inference_at_graph(self.graph_uri)
         else:
             for graph_ in self.fixtures_by_graph.keys():
                 enable_inference_at_graph(graph_)
+
+    def remove_inference_options(self):
+        #if self.allow_inference:
+        if not self.fixtures_by_graph:
+            disable_inference_at_graph(self.graph_uri)
+        else:
+            for graph_ in self.fixtures_by_graph.keys():
+                disable_inference_at_graph(graph_)
 
     def query(self, query_string, graph=None):
         endpoint_dict = parse_section()

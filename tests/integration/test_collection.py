@@ -910,3 +910,32 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         })
         result = get_collection.filter_instances(params)
         self.assertEqual(result, None)
+
+
+class GetCollectionDirectObjectTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+    fixtures_by_graph = {
+        "http://example.onto/": ["tests/sample/animalia.n3"]
+    }
+    maxDiff = None
+    allow_triplestore_connection = True
+
+    @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://example.onto/ruleset")
+    def test_get_collection_includes_indirect_instances(self, settings):
+        response = self.fetch('/_/_/?graph_uri=http://example.onto/&class_uri=http://example.onto/Animal', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        expected_items = [
+            {
+                "resource_id": "Nina",
+                "instance_prefix": "http://example.onto/",
+                "@id": "http://example.onto/Nina",
+                "class_prefix": "_",
+                "title": "Nina Fox"
+            }
+        ]
+        self.assertEqual(computed_items, expected_items)
+
+    # @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://example.onto/ruleset")
+    # def test_get_collection_includes_only_direct_instances(self, settings):
+    #     response = self.fetch('/_/_/?graph_uri=http://example.onto/&class_uri=http://example.onto/Animal&direct_instances_only=1', method='GET')
+    #     self.assertEqual(response.code, 404)

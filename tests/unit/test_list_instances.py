@@ -108,10 +108,9 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
 
         LIMIT 10
@@ -129,11 +128,10 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      some:predicate some:object .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
 
         LIMIT 10
@@ -153,12 +151,11 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?another_object, ?label, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      another:predicate ?another_object ;
                      some:predicate some:object .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
 
         LIMIT 10
@@ -176,10 +173,9 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
 
         LIMIT 10
@@ -197,10 +193,9 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 15
         OFFSET 30
@@ -216,11 +211,10 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?object, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://some.graph/predicate> ?object .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10
         OFFSET 0
@@ -236,10 +230,9 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10
         OFFSET 0
@@ -255,11 +248,10 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?object, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://schema.org/Creature> ?object .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10
         OFFSET 0
@@ -276,13 +268,11 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://schema.org/Creature> ?literal1 .
                      }
             FILTER(str(?literal1) = "Xubiru") .
-            FILTER(?g = <http://some.graph/>) .
-
         }
         LIMIT 10
         OFFSET 0
@@ -300,13 +290,12 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://schema.org/Creature> ?literal1 .
                      }
             FILTER(str(?literal1) = "Xubiru") .
             FILTER(langMatches(lang(?label), "pt") OR langMatches(lang(?label), "")) .
-            FILTER(?g = <http://some.graph/>) .
         }
         LIMIT 10
         OFFSET 0
@@ -323,10 +312,9 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?sort_object, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
             OPTIONAL {?subject <http://dbpedia.org/ontology/predicate> ?sort_object} }
-            FILTER(?g = <http://some.graph/>) .
         }
         ORDER BY ASC(?sort_object)
         LIMIT 10
@@ -345,11 +333,10 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?sort_object, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://dbpedia.org/ontology/predicate> ?sort_object .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
         ORDER BY ASC(?sort_object)
         LIMIT 10
@@ -367,10 +354,9 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
         ORDER BY DESC(?label)
         LIMIT 10
@@ -389,11 +375,10 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT DISTINCT ?label, ?object, ?subject
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label ;
                      <http://schema.org/another_predicate> ?object .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
         ORDER BY DESC(?object)
         LIMIT 10
@@ -409,10 +394,9 @@ class ListQueryTestCase(unittest.TestCase):
         DEFINE input:inference <http://semantica.globo.com/ruleset>
         SELECT count(DISTINCT ?subject) as ?total
         WHERE {
-            GRAPH ?g { ?subject a <http://some.graph/SomeClass> ;
+            GRAPH <http://some.graph/> { ?subject a <http://some.graph/SomeClass> ;
                      rdfs:label ?label .
                      }
-            FILTER(?g = <http://some.graph/>) .
         }
         """
         self.assertEqual(strip(computed), strip(expected))

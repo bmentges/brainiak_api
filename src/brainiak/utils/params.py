@@ -85,7 +85,8 @@ VALID_PARAMS = ['lang',
                 'page', 'per_page',
                 'sort_by', 'sort_order', 'sort_include_empty',
                 'purge',
-                'do_item_count']
+                'do_item_count',
+                'direct_instances_only']
 
 VALID_PATTERNS = (
     PATTERN_P,

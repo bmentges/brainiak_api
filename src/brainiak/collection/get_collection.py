@@ -30,7 +30,6 @@ class Query(object):
     """
 
     skeleton = """
-        DEFINE input:inference <%(inference_graph)s>
         SELECT DISTINCT %(variables)s
         WHERE {
             %(triples)s
@@ -42,7 +41,6 @@ class Query(object):
     """
 
     skeleton_count = """
-        DEFINE input:inference <%(inference_graph)s>
         SELECT count(DISTINCT ?subject) as ?total
         WHERE {
             %(triples)s
@@ -75,7 +73,6 @@ class Query(object):
     @property
     def triples(self):
         tuples = [
-            ("a", "<%(class_uri)s>"),
             ("rdfs:label", "?label")
         ]
         variable_index = 0
@@ -102,11 +99,23 @@ class Query(object):
             else:
                 tuples.append((sort_predicate, sort_object))
 
-        tuples_strings = ["%s %s" % each_tuple for each_tuple in tuples]
-        statement = "?subject " + " ;\n".join(tuples_strings) + " .\n" + sort_sufix
+        if self.direct_instances:
+            first_statement = "?subject a <%(class_uri)s> ;\n"
+        else:
+            tuples.insert(0, ("a", "<%(class_uri)s>"))
+            first_statement = "?subject "
+
+        inference = 'OPTION(inference "%s")' % self.inference_graph
+        tuples_strings = ["%s %s %s" % (p, o, inference) for p, o in tuples]
+
+        statement = first_statement + " ;\n".join(tuples_strings) + " .\n" + sort_sufix
         statements = statement % self.params
 
         return 'GRAPH <%(graph_uri)s> { %(statements)s }' % {"statements": statements, 'graph_uri': self.params['graph_uri']}
+
+    @property
+    def direct_instances(self):
+        return self.params.get("direct_instances_only") == "1"
 
     @property
     def filter(self):

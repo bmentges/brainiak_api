@@ -30,7 +30,7 @@ from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
-from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, DEFAULT_PARAMS, RequiredParamMissing, validate_body_params
+from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, DEFAULT_PARAMS, RequiredParamMissing, validate_body_params, DefaultParamsDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples
 
@@ -300,7 +300,7 @@ class CollectionHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-        valid_params = LIST_PARAMS + CLASS_PARAMS
+        valid_params = LIST_PARAMS + CLASS_PARAMS + DefaultParamsDict(direct_instances_only='0')
         with safe_params(valid_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,

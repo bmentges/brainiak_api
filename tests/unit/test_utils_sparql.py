@@ -387,6 +387,36 @@ class CreateExplicitTriples(unittest.TestCase):
         instance_id = extract_instance_id(instance_uri)
         self.assertEqual(instance_id, "instance_id")
 
+    def test_clean_up_attributes(self):
+        expected_clean_instance_data = {
+            'upper:fullName': u'Globoland (RJ)',
+            'dct:isPartOf': 'base:UF_RJ',
+            'rdf:type': 'place:City',
+            'place:longitude': u'-43.407133',
+            'upper:name': u'Globoland',
+            'rdfs:comment': u"City of Globo's companies. Historically known as PROJAC.",
+            'place:latitude': u'-22.958314',
+            'place:partOfState': 'base:UF_RJ'
+        }
+        dirty_instance_data = {
+            '_instance_prefix': 'http://semantica.globo.com/place/',
+            '_base_url': 'http://localhost:5100/place/City/',
+            '_resource_id': '3b62b2e1-d495-4e1f-be27-8ee9382ca46b',
+            '@context': {'upper': 'http://semantica.globo.com/upper/',
+                         'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
+                         'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+                         'place': 'http://semantica.globo.com/place/',
+                         'base': 'http://semantica.globo.com/base/',
+                         'dbpedia': 'http://dbpedia.org/ontology/',
+                         'dct': 'http://purl.org/dc/terms/',
+                         'schema': 'http://schema.org/'},
+            '@id': 'http://semantica.globo.com/place/City/3b62b2e1-d495-4e1f-be27-8ee9382ca46b',
+            '@type': 'place:City',
+        }
+        dirty_instance_data.update(expected_clean_instance_data)
+        cleaned_instance_data = clean_up_reserved_attributes(dirty_instance_data)
+        self.assertEqual(cleaned_instance_data, expected_clean_instance_data)
+
 
 class LanguageSupportTestCase(unittest.TestCase):
 

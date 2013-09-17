@@ -25,22 +25,22 @@ For example:
   {
     "links": [
       {
-        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
+        "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/Male",
         "rel": "self"
       },
       {
-        href: "http://api.semantica.dev.globoi.com/person/Gender",
+        href: "http://brainiak.semantica.dev.globoi.com/person/Gender",
         method: "GET",
         rel: "inCollection"
       },
       {
-        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
+        "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/Male",
         "method": "PUT",
-        "schema": {"$ref": "http://api.semantica.dev.globoi.com/person/Gender/_schema"}
+        "schema": {"$ref": "http://brainiak.semantica.dev.globoi.com/person/Gender/_schema"}
         "rel": "update"
       },
       {
-        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
+        "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/Male",
         "method": "DELETE",
         "rel": "delete"
       }
@@ -67,7 +67,7 @@ For example:
     ],
     "links": [
       {
-        "href": "http://api.semantica.dev.globoi.com/place/Continent/{resource_id}?instance_prefix={instance_prefix}",
+        "href": "http://brainiak.semantica.dev.globoi.com/place/Continent/{resource_id}?instance_prefix={instance_prefix}",
         "method": "GET",
         "rel": "item"
       }

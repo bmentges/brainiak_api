@@ -176,14 +176,14 @@ using the <tt class="docutils literal"><span class="pre">search_fields</span></t
 </pre></div>
 </div>
 <p><strong>Basic usage</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -XPOST <span class="s1">&#39;http://api.semantica.dev.globoi.com/_suggest&#39;</span> -T <span class="s2">&quot;suggest_search.json&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -XPOST <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_suggest&#39;</span> -T <span class="s2">&quot;suggest_search.json&quot;</span>
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;@context&quot;: {
         &quot;@language&quot;: &quot;pt&quot;
     }, 
-    &quot;_base_url&quot;: &quot;http://api.semantica.dev.globoi.com/_suggest/&quot;, 
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/_suggest/&quot;, 
     &quot;_first_args&quot;: &quot;page=1&quot;, 
     &quot;_next_args&quot;: &quot;page=2&quot;, 
     &quot;items&quot;: [
@@ -282,14 +282,14 @@ By default <tt class="docutils literal"><span class="pre">do_item_count</span></
 <p><strong>per_page</strong>: Defines how many items are retrieved per page. The default value is <tt class="docutils literal"><span class="pre">10</span></tt></p>
 <blockquote>
 <div>By default, the first page containing 10 items is returned. It could also be retrieved by:</div></blockquote>
-<div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/?page=1&amp;per_page=10'</pre>
+<div class="highlight-http"><pre>GET 'http://brainiak.semantica.dev.globoi.com/?page=1&amp;per_page=10'</pre>
 </div>
 </div>
 <div class="section" id="possible-responses">
 <h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>
 <p><strong>Status 200</strong></p>
 <p>If the search is successfull, a response JSON is returned, showing the matched instances.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -XPOST <span class="s1">&#39;http://api.semantica.dev.globoi.com/_suggest&#39;</span> -T <span class="s2">&quot;suggest_search.json&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -XPOST <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_suggest&#39;</span> -T <span class="s2">&quot;suggest_search.json&quot;</span>
 </pre></div>
 </div>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>

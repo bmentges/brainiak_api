@@ -7,7 +7,7 @@ This service deletes a instance, given its context, class name and instance id.
 
 .. code-block:: http
 
-  DELETE 'http://api.semantica.dev.globoi.com/place/Country/Brazil'
+  DELETE 'http://brainiak.semantica.dev.globoi.com/place/Country/Brazil'
 
 Optional parameters
 -------------------

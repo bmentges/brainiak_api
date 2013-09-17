@@ -6,7 +6,7 @@ If the convention doesn't apply, provide class_prefix so the URI will be: class_
 
 .. code-block:: http
 
-  'http://api.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'
+  'http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'
 
 If no **class_prefix** had been provided, the class URI above would be resolved as: http://semantica.globo.com/place/City.
 As **class_prefix** was defined, the class URI will be: http://dbpedia.org/City.

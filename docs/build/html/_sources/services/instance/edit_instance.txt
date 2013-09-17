@@ -9,7 +9,7 @@ This service allows the edition of an instance, provided its context, class name
 
 .. code-block:: bash
 
-  $ curl -i -X PUT -T "edit_female.json" http://api.semantica.dev.globoi.com/person/Gender/Female
+  $ curl -i -X PUT -T "edit_female.json" http://brainiak.semantica.dev.globoi.com/person/Gender/Female
 
 .. code-block:: http
 
@@ -22,7 +22,7 @@ This service allows the edition of an instance, provided its context, class name
     Access-Control-Allow-Origin: *
 
     {
-        "$schema": "http://api.semantica.dev.globoi.com/person/Gender/_schema",
+        "$schema": "http://brainiak.semantica.dev.globoi.com/person/Gender/_schema",
         "@context": {
             "person": "http://semantica.globo.com/person/",
             "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
@@ -32,20 +32,20 @@ This service allows the edition of an instance, provided its context, class name
         "@type": "person:Gender",
         "links": [
             {
-                "href": "http://api.semantica.dev.globoi.com/person/Gender/Female",
+                "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/Female",
                 "rel": "self"
             },
             {
-                "href": "http://api.semantica.dev.globoi.com/person/Gender/_schema",
+                "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/_schema",
                 "rel": "describedBy"
             },
             {
-                "href": "http://api.semantica.dev.globoi.com/person/Gender/Female",
+                "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/Female",
                 "method": "DELETE",
                 "rel": "delete"
             },
             {
-                "href": "http://api.semantica.dev.globoi.com/person/Gender/Female",
+                "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/Female",
                 "method": "PUT",
                 "rel": "update"
             }
@@ -65,7 +65,7 @@ Sample JSON "edit_female.json":
 .. include :: examples/edit_instance_payload.rst
 
 Note that prefixes are defined in the "@context" section.
-`Default prefixes  <http://api.semantica.dev.globoi.com/_prefixes>`_ are implicit and don't need to be declared.
+`Default prefixes  <http://brainiak.semantica.dev.globoi.com/_prefixes>`_ are implicit and don't need to be declared.
 
 
 Optional query string parameters
@@ -88,7 +88,7 @@ The instance was edited successfully, the response body is the modified instance
 If there are unknown parameters in the request, the response status code
 is 400 and the body contains a JSON containing valid and invalid parameters.
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Country/Brazil?invalid_param=1' | python -mjson.tool
+.. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/place/Country/Brazil?invalid_param=1' | python -mjson.tool
   :shell:
 
 The 400 status may also happen when the JSON provided is invalid:
@@ -102,7 +102,7 @@ If the class does not exist, the response status code is 404.
 .. code-block:: http
 
 
-.. program-output:: curl -s -X PUT 'http://api.semantica.dev.globoi.com/place/InexistentClass/InvalidInstance' -d '{}' | python -mjson.tool
+.. program-output:: curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/place/InexistentClass/InvalidInstance' -d '{}' | python -mjson.tool
   :shell:
 
 **Status 500**

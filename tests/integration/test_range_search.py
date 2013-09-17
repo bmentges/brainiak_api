@@ -37,7 +37,8 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         entry = {
             "http://www.w3.org/2000/01/rdf-schema#label": "York"
         }
-        requests.put(self.elastic_request_url, data=json.dumps(entry))
+
+        requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
 
 
     def tearDown(self):

@@ -119,16 +119,12 @@
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
 <li><a class="reference internal" href="#">Suggest</a><ul>
-<li><a class="reference internal" href="#optional-request-body-parameters">Optional request body parameters</a><ul>
+<li><a class="reference internal" href="#optional-request-body-parameters">Optional request body parameters</a></li>
 <li><a class="reference internal" href="#optional-search-fields">Optional search fields</a></li>
 <li><a class="reference internal" href="#optional-response-fields">Optional response fields</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#optional-query-string-parameters">Optional query string parameters</a></li>
-<li><a class="reference internal" href="#response-body-parameters">Response body parameters</a><ul>
+<li><a class="reference internal" href="#response-body-parameters">Response body parameters</a></li>
 <li><a class="reference internal" href="#response-item-details">Response item details</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#possible-responses">Possible responses</a></li>
 </ul>
 </li>
@@ -240,8 +236,9 @@ using the <tt class="docutils literal"><span class="pre">fields</span></tt> opti
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
 <div class="section" id="optional-search-fields">
-<h3>Optional search fields<a class="headerlink" href="#optional-search-fields" title="Permalink to this headline">¶</a></h3>
+<h2>Optional search fields<a class="headerlink" href="#optional-search-fields" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">fields</span></tt> list of optional fields to search on. Each field must be an URI or a CURIE. Without this parameter, only <tt class="docutils literal"><span class="pre">rdfs:label</span></tt> and its subproperties are matched.</p>
 <p><tt class="docutils literal"><span class="pre">classes</span></tt> list of classes whose instances will be searched, thus restricting the result of the predicate range. Each class must be an URI or a CURIE.</p>
 <p>If this parameter has classes that are not in the predicate range, a 400 error is returned.</p>
@@ -249,12 +246,11 @@ using the <tt class="docutils literal"><span class="pre">fields</span></tt> opti
 <p>If this parameter has graphs that the classes in the predicate range are not in, a 400 error is returned.</p>
 </div>
 <div class="section" id="optional-response-fields">
-<h3>Optional response fields<a class="headerlink" href="#optional-response-fields" title="Permalink to this headline">¶</a></h3>
+<h2>Optional response fields<a class="headerlink" href="#optional-response-fields" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">required_fields</span></tt> boolean which indicates that fields which have <tt class="docutils literal"><span class="pre">owl:minQualifiedCardinality</span></tt> equal or larger than <tt class="docutils literal"><span class="pre">1</span></tt> should be returned. The default is <tt class="docutils literal"><span class="pre">true</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">meta_fields</span></tt> list of meta predicates. These meta predicates must be defined in the ontology and might map the most relevant predicates for disambiguation, for instance. Each meta predicate must be an URI or a CURIE.</p>
 <p><tt class="docutils literal"><span class="pre">class_fields</span></tt> list of class predicates whose values should be retrieved. E.g. class name (<tt class="docutils literal"><span class="pre">rdfs:label</span></tt>), class comment (<tt class="docutils literal"><span class="pre">rdfs:comment</span></tt>) or other properties. Each class field must be an URI or a CURIE.</p>
 <p><tt class="docutils literal"><span class="pre">classes</span></tt> list of classes towards which the instances will be restricted.  Each class must be an URI or a CURIE.</p>
-</div>
 </div>
 <div class="section" id="optional-query-string-parameters">
 <h2>Optional query string parameters<a class="headerlink" href="#optional-query-string-parameters" title="Permalink to this headline">¶</a></h2>
@@ -314,21 +310,23 @@ By default <tt class="docutils literal"><span class="pre">do_item_count</span></
 <p><tt class="docutils literal"><span class="pre">items</span></tt> list of instances (more details on the items on <a class="reference internal" href="#item-details"><em>Response item details</em></a>)
 <tt class="docutils literal"><span class="pre">item_count</span></tt> integer representing the total number of items
 <tt class="docutils literal"><span class="pre">&#64;context</span></tt> JSON containing definitions of prefixes used in CURIEs.</p>
-<div class="section" id="response-item-details">
-<span id="item-details"></span><h3>Response item details<a class="headerlink" href="#response-item-details" title="Permalink to this headline">¶</a></h3>
-<p>Each item has several parameters:
-<tt class="docutils literal"><span class="pre">&#64;id</span></tt> string containing the unique identifier (URI) of a certain instance
-<tt class="docutils literal"><span class="pre">title</span></tt> string that represents the instance label (<tt class="docutils literal"><span class="pre">rdfs:label</span></tt>)
-<tt class="docutils literal"><span class="pre">&#64;type</span></tt> class from which the item was instantiated (<tt class="docutils literal"><span class="pre">rdfs:type</span></tt>)
-<tt class="docutils literal"><span class="pre">type_title</span></tt> label (<tt class="docutils literal"><span class="pre">rdfs:label</span></tt>) associated to the instance&#8217;s class
-<tt class="docutils literal"><span class="pre">class_fields</span></tt> JSON that maps the class predicates declared in the request&#8217;s <tt class="docutils literal"><span class="pre">class_fields</span></tt> to their respective values for the instance
-<tt class="docutils literal"><span class="pre">instance_fields</span></tt> based on the fields defined in the request payload (<tt class="docutils literal"><span class="pre">fields</span></tt>, <tt class="docutils literal"><span class="pre">required_fields</span></tt>, <tt class="docutils literal"><span class="pre">meta_fields</span></tt>), return a list of JSONs composed by:
-* <tt class="docutils literal"><span class="pre">predicate_id</span></tt> string containing a URI or a CURIE of the predicate
-* <tt class="docutils literal"><span class="pre">predicate_title``string</span> <span class="pre">containing</span> <span class="pre">the</span> <span class="pre">label</span> <span class="pre">(``rdfs:label</span></tt>) of the predicate
-* <tt class="docutils literal"><span class="pre">object_id</span></tt> string containing a URI or a CURIE of the object mapped by the predicate for the given instance
-* <tt class="docutils literal"><span class="pre">object_title</span></tt> string containing the label (<tt class="docutils literal"><span class="pre">rdfs:label</span></tt>) of the object mapped by the predicate for the given instance
-* <tt class="docutils literal"><span class="pre">required</span></tt> boolean that represents if a certain predicate is obligatory for the provided class. In other words, if <tt class="docutils literal"><span class="pre">owl:minQualifiedCardinality</span></tt> equal or larger than <tt class="docutils literal"><span class="pre">1</span></tt>. It is related to <tt class="docutils literal"><span class="pre">required_fields</span></tt>.</p>
 </div>
+<div class="section" id="response-item-details">
+<span id="item-details"></span><h2>Response item details<a class="headerlink" href="#response-item-details" title="Permalink to this headline">¶</a></h2>
+<p>Each item has several parameters:</p>
+<p><tt class="docutils literal"><span class="pre">&#64;id</span></tt> string containing the unique identifier (URI) of a certain instance</p>
+<p><tt class="docutils literal"><span class="pre">title</span></tt> string that represents the instance label (<tt class="docutils literal"><span class="pre">rdfs:label</span></tt>)</p>
+<p><tt class="docutils literal"><span class="pre">&#64;type</span></tt> class from which the item was instantiated (<tt class="docutils literal"><span class="pre">rdfs:type</span></tt>)</p>
+<p><tt class="docutils literal"><span class="pre">type_title</span></tt> label (<tt class="docutils literal"><span class="pre">rdfs:label</span></tt>) associated to the instance&#8217;s class</p>
+<p><tt class="docutils literal"><span class="pre">class_fields</span></tt> JSON that maps the class predicates declared in the request&#8217;s <tt class="docutils literal"><span class="pre">class_fields</span></tt> to their respective values for the instance</p>
+<p><tt class="docutils literal"><span class="pre">instance_fields</span></tt> based on the fields defined in the request payload (<tt class="docutils literal"><span class="pre">fields</span></tt>, <tt class="docutils literal"><span class="pre">required_fields</span></tt>, <tt class="docutils literal"><span class="pre">meta_fields</span></tt>), return a list of JSONs composed by:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">predicate_id</span></tt> string containing a URI or a CURIE of the predicate</li>
+<li><tt class="docutils literal"><span class="pre">predicate_title``string</span> <span class="pre">containing</span> <span class="pre">the</span> <span class="pre">label</span> <span class="pre">(``rdfs:label</span></tt>) of the predicate</li>
+<li><tt class="docutils literal"><span class="pre">object_id</span></tt> string containing a URI or a CURIE of the object mapped by the predicate for the given instance</li>
+<li><tt class="docutils literal"><span class="pre">object_title</span></tt> string containing the label (<tt class="docutils literal"><span class="pre">rdfs:label</span></tt>) of the object mapped by the predicate for the given instance</li>
+<li><tt class="docutils literal"><span class="pre">required</span></tt> boolean that represents if a certain predicate is obligatory for the provided class. In other words, if <tt class="docutils literal"><span class="pre">owl:minQualifiedCardinality</span></tt> equal or larger than <tt class="docutils literal"><span class="pre">1</span></tt>. It is related to <tt class="docutils literal"><span class="pre">required_fields</span></tt>.</li>
+</ul>
 </div>
 <div class="section" id="possible-responses">
 <h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>

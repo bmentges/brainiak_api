@@ -545,3 +545,10 @@ class POTestCase(unittest.TestCase):
         self.assertTrue(PATTERN_O.match("o200"))
         self.assertFalse(PATTERN_O.match("other_key"))
         self.assertFalse(PATTERN_O.match("no"))
+
+    def escape_quotes(self):
+        object_value = 'Aos 15 anos, lan\xe7ou o 1\xba disco com o sucesso "Musa do ver\xe3o"'
+
+        expected_object_value = 'Aos 15 anos, lan\xe7ou o 1\xba disco com o sucesso \\"Musa do ver\xe3o\\"'
+
+        self.assertEqual(expected_object_value, escape_quotes(object_value))

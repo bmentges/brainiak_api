@@ -158,7 +158,7 @@
 <span id="edit-instance"></span><h1>Edit a Instance<a class="headerlink" href="#edit-a-instance" title="Permalink to this headline">¶</a></h1>
 <p>This service allows the edition of an instance, provided its context, class name, instance identifier and JSON.</p>
 <p><strong>Basic usage</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X PUT -T <span class="s2">&quot;edit_female.json&quot;</span> http://api.semantica.dev.globoi.com/person/Gender/Female
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X PUT -T <span class="s2">&quot;edit_female.json&quot;</span> http://brainiak.semantica.dev.globoi.com/person/Gender/Female
 </pre></div>
 </div>
 <div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
@@ -170,7 +170,7 @@
 <span class="na">Access-Control-Allow-Origin</span><span class="o">:</span> <span class="l">*</span>
 
 <span class="p">{</span>
-    <span class="nt">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://api.semantica.dev.globoi.com/person/Gender/_schema&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/person/Gender/_schema&quot;</span><span class="p">,</span>
     <span class="nt">&quot;@context&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;person&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/person/&quot;</span><span class="p">,</span>
         <span class="nt">&quot;rdf&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;</span><span class="p">,</span>
@@ -180,20 +180,20 @@
     <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;person:Gender&quot;</span><span class="p">,</span>
     <span class="nt">&quot;links&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
-            <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://api.semantica.dev.globoi.com/person/Gender/Female&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/person/Gender/Female&quot;</span><span class="p">,</span>
             <span class="nt">&quot;rel&quot;</span><span class="p">:</span> <span class="s2">&quot;self&quot;</span>
         <span class="p">},</span>
         <span class="p">{</span>
-            <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://api.semantica.dev.globoi.com/person/Gender/_schema&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/person/Gender/_schema&quot;</span><span class="p">,</span>
             <span class="nt">&quot;rel&quot;</span><span class="p">:</span> <span class="s2">&quot;describedBy&quot;</span>
         <span class="p">},</span>
         <span class="p">{</span>
-            <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://api.semantica.dev.globoi.com/person/Gender/Female&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/person/Gender/Female&quot;</span><span class="p">,</span>
             <span class="nt">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span>
             <span class="nt">&quot;rel&quot;</span><span class="p">:</span> <span class="s2">&quot;delete&quot;</span>
         <span class="p">},</span>
         <span class="p">{</span>
-            <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://api.semantica.dev.globoi.com/person/Gender/Female&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/person/Gender/Female&quot;</span><span class="p">,</span>
             <span class="nt">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;PUT&quot;</span><span class="p">,</span>
             <span class="nt">&quot;rel&quot;</span><span class="p">:</span> <span class="s2">&quot;update&quot;</span>
         <span class="p">}</span>
@@ -215,7 +215,7 @@ In order to avoid that, either remove the last &#8220;/&#8221; or use &#8216;-d 
         <span class="nt">&quot;rdf&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;</span><span class="p">,</span>
         <span class="nt">&quot;rdfs&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/2000/01/rdf-schema#&quot;</span>
     <span class="p">},</span>
-    <span class="nt">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://api.semantica.dev.globoi.com/person/Gender/_schema&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/person/Gender/_schema&quot;</span><span class="p">,</span>
     <span class="nt">&quot;rdfs:label&quot;</span><span class="p">:</span> <span class="s2">&quot;Feminino 2&quot;</span><span class="p">,</span>
     <span class="nt">&quot;rdf:type&quot;</span><span class="p">:</span> <span class="s2">&quot;person:Gender&quot;</span><span class="p">,</span>
     <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/person/Gender/Female&quot;</span><span class="p">,</span>
@@ -224,27 +224,27 @@ In order to avoid that, either remove the last &#8220;/&#8221; or use &#8216;-d 
 </pre></div>
 </div>
 <p>Note that prefixes are defined in the &#8220;&#64;context&#8221; section.
-<a class="reference external" href="http://api.semantica.dev.globoi.com/_prefixes">Default prefixes</a> are implicit and don&#8217;t need to be declared.</p>
+<a class="reference external" href="http://brainiak.semantica.dev.globoi.com/_prefixes">Default prefixes</a> are implicit and don&#8217;t need to be declared.</p>
 <div class="section" id="optional-query-string-parameters">
 <h2>Optional query string parameters<a class="headerlink" href="#optional-query-string-parameters" title="Permalink to this headline">¶</a></h2>
 <p><strong>graph_uri</strong>: Set the graph URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME</span></tt></p>
 <p><strong>class_uri</strong>: Set the class URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME</span></tt></p>
 <p><strong>class_prefix</strong>: by default, the class URI is defined by the API&#8217;s convention (context_uri/class_name).
 If the convention doesn&#8217;t apply, provide class_prefix so the URI will be: class_prefix/class_name.  Example:</p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
 </div>
 <p>If no <strong>class_prefix</strong> had been provided, the class URI above would be resolved as: <a class="reference external" href="http://semantica.globo.com/place/City">http://semantica.globo.com/place/City</a>.
 As <strong>class_prefix</strong> was defined, the class URI will be: <a class="reference external" href="http://dbpedia.org/City">http://dbpedia.org/City</a>.</p>
 <p><strong>instance_prefix</strong>: by default, the instance URI is defined by the API&#8217;s convention (context_uri/class_name/instance_name). If the convention doesn&#8217;t apply, provide instance_prefix so the URI will be: class_instance/instance_name.  Example:</p>
 <p>examples:</p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/place/City/Campinas_SP?instance_prefix=http%3A//dbpedia.org/'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/place/City/Campinas_SP?instance_prefix=http%3A//dbpedia.org/'</pre>
 </div>
 <p>If no <strong>instance_prefix</strong> had been provided, the instance URI above would be resolved as: <a class="reference external" href="http://semantica.globo.com/place/City/Campinas_SP">http://semantica.globo.com/place/City/Campinas_SP</a>. As <strong>instance_prefix</strong> was defined, the instance URI will be: <a class="reference external" href="http://dbpedia.org/Campinas_SP">http://dbpedia.org/Campinas_SP</a>.</p>
 <p>Other example: Instance URI is <a class="reference external" href="http://semantica.globo.com/esportes/atleta/80801">http://semantica.globo.com/esportes/atleta/80801</a></p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/esportes/Atleta/80801?instance_prefix=http://semantica.globo.com/esportes/atleta/'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/esportes/Atleta/80801?instance_prefix=http://semantica.globo.com/esportes/atleta/'</pre>
 </div>
 <p>example: Instance URI is <a class="reference external" href="http://semantica.globo.com/base/Pessoa_ImportacaoEleicoes2012TSE_10000001494">http://semantica.globo.com/base/Pessoa_ImportacaoEleicoes2012TSE_10000001494</a> and Graph URI is <a class="reference external" href="http://semantica.globo.com/">http://semantica.globo.com/</a></p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/base/Pessoa/Pessoa_ImportacaoEleicoes2012TSE_10000001494?instance_prefix=base&amp;graph_uri=glb'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/base/Pessoa/Pessoa_ImportacaoEleicoes2012TSE_10000001494?instance_prefix=base&amp;graph_uri=glb'</pre>
 </div>
 <p><strong>instance_id</strong>: Unique word identifier for an instance. This is composed with <tt class="docutils literal"><span class="pre">instance_prefix</span></tt> to form an equivalent of <tt class="docutils literal"><span class="pre">instance_uri</span></tt>.</p>
 <p><strong>instance_uri</strong>: Set the instance URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME/INSTANCE_ID</span></tt></p>

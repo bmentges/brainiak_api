@@ -162,10 +162,10 @@ It is highly recommended that API clients use these links, because API service U
 The links are not embedded in the resource, they are present in the schema that described such resource.
 In order to obtain the list of links for a given resource, one should follow the profile URL present in the Content-Type response header.
 For example:</p>
-<div class="highlight-python"><pre>$ curl -i http://api.semantica.dev.globoi.com
+<div class="highlight-python"><pre>$ curl -i http://brainiak.semantica.dev.globoi.com
 
 HTTP/1.1 200 OK
-Content-Type: application/json; profile=http://api.semantica.dev.globoi.com/_schema_list
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
 Content-Length: 1007
 ...</pre>
 </div>
@@ -179,21 +179,21 @@ The href value can be an exact string, or a string template whose variable place
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
   <span class="nt">&quot;links&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
-      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://api.semantica.dev.globoi.com/person/Gender/Male&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/person/Gender/Male&quot;</span><span class="p">,</span>
       <span class="nt">&quot;rel&quot;</span><span class="p">:</span> <span class="s2">&quot;self&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
 
-      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://api.semantica.dev.globoi.com/person/Gender/_schema&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/person/Gender/_schema&quot;</span><span class="p">,</span>
       <span class="nt">&quot;rel&quot;</span><span class="p">:</span> <span class="s2">&quot;describedBy&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
-      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://api.semantica.dev.globoi.com/person/Gender/Male&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/person/Gender/Male&quot;</span><span class="p">,</span>
       <span class="nt">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;PUT&quot;</span><span class="p">,</span>
       <span class="nt">&quot;rel&quot;</span><span class="p">:</span> <span class="s2">&quot;update&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
-      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://api.semantica.dev.globoi.com/person/Gender/Male&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;href&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/person/Gender/Male&quot;</span><span class="p">,</span>
       <span class="nt">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span>
       <span class="nt">&quot;rel&quot;</span><span class="p">:</span> <span class="s2">&quot;delete&quot;</span>
     <span class="p">}</span>

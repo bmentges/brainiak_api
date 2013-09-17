@@ -55,7 +55,7 @@ Some optional parameters can be passed in request body:
 
 
 Optional search fields
-**********************
+----------------------
 
 ``fields`` list of optional fields to search on. Each field must be an URI or a CURIE. Without this parameter, only ``rdfs:label`` and its subproperties are matched.
 
@@ -69,7 +69,7 @@ If this parameter has graphs that the classes in the predicate range are not in,
 
 
 Optional response fields
-************************
+------------------------
 
 ``required_fields`` boolean which indicates that fields which have ``owl:minQualifiedCardinality`` equal or larger than ``1`` should be returned. The default is ``true``.
 
@@ -101,15 +101,22 @@ Example of response:
 .. _item_details:
 
 Response item details
-*********************
+---------------------
 
 Each item has several parameters:
+
 ``@id`` string containing the unique identifier (URI) of a certain instance
+
 ``title`` string that represents the instance label (``rdfs:label``)
+
 ``@type`` class from which the item was instantiated (``rdfs:type``)
+
 ``type_title`` label (``rdfs:label``) associated to the instance's class
+
 ``class_fields`` JSON that maps the class predicates declared in the request's ``class_fields`` to their respective values for the instance
+
 ``instance_fields`` based on the fields defined in the request payload (``fields``, ``required_fields``, ``meta_fields``), return a list of JSONs composed by:
+
 * ``predicate_id`` string containing a URI or a CURIE of the predicate
 * ``predicate_title``string containing the label (``rdfs:label``) of the predicate
 * ``object_id`` string containing a URI or a CURIE of the object mapped by the predicate for the given instance

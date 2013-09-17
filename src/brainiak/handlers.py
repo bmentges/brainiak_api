@@ -132,9 +132,11 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
                 for msg in extra_messages:
                     message += msg
 
-            if settings.DEBUG:
-                # Put backend service response in error for debuggin purposes
-                message += "\nResponse:\n" + e.response.body
+            # Put backend service response in error for debugging purposes
+            if settings.DEBUG and hasattr(e, "response") and \
+               e.response is not None and hasattr(e.response, "body") and \
+               e.response.body is not None:
+                    message += "\nResponse:\n" + e.response.body
 
             logger.error(message)
             self.send_error(status_code, message=message)

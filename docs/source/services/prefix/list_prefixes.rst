@@ -7,7 +7,7 @@ This service retrieves registered prefixes, used in compact communication with t
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/_prefixes'
+  $ curl -s 'http://brainiak.semantica.dev.globoi.com/_prefixes'
 
 
 Optional parameters
@@ -24,7 +24,7 @@ Possible responses
 The response body is a JSON containing the prefixes in a "@context" section
 and the root context, which is a context whose name is not in the prefix URI.
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/_prefixes' | python -mjson.tool
+.. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/_prefixes' | python -mjson.tool
   :shell:
 
 **Status 400**
@@ -32,7 +32,7 @@ and the root context, which is a context whose name is not in the prefix URI.
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/prefixes?invalid_param=1' | python -mjson.tool
+.. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/prefixes?invalid_param=1' | python -mjson.tool
   :shell:
 
 **Status 500**

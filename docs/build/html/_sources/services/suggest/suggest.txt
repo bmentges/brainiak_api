@@ -28,9 +28,9 @@ Here is an example of request body:
 
 .. code-block:: bash
 
-  $ curl -s -XPOST 'http://api.semantica.dev.globoi.com/_suggest' -T "suggest_search.json"
+  $ curl -s -XPOST 'http://brainiak.semantica.dev.globoi.com/_suggest' -T "suggest_search.json"
 
-.. program-output:: curl -s -X POST 'http://api.semantica.dev.globoi.com/_suggest' -T "services/suggest/examples/suggest_minimal_example.json" | python -mjson.tool
+.. program-output:: curl -s -X POST 'http://brainiak.semantica.dev.globoi.com/_suggest' -T "services/suggest/examples/suggest_minimal_example.json" | python -mjson.tool
   :shell:
 
 
@@ -70,7 +70,7 @@ If the search is successfull, a response JSON is returned, showing the matched i
 
 .. code-block:: bash
 
-  $ curl -s -XPOST 'http://api.semantica.dev.globoi.com/_suggest' -T "suggest_search.json"
+  $ curl -s -XPOST 'http://brainiak.semantica.dev.globoi.com/_suggest' -T "suggest_search.json"
 
 .. include :: examples/suggest_response.rst
 

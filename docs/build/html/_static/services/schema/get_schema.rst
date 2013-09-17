@@ -10,9 +10,9 @@ In this service, we can get a class defined in some context.
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/place/City/_schema'
+  $ curl -s 'http://brainiak.semantica.dev.globoi.com/place/City/_schema'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/City/_schema' | python -mjson.tool
+.. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/place/City/_schema' | python -mjson.tool
   :shell:
 
 Why _schema? In our data model we have a clear distinction between class
@@ -44,9 +44,9 @@ If the class exists, the response body is a JSON representing the class definiti
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/place/Country/_schema'
+  $ curl -s 'http://brainiak.semantica.dev.globoi.com/place/Country/_schema'
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Country/_schema' | python -mjson.tool
+.. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/place/Country/_schema' | python -mjson.tool
   :shell:
 
 

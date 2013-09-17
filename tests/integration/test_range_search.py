@@ -21,6 +21,9 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
     fixtures = ["tests/sample/animalia.n3"]
     graph_uri = "http://example.onto/"
 
+    retries = 3
+    sleep_between_retries = 1000
+
     maxDiff = None
 
     VALID_BODY_PARAMS = {'pattern': 'york', 'predicate': 'http://example.onto/birthPlace'}
@@ -34,7 +37,8 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         entry = {
             "http://www.w3.org/2000/01/rdf-schema#label": "York"
         }
-        requests.put(self.elastic_request_url, data=json.dumps(entry))
+
+        requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
 
     def tearDown(self):
         super(TestRangeSearch, self).setUp()

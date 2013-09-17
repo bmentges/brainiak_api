@@ -1,25 +1,35 @@
 Suggest
 =======
 
-Given a predicate (an object property whose value is a object, a URI), the suggest service searches instances that could be added as the predicate's object.
+Given a target predicate (an object property whose value is an object, i.e. an URI),
+the suggest service searches for instances that could be set as the predicate's object.
 
-A JSON must be passed in the request body. There are two required parameters:
+A JSON must be passed in the request's body.
 
-**predicate**
+This JSON may have the sections ``search`` and ``response``:
 
-The ``predicate`` parameter represents the target predicate.
+* ``search``: is **obligatory** and is related to what will be searched
+* ``response``: is **optional** and refers to what will be retrieved
 
-For example, the predicate in the example below is ``place:partOfCity``.
+
+Two parameters must be defined in ``search``:
+
+**target**
+
+The ``target`` parameter represents the target predicate.
+
+For example, the target in the example below is ``place:partOfCity``.
 The range (types of possible values) of this predicate is ``place:City``.
-Therefore, the ``_suggest`` service will only try to match instances of ``place:City``.
+Therefore, the ``_suggest`` service will only try to match instances of ``place:City`` set as the value of ``place:partOfCity`.
 
 **pattern**
 
-The ``pattern`` parameter indicates the search keyword used to match instances.
-Usually, the pattern must occur in the ``rdfs:label`` of the instances, but one might want to search in other properties as well,
-using the ``search_fields`` optional parameter (see in :ref:`optional_body_parameters`).
+The ``pattern`` parameter indicates the search expression used to match instances.
+Usually, the pattern is matched against the property ``rdfs:label`` of the instances,
+but one might want to search in other properties.
+The  optional parameter ``fields`` serves to include other properties (see in :ref:`optional_body_parameters`).
 
-Here is an example of request body:
+Here is a minimal example of the request body:
 
 .. include :: examples/suggest_minimal_example_payload.rst
 
@@ -36,29 +46,78 @@ Here is an example of request body:
 
 .. _optional_body_parameters:
 
-Optional body parameters
-------------------------
+Optional request body parameters
+--------------------------------
 
 Some optional parameters can be passed in request body:
 
 .. include :: examples/suggest_full_example_payload.rst
 
-``search_fields`` indicates optional fields to search on. Without this parameter, only ``rdfs:label`` and its subproperties are matched.
 
-``search_classes`` indicates the classes in which we search instances, thus restricting the result of the predicate range.
+Optional search fields
+----------------------
 
-If this parameter has classes that are not in the predicate range, a 400 error is returned.
+``fields`` list of optional fields to search on. Each field must be an URI or a CURIE. Without this parameter, only ``rdfs:label`` and its subproperties are matched.
 
-``search_graphs`` indicates the graphs in which we look for instances, thus restricting the result of the graphs in which the classes in the predicate ranges are in.
+``classes`` list of classes whose instances will be searched, thus restricting the result of the predicate range. Each class must be an URI or a CURIE. If this parameter has classes that are not in the predicate range, a 400 error is returned.
 
-If this parameter has graphs that the classes in the predicate range are not in, a 400 error is returned.
+``graphs`` list of graphs in which we look for instances, thus restricting the result of the graphs. By default the graphs considered in the search are those in which the classes (present in the range of the target property) are declared. Each graph must be an URI or a CURIE. If this parameter has graphs that the classes in the predicate range are not in, a 400 error is returned.
 
+
+Optional response fields
+------------------------
+
+``required_fields`` boolean which indicates that fields which have ``owl:minQualifiedCardinality`` equal or larger than ``1`` should be returned. The default is ``true``.
+
+``meta_fields`` list of meta predicates. These meta predicates must be defined in the ontology and might map the most relevant predicates for disambiguation, for instance. Each meta predicate must be an URI or a CURIE.
+
+``class_fields`` list of class predicates whose values should be retrieved, such as class description (``rdfs:comment``) or other properties. Each class field must be an URI or a CURIE.
+
+``classes`` list of classes towards which the instances will be restricted.  Each class must be an URI or a CURIE.
 
 Optional query string parameters
 --------------------------------
 
 .. include :: ../params/item_count.rst
 .. include :: ../params/pages.rst
+.. include :: ../params/expand.rst
+
+
+Response body parameters
+------------------------
+
+Example of response:
+
+.. include :: examples/suggest_full_example_response.rst
+
+``items`` list of instances (more details on the items on :ref:`item_details`)
+``item_count`` integer representing the total number of items
+``@context`` JSON containing definitions of prefixes used in CURIEs.
+
+.. _item_details:
+
+Response item details
+---------------------
+
+Each item has several parameters:
+
+``@id`` string containing the unique identifier (URI) of a certain instance
+
+``title`` string that represents the instance label (``rdfs:label``)
+
+``@type`` class from which the item was instantiated (``rdfs:type``)
+
+``type_title`` label (``rdfs:label``) associated to the instance's class
+
+``class_fields`` JSON that maps the class predicates declared in the request's ``class_fields`` to their respective values for the instance
+
+``instance_fields`` based on the fields defined in the request payload (``fields``, ``required_fields``, ``meta_fields``), return a list of JSONs composed by:
+
+* ``predicate_id`` string containing a URI or a CURIE of the predicate
+* ``predicate_title`` string containing the label (``rdfs:label``) of the predicate
+* ``object_id`` string containing a URI or a CURIE of the object mapped by the predicate for the given instance
+* ``object_title`` string containing the label (``rdfs:label``) of the object mapped by the predicate for the given instance
+* ``required`` boolean that represents if a certain predicate is obligatory for the provided class. In other words, if ``owl:minQualifiedCardinality`` equal or larger than ``1``. It is related to ``required_fields``.
 
 
 Possible responses

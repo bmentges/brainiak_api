@@ -248,6 +248,15 @@ def is_reserved_attribute(predicate):
     return False
 
 
+def clean_up_reserved_attributes(instance_data):
+    clean_instance = {}
+    for key, value in instance_data.items():
+        if not is_reserved_attribute(key):
+            clean_instance[key] = value
+
+    return clean_instance
+
+
 def create_explicit_triples(instance_uri, instance_data):
     # TODO-2:
     # lang = query_params["lang"]

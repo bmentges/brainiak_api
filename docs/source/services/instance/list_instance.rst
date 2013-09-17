@@ -8,7 +8,7 @@ according a propert/value filter. The results are paginated.
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/place/Continent'
+  $ curl -s 'http://brainiak.semantica.dev.globoi.com/place/Continent'
 
 
 This will retrieve all instances of ``Continent`` in the graph ``place``
@@ -36,7 +36,7 @@ Possible responses
 If there are instances that match the query, the response body is a JSON containing instances' titles, resources_id and @ids (URIs).
 By default, the first page containing 10 items is returned (``?page=1&per_page=10``).
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Continent?page=1&per_page=10' | python -mjson.tool
+.. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/place/Continent?page=1&per_page=10' | python -mjson.tool
   :shell:
 
 **Status 400**
@@ -44,7 +44,7 @@ By default, the first page containing 10 items is returned (``?page=1&per_page=1
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Continent?invalid_param=1' | python -mjson.tool
+.. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/place/Continent?invalid_param=1' | python -mjson.tool
   :shell:
 
 **Status 404**

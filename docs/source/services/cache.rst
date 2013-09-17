@@ -10,9 +10,9 @@ To check if cache is enabled for some resource, run:
 
 .. code-block:: bash
 
-  $ curl -i -X OPTIONS http://api.semantica.dev.globoi.com/
+  $ curl -i -X OPTIONS http://brainiak.semantica.dev.globoi.com/
 
-.. program-output:: curl -i -s -X OPTIONS http://api.semantica.dev.globoi.com/
+.. program-output:: curl -i -s -X OPTIONS http://brainiak.semantica.dev.globoi.com/
   :shell:
 
 If cache is enabled, ``PURGE`` will be shown on the response header ``Access-Control-Allow-Methods``.
@@ -33,18 +33,18 @@ The first time a URL is accessed, there will be no cache - so ``X-Cache``  will 
 
 .. code-block:: bash
 
-  $ curl -i -X GET http://api.semantica.dev.globoi.com/
+  $ curl -i -X GET http://brainiak.semantica.dev.globoi.com/
 
-.. program-output:: curl -s -X PURGE http://api.semantica.dev.globoi.com/; curl -i -s -X GET http://api.semantica.dev.globoi.com/ | head -n 10
+.. program-output:: curl -s -X PURGE http://brainiak.semantica.dev.globoi.com/; curl -i -s -X GET http://brainiak.semantica.dev.globoi.com/ | head -n 10
   :shell:
 
 From the second time on, ``X-Cache`` will contain ``HIT`` and ``Last-Modified`` will be the same:
 
 .. code-block:: bash
 
-  $ curl -i -X GET http://api.semantica.dev.globoi.com/
+  $ curl -i -X GET http://brainiak.semantica.dev.globoi.com/
 
-.. program-output:: sleep 1; curl -i -s -X GET http://api.semantica.dev.globoi.com/ | head -n 10
+.. program-output:: sleep 1; curl -i -s -X GET http://brainiak.semantica.dev.globoi.com/ | head -n 10
   :shell:
 
 
@@ -57,9 +57,9 @@ Example:
 
 .. code-block:: bash
 
-  $ curl -i -X PURGE http://api.semantica.dev.globoi.com/
+  $ curl -i -X PURGE http://brainiak.semantica.dev.globoi.com/
 
-.. program-output:: curl -i -s -X PURGE http://api.semantica.dev.globoi.com/
+.. program-output:: curl -i -s -X PURGE http://brainiak.semantica.dev.globoi.com/
   :shell:
 
 Note that for purging purposes, query string parameters are ignored.
@@ -72,7 +72,7 @@ It is also possible to cleanup recursively, calling ``PURGE`` with the header ``
 
 .. code-block:: bash
 
-  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://api.semantica.dev.globoi.com/
+  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://brainiak.semantica.dev.globoi.com/
 
 Be careful when using this feature, all cached resources from that point on will be purged.
 
@@ -87,7 +87,7 @@ And the command below is run:
 
 .. code-block:: bash
 
-  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://api.semantica.dev.globoi.com/
+  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://brainiak.semantica.dev.globoi.com/
 
 All cache will be purged (a, b, c and d).
 
@@ -95,7 +95,7 @@ Otherwise, to purge only (c) and (d), the command bellow should be run:
 
 .. code-block:: bash
 
-  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://api.semantica.dev.globoi.com/person/Person
+  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://brainiak.semantica.dev.globoi.com/person/Person
 
 
 

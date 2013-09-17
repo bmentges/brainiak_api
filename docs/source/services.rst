@@ -68,36 +68,36 @@ Service Examples
 
 .. code-block:: http
 
-    GET 'http://api.semantica.dev.globoi.com'
+    GET 'http://brainiak.semantica.dev.globoi.com'
 
 **List all collections of a context**
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/place'
+  GET 'http://brainiak.semantica.dev.globoi.com/place'
 
 **List all instances of a collection**
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/place/Country'
+  GET 'http://brainiak.semantica.dev.globoi.com/place/Country'
 
 **Get a class associated with a collection**
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/place/Country/_schema'
+  GET 'http://brainiak.semantica.dev.globoi.com/place/Country/_schema'
 
 Try it yourself: `Class for Country`_
 
-.. _Class for Country: for Country: http://api.semantica.dev.globoi.com/place/Country/_schema
+.. _Class for Country: for Country: http://brainiak.semantica.dev.globoi.com/place/Country/_schema
 
 **Get a instance of a collection**
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/place/Country/Brazil'
+  GET 'http://brainiak.semantica.dev.globoi.com/place/Country/Brazil'
 
 Try it yourself: `Brazil (Country Instance)`_
 
-.. _Brazil (Country Instance): http://api.semantica.dev.globoi.com/place/Country/Brazil
+.. _Brazil (Country Instance): http://brainiak.semantica.dev.globoi.com/place/Country/Brazil

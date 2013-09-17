@@ -158,7 +158,7 @@
 <h1>Delete a Instance<a class="headerlink" href="#delete-a-instance" title="Permalink to this headline">¶</a></h1>
 <p>This service deletes a instance, given its context, class name and instance id.</p>
 <p><strong>Basic usage</strong></p>
-<div class="highlight-http"><pre>DELETE 'http://api.semantica.dev.globoi.com/place/Country/Brazil'</pre>
+<div class="highlight-http"><pre>DELETE 'http://brainiak.semantica.dev.globoi.com/place/Country/Brazil'</pre>
 </div>
 <div class="section" id="optional-parameters">
 <h2>Optional parameters<a class="headerlink" href="#optional-parameters" title="Permalink to this headline">¶</a></h2>
@@ -166,20 +166,20 @@
 <p><strong>class_uri</strong>: Set the class URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME</span></tt></p>
 <p><strong>class_prefix</strong>: by default, the class URI is defined by the API&#8217;s convention (context_uri/class_name).
 If the convention doesn&#8217;t apply, provide class_prefix so the URI will be: class_prefix/class_name.  Example:</p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
 </div>
 <p>If no <strong>class_prefix</strong> had been provided, the class URI above would be resolved as: <a class="reference external" href="http://semantica.globo.com/place/City">http://semantica.globo.com/place/City</a>.
 As <strong>class_prefix</strong> was defined, the class URI will be: <a class="reference external" href="http://dbpedia.org/City">http://dbpedia.org/City</a>.</p>
 <p><strong>instance_prefix</strong>: by default, the instance URI is defined by the API&#8217;s convention (context_uri/class_name/instance_name). If the convention doesn&#8217;t apply, provide instance_prefix so the URI will be: class_instance/instance_name.  Example:</p>
 <p>examples:</p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/place/City/Campinas_SP?instance_prefix=http%3A//dbpedia.org/'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/place/City/Campinas_SP?instance_prefix=http%3A//dbpedia.org/'</pre>
 </div>
 <p>If no <strong>instance_prefix</strong> had been provided, the instance URI above would be resolved as: <a class="reference external" href="http://semantica.globo.com/place/City/Campinas_SP">http://semantica.globo.com/place/City/Campinas_SP</a>. As <strong>instance_prefix</strong> was defined, the instance URI will be: <a class="reference external" href="http://dbpedia.org/Campinas_SP">http://dbpedia.org/Campinas_SP</a>.</p>
 <p>Other example: Instance URI is <a class="reference external" href="http://semantica.globo.com/esportes/atleta/80801">http://semantica.globo.com/esportes/atleta/80801</a></p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/esportes/Atleta/80801?instance_prefix=http://semantica.globo.com/esportes/atleta/'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/esportes/Atleta/80801?instance_prefix=http://semantica.globo.com/esportes/atleta/'</pre>
 </div>
 <p>example: Instance URI is <a class="reference external" href="http://semantica.globo.com/base/Pessoa_ImportacaoEleicoes2012TSE_10000001494">http://semantica.globo.com/base/Pessoa_ImportacaoEleicoes2012TSE_10000001494</a> and Graph URI is <a class="reference external" href="http://semantica.globo.com/">http://semantica.globo.com/</a></p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/base/Pessoa/Pessoa_ImportacaoEleicoes2012TSE_10000001494?instance_prefix=base&amp;graph_uri=glb'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/base/Pessoa/Pessoa_ImportacaoEleicoes2012TSE_10000001494?instance_prefix=base&amp;graph_uri=glb'</pre>
 </div>
 <p><strong>instance_id</strong>: Unique word identifier for an instance. This is composed with <tt class="docutils literal"><span class="pre">instance_prefix</span></tt> to form an equivalent of <tt class="docutils literal"><span class="pre">instance_uri</span></tt>.</p>
 <p><strong>instance_uri</strong>: Set the instance URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME/INSTANCE_ID</span></tt></p>

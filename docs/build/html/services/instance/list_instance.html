@@ -159,7 +159,7 @@
 <p>This service retrieves all instances of a specific class or Instances
 according a propert/value filter. The results are paginated.</p>
 <p><strong>Basic usage</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s <span class="s1">&#39;http://api.semantica.dev.globoi.com/place/Continent&#39;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/place/Continent&#39;</span>
 </pre></div>
 </div>
 <p>This will retrieve all instances of <tt class="docutils literal"><span class="pre">Continent</span></tt> in the graph <tt class="docutils literal"><span class="pre">place</span></tt></p>
@@ -180,7 +180,7 @@ It is only supported while retrieving instances and class definition.</p>
 <p><strong>per_page</strong>: Defines how many items are retrieved per page. The default value is <tt class="docutils literal"><span class="pre">10</span></tt></p>
 <blockquote>
 <div>By default, the first page containing 10 items is returned. It could also be retrieved by:</div></blockquote>
-<div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/?page=1&amp;per_page=10'</pre>
+<div class="highlight-http"><pre>GET 'http://brainiak.semantica.dev.globoi.com/?page=1&amp;per_page=10'</pre>
 </div>
 <p><strong>do_item_count</strong>: If set to 1 determines that the resulting page will compute the property <tt class="docutils literal"><span class="pre">ìtem_count</span></tt> with total number of items.
 When set, this parameter also has the side effect of including the URL for the <tt class="docutils literal"><span class="pre">last</span></tt> page in the links section.
@@ -189,7 +189,7 @@ By default <tt class="docutils literal"><span class="pre">do_item_count</span></
 <p><strong>class_uri</strong>: Set the class URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME</span></tt></p>
 <p><strong>class_prefix</strong>: by default, the class URI is defined by the API&#8217;s convention (context_uri/class_name).
 If the convention doesn&#8217;t apply, provide class_prefix so the URI will be: class_prefix/class_name.  Example:</p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
 </div>
 <p>If no <strong>class_prefix</strong> had been provided, the class URI above would be resolved as: <a class="reference external" href="http://semantica.globo.com/place/City">http://semantica.globo.com/place/City</a>.
 As <strong>class_prefix</strong> was defined, the class URI will be: <a class="reference external" href="http://dbpedia.org/City">http://dbpedia.org/City</a>.</p>
@@ -197,21 +197,21 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
 <p><strong>o</strong>: Filters the instances that have the (<strong>o</strong>)bject specified used in a triple.</p>
 <p>By combining <tt class="docutils literal"><span class="pre">p</span></tt> and/or <tt class="docutils literal"><span class="pre">o</span></tt> parameters you can specify a filter for instances that have
 this property and/or object values. For example:</p>
-<div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/place/Country/?p=place:partOfContinent&amp;o=http://semantica.globo.com/place/Continent/America'</pre>
+<div class="highlight-http"><pre>GET 'http://brainiak.semantica.dev.globoi.com/place/Country/?p=place:partOfContinent&amp;o=http://semantica.globo.com/place/Continent/America'</pre>
 </div>
 <p>It is also possible to set multiple <tt class="docutils literal"><span class="pre">p's</span></tt> and/or <tt class="docutils literal"><span class="pre">o's</span></tt>, adding a number after them (p1, o1, p2, o2, etc). Example:</p>
-<div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/place/City/?o=base:UF_RJ&amp;p1=place:longitude&amp;p2=place:latitude&amp;per_page=1''</pre>
+<div class="highlight-http"><pre>GET 'http://brainiak.semantica.dev.globoi.com/place/City/?o=base:UF_RJ&amp;p1=place:longitude&amp;p2=place:latitude&amp;per_page=1''</pre>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;@context&quot;: {
         &quot;@language&quot;: &quot;pt&quot;
     }, 
     &quot;@id&quot;: &quot;http://semantica.globo.com/place/City&quot;, 
-    &quot;_base_url&quot;: &quot;http://api.semantica.dev.globoi.com/place/City&quot;, 
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City&quot;, 
     &quot;_class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;, 
     &quot;_first_args&quot;: &quot;p2=place:latitude&amp;per_page=1&amp;p1=place:longitude&amp;page=1&amp;o=base:UF_RJ&quot;, 
     &quot;_next_args&quot;: &quot;p2=place:latitude&amp;per_page=1&amp;p1=place:longitude&amp;page=2&amp;o=base:UF_RJ&quot;, 
-    &quot;_schema_url&quot;: &quot;http://api.semantica.dev.globoi.com/place/City/_schema&quot;, 
+    &quot;_schema_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;, 
     &quot;items&quot;: [
         {
             &quot;@id&quot;: &quot;http://semantica.globo.com/base/Cidade_Porto_Real_RJ&quot;, 
@@ -236,6 +236,7 @@ From the example above: <tt class="docutils literal"><span class="pre">p:</span>
 <p><strong>sort_by</strong>: Defines predicate used to order instances. The sorting can also behave as a <strong>p</strong> filter, read <strong>sort_include_empty</strong>. Usage: <tt class="docutils literal"><span class="pre">sort_by=rdfs:label</span></tt> or <tt class="docutils literal"><span class="pre">sort_by=dbprop:stadium</span></tt>.</p>
 <p><strong>sort_order</strong>: Defines if ordering will be ascending or descending. The default is ascending. E.g: <tt class="docutils literal"><span class="pre">sort_order=asc</span></tt> or <tt class="docutils literal"><span class="pre">sort_order=desc</span></tt>.</p>
 <p><strong>sort_include_empty</strong>: By default, items that don&#8217;t define <strong>sort_by</strong> property are also listed (<tt class="docutils literal"><span class="pre">sort_include_empty=1</span></tt>). If it is desired to exclude such items, set <tt class="docutils literal"><span class="pre">sort_include_empty=0</span></tt>.</p>
+<p><strong>direct_instances_only</strong>: If set to 1 determines that the response will only contain instances of a certain class (ignoring sub-classes&#8217; instances). Otherwise, if it is set to 0, it returns both direct class&#8217; and subclasses&#8217; instances. The default value for <tt class="docutils literal"><span class="pre">direct_instances_only</span></tt> is 1.</p>
 </div>
 <div class="section" id="possible-responses">
 <h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>
@@ -247,11 +248,11 @@ By default, the first page containing 10 items is returned (<tt class="docutils 
         &quot;@language&quot;: &quot;pt&quot;
     }, 
     &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent&quot;, 
-    &quot;_base_url&quot;: &quot;http://api.semantica.dev.globoi.com/place/Continent&quot;, 
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Continent&quot;, 
     &quot;_class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;, 
     &quot;_first_args&quot;: &quot;per_page=10&amp;page=1&quot;, 
     &quot;_next_args&quot;: &quot;per_page=10&amp;page=2&quot;, 
-    &quot;_schema_url&quot;: &quot;http://api.semantica.dev.globoi.com/place/Continent/_schema&quot;, 
+    &quot;_schema_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Continent/_schema&quot;, 
     &quot;items&quot;: [
         {
             &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Africa&quot;, 

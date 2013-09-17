@@ -28,7 +28,6 @@ def do_range_search(params):
 
     request_body = _build_body_query(params, classes, search_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)
-
     items, item_count = _build_items(elasticsearch_result, class_label_dict, title_fields)
 
     if not items:

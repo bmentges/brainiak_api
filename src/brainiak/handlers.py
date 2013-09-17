@@ -32,7 +32,7 @@ from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
 from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, DEFAULT_PARAMS, RequiredParamMissing, validate_body_params, DefaultParamsDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
-from brainiak.utils.sparql import extract_po_tuples
+from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes
 
 
 logger = LazyObject(get_logger)
@@ -163,7 +163,11 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
 
     def _notify_bus(self, **kwargs):
         if kwargs.get("instance_data"):
-            kwargs["instance_data"] = expand_all_uris_recursively(kwargs["instance_data"])
+            instance_data = kwargs["instance_data"]
+            expanded_instance_data = expand_all_uris_recursively(instance_data)
+            clean_instance_data = clean_up_reserved_attributes(expanded_instance_data)
+            kwargs["instance_data"] = clean_instance_data
+
         notify_bus(instance=self.query_params["instance_uri"],
                    klass=self.query_params["class_uri"],
                    graph=self.query_params["graph_uri"],

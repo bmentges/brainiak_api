@@ -21,7 +21,7 @@ Sending the unknown parameters in the request, the response is a 400 with a JSON
 
  HTTP/1.1 400 Bad Request
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/place/Country/Brazil?invalid_param=1' | python -mjson.tool
+.. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/place/Country/Brazil?invalid_param=1' | python -mjson.tool
   :shell:
 
 

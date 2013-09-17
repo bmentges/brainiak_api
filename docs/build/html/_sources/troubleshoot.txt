@@ -66,10 +66,10 @@ E.g, the request below returns 404:
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/G1/Materia/?p1=base:status_de_publicacao&o1=P&p2=G1:cita_a_entidade&o2=http://semantica.globo.com/base/UF_MA'
+  GET 'http://brainiak.semantica.dev.globoi.com/G1/Materia/?p1=base:status_de_publicacao&o1=P&p2=G1:cita_a_entidade&o2=http://semantica.globo.com/base/UF_MA'
 
 While this second request is successful:
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/G1/Materia/?p1=base:status_de_publicacao&o1=P&p2=G1:cita_a_entidade&o2=http://semantica.globo.com/base/UF_MA&lang=undefined'
+  GET 'http://brainiak.semantica.dev.globoi.com/G1/Materia/?p1=base:status_de_publicacao&o1=P&p2=G1:cita_a_entidade&o2=http://semantica.globo.com/base/UF_MA&lang=undefined'

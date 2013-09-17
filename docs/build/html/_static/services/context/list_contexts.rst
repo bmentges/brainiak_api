@@ -10,7 +10,7 @@ This resource is **cached**. Read :doc:`/services/cache` for more information.
 
 .. code-block:: bash
 
-  $ curl -s 'http://api.semantica.dev.globoi.com/'
+  $ curl -s 'http://brainiak.semantica.dev.globoi.com/'
 
 
 Optional parameters
@@ -28,7 +28,7 @@ Possible responses
 
 If there are contexts, the response body is a JSON containing contexts' titles, resources_id and @ids (URIs).
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/' | python -mjson.tool
+.. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/' | python -mjson.tool
   :shell:
 
 **Status 400**
@@ -36,7 +36,7 @@ If there are contexts, the response body is a JSON containing contexts' titles, 
 If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.
 
-.. program-output:: curl -s 'http://api.semantica.dev.globoi.com/?invalid_param=1' | python -mjson.tool
+.. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/?invalid_param=1' | python -mjson.tool
   :shell:
 
 **Status 404**

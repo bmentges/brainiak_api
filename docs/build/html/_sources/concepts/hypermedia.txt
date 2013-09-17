@@ -21,10 +21,10 @@ For example:
 
 ::
 
-    $ curl -i http://api.semantica.dev.globoi.com
+    $ curl -i http://brainiak.semantica.dev.globoi.com
 
     HTTP/1.1 200 OK
-    Content-Type: application/json; profile=http://api.semantica.dev.globoi.com/_schema_list
+    Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
     Content-Length: 1007
     ...
 
@@ -46,21 +46,21 @@ We give an example of a link section below:
   {
     "links": [
       {
-        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
+        "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/Male",
         "rel": "self"
       },
       {
 
-        "href": "http://api.semantica.dev.globoi.com/person/Gender/_schema",
+        "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/_schema",
         "rel": "describedBy"
       },
       {
-        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
+        "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/Male",
         "method": "PUT",
         "rel": "update"
       },
       {
-        "href": "http://api.semantica.dev.globoi.com/person/Gender/Male",
+        "href": "http://brainiak.semantica.dev.globoi.com/person/Gender/Male",
         "method": "DELETE",
         "rel": "delete"
       }

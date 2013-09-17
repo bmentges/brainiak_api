@@ -164,12 +164,12 @@
 <p>Cache is enabled or disabled at the <tt class="docutils literal"><span class="pre">settings.py</span></tt> of the application, through the variable <tt class="docutils literal"><span class="pre">ENABLE_CACHE</span></tt>.
 When this global cache configuration is enabled, cache is set (or not) for each resource of the API.
 To check if cache is enabled for some resource, run:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X OPTIONS http://api.semantica.dev.globoi.com/
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X OPTIONS http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 204 No Content
 Server: nginx
-Date: Wed, 28 Aug 2013 18:37:01 GMT
+Date: Tue, 17 Sep 2013 13:55:59 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 0
 Connection: keep-alive
@@ -194,34 +194,34 @@ Access-Control-Allow-Headers: Content-Type, Authorization
 <div class="section" id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
 <p>The first time a URL is accessed, there will be no cache - so <tt class="docutils literal"><span class="pre">X-Cache</span></tt>  will return <tt class="docutils literal"><span class="pre">MISS</span></tt>:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X GET http://api.semantica.dev.globoi.com/
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X GET http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Wed, 28 Aug 2013 18:37:02 GMT
-Content-Type: application/json; profile=http://api.semantica.dev.globoi.com/_schema_list
-Content-Length: 994
+Date: Tue, 17 Sep 2013 13:56:00 GMT
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
+Content-Length: 1002
 Connection: keep-alive
-X-Cache: MISS from api.semantica.dev.globoi.com
-Last-Modified: Wed, 28 Aug 2013 15:37:02 -0300
-Etag: &quot;00ef846b0240b30b72c241e34d8f8eba40df29aa&quot;
+X-Cache: MISS from brainiak.semantica.dev.globoi.com
+Last-Modified: Tue, 17 Sep 2013 10:56:00 -0300
+Etag: &quot;79f884695120bde1f4b3c3e5877a07ce4f07b02d&quot;
 Access-Control-Allow-Origin: *
 </pre></div>
 </div>
 <p>From the second time on, <tt class="docutils literal"><span class="pre">X-Cache</span></tt> will contain <tt class="docutils literal"><span class="pre">HIT</span></tt> and <tt class="docutils literal"><span class="pre">Last-Modified</span></tt> will be the same:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X GET http://api.semantica.dev.globoi.com/
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X GET http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Wed, 28 Aug 2013 18:37:03 GMT
-Content-Type: application/json; profile=http://api.semantica.dev.globoi.com/_schema_list
-Content-Length: 994
+Date: Tue, 17 Sep 2013 13:56:01 GMT
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
+Content-Length: 1002
 Connection: keep-alive
-X-Cache: HIT from api.semantica.dev.globoi.com
-Last-Modified: Wed, 28 Aug 2013 15:37:02 -0300
-Etag: &quot;546b7cfa6c88fa32aa30a6e8f82c3743f5640ff5&quot;
+X-Cache: HIT from brainiak.semantica.dev.globoi.com
+Last-Modified: Tue, 17 Sep 2013 10:56:00 -0300
+Etag: &quot;10f7f0dfafa42a9e1089669678b8526416ec05d5&quot;
 Access-Control-Allow-Origin: *
 </pre></div>
 </div>
@@ -230,12 +230,12 @@ Access-Control-Allow-Origin: *
 <h2>Purge<a class="headerlink" href="#purge" title="Permalink to this headline">¶</a></h2>
 <p>To cleanup cache, the <tt class="docutils literal"><span class="pre">PURGE</span></tt> method should be used:</p>
 <p>Example:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X PURGE http://api.semantica.dev.globoi.com/
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X PURGE http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Wed, 28 Aug 2013 18:37:03 GMT
+Date: Tue, 17 Sep 2013 13:56:01 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 0
 Connection: keep-alive
@@ -247,7 +247,7 @@ Access-Control-Allow-Origin: *
 <div class="section" id="recursive-purge">
 <h2>Recursive purge<a class="headerlink" href="#recursive-purge" title="Permalink to this headline">¶</a></h2>
 <p>It is also possible to cleanup recursively, calling <tt class="docutils literal"><span class="pre">PURGE</span></tt> with the header <tt class="docutils literal"><span class="pre">X-Cache-Recursive</span></tt> set to <tt class="docutils literal"><span class="pre">1</span></tt>:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X --header <span class="s2">&quot;X-Cache-Recursive: 1&quot;</span>  PURGE http://api.semantica.dev.globoi.com/
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X --header <span class="s2">&quot;X-Cache-Recursive: 1&quot;</span>  PURGE http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
 <p>Be careful when using this feature, all cached resources from that point on will be purged.</p>
@@ -259,12 +259,12 @@ Access-Control-Allow-Origin: *
 <li><a class="reference external" href="http://localhost:5100/person/Person/IsaacNewton">http://localhost:5100/person/Person/IsaacNewton</a></li>
 </ol>
 <p>And the command below is run:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X --header <span class="s2">&quot;X-Cache-Recursive: 1&quot;</span>  PURGE http://api.semantica.dev.globoi.com/
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X --header <span class="s2">&quot;X-Cache-Recursive: 1&quot;</span>  PURGE http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
 <p>All cache will be purged (a, b, c and d).</p>
 <p>Otherwise, to purge only (c) and (d), the command bellow should be run:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X --header <span class="s2">&quot;X-Cache-Recursive: 1&quot;</span>  PURGE http://api.semantica.dev.globoi.com/person/Person
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X --header <span class="s2">&quot;X-Cache-Recursive: 1&quot;</span>  PURGE http://brainiak.semantica.dev.globoi.com/person/Person
 </pre></div>
 </div>
 </div>

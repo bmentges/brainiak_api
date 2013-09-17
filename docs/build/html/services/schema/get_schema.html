@@ -159,7 +159,7 @@
 <p>A class is where the definition of the data structure resides.</p>
 <p>In this service, we can get a class defined in some context.</p>
 <p><strong>Basic usage</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s <span class="s1">&#39;http://api.semantica.dev.globoi.com/place/City/_schema&#39;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/place/City/_schema&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
@@ -180,26 +180,26 @@
             &quot;rel&quot;: &quot;self&quot;
         }, 
         {
-            &quot;href&quot;: &quot;http://api.semantica.dev.globoi.com/place/City/_schema&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;, 
             &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;class&quot;
         }, 
         {
-            &quot;href&quot;: &quot;http://api.semantica.dev.globoi.com/place/City/?class_prefix=http://semantica.globo.com/place/&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http://semantica.globo.com/place/&quot;, 
             &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;collection&quot;
         }, 
         {
-            &quot;href&quot;: &quot;http://api.semantica.dev.globoi.com/place/City/{_resource_id}&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/{_resource_id}&quot;, 
             &quot;method&quot;: &quot;DELETE&quot;, 
             &quot;rel&quot;: &quot;delete&quot;
         }, 
         {
-            &quot;href&quot;: &quot;http://api.semantica.dev.globoi.com/place/City/{_resource_id}&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/{_resource_id}&quot;, 
             &quot;method&quot;: &quot;PUT&quot;, 
             &quot;rel&quot;: &quot;update&quot;, 
             &quot;schema&quot;: {
-                &quot;$ref&quot;: &quot;http://api.semantica.dev.globoi.com/place/City/_schema&quot;
+                &quot;$ref&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;
             }
         }
     ], 
@@ -398,7 +398,7 @@ It is only supported while retrieving instances and class definition.</p>
 <p><strong>class_uri</strong>: Set the class URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME</span></tt></p>
 <p><strong>class_prefix</strong>: by default, the class URI is defined by the API&#8217;s convention (context_uri/class_name).
 If the convention doesn&#8217;t apply, provide class_prefix so the URI will be: class_prefix/class_name.  Example:</p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
 </div>
 <p>If no <strong>class_prefix</strong> had been provided, the class URI above would be resolved as: <a class="reference external" href="http://semantica.globo.com/place/City">http://semantica.globo.com/place/City</a>.
 As <strong>class_prefix</strong> was defined, the class URI will be: <a class="reference external" href="http://dbpedia.org/City">http://dbpedia.org/City</a>.</p>
@@ -407,7 +407,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
 <h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>
 <p><strong>Status 200</strong></p>
 <p>If the class exists, the response body is a JSON representing the class definition.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s <span class="s1">&#39;http://api.semantica.dev.globoi.com/place/Country/_schema&#39;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/place/Country/_schema&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
@@ -428,26 +428,26 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;rel&quot;: &quot;self&quot;
         }, 
         {
-            &quot;href&quot;: &quot;http://api.semantica.dev.globoi.com/place/Country/_schema&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/_schema&quot;, 
             &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;class&quot;
         }, 
         {
-            &quot;href&quot;: &quot;http://api.semantica.dev.globoi.com/place/Country/?class_prefix=http://semantica.globo.com/place/&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/?class_prefix=http://semantica.globo.com/place/&quot;, 
             &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;collection&quot;
         }, 
         {
-            &quot;href&quot;: &quot;http://api.semantica.dev.globoi.com/place/Country/{_resource_id}&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/{_resource_id}&quot;, 
             &quot;method&quot;: &quot;DELETE&quot;, 
             &quot;rel&quot;: &quot;delete&quot;
         }, 
         {
-            &quot;href&quot;: &quot;http://api.semantica.dev.globoi.com/place/Country/{_resource_id}&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/{_resource_id}&quot;, 
             &quot;method&quot;: &quot;PUT&quot;, 
             &quot;rel&quot;: &quot;update&quot;, 
             &quot;schema&quot;: {
-                &quot;$ref&quot;: &quot;http://api.semantica.dev.globoi.com/place/Country/_schema&quot;
+                &quot;$ref&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/_schema&quot;
             }
         }
     ], 

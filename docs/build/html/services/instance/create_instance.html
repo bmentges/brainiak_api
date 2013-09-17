@@ -158,17 +158,17 @@
 <h1>Create a Instance<a class="headerlink" href="#create-a-instance" title="Permalink to this headline">¶</a></h1>
 <p>This service allows the creation of a new instance, provided its context, class name and JSON.</p>
 <p><strong>Basic usage</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X POST -T <span class="s2">&quot;new_york_city.json&quot;</span> http://api.semantica.dev.globoi.com/place/City
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X POST -T <span class="s2">&quot;new_york_city.json&quot;</span> http://brainiak.semantica.dev.globoi.com/place/City
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 201 Created
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 500 Internal Server Error
 Server: nginx
-Date: Wed, 28 Aug 2013 18:37:05 GMT
-Content-Type: application/json; profile=http://api.semantica.dev.globoi.com/place/City/_schema_list
-Content-Length: 0
+Date: Tue, 17 Sep 2013 13:56:04 GMT
+Content-Type: application/json; charset=UTF-8
+Content-Length: 100
 Connection: keep-alive
-Location: http://api.semantica.dev.globoi.com/place/City/b2906002-2827-4abc-8f17-3e51c2f60221
-Access-Control-Allow-Origin: *
+
+{&quot;errors&quot;: [&quot;HTTP error: 500\nAccess to backend service failed.  HTTP 500: Internal Server Error.&quot;]}
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -176,7 +176,7 @@ Access-Control-Allow-Origin: *
 <p class="last">When using curl, the &#8220;-T&#8221; param will append the filename to the actual URL, if the URL parameter ends with a &#8220;/&#8221;.
 In order to avoid that, either remove the last &#8220;/&#8221; or use &#8216;-d &#64;new_york_city.json&#8217; to expand the file contents.</p>
 </div>
-<p>Sample JSON &#8220;new_city.json&#8221; for the class <a class="reference external" href="http://api.semantica.dev.globoi.com/place/City/_schema">City</a>:</p>
+<p>Sample JSON &#8220;new_city.json&#8221; for the class <a class="reference external" href="http://brainiak.semantica.dev.globoi.com/place/City/_schema">City</a>:</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
     <span class="nt">&quot;@context&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;rdf&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;</span><span class="p">,</span>
@@ -195,7 +195,7 @@ In order to avoid that, either remove the last &#8220;/&#8221; or use &#8216;-d 
 </pre></div>
 </div>
 <p>Note that prefixes are defined in the &#8220;&#64;context&#8221; section.
-<a class="reference external" href="http://api.semantica.dev.globoi.com/_prefixes">Default prefixes</a> are implicit and don&#8217;t need to be declared.</p>
+<a class="reference external" href="http://brainiak.semantica.dev.globoi.com/_prefixes">Default prefixes</a> are implicit and don&#8217;t need to be declared.</p>
 <p>Besides using <tt class="docutils literal"><span class="pre">POST</span></tt> to create new instances, it is also possible to use <tt class="docutils literal"><span class="pre">PUT</span></tt> (for more information, see <a class="reference internal" href="edit_instance.html#edit-instance"><em>Edit a Instance</em></a>).
 In this case, the <tt class="docutils literal"><span class="pre">instance_id</span></tt> should be provided, which must be unique in the specified context.
 The recommended policy is to use <tt class="docutils literal"><span class="pre">POST</span></tt>, as it will assure uniqueness of the identifiers.</p>
@@ -205,7 +205,7 @@ The recommended policy is to use <tt class="docutils literal"><span class="pre">
 <p><strong>class_uri</strong>: Set the class URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME</span></tt></p>
 <p><strong>class_prefix</strong>: by default, the class URI is defined by the API&#8217;s convention (context_uri/class_name).
 If the convention doesn&#8217;t apply, provide class_prefix so the URI will be: class_prefix/class_name.  Example:</p>
-<div class="highlight-http"><pre>'http://api.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
 </div>
 <p>If no <strong>class_prefix</strong> had been provided, the class URI above would be resolved as: <a class="reference external" href="http://semantica.globo.com/place/City">http://semantica.globo.com/place/City</a>.
 As <strong>class_prefix</strong> was defined, the class URI will be: <a class="reference external" href="http://dbpedia.org/City">http://dbpedia.org/City</a>.</p>

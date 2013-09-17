@@ -160,7 +160,7 @@
 Contexts that contain no data are not listed.</p>
 <p>This resource is <strong>cached</strong>. Read <a class="reference internal" href="../cache.html"><em>Caching</em></a> for more information.</p>
 <p><strong>Basic usage</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s <span class="s1">&#39;http://api.semantica.dev.globoi.com/&#39;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/&#39;</span>
 </pre></div>
 </div>
 <div class="section" id="optional-parameters">
@@ -169,7 +169,7 @@ Contexts that contain no data are not listed.</p>
 <p><strong>per_page</strong>: Defines how many items are retrieved per page. The default value is <tt class="docutils literal"><span class="pre">10</span></tt></p>
 <blockquote>
 <div>By default, the first page containing 10 items is returned. It could also be retrieved by:</div></blockquote>
-<div class="highlight-http"><pre>GET 'http://api.semantica.dev.globoi.com/?page=1&amp;per_page=10'</pre>
+<div class="highlight-http"><pre>GET 'http://brainiak.semantica.dev.globoi.com/?page=1&amp;per_page=10'</pre>
 </div>
 <p><strong>do_item_count</strong>: If set to 1 determines that the resulting page will compute the property <tt class="docutils literal"><span class="pre">ìtem_count</span></tt> with total number of items.
 When set, this parameter also has the side effect of including the URL for the <tt class="docutils literal"><span class="pre">last</span></tt> page in the links section.
@@ -180,7 +180,7 @@ By default <tt class="docutils literal"><span class="pre">do_item_count</span></
 <p><strong>Status 200</strong></p>
 <p>If there are contexts, the response body is a JSON containing contexts&#8217; titles, resources_id and &#64;ids (URIs).</p>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;_base_url&quot;: &quot;http://api.semantica.dev.globoi.com&quot;, 
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com&quot;, 
     &quot;_first_args&quot;: &quot;page=1&quot;, 
     &quot;_next_args&quot;: &quot;page=2&quot;, 
     &quot;items&quot;: [
@@ -195,24 +195,9 @@ By default <tt class="docutils literal"><span class="pre">do_item_count</span></
             &quot;title&quot;: &quot;glb&quot;
         }, 
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/person/&quot;, 
-            &quot;resource_id&quot;: &quot;person&quot;, 
-            &quot;title&quot;: &quot;person&quot;
-        }, 
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/organization/&quot;, 
-            &quot;resource_id&quot;: &quot;organization&quot;, 
-            &quot;title&quot;: &quot;organization&quot;
-        }, 
-        {
             &quot;@id&quot;: &quot;http://semantica.globo.com/G1/&quot;, 
             &quot;resource_id&quot;: &quot;G1&quot;, 
             &quot;title&quot;: &quot;G1&quot;
-        }, 
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/&quot;, 
-            &quot;resource_id&quot;: &quot;place&quot;, 
-            &quot;title&quot;: &quot;place&quot;
         }, 
         {
             &quot;@id&quot;: &quot;http://semantica.globo.com/ego/&quot;, 
@@ -225,14 +210,29 @@ By default <tt class="docutils literal"><span class="pre">do_item_count</span></
             &quot;title&quot;: &quot;tvg&quot;
         }, 
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/base/&quot;, 
-            &quot;resource_id&quot;: &quot;base&quot;, 
-            &quot;title&quot;: &quot;base&quot;
+            &quot;@id&quot;: &quot;http://semantica.globo.com/upper/&quot;, 
+            &quot;resource_id&quot;: &quot;upper&quot;, 
+            &quot;title&quot;: &quot;upper&quot;
+        }, 
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/person/&quot;, 
+            &quot;resource_id&quot;: &quot;person&quot;, 
+            &quot;title&quot;: &quot;person&quot;
+        }, 
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/&quot;, 
+            &quot;resource_id&quot;: &quot;place&quot;, 
+            &quot;title&quot;: &quot;place&quot;
         }, 
         {
             &quot;@id&quot;: &quot;http://semantica.globo.com/eureka/&quot;, 
             &quot;resource_id&quot;: &quot;eureka&quot;, 
             &quot;title&quot;: &quot;eureka&quot;
+        }, 
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/organization/&quot;, 
+            &quot;resource_id&quot;: &quot;organization&quot;, 
+            &quot;title&quot;: &quot;organization&quot;
         }
     ]
 }

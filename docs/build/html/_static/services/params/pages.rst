@@ -6,4 +6,4 @@
 
 .. code-block:: http
 
-  GET 'http://api.semantica.dev.globoi.com/?page=1&per_page=10'
+  GET 'http://brainiak.semantica.dev.globoi.com/?page=1&per_page=10'

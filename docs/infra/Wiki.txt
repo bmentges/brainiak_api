@@ -15,6 +15,11 @@ Os seguintes tópicos motivaram o desenvolvimento do Brainiak:
    * Melhorar o gerenciamento de dados de "triple stores"
    * Prover um único e coerente interface para outros bancos de dados, incluindo "non triple stores" (exemplo: [[http://www.elasticsearch.org][ElasticSearch]]).
 
+O Brainiak faz parte de um conjunto de APIs que são disponibilizadas e gerenciadas através do [[http://wiki.globoi.com/view/Producao/ApiManager][API Manager]].
+Desta forma, é esperado que *todos* os acessos oriundos de aplicações da Globo.com sejam feitos através do API Manager.
+Para tal, o API Manager faz requisiões ao Brainiak passando no header HTTP Host o valor 'brainiak.api.backstage.globoi.com'.
+Isso só é possível pois este hostname foi liberado no webserver da farm do projeto Brainiak.
+
 ---++ Usuário do projeto
 
    * <b>brainiak</b>

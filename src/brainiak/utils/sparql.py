@@ -279,11 +279,26 @@ def create_explicit_triples(instance_uri, instance_data):
                 if has_lang(object_value):
                     object_ = object_value
                 else:
+                    object_value = escape_quotes(object_value)
                     object_ = '"%s"' % object_value
             triple = (instance, predicate, object_)
             triples.append(triple)
 
     return triples
+
+
+ESCAPED_QUOTES = {
+    u'"': u'\\"',
+    u"'": u"\\'"
+}
+
+
+def escape_quotes(object_value):
+    escaped_value = object_value
+    for char in ESCAPED_QUOTES:
+        escaped_value = escaped_value.replace(char, ESCAPED_QUOTES[char])
+
+    return escaped_value
 
 
 def create_implicit_triples(instance_uri, class_uri):

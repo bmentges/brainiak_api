@@ -40,7 +40,6 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
 
         requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
 
-
     def tearDown(self):
         super(TestRangeSearch, self).setUp()
         requests.delete(self.elastic_request_url)

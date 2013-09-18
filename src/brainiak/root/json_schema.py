@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from brainiak.suggest.suggest import SUGGEST_PARAM_SCHEMA
 from brainiak.utils.links import merge_schemas, pagination_schema
 
 
@@ -46,44 +47,7 @@ def schema():
                 "href": "/_suggest",
                 "method": "POST",
                 "rel": "suggest",
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "pattern": {
-                            "required": True,
-                            "type": "string"
-                        },
-                        "predicate": {
-                            "required": True,
-                            "type": "string",
-                            "format": "uri"
-                        },
-                        "search_fields": {
-                            "required": False,
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "format": "uri"
-                            }
-                        },
-                        "search_classes": {
-                            "required": False,
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "format": "uri"
-                            }
-                        },
-                        "search_graphs": {
-                            "required": False,
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "format": "uri"
-                            }
-                        },
-                    },
-                }
+                "schema": SUGGEST_PARAM_SCHEMA
             },
             {
                 "href": "/{{context_id}}/{{collection_id}}",

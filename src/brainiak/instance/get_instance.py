@@ -85,11 +85,11 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
 DEFINE input:inference <%(ruleset)s>
-SELECT DISTINCT ?predicate ?object ?object_label ?super_property {
+SELECT DISTINCT ?predicate ?object %(object_label_variable)s ?super_property {
     <%(instance_uri)s> a <%(class_uri)s> ;
     ?predicate ?object .
 OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
-OPTIONAL { ?object rdfs:label ?object_label } .
+%(object_label_optional_clause)s
 FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
 }
 """
@@ -97,5 +97,13 @@ FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")
 
 def query_all_properties_and_objects(query_params):
     query_params["ruleset"] = settings.DEFAULT_RULESET_URI
+
+    expand_object_properties = query_params.get("expand_object_properties") == "1"
+    if expand_object_properties:
+        query_params["object_label_variable"] = "?object_label"
+        query_params["object_label_optional_clause"] = "OPTIONAL { ?object rdfs:label ?object_label } ."
+    else:
+        query_params["object_label_variable"] = ""
+        query_params["object_label_optional_clause"] = ""
     query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % query_params
     return triplestore.query_sparql(query, query_params.triplestore_config)

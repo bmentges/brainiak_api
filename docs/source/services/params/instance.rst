@@ -25,3 +25,5 @@ example: Instance URI is http://semantica.globo.com/base/Pessoa_ImportacaoEleico
 **instance_id**: Unique word identifier for an instance. This is composed with ``instance_prefix`` to form an equivalent of ``instance_uri``.
 
 **instance_uri**: Set the instance URI, for cases where the URI is not like ``http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME/INSTANCE_ID``
+
+**expand_object_properties**: If set to 1 determines that the ObjectProperties of the response will map objects as ``{"@id": "object:uri", "title": "object label"}``. The default value for ``expand_object_properties`` is 0 and the objects of ObjectProperties are represented as strings such as ``"object:uri"``.

@@ -237,8 +237,8 @@ def _build_items(result, class_label_dict, title_fields):
     if item_count:
         for item in result["hits"]["hits"]:
             item_dict = {
-                "title": _get_title_value(item["fields"], title_fields),
                 "@id": item["_id"],
+                "title": _get_title_value(item["fields"], title_fields),
                 "@type": item["_type"],
                 "type_title": class_label_dict[item["_type"]]
             }

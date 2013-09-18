@@ -140,7 +140,9 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
             "lang": "en",
             "class_uri": "http://dbpedia.org/ontology/News",
             "instance_uri": "http://brmedia.com/news_cricket",
-            "ruleset": "http://brmedia.com/ruleset"
+            "ruleset": "http://brmedia.com/ruleset",
+            "object_label_variable": "?object_label",
+            "object_label_optional_clause": "OPTIONAL { ?object rdfs:label ?object_label } ."
         }
         query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % params
         computed = self.query(query, False)["results"]["bindings"]

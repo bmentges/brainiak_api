@@ -77,7 +77,7 @@ def do_range_search(query_params, suggest_params):
 
     title_fields = [RDFS_LABEL]
     title_fields += _get_subproperties(query_params, RDFS_LABEL)
-    search_fields = list(set(_get_search_fields(search_params) + title_fields))
+    search_fields = list(set(_get_search_fields(query_params, suggest_params) + title_fields))
 
     request_body = _build_body_query(query_params, search_params, response_params, classes, search_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)
@@ -149,11 +149,11 @@ def _get_subproperties(params, super_property):
     return filter_values(result, "property")
 
 
-def _get_search_fields(search_params):
+def _get_search_fields(query_params, search_params):
     search_fields_in_search_params = search_params.get("fields", [])
     search_fields = set(search_fields_in_search_params)
     for field in search_fields_in_search_params:
-        sub_properties = _get_subproperties(search_params, field)
+        sub_properties = _get_subproperties(query_params, field)
         search_fields.update(sub_properties)
 
     return list(search_fields)

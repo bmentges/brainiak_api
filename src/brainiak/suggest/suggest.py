@@ -5,8 +5,6 @@ from brainiak.search_engine import run_search
 from brainiak.utils.sparql import add_language_support, compress_keys_and_values, filter_values, is_result_empty
 from brainiak.utils.resources import calculate_offset, decorate_dict_with_pagination
 
-SUGGEST_REQUIRED_PARAMS = ('pattern', 'predicate')
-SUGGEST_OPTIONAL_PARAMS = ('search_fields', 'search_classes', 'search_graphs')
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 SUGGEST_PARAM_SCHEMA = {

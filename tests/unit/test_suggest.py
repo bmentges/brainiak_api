@@ -27,23 +27,26 @@ class RangeSearchTestCase(TestCase):
             "filter": {}
         }
 
-        params = {
-            "pattern": "Rio De Jan",
+        query_params = {
             "page": "1"
         }
+        search_params = {
+            "pattern": "Rio De Jan",
+        }
+        response_params = {}
 
-        response = _build_body_query(params, [], ["rdfs:label", "upper:name"])
+        response = _build_body_query(query_params, search_params, response_params, [], ["rdfs:label", "upper:name"])
         self.assertEqual(expected, response)
 
     @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])
     def test_validate_classes_restriction(self, mocked_filter_values):
         expected = ["class1"]
 
-        params = {
-            "search_classes": ["class1"]
+        search_params = {
+            "classes": ["class1"]
         }
 
-        response = _validate_class_restriction(params, None)  # None because filter_values is mocked
+        response = _validate_class_restriction(search_params, None)  # None because filter_values is mocked
         self.assertEqual(expected, response)
 
     @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])
@@ -58,8 +61,8 @@ class RangeSearchTestCase(TestCase):
     @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])
     def test_validate_classes_restriction_raises_error(self, mocked_filter_values):
         params = {
-            "search_classes": ["class1", "class2", "class3"],
-            "predicate": "predicate1"
+            "classes": ["class1", "class2", "class3"],
+            "target": "predicate1"
         }
         self.assertRaises(HTTPError, _validate_class_restriction, params, None)  # None because filter_values is mocked
 
@@ -68,7 +71,7 @@ class RangeSearchTestCase(TestCase):
         expected = ["graph1"]
 
         params = {
-            "search_graphs": ["graph1"]
+            "graphs": ["graph1"]
         }
 
         response = _validate_graph_restriction(params, None)  # None because filter_values is mocked
@@ -87,8 +90,8 @@ class RangeSearchTestCase(TestCase):
     def test_validate_graphs_restriction_raises_error(self, mocked_filter_values):
         expected_message = "Classes in the range of predicate 'predicate1' are not in graphs ['graph3']"
         params = {
-            "search_graphs": ["graph1", "graph2", "graph3"],
-            "predicate": "predicate1"
+            "graphs": ["graph1", "graph2", "graph3"],
+            "target": "predicate1"
         }
         try:
             _validate_graph_restriction(params, None)  # None because filter_values is mocked
@@ -104,7 +107,7 @@ class RangeSearchTestCase(TestCase):
         expected_message = "Classes in the range of predicate 'predicate1' are in graphs without instances," + \
             " such as: ['graph_without_instances1', 'graph_without_instances2']"
         params = {
-            "predicate": "predicate1"
+            "target": "predicate1"
         }
         try:
             _validate_graph_restriction(params, None)  # None because filter_values is mocked
@@ -210,7 +213,7 @@ class RangeSearchTestCase(TestCase):
     def test_get_search_fields(self, mocked_get_subproperties):
         expected = {"property1", "property2", "rdfs:label"}
         params = {
-            "search_fields": ["rdfs:label"]
+            "fields": ["rdfs:label"]
         }
         search_fields = _get_search_fields(params)
 

@@ -69,8 +69,7 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 400)
 
     @patch("brainiak.handlers.logger")
-    @patch("brainiak.handlers.notify_bus")
-    def test_edit_instance_that_doesnt_exist_201(self, log, notify_bus):  # Bus notification test is in a separated test file
+    def test_edit_instance_that_doesnt_exist_201(self, log):  # Bus notification test is in a separated test file
         response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='PUT', body=json.dumps({"rdfs:label": "Inexistent city"}))
         self.assertEqual(response.code, 201)
         location = response.headers['Location']
@@ -78,8 +77,7 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(location.endswith("/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/"))
 
     @patch("brainiak.handlers.logger")
-    @patch("brainiak.handlers.notify_bus")  # Bus notification test is in a separated test file
-    def test_edit_instance_200_adding_predicate(self, log, notify_bus):
+    def test_edit_instance_200_adding_predicate(self, log):
         actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
             method='GET')
         self.assertEqual(actual_new_york.code, 200)
@@ -93,9 +91,6 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                                        body=json.dumps(actual_new_york_dict))
         self.assertEqual(modified_new_york.code, 200)
         self.assertEqual(modified_new_york.body, "")
-        # modified_new_york_dict = json.loads(modified_new_york.body)
-        # self.assertIn("rdfs:label", modified_new_york_dict)
-        # self.assertIn("rdfs:comment", modified_new_york_dict)
 
 
 class EditInstanceResourceTestCase(QueryTestCase):

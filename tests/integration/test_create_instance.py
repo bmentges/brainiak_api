@@ -101,6 +101,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(location.startswith("http://localhost:"))
         self.assertTrue("/example/City" in location)
         self.assertEqual(response.body, "")
+        self.assertEqual(mocked_notify_bus.call_count, 1)
         # body = json.loads()
         # self.assertTrue('http://example.onto/name' in body)
         # self.assertInstanceExist('http://example.onto/City', "http://example.onto/City/123")

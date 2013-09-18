@@ -5,6 +5,10 @@
 
 dbpedia:News a owl:Class .
 
+dbpedia:Cricket a dbpedia:Sport ;
+                rdfs:label "Cricket" .
+
 brmedia:news_cricket
-    a dbpedia:News;
-    rdfs:label "Cricket becomes the most popular sport of Brazil" .
+    a dbpedia:News ;
+    rdfs:label "Cricket becomes the most popular sport of Brazil" ;
+    brmedia:related_to dbpedia:Cricket .

@@ -1,0 +1,11 @@
+{
+    "rdfs:label": "Cascalho Rico",
+    "rdf:type": "base:Cidade",
+    "base:esta_na_uf": "base:UF_MG",
+    "G1:mapa_cidade": "http://s.glbimg.com/jo/g1/mapa/cidade_cascalho_rico_mg.png",
+    "base:geonameid": "6321257",
+    "base:nome_completo": "Cascalho Rico (MG)",
+    "base:latitude": "-18.54616928100586",
+    "base:slug_topico": "cascalho-rico",
+    "base:longitude": "-47.851318359375"
+}

@@ -99,7 +99,7 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")
-    def test_handler_204(self, log, notify_bus):
+    def test_handler_204(self, log, mocked_notify_bus):
         response = self.fetch(
                     '/anygraph/Species/Platypus?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                     method="DELETE")

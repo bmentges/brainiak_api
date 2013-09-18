@@ -1,12 +1,13 @@
 {
-  "pattern": "Globoland",
-  "predicate": "upper:isPartOf",
-  "search_fields": ["upper:name", "upper:fullName"],
-  "search_classes": ["place:City"],
-  "search_graphs": ["http://semantica.globo.com/place/"],
-  "@context" : {
-      "place": "http://semantica.globo.com/place/",
-      "upper": "http://semantica.globo.com/upper/"
+    "search": {
+      "pattern": "Globoland",
+      "target": "upper:isPartOf",
+      "fields": ["upper:name", "upper:fullName"],
+      "classes": ["place:City"],
+      "graphs": ["http://semantica.globo.com/place/"],
+      "@context" : {
+          "place": "http://semantica.globo.com/place/",
+          "upper": "http://semantica.globo.com/upper/"
+      }
   }
 }
-

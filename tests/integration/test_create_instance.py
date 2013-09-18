@@ -89,8 +89,9 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.instance.create_instance.create_instance_uri", return_value="http://example.onto/City/123")
     @patch("brainiak.instance.get_instance.settings", DEFAULT_RULESET_URI="{0}ruleset".format(graph_uri))
     @patch("brainiak.instance.get_instance.triplestore")
-    def test_create_instance_201(self, mockeed_triplestore, mocked_settings, mocked_create_instance_uri,
-                                 mocked_get_schema, mocked_notify_bus, mocked_logger):
+    @patch("brainiak.handlers.settings", NOTIFY_BUS=True)
+    def test_create_instance_201(self, mocked_handler_settings, mockeed_triplestore, mocked_settings,
+                                 mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
         mockeed_triplestore.query_sparql = self.query
         payload = JSON_CITY_GLOBOLAND
         response = self.fetch('/example/City?graph_uri=http://example.onto/&class_prefix=http://example.onto/',
@@ -101,10 +102,16 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(location.startswith("http://localhost:"))
         self.assertTrue("/example/City" in location)
         self.assertEqual(response.body, "")
-        self.assertEqual(mocked_notify_bus.call_count, 1)
-        # body = json.loads()
-        # self.assertTrue('http://example.onto/name' in body)
-        # self.assertInstanceExist('http://example.onto/City', "http://example.onto/City/123")
+        self.assertTrue(mocked_notify_bus.called)
+        expected = {
+            'action': 'POST',
+            'instance_data': {'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://example.onto/City',
+                              u'http://example.onto/name': u'Globoland'},
+            'instance': 'http://example.onto/City/123',
+            'klass': 'http://example.onto/City',
+            'graph': 'http://example.onto/'
+        }
+        mocked_notify_bus.assert_called_once_with(**expected)
 
     def test_query(self):
         self.graph_uri = "http://fofocapedia.org/"

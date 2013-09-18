@@ -51,7 +51,7 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     def test_request_with_invalid_predicate(self):
         INVALID_PARAMS = {
-            "search" : {
+            "search": {
                 'pattern': 'york',
                 'target': 'http://example.onto/invalidPredicate'
             }
@@ -90,23 +90,23 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
                               body=json.dumps(zero_results_parameters))
         self.assertEqual(response.code, 404)
 
-    #def test_suggest_without_required_param_predicate(self):
-    #    response = self.fetch('/_suggest',
-    #                          method='POST',
-    #                          body=json.dumps({'pattern': 1}))
-    #    self.assertEqual(response.code, 400)
-    #    json_received = json.loads(response.body)
-    #    self.assertEqual(json_received['errors'][0], "HTTP error: 400\nRequired parameter (predicate) was not given.")
+    def test_suggest_without_required_param_target(self):
+        response = self.fetch('/_suggest',
+                                method='POST',
+                                body=json.dumps({'search': {'pattern': 1}}))
+        self.assertEqual(response.code, 400)
+        json_received = json.loads(response.body)
+        self.assertIn("'target' is a required property", json_received['errors'][0])
 
-    #def test_suggest_with_invalid_body_param(self):
-    #    d = {'invalid': 3}
-    #    d.update(self.VALID_BODY_PARAMS)
-    #    response = self.fetch('/_suggest',
-    #                          method='POST',
-    #                          body=json.dumps(d))
-    #    self.assertEqual(response.code, 400)
-    #    json_received = json.loads(response.body)
-    #    self.assertIn("Argument invalid is not supported", json_received['errors'][0])
+    def test_suggest_with_invalid_body_param(self):
+        d = {'invalid': 3}
+        d.update(self.VALID_BODY_PARAMS)
+        response = self.fetch('/_suggest',
+                                method='POST',
+                                body=json.dumps(d))
+        self.assertEqual(response.code, 400)
+        json_received = json.loads(response.body)
+        self.assertIn("Additional properties are not allowed (u'invalid' was unexpected)", json_received['errors'][0])
 
     def test_query_predicate_superclass_range(self):
         expected_classes = ["http://example.onto/Place", "http://example.onto/City"]

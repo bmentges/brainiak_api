@@ -12,6 +12,7 @@ supervisor==3.0b2
 tornado==3.1
 tornado-cors==0.3.2
 ujson==1.30
+jsonschema==2.0.0
 
 #docs
 sphinxcontrib-programoutput==0.8

@@ -9,6 +9,52 @@ SUGGEST_REQUIRED_PARAMS = ('pattern', 'predicate')
 SUGGEST_OPTIONAL_PARAMS = ('search_fields', 'search_classes', 'search_graphs')
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
+SUGGEST_PARAM_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Describe the parameters given to the suggest primitive",
+    "type": "object",
+    "required": ["search"],
+    "additionalProperties": False,
+    "properties": {
+        "search": {
+            "type": "object",
+            "required": ["pattern", "target"],
+            "additionalProperties": False,
+            "properties": {
+                "pattern": {"type": "string"},
+                "target": {"type": "string", "format": "url"},
+                "graphs": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "url"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "url"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                },
+
+            }
+        },
+        "response": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "url"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                },
+
+            }
+        }
+
+    }
+}
+
 
 def do_range_search(query_params, suggest_params):
     search_params = suggest_params["search"]

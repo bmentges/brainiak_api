@@ -10,7 +10,7 @@ set :filer_host,                  'riofd07a'
 set :elasticsearch_host,          'esearch.qa.globoi.com'
 
 # Ports
-set :virtuoso_port,              8890
+set :virtuoso_port,               8890
 
 # URLs
 set :virtuoso_url,                "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"

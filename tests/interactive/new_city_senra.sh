@@ -1,0 +1,1 @@
+curl -i -X PUT -T "problematic_city.json" http://10.2.180.24:5100/context/class/instance/?graph_uri=glb&class_uri=base:Cidade&instance_uri=http://semantica.globo.com/base/Cidade_Cascalho_Rico_MG

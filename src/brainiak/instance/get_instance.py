@@ -20,13 +20,19 @@ def get_instance(query_params):
                                       query_result_dict)
 
 
-def build_items_dict(context, bindings, class_uri):
+def build_items_dict(context, bindings, class_uri, expand_object_properties):
     super_predicates = get_super_properties(context, bindings)
 
     items_dict = {}
     for item in bindings:
         predicate_uri = context.normalize_uri_key(item["predicate"]["value"])
-        value = context.normalize_uri_value(item["object"]["value"])
+        object_uri = context.normalize_uri_value(item["object"]["value"])
+        object_label = item.get("object_label", {}).get("value")
+        if object_label and expand_object_properties:
+            value = {"@id": object_uri, "title": object_label}
+        else:
+            value = object_uri
+
         if predicate_uri in items_dict:
             if not isinstance(items_dict[predicate_uri], list):
                 value_list = [items_dict[predicate_uri]]
@@ -59,7 +65,8 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
         context = MemorizeContext(normalize_keys=query_params['expand_uri_keys'],
                                   normalize_values=query_params['expand_uri_values'])
 
-    items = build_items_dict(context, query_result_dict['results']['bindings'], query_params["class_uri"])
+    expand_object_properties = query_params.get("expand_object_properties") == "1"
+    items = build_items_dict(context, query_result_dict['results']['bindings'], query_params["class_uri"], expand_object_properties)
     class_url = build_class_url(query_params)
     query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
     instance = {
@@ -78,10 +85,11 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = """
 DEFINE input:inference <%(ruleset)s>
-SELECT DISTINCT ?predicate ?object ?super_property {
-    <%(instance_uri)s> a <%(class_uri)s>;
-        ?predicate ?object .
+SELECT DISTINCT ?predicate ?object ?object_label ?super_property {
+    <%(instance_uri)s> a <%(class_uri)s> ;
+    ?predicate ?object .
 OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+OPTIONAL { ?object rdfs:label ?object_label } .
 FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
 }
 """

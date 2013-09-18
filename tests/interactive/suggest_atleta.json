@@ -1,0 +1,5 @@
+{
+    "predicate": "http://semantica.globo.com/esportes/tem_como_conteudo",
+    "pattern": "marcelo flamengo",
+    "search_fields": ["http://semantica.globo.com/esportes/composite"]
+}

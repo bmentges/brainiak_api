@@ -212,10 +212,10 @@ class RangeSearchTestCase(TestCase):
     @patch("brainiak.suggest.suggest._get_subproperties", return_value=["property1", "property2"])
     def test_get_search_fields(self, mocked_get_subproperties):
         expected = {"property1", "property2", "rdfs:label"}
-        params = {
+        search_params = {
             "fields": ["rdfs:label"]
         }
-        search_fields = _get_search_fields(params)
+        search_fields = _get_search_fields({}, search_params)
 
         self.assertEqual(expected, set(search_fields))
 

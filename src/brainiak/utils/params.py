@@ -94,20 +94,6 @@ VALID_PATTERNS = (
 )
 
 
-def validate_body_params(params, required, optionals):
-
-    for key in required:
-        if not key in params:
-            raise RequiredParamMissing(key)
-
-    valid = required + optionals
-    for key in params:
-        if key not in valid:
-            raise InvalidParam(key)
-
-    return True
-
-
 class ParamDict(dict):
     "Utility class to generate default params on demand and memoize results"
 

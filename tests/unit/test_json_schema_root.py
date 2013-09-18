@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+from brainiak.suggest.suggest import SUGGEST_PARAM_SCHEMA
 from brainiak.root.json_schema import schema as root_schema
 
 
@@ -24,25 +25,7 @@ class TestRootJsonSchema(unittest.TestCase):
                 'href': '/_suggest',
                 'method': 'POST',
                 'rel': 'suggest',
-                'schema': {
-                    'type': 'object',
-                    'properties': {
-                        'pattern': {'required': True, 'type': 'string'},
-                        'predicate': {'format': 'uri',
-                                      'required': True,
-                                      'type': 'string'},
-                        'search_classes': {'items': {'format': 'uri', 'type': 'string'},
-                                           'required': False,
-                                           'type': 'array'},
-                        'search_fields': {'items': {'format': 'uri', 'type': 'string'},
-                                          'required': False,
-                                          'type': 'array'},
-                        'search_graphs': {'items': {'format': 'uri', 'type': 'string'},
-                                          'required': False,
-                                          'type': 'array'}
-
-                    }
-                }
+                'schema': SUGGEST_PARAM_SCHEMA
             },
             {
                 'href': '/{{context_id}}/{{collection_id}}',

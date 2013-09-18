@@ -25,6 +25,7 @@ class brainiak::params {
     $usuario                    = $projeto
     $grupo                      = $projeto
     $projeto_host               = "${projeto}.semantica.${supso::vars::dns_interno}"
+    $projeto_backstage_host     = "${projeto}.api.backstage.${supso::vars::dns_interno}"
     $projeto_home_dir           = "${supso::dir_opt::dir}/${projeto}"
     $projeto_log_dir            = "${supso::dir_opt::dir}/logs/${projeto}"
     $projeto_deploybe_dir       = "/mnt/projetos/deploy-be/${projeto}"

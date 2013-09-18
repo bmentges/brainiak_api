@@ -471,12 +471,12 @@ class SuggestHandler(BrainiakRequestHandler):
             if '@context' in body_params:
                 del body_params['@context']
 
-            validate_body_params(body_params, SUGGEST_REQUIRED_PARAMS, SUGGEST_OPTIONAL_PARAMS)
+            #validate_body_params(body_params, SUGGEST_REQUIRED_PARAMS, SUGGEST_OPTIONAL_PARAMS)
             self.query_params = ParamDict(self, **valid_params)
             self.query_params.validate_required(valid_params)
 
-        self.query_params.update(body_params)
-        response = do_range_search(self.query_params)
+        #self.query_params.update(body_params)
+        response = do_range_search(self.query_params, body_params)
 
         self.finalize(response)
 

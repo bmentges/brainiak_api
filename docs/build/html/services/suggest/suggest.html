@@ -161,9 +161,9 @@
   
   <div class="section" id="suggest">
 <h1>Suggest<a class="headerlink" href="#suggest" title="Permalink to this headline">¶</a></h1>
-<p>Given a target predicate (an object property whose value is a object, an URI),
-the suggest service searches instances that could be added as the predicate&#8217;s object.</p>
-<p>A JSON must be passed in the request body.</p>
+<p>Given a target predicate (an object property whose value is an object, i.e. an URI),
+the suggest service searches for instances that could be set as the predicate&#8217;s object.</p>
+<p>A JSON must be passed in the request&#8217;s body.</p>
 <p>This JSON may have the sections <tt class="docutils literal"><span class="pre">search</span></tt> and <tt class="docutils literal"><span class="pre">response</span></tt>:</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">search</span></tt>: is <strong>obligatory</strong> and is related to what will be searched</li>
@@ -174,12 +174,12 @@ the suggest service searches instances that could be added as the predicate&#821
 <p>The <tt class="docutils literal"><span class="pre">target</span></tt> parameter represents the target predicate.</p>
 <p>For example, the target in the example below is <tt class="docutils literal"><span class="pre">place:partOfCity</span></tt>.
 The range (types of possible values) of this predicate is <tt class="docutils literal"><span class="pre">place:City</span></tt>.
-Therefore, the <tt class="docutils literal"><span class="pre">_suggest</span></tt> service will only try to match instances of <tt class="docutils literal"><span class="pre">place:City</span></tt>.</p>
+Therefore, the <tt class="docutils literal"><span class="pre">_suggest</span></tt> service will only try to match instances of <tt class="docutils literal"><span class="pre">place:City</span></tt> set as the value of <a href="#id1"><span class="problematic" id="id2">``</span></a>place:partOfCity`.</p>
 <p><strong>pattern</strong></p>
-<p>The <tt class="docutils literal"><span class="pre">pattern</span></tt> parameter indicates the search keyword used to match instances.
-Usually, the pattern must occur in the <tt class="docutils literal"><span class="pre">rdfs:label</span></tt> of the instances,
-but one might want to search in other properties as well,
-using the <tt class="docutils literal"><span class="pre">fields</span></tt> optional parameter (see in <a class="reference internal" href="#optional-body-parameters"><em>Optional request body parameters</em></a>).</p>
+<p>The <tt class="docutils literal"><span class="pre">pattern</span></tt> parameter indicates the search expression used to match instances.
+Usually, the pattern is matched against the property <tt class="docutils literal"><span class="pre">rdfs:label</span></tt> of the instances,
+but one might want to search in other properties.
+The  optional parameter <tt class="docutils literal"><span class="pre">fields</span></tt> serves to include other properties (see in <a class="reference internal" href="#optional-body-parameters"><em>Optional request body parameters</em></a>).</p>
 <p>Here is a minimal example of the request body:</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
     <span class="nt">&quot;search&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -240,16 +240,14 @@ using the <tt class="docutils literal"><span class="pre">fields</span></tt> opti
 <div class="section" id="optional-search-fields">
 <h2>Optional search fields<a class="headerlink" href="#optional-search-fields" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">fields</span></tt> list of optional fields to search on. Each field must be an URI or a CURIE. Without this parameter, only <tt class="docutils literal"><span class="pre">rdfs:label</span></tt> and its subproperties are matched.</p>
-<p><tt class="docutils literal"><span class="pre">classes</span></tt> list of classes whose instances will be searched, thus restricting the result of the predicate range. Each class must be an URI or a CURIE.</p>
-<p>If this parameter has classes that are not in the predicate range, a 400 error is returned.</p>
-<p><tt class="docutils literal"><span class="pre">graphs</span></tt> list of graphs in which we look for instances, thus restricting the result of the graphs in which the classes in the predicate ranges are in.  Each graph must be an URI or a CURIE.</p>
-<p>If this parameter has graphs that the classes in the predicate range are not in, a 400 error is returned.</p>
+<p><tt class="docutils literal"><span class="pre">classes</span></tt> list of classes whose instances will be searched, thus restricting the result of the predicate range. Each class must be an URI or a CURIE. If this parameter has classes that are not in the predicate range, a 400 error is returned.</p>
+<p><tt class="docutils literal"><span class="pre">graphs</span></tt> list of graphs in which we look for instances, thus restricting the result of the graphs. By default the graphs considered in the search are those in which the classes (present in the range of the target property) are declared. Each graph must be an URI or a CURIE. If this parameter has graphs that the classes in the predicate range are not in, a 400 error is returned.</p>
 </div>
 <div class="section" id="optional-response-fields">
 <h2>Optional response fields<a class="headerlink" href="#optional-response-fields" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">required_fields</span></tt> boolean which indicates that fields which have <tt class="docutils literal"><span class="pre">owl:minQualifiedCardinality</span></tt> equal or larger than <tt class="docutils literal"><span class="pre">1</span></tt> should be returned. The default is <tt class="docutils literal"><span class="pre">true</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">meta_fields</span></tt> list of meta predicates. These meta predicates must be defined in the ontology and might map the most relevant predicates for disambiguation, for instance. Each meta predicate must be an URI or a CURIE.</p>
-<p><tt class="docutils literal"><span class="pre">class_fields</span></tt> list of class predicates whose values should be retrieved. E.g. class name (<tt class="docutils literal"><span class="pre">rdfs:label</span></tt>), class comment (<tt class="docutils literal"><span class="pre">rdfs:comment</span></tt>) or other properties. Each class field must be an URI or a CURIE.</p>
+<p><tt class="docutils literal"><span class="pre">class_fields</span></tt> list of class predicates whose values should be retrieved, such as class description (<tt class="docutils literal"><span class="pre">rdfs:comment</span></tt>) or other properties. Each class field must be an URI or a CURIE.</p>
 <p><tt class="docutils literal"><span class="pre">classes</span></tt> list of classes towards which the instances will be restricted.  Each class must be an URI or a CURIE.</p>
 </div>
 <div class="section" id="optional-query-string-parameters">
@@ -272,40 +270,46 @@ By default <tt class="docutils literal"><span class="pre">do_item_count</span></
 <div class="section" id="response-body-parameters">
 <h2>Response body parameters<a class="headerlink" href="#response-body-parameters" title="Permalink to this headline">¶</a></h2>
 <p>Example of response:</p>
-<div class="highlight-json"><pre>{
-  "items": [
-     {
-      "@id": "http://semantica.globo.com/esportes/Atleta/Ronaldo",
-      "title": "Ronaldinho o Fenômeno"
-      "@type": "http://semantica.globo.com/esportes/Atleta",
-      "type_title": "Atleta",
-      "class_fields": {
-          "base:thumbnail": "http://s-ct.glbimg.globoi.com/jo/eg/static/semantica/img/icones/ico_criatura.png",
-      },
-      "instance_fields" : [
-          {"predicate_id": "rdfs:label",
-           "predicate_title": "Nome"
-           "object_id":"http://semantica.globo.com/esportes/Atleta/Ronaldo",
-           "object_title": "Ronaldo O Fenômeno",
-           "required": true,
-          },
-          {"predicate_id": "esportes:esta_no_time",
-           "predicate_title": "Pertence ao Time"
-           "object_id":"http://semantica.globo.com/esportes/Equipe/Botafogo",
-           "object_title": "Botafogo"
-           "required": false,
-          },
-          {"predicate_id": "esportes:posicao",
-           "predicate_title": "Posição"
-           "object_title": "VOL"
-           "required": false,
-          }
-
-     ],
-  },
-  "item_count": 1,
-  "@context": {"esportes": "http://semantica.globo.com/esportes/"}
-}</pre>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/esportes/Atleta/Ronaldo&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Ronaldinho o Fenômeno&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/esportes/Atleta&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;type_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Atleta&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;class_fields&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;base:thumbnail&quot;</span><span class="p">:</span> <span class="s2">&quot;http://s-ct.glbimg.globoi.com/jo/eg/static/semantica/img/icones/ico_criatura.png&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;instance_fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;predicate_id&quot;</span><span class="p">:</span> <span class="s2">&quot;rdfs:label&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;predicate_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Nome&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;object_id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/esportes/Atleta/Ronaldo&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;object_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Ronaldo O Fenômeno&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="kc">true</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;predicate_id&quot;</span><span class="p">:</span> <span class="s2">&quot;esportes:esta_no_time&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;predicate_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Pertence ao Time&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;object_id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/esportes/Equipe/Botafogo&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;object_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Botafogo&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="kc">false</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;predicate_id&quot;</span><span class="p">:</span> <span class="s2">&quot;esportes:posicao&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;predicate_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Posição&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;object_title&quot;</span><span class="p">:</span> <span class="s2">&quot;VOL&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="kc">false</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;item_count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;@context&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;esportes&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/esportes/&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 </div>
 <p><tt class="docutils literal"><span class="pre">items</span></tt> list of instances (more details on the items on <a class="reference internal" href="#item-details"><em>Response item details</em></a>)
 <tt class="docutils literal"><span class="pre">item_count</span></tt> integer representing the total number of items
@@ -322,7 +326,7 @@ By default <tt class="docutils literal"><span class="pre">do_item_count</span></
 <p><tt class="docutils literal"><span class="pre">instance_fields</span></tt> based on the fields defined in the request payload (<tt class="docutils literal"><span class="pre">fields</span></tt>, <tt class="docutils literal"><span class="pre">required_fields</span></tt>, <tt class="docutils literal"><span class="pre">meta_fields</span></tt>), return a list of JSONs composed by:</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">predicate_id</span></tt> string containing a URI or a CURIE of the predicate</li>
-<li><tt class="docutils literal"><span class="pre">predicate_title``string</span> <span class="pre">containing</span> <span class="pre">the</span> <span class="pre">label</span> <span class="pre">(``rdfs:label</span></tt>) of the predicate</li>
+<li><tt class="docutils literal"><span class="pre">predicate_title</span></tt> string containing the label (<tt class="docutils literal"><span class="pre">rdfs:label</span></tt>) of the predicate</li>
 <li><tt class="docutils literal"><span class="pre">object_id</span></tt> string containing a URI or a CURIE of the object mapped by the predicate for the given instance</li>
 <li><tt class="docutils literal"><span class="pre">object_title</span></tt> string containing the label (<tt class="docutils literal"><span class="pre">rdfs:label</span></tt>) of the object mapped by the predicate for the given instance</li>
 <li><tt class="docutils literal"><span class="pre">required</span></tt> boolean that represents if a certain predicate is obligatory for the provided class. In other words, if <tt class="docutils literal"><span class="pre">owl:minQualifiedCardinality</span></tt> equal or larger than <tt class="docutils literal"><span class="pre">1</span></tt>. It is related to <tt class="docutils literal"><span class="pre">required_fields</span></tt>.</li>

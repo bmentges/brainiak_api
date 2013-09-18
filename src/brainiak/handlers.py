@@ -24,14 +24,14 @@ from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
 from brainiak.prefix.get_prefixes import list_prefixes
 from brainiak.prefixes import expand_all_uris_recursively
-from brainiak.suggest.suggest import do_range_search, SUGGEST_OPTIONAL_PARAMS, SUGGEST_REQUIRED_PARAMS, SUGGEST_PARAM_SCHEMA
+from brainiak.suggest.suggest import do_range_search, SUGGEST_PARAM_SCHEMA
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
-from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, DEFAULT_PARAMS, RequiredParamMissing, validate_body_params, DefaultParamsDict
+from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, DEFAULT_PARAMS, RequiredParamMissing, DefaultParamsDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes
 
@@ -465,7 +465,7 @@ class SuggestHandler(BrainiakRequestHandler):
     def post(self):
         valid_params = PAGING_PARAMS
 
-        with safe_params(valid_params, SUGGEST_REQUIRED_PARAMS + SUGGEST_OPTIONAL_PARAMS):
+        with safe_params(valid_params):
 
             raw_body_params = json.loads(self.request.body)
             body_params = expand_all_uris_recursively(raw_body_params)

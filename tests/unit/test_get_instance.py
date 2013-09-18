@@ -80,10 +80,11 @@ class TestCaseInstanceResource(unittest.TestCase):
         computed = get_instance.query_all_properties_and_objects(params)
         expected = """
             DEFINE input:inference <http://semantica.globo.com/ruleset>
-            SELECT DISTINCT ?predicate ?object ?super_property {
-                <instance_uri> a <class_uri>;
+            SELECT DISTINCT ?predicate ?object ?object_label ?super_property {
+                <instance_uri> a <class_uri> ;
                     ?predicate ?object .
             OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+            OPTIONAL { ?object rdfs:label ?object_label } .
             FILTER((langMatches(lang(?object), "en") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
             }
             """
@@ -96,7 +97,7 @@ class AssembleTestCase(unittest.TestCase):
 
     def setUp(self):
         self.original_build_items = get_instance.build_items_dict
-        get_instance.build_items_dict = lambda context, bindings, class_uri: {}
+        get_instance.build_items_dict = lambda context, bindings, class_uri, expand_direct_properties: {}
 
     def tearDown(self):
         get_instance.build_items_dict = self.original_build_items
@@ -147,8 +148,35 @@ class BuildItemsDictTestCase(unittest.TestCase):
             "key2": "value2",
             "rdf:type": "some:Class"}
         context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
-        response = get_instance.build_items_dict(context, bindings, "some:Class")
+        response = get_instance.build_items_dict(context, bindings, "some:Class", True)
         self.assertEqual(response, expected)
+
+    def test_assemble_instance_json_with_object_labels(self):
+
+        bindings = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                u'object': {u'type': u'literal', u'value': u'Cricket becomes the most popular sport of Brazil'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/Cricket'},
+                u'object_label': {u'type': u'literal', u'value': u'Cricket'}
+            }
+        ]
+        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        computed = get_instance.build_items_dict(context, bindings, "dbpedia:News", 1)
+
+        expected = {
+            'rdfs:label': u'Cricket becomes the most popular sport of Brazil',
+            'rdf:type': 'dbpedia:News',
+            'http://brmedia.com/related_to': {"@id": "dbpedia:Cricket", "title": "Cricket"}
+        }
+        self.assertEqual(computed, expected)
 
     def prepare_input_and_expected_output(self, object_value):
         bindings = [
@@ -170,7 +198,7 @@ class BuildItemsDictTestCase(unittest.TestCase):
         bindings = self.prepare_input_and_expected_output(object_value="Rio de Janeiro")
         expected = {"birthCity": "Rio de Janeiro", 'rdf:type': 'http://class.uri'}
         context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
-        response = get_instance.build_items_dict(context, bindings, "http://class.uri")
+        response = get_instance.build_items_dict(context, bindings, "http://class.uri", False)
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_different_values(self):
@@ -181,7 +209,7 @@ class BuildItemsDictTestCase(unittest.TestCase):
             'rdf:type': 'http://class.uri'
         }
         context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
-        response = get_instance.build_items_dict(context, bindings, "http://class.uri")
+        response = get_instance.build_items_dict(context, bindings, "http://class.uri", False)
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_different_values_expanding_uri(self):
@@ -192,5 +220,5 @@ class BuildItemsDictTestCase(unittest.TestCase):
             'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://class.uri'
         }
         context = MemorizeContext(normalize_keys=EXPAND, normalize_values=EXPAND)
-        response = get_instance.build_items_dict(context, bindings, "http://class.uri")
+        response = get_instance.build_items_dict(context, bindings, "http://class.uri", False)
         self.assertEqual(response, expected)

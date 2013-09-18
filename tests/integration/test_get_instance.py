@@ -111,11 +111,26 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(body['rdfs:label'], u'Teste')
 
 
-class InstanceQueryTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+
+    allow_triplestore_connection = True
+    fixtures = ["tests/sample/gender.n3", "tests/sample/animalia.n3"]
+    graph_uri = "http://test.com/"
+
+    maxDiff = None
+
+    def test_instance_query_doesnt_duplicate_equal_properties_from_different_graphs(self):
+        response = self.fetch('/_/Yorkshire_Terrier/Nina?class_prefix=http://example.onto/&instance_prefix=http://example.onto/', method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        self.assertEqual(body[u'http://example.onto/birthCity'], u'http://example.onto/York')
+
+
+class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     allow_triplestore_connection = True
     fixtures_by_graph = {
-        "http://test.com/": ["tests/sample/animalia.n3"]
+        "http://brmedia.com/": ["tests/sample/sports.n3"]
     }
 
     maxDiff = None
@@ -123,52 +138,44 @@ class InstanceQueryTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     def test_instance_query(self):
         params = {
             "lang": "en",
-            "class_uri": "http://example.onto/Yorkshire_Terrier",
-            "instance_uri": "http://example.onto/Nina",
-            "ruleset": "http://test.com/ruleset"
+            "class_uri": "http://dbpedia.org/ontology/News",
+            "instance_uri": "http://brmedia.com/news_cricket",
+            "ruleset": "http://brmedia.com/ruleset"
         }
         query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % params
         computed = self.query(query, False)["results"]["bindings"]
-        non_blank_expected = [
+        expected = [
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
-                u'object': {u'type': u'literal', u'value': u'Nina Fox'}
+                u'object': {u'type': u'literal', u'value': u'Cricket becomes the most popular sport of Brazil'}
             },
             {
-                u'object': {u'type': u'uri', u'value': u'http://example.onto/Yorkshire_Terrier'},
-                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'}
             },
             {
-                u'object': {u'type': u'uri', u'value': u'http://example.onto/Canidae'},
-                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
-            },
-            {
-                u'object': {u'type': u'uri', u'value': u'http://example.onto/Mammalia'},
-                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
-            },
-            {
-                u'object': {u'type': u'uri', u'value': u'http://example.onto/Animal'},
-                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
-            },
-            {
-                u'object': {u'type': u'uri', u'value': u'http://example.onto/Species'},
-                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'}
-            },
-            {
-                u'object': {u'type': u'uri', u'value': u'http://example.onto/York'},
-                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthCity'},
-                u'super_property': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'}
-            },
-            {
-                u'object': {u'type': u'uri', u'value': u'http://example.onto/York'},
-                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'}
+                u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/Cricket'},
+                u'object_label': {u'type': u'literal', u'value': u'Cricket'}
             }
         ]
-        for item in non_blank_expected:
-            self.assertIn(item, computed)
 
-    def test_instance_query_doesnt_duplicate_equal_properties_from_different_graphs(self):
-        response = self.fetch('/anything/Yorkshire_Terrier/Nina?class_prefix=http://example.onto/&instance_prefix=http://example.onto/', method='GET')
+        self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_instance_query_expand_object_properties_is_not_defined(self):
+        response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertEqual(body[u'http://example.onto/birthCity'], u'http://example.onto/York')
+        self.assertEqual(body[u'http://brmedia.com/related_to'], u'dbpedia:Cricket')
+
+    def test_instance_query_expand_object_properties_is_false(self):
+        response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/&expand_object_properties=0', method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        self.assertEqual(body[u'http://brmedia.com/related_to'], u'dbpedia:Cricket')
+
+    def test_instance_query_expand_object_properties_is_true(self):
+        response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/&expand_object_properties=1', method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        self.assertEqual(body[u'http://brmedia.com/related_to'], {"@id": "dbpedia:Cricket", "title": "Cricket"})

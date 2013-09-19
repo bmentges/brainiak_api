@@ -25,6 +25,7 @@ from brainiak.log import get_logger
 from brainiak.prefix.get_prefixes import list_prefixes
 from brainiak.prefixes import expand_all_uris_recursively
 from brainiak.suggest.suggest import do_range_search, SUGGEST_PARAM_SCHEMA
+from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
@@ -77,6 +78,7 @@ def get_routes():
         # json-schemas
         URLSpec(r'/_schema_list/?', RootJsonSchemaHandler),
         URLSpec(r'/_suggest/?', SuggestHandler),
+        URLSpec(r'/_suggest/_schema_list/?', SuggestJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/_schema_list/?', ContextJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema_list/?', CollectionJsonSchemaHandler),
         # resources that represents concepts
@@ -457,6 +459,12 @@ class InstanceHandler(BrainiakRequestHandler):
         elif isinstance(response, int):  # status code
             self.set_status(response)
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25
+
+
+class SuggestJsonSchemaHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.finalize(suggest_schema())
 
 
 class SuggestHandler(BrainiakRequestHandler):

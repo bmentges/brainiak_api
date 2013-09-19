@@ -9,11 +9,11 @@ set :syslog_host,                 'syslog.tcp.glog.qa01.globoi.com'
 set :elasticsearch_host,          'esearch.qa01.globoi.com'
 
 # Ports
-set :redis_port,                  20015
+set :redis_port,                  20019
 
 # Variables
 set :puppetmaster_env,            'qa1'
-set :redis_password,              'a8pdifs2e2m9afn7tcifcea99674aad2'
+set :redis_password,              '4fdfa56255f21ccf01b3d78f999caea3'
 
 # Directories
 set :dbpasswd_dir,                "/mnt/projetos/dbpasswd/#{projeto}"

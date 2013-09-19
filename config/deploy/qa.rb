@@ -10,14 +10,14 @@ set :filer_host,                  'riofd07a'
 set :elasticsearch_host,          'esearch.qa.globoi.com'
 
 # Ports
-set :virtuoso_port,              8890
+set :virtuoso_port,               8890
 
 # URLs
 set :virtuoso_url,                "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"
 
 # Variables
 set :puppetmaster_env,            'qa'
-set :redis_password,              'a8pdifs2e2m9afn7tcifcea99674aad2'
+set :redis_password,              '4fdfa56255f21ccf01b3d78f999caea3'
 
 # Directories
 set :dbpasswd_dir,                "/mnt/projetos/dbpasswd/#{projeto}"

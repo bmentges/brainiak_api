@@ -7,7 +7,7 @@ import requests
 from mock import patch
 
 from brainiak.suggest.suggest import QUERY_PREDICATE_RANGES, \
-    QUERY_SUBPROPERTIES
+    QUERY_SUBPROPERTIES, _build_meta_fields_query
 from brainiak.utils.sparql import filter_values
 from brainiak import settings
 
@@ -131,3 +131,12 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         query_response = self.query(QUERY_SUBPROPERTIES % "http://example.onto/birthPlace")
         response = filter_values(query_response, "property")
         self.assertEqual(expected, response)
+
+    def test_query_meta_fields(self):
+        expected = ["http://example.onto/nickname, http://example.onto/description"]
+        classes = ["http://example.onto/City"]
+        meta_field = "http://example.onto/suggestMetaField"
+        query = _build_meta_fields_query(classes, meta_field)
+        query_response = self.query(query)
+        meta_field_values = filter_values(query_response, "meta_field_value")
+        self.assertEqual(expected, meta_field_values)

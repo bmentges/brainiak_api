@@ -6,10 +6,11 @@ from tornado.web import HTTPError
 
 from brainiak.suggest.suggest import _build_body_query, _validate_class_restriction, \
     _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
-    _build_class_label_dict, _build_items, _get_search_fields, _get_title_value
+    _build_class_label_dict, _build_items, _get_search_fields, _get_title_value, \
+    _build_meta_fields_query, _get_response_fields_from_meta_fields
 
 
-class RangeSearchTestCase(TestCase):
+class SuggestTestCase(TestCase):
 
     @patch("brainiak.suggest.suggest._build_type_filters", return_value={})
     @patch("brainiak.suggest.suggest.calculate_offset", return_value=10)
@@ -17,7 +18,7 @@ class RangeSearchTestCase(TestCase):
         expected = {
             "from": 10,
             "size": 10,
-            "fields": ["rdfs:label", "upper:name"],
+            "fields": ["upper:name"],
             "query": {
                 "query_string": {
                     "query": "rio AND de AND jan*",
@@ -33,9 +34,11 @@ class RangeSearchTestCase(TestCase):
         search_params = {
             "pattern": "Rio De Jan",
         }
-        response_params = {}
+        classes = []
+        search_fields = ["rdfs:label", "upper:name"]
+        response_fields = ["upper:name"]
 
-        response = _build_body_query(query_params, search_params, response_params, [], ["rdfs:label", "upper:name"])
+        response = _build_body_query(query_params, search_params, classes, search_fields, response_fields)
         self.assertEqual(expected, response)
 
     @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])
@@ -172,10 +175,10 @@ class RangeSearchTestCase(TestCase):
     @patch("brainiak.suggest.suggest._get_title_value", return_value="Globoland")
     def test_build_items(self, mocked_get_title_value):
         expected = {
-                "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
-                "title": "Globoland",
-                "@type": "http://semantica.globo.com/place/City",
-                "type_title": "Cidade",
+            "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
+            "title": "Globoland",
+            "@type": "http://semantica.globo.com/place/City",
+            "type_title": "Cidade",
         }
 
         elasticsearch_result = {
@@ -238,3 +241,25 @@ class RangeSearchTestCase(TestCase):
         title_fields = ["unexistent:name"]
 
         self.assertRaises(RuntimeError, _get_title_value, elasticsearch_fields, title_fields)
+
+    def test_build_meta_fields_query(self):
+        expected = """
+SELECT DISTINCT ?meta_field_value {
+  ?s <meta_field> ?meta_field_value
+  FILTER(?s = <class_a> OR ?s = <class_b>)
+}
+"""
+        classes = ["class_a", "class_b"]
+        meta_field = "meta_field"
+        self.assertEqual(expected, _build_meta_fields_query(classes, meta_field))
+
+    @patch("brainiak.suggest.suggest._get_meta_fields_value",
+           return_value=["metafield1, metafield2", "metafield2", "metafield2, metafield3"])
+    def test_get_response_fields_from_meta_fields(self, mocked_get_meta_fields_value):
+        expected = ["metafield3", "metafield2", "metafield1"]
+        response_params = {
+            "meta_fields": ["a", "b"]
+        }
+        query_params = classes = {}
+        response = _get_response_fields_from_meta_fields(query_params, response_params, classes)
+        self.assertEqual(sorted(expected), sorted(response))

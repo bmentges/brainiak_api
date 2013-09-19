@@ -27,6 +27,7 @@ def schema():
                             "type": "array",
                             "items": {
                                 "type": "object",
+                                "additionalProperties": False,
                                 "properties": {
                                     "predicate_id": {"type": "string", "required": True},
                                     "predicate_title": {"type": "string", "required": True},
@@ -35,7 +36,6 @@ def schema():
                                     "required": {"type": "boolean", "required": True}
                                 }
                             },
-                            "additionalProperties": False
                         }
                     },
                     "links": [

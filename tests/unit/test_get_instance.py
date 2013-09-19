@@ -64,7 +64,7 @@ class TestCaseInstanceResource(unittest.TestCase):
         self.assertEqual(response, None)
         self.assertFalse(mock_assemble_instance_json.called)
 
-    def test_query_all_properties_and_objects(self):
+    def test_query_all_properties_and_objects_with_expand_object_properties(self):
         triplestore.query_sparql = lambda query, query_params: query
 
         class Params(dict):
@@ -74,7 +74,8 @@ class TestCaseInstanceResource(unittest.TestCase):
         params.update({
             "instance_uri": "instance_uri",
             "class_uri": "class_uri",
-            "lang": "en"
+            "lang": "en",
+            "expand_object_properties": "1"
         })
 
         computed = get_instance.query_all_properties_and_objects(params)
@@ -85,6 +86,33 @@ class TestCaseInstanceResource(unittest.TestCase):
                     ?predicate ?object .
             OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
             OPTIONAL { ?object rdfs:label ?object_label } .
+            FILTER((langMatches(lang(?object), "en") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
+            }
+            """
+        self.assertEqual(strip(computed), strip(expected))
+
+    def test_query_all_properties_and_objects_without_expand_object_properties(self):
+        triplestore.query_sparql = lambda query, query_params: query
+
+        class Params(dict):
+            triplestore_config = {}
+
+        params = Params({})
+        params.update({
+            "instance_uri": "instance_uri",
+            "class_uri": "class_uri",
+            "lang": "en",
+            "expand_object_properties": "0"
+        })
+
+        computed = get_instance.query_all_properties_and_objects(params)
+        expected = """
+            DEFINE input:inference <http://semantica.globo.com/ruleset>
+            SELECT DISTINCT ?predicate ?object  ?super_property {
+                <instance_uri> a <class_uri> ;
+                    ?predicate ?object .
+            OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+
             FILTER((langMatches(lang(?object), "en") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
             }
             """

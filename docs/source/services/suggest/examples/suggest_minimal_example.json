@@ -1,6 +1,6 @@
 {
     "search": {
-        "predicate": "http://semantica.globo.com/place/partOfCity",
-        "pattern": "rio"        
+        "target": "http://semantica.globo.com/place/partOfCity",
+        "pattern": "rio"
     }
 }

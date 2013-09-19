@@ -149,12 +149,12 @@ def pagination_items(query_params, total_items=None):
     return result
 
 
-def pagination_schema(root_url, extra_url_params=''):
+def pagination_schema(root_url, extra_url_params='', method="GET"):
     """Json schema part that expresses pagination structure"""
     def link(rel, href):
         link_pattern = {
             "href": href,
-            "method": "GET",
+            "method": method,
             "rel": rel
         }
         return link_pattern

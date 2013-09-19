@@ -79,7 +79,15 @@ def do_range_search(query_params, suggest_params):
     title_fields += _get_subproperties(query_params, RDFS_LABEL)
     search_fields = list(set(_get_search_fields(query_params, suggest_params) + title_fields))
 
-    request_body = _build_body_query(query_params, search_params, response_params, classes, search_fields)
+    response_fields = set(title_fields)
+
+    meta_fields = _get_response_fields_from_meta_fields(query_params, response_params, classes)
+    response_fields.update(meta_fields)
+
+    response_fields.update(set(response_params.get("fields", [])))
+    response_fields = list(response_fields)
+
+    request_body = _build_body_query(query_params, search_params, classes, search_fields, response_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)
     items, item_count = _build_items(elasticsearch_result, class_label_dict, title_fields)
 
@@ -190,14 +198,51 @@ def _validate_graph_restriction(search_params, range_result):
     return list(graphs)
 
 
-def _build_body_query(query_params, search_params, response_params, classes, search_fields):
+QUERY_META_FIELDS = """
+SELECT DISTINCT ?meta_field_value {
+  ?s <%(meta_field)s> ?meta_field_value
+  %(filter_clause)s
+}
+"""
+
+
+def _build_meta_fields_query(classes, meta_field):
+    conditions = ["?s = <{0}>".format(klass) for klass in classes]
+    conditions = " OR ".join(conditions)
+    filter_clause = "FILTER(" + conditions + ")"
+    query = QUERY_META_FIELDS % {
+        "meta_field": meta_field,
+        "filter_clause": filter_clause
+    }
+    return query
+
+
+def _get_meta_fields_value(query_params, classes, meta_field):
+    query = _build_meta_fields_query(classes, meta_field)
+    meta_field_query_response = triplestore.query_sparql(query, query_params.triplestore_config)
+    meta_field_values = filter_values(meta_field_query_response, "meta_field_value")
+    return meta_field_values
+
+
+def _get_response_fields_from_meta_fields(query_params, response_params, classes):
+    meta_fields_response = set([])
+    for meta_field in response_params.get("meta_fields", []):
+        meta_field_values = _get_meta_fields_value(query_params, classes, meta_field)
+        for meta_field_value in meta_field_values:
+            values = meta_field_value.split(",")
+            values = [v.strip() for v in values]
+            meta_fields_response.update(values)
+
+    return meta_fields_response
+
+
+def _build_body_query(query_params, search_params, classes, search_fields, response_fields):
     patterns = search_params["pattern"].lower().split()
     query_string = " AND ".join(patterns) + "*"
-    return_fields = search_fields  # TODO fields in response_params
     body = {
         "from": int(calculate_offset(query_params)),
         "size": int(query_params.get("per_page", settings.DEFAULT_PER_PAGE)),
-        "fields": return_fields,
+        "fields": response_fields,
         "query": {
             "query_string": {
                 "query": query_string,

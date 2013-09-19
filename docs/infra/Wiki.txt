@@ -20,6 +20,10 @@ Desta forma, é esperado que *todos* os acessos oriundos de aplicações da Glob
 Para tal, o API Manager faz requisiões ao Brainiak passando no header HTTP Host o valor 'brainiak.api.backstage.globoi.com'.
 Isso só é possível pois este hostname foi liberado no webserver da farm do projeto Brainiak.
 
+---+++ Workshop
+
+   * Realizado em 18/09/2013 - [[http://wws.globoi.com/workshop_ondemand.php?id=ODk=][Vídeo]]
+
 ---++ Usuário do projeto
 
    * <b>brainiak</b>

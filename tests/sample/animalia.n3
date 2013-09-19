@@ -69,6 +69,22 @@
            rdfs:domain owl:Thing ;
            rdfs:range xsd:string .
 
+:nickname a owl:DatatypeProperty ;
+          rdfs:label "Nickname of a place" ;
+          rdfs:domain :Place ;
+          rdfs:range xsd:string .
+
+:description a owl:DatatypeProperty ;
+             rdfs:label "Description of a place" ;
+             rdfs:domain :Place ;
+             rdfs:range xsd:string .
+
+#######################
+# Annotation Properties
+#######################
+
+:suggestMetaField a owl:AnnotationProperty .
+
 ##########################################
 # Classes
 ##########################################
@@ -81,7 +97,8 @@
 # http://example.onto/City
 :City a owl:Class ;
       rdfs:subClassOf :Place ;
-      rdfs:label "City" .
+      rdfs:label "City" ;
+      :suggestMetaField "http://example.onto/nickname, http://example.onto/description" .
 
 # http://example.onto/Gender
 :Gender a owl:Class .

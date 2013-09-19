@@ -20,6 +20,10 @@ Desta forma, é esperado que *todos* os acessos oriundos de aplicações da Glob
 Para tal, o API Manager faz requisiões ao Brainiak passando no header HTTP Host o valor 'brainiak.api.backstage.globoi.com'.
 Isso só é possível pois este hostname foi liberado no webserver da farm do projeto Brainiak.
 
+---+++ Workshop
+
+   * Realizado em 18/09/2013 - [[http://wws.globoi.com/workshop_ondemand.php?id=ODk=][Vídeo]]
+
 ---++ Usuário do projeto
 
    * <b>brainiak</b>
@@ -116,7 +120,7 @@ tail-brainiak-nginx-be-error
 | ldap.globoi.com | 636 |
 | riofd01a | 111,2049 |
 | barramento.backstage.globoi.com | 61613 |
-| redis.api.semantica.globoi.com | 20015 |
+| redis.brainiak.globoi.com | 20019 |
 
 ---+++ Banco de dados
 
@@ -192,30 +196,33 @@ send "GET /healthcheck HTTP/1.0\r\nHost: brainiak.semantica.globoi.com\r\n\r\n"
 }
 </pre>
 
----++++redis.api.semantica.globoi.com
+---++++redis.brainiak.globoi.com
 <pre>
-virtual VIP2950_10.70.2.193_20015 {
-  snat automap
-  pool VIP2950_10.70.2.193_20015
-  destination 10.70.2.193:20015
-  ip protocol 6
-  profiles fastL4 {}
+virtual VIP5317_10.70.3.58_20019 {
+snat automap
+pool VIP5317_10.70.3.58_20019
+destination 10.70.3.58:20019
+ip protocol tcp
+profiles fastL4 {}
 }
-
-pool VIP2950_10.70.2.193_20015 {
-  lb method least conn
-  min active members 1
-  monitor all tcp
-  members {
-    10.10.4.6:20015 {
-      limit 1000
-      priority 1
-    }
-    10.10.4.8:20015 {
-      limit 1000
-      priority 2
-    }
-  }
+pool VIP5317_10.70.3.58_20019 {
+lb method least conn
+min active members 1
+monitor all tcp
+members {
+10.10.4.6:20019 {
+limit 1000
+}
+10.10.4.8:20019 {
+limit 1000
+}
+}
+}
+node 10.10.4.6 {
+screen RIOMP81LB07
+}
+node 10.10.4.8 {
+screen RIOMP82LB07
 }
 </pre>
 

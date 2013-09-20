@@ -161,14 +161,14 @@
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X POST -T <span class="s2">&quot;new_york_city.json&quot;</span> http://brainiak.semantica.dev.globoi.com/place/City
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 500 Internal Server Error
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 201 Created
 Server: nginx
-Date: Thu, 19 Sep 2013 18:15:08 GMT
-Content-Type: application/json; charset=UTF-8
-Content-Length: 100
+Date: Fri, 20 Sep 2013 14:15:21 GMT
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/place/City/_schema_list
+Content-Length: 0
 Connection: keep-alive
-
-{&quot;errors&quot;: [&quot;HTTP error: 500\nAccess to backend service failed.  HTTP 500: Internal Server Error.&quot;]}
+Location: http://brainiak.semantica.dev.globoi.com/place/City/985be3fe-1f3e-4e33-97d4-d4d2d2155481
+Access-Control-Allow-Origin: *
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -223,7 +223,7 @@ a instance from the API. For retrieving it, use the retrieve instance primitive 
 is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;errors&quot;: [
-        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang.&quot;
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_object_properties, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang.&quot;
     ]
 }
 </pre></div>

@@ -94,7 +94,7 @@ def do_range_search(query_params, suggest_params):
 
     request_body = _build_body_query(query_params, search_params, classes, search_fields, response_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)
-    items, item_count = _build_items(elasticsearch_result, class_label_dict, title_fields, response_fields)
+    items, item_count = _build_items(query_params, elasticsearch_result, class_label_dict, title_fields, response_fields)
 
     if not items:
         return None
@@ -288,7 +288,7 @@ def _get_title_value(elasticsearch_fields, title_fields):
 
 
 QUERY_PREDICATE_VALUES = """
-SELECT ?object_value ?object_value_label ?predicate_title {
+SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
   <%(instance_uri)s> ?predicate ?object_value OPTION(inference "http://semantica.globo.com/ruleset") .
   OPTIONAL { ?object_value rdfs:label ?object_value_label OPTION(inference "http://semantica.globo.com/ruleset") }
   ?predicate rdfs:label ?predicate_title .
@@ -297,8 +297,8 @@ SELECT ?object_value ?object_value_label ?predicate_title {
 """
 
 
-def _build_predicate_values_query(instance_uri, instance_fields):
-    conditions = ["?predicate = <{0}>".format(predicate) for predicate in instance_fields]
+def _build_predicate_values_query(instance_uri, predicates):
+    conditions = ["?predicate = <{0}>".format(predicate) for predicate in predicates]
     conditions = " OR ".join(conditions)
     filter_clause = "FILTER(" + conditions + ")"
     query = QUERY_PREDICATE_VALUES % {
@@ -308,17 +308,41 @@ def _build_predicate_values_query(instance_uri, instance_fields):
     return query
 
 
-def _get_predicate_information():
-    pass
+def _get_predicate_values(query_params, instance_uri, predicates):
+    query = _build_predicate_values_query(instance_uri, predicates)
+    query_response = triplestore.query_sparql(query, query_params.triplestore_config)
+    return compress_keys_and_values(query_response)
 
 
-def _get_instance_fields(instance_uri, klass, response_fields, title_field):
+def _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field):
     # TODO set required
-    instance_fields = response_fields.remove(title_field)
-    return {}
+    predicates = list(response_fields)
+    predicates.remove(title_field)  # title_field is already in response
+    predicate_values = _get_predicate_values(query_params, instance_uri, predicates)
+
+    instance_fields = {}
+    if not predicate_values:
+        return instance_fields
+    else:
+        instance_fields_list = []
+        for value in predicate_values:
+            instance_field_dict = {
+                "predicate_id": value["predicate"],
+                "predicate_title": value["predicate_title"],
+            }
+            if "object_value_label" in value:
+                instance_field_dict["object_id"] = value["object_value"]
+                instance_field_dict["object_title"] = value["object_value_label"]
+            else:
+                instance_field_dict["object_title"] = value["object_value"]
+
+            instance_fields_list.append(instance_field_dict)
+        instance_fields["instance_fields"] =instance_fields_list
+
+    return instance_fields
 
 
-def _build_items(result, class_label_dict, title_fields, response_fields):
+def _build_items(query_params, result, class_label_dict, title_fields, response_fields):
     items = []
     item_count = result["hits"]["total"]
     if item_count:
@@ -332,7 +356,8 @@ def _build_items(result, class_label_dict, title_fields, response_fields):
                 "@type": klass,
                 "type_title": class_label_dict[klass]
             }
-            item_dict.update(_get_instance_fields(instance_uri, klass, response_fields, title_field))
+            instance_fields = _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field)
+            item_dict.update(instance_fields)
             # TODO class fields
             items.append(item_dict)
 

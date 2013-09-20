@@ -7,8 +7,8 @@ import requests
 from mock import patch
 
 from brainiak.suggest.suggest import QUERY_PREDICATE_RANGES, \
-    QUERY_SUBPROPERTIES, _build_meta_fields_query
-from brainiak.utils.sparql import filter_values
+    QUERY_SUBPROPERTIES, _build_meta_fields_query, _build_predicate_values_query
+from brainiak.utils.sparql import filter_values, compress_keys_and_values
 from brainiak import settings
 
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
@@ -40,7 +40,10 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.elastic_request_url += quote_plus("http://example.onto/City") + "/"
         self.elastic_request_url += quote_plus("http://example.onto/York")
         entry = {
-            "http://www.w3.org/2000/01/rdf-schema#label": "York"
+            "http://www.w3.org/2000/01/rdf-schema#label": "York",
+            "http://example.onto/nickname": "City of York",
+            "http://example.onto/description":
+                "York is a walled city, situated at the confluence of the Rivers Ouse and Foss in North Yorkshire, England."
         }
 
         requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
@@ -67,12 +70,48 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.suggest.suggest._graph_uri_to_index_name", return_value="example.onto")
     def test_successful_request(self, mocked_graph_uri_to_index_name):
         expected_items = [
-            {u'type_title': u'City', u'@id': u'http://example.onto/York',
-             u'@type': u'http://example.onto/City', u'title': u'York'}
+            {
+                u'@id': u'http://example.onto/York', u'title': u'York',
+                u'@type': u'http://example.onto/City', u'type_title': u'City'
+            }
         ]
         response = self.fetch('/_suggest',
                               method='POST',
                               body=json.dumps(self.VALID_BODY_PARAMS))
+        self.assertEqual(response.code, 200)
+        response_json = json.loads(response.body)
+        self.assertEqual(expected_items, response_json["items"])
+
+    @patch("brainiak.suggest.suggest._graph_uri_to_index_name", return_value="example.onto")
+    def test_successful_request_with_metafields(self, mocked_graph_uri_to_index_name):
+        expected_items = [
+            {
+                u'@id': u'http://example.onto/York', u'title': u'York',
+                u'@type': u'http://example.onto/City', u'type_title': u'City',
+                u"instance_fields": [
+                    {
+                        u"predicate_id": u"http://example.onto/description",
+                        u"predicate_title": u"Description of a place",
+                        u"object_title": u"York is a walled city, situated at the confluence of the Rivers Ouse and Foss in North Yorkshire, England."
+                    },
+                    {
+                        u"predicate_id": u"http://example.onto/nickname",
+                        u"predicate_title": u"Nickname of a place",
+                        u"object_title": u"City of York"
+                    }
+                ]
+            }
+        ]
+
+        VALID_BODY_PARAMS_WITH_METAFIELDS = dict(self.VALID_BODY_PARAMS)
+        VALID_BODY_PARAMS_WITH_METAFIELDS.update({
+            "response": {
+                "meta_fields": ["http://example.onto/suggestMetaField"]
+            }
+        })
+        response = self.fetch('/_suggest',
+                              method='POST',
+                              body=json.dumps(VALID_BODY_PARAMS_WITH_METAFIELDS))
         self.assertEqual(response.code, 200)
         response_json = json.loads(response.body)
         self.assertEqual(expected_items, response_json["items"])
@@ -140,3 +179,23 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         query_response = self.query(query)
         meta_field_values = filter_values(query_response, "meta_field_value")
         self.assertEqual(expected, meta_field_values)
+
+    def test_query_predicate_values(self):
+        expected = [
+            {
+                u'predicate': u'http://example.onto/nickname',
+                u'predicate_title': u'Nickname of a place',
+                u'object_value': u'City of York'
+            },
+            {
+                u'predicate': u'http://example.onto/description',
+                u'predicate_title': u'Description of a place',
+                u'object_value': u'York is a walled city, situated at the confluence of the Rivers Ouse and Foss in North Yorkshire, England.'
+            }
+        ]
+        instance_uri = "http://example.onto/York"
+        instance_fields = ["http://example.onto/nickname", "http://example.onto/description"]
+        query = _build_predicate_values_query(instance_uri, instance_fields)
+        query_response = self.query(query)
+        values = compress_keys_and_values(query_response)
+        self.assertEqual(expected, values)

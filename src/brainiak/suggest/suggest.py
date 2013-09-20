@@ -52,7 +52,12 @@ SUGGEST_PARAM_SCHEMA = {
                     "minItems": 1,
                     "uniqueItems": True
                 },
-
+                "meta_fields": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "url"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                }
             }
         }
 

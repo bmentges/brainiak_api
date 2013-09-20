@@ -337,7 +337,7 @@ def _get_instance_fields(query_params, instance_uri, klass, response_fields, tit
                 instance_field_dict["object_title"] = value["object_value"]
 
             instance_fields_list.append(instance_field_dict)
-        instance_fields["instance_fields"] =instance_fields_list
+        instance_fields["instance_fields"] = instance_fields_list
 
     return instance_fields
 

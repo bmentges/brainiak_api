@@ -7,7 +7,8 @@ from tornado.web import HTTPError
 from brainiak.suggest.suggest import _build_body_query, _validate_class_restriction, \
     _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
     _build_class_label_dict, _build_items, _get_search_fields, _get_title_value, \
-    _build_meta_fields_query, _get_response_fields_from_meta_fields
+    _build_meta_fields_query, _get_response_fields_from_meta_fields, \
+    _build_predicate_values_query
 
 
 class SuggestTestCase(TestCase):
@@ -172,8 +173,9 @@ class SuggestTestCase(TestCase):
         response = _build_class_label_dict(compressed_result)
         self.assertEqual(expected, response)
 
-    @patch("brainiak.suggest.suggest._get_title_value", return_value="Globoland")
-    def test_build_items(self, mocked_get_title_value):
+    @patch("brainiak.suggest.suggest._get_instance_fields", return_value={})
+    @patch("brainiak.suggest.suggest._get_title_value", return_value=("rdfs:label", "Globoland"))
+    def test_build_items(self, mocked_get_title_value, mocked_get_instance_fields):
         expected = {
             "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
             "title": "Globoland",
@@ -209,7 +211,10 @@ class SuggestTestCase(TestCase):
         class_label_dict = {
             "http://semantica.globo.com/place/City": "Cidade"
         }
-        items_response, item_count = _build_items(elasticsearch_result, class_label_dict, [])
+        title_fields = []  # mocked _get_title_value
+        response_fields = []  # mocked _get_instance_fields
+        items_response, item_count = _build_items(elasticsearch_result, class_label_dict, title_fields, response_fields)
+        self.assertEqual(len(items_response), 1)
         self.assertDictEqual(expected, items_response[0])
 
     @patch("brainiak.suggest.suggest._get_subproperties", return_value=["property1", "property2"])
@@ -223,12 +228,12 @@ class SuggestTestCase(TestCase):
         self.assertEqual(expected, set(search_fields))
 
     def test_get_title_value(self):
-        expected = "label2"
+        expected = ("rdfs:label", "label1")
         elasticsearch_fields = {
             "rdfs:label": "label1",
             "upper:name": "label2"
         }
-        title_fields = ["rdfs:label", "upper:name"]
+        title_fields = ["upper:name", "rdfs:label"]
 
         response = _get_title_value(elasticsearch_fields, title_fields)
         self.assertEqual(expected, response)
@@ -263,3 +268,16 @@ SELECT DISTINCT ?meta_field_value {
         query_params = classes = {}
         response = _get_response_fields_from_meta_fields(query_params, response_params, classes)
         self.assertEqual(sorted(expected), sorted(response))
+
+    def test_build_predicate_values_query(self):
+        expected = """
+SELECT ?object_value ?object_value_label ?predicate_title {
+  <http://instance-uri> ?predicate ?object_value OPTION(inference "http://semantica.globo.com/ruleset") .
+  OPTIONAL { ?object_value rdfs:label ?object_value_label OPTION(inference "http://semantica.globo.com/ruleset") }
+  ?predicate rdfs:label ?predicate_title .
+  FILTER(?predicate = <http://predicate-a> OR ?predicate = <http://predicate-b>)
+}
+"""
+        instance_uri = "http://instance-uri"
+        instance_fields = ["http://predicate-a", "http://predicate-b"]
+        self.assertEqual(expected, _build_predicate_values_query(instance_uri, instance_fields))

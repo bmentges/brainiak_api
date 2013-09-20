@@ -8,10 +8,13 @@ from brainiak.suggest.suggest import _build_body_query, _validate_class_restrict
     _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
     _build_class_label_dict, _build_items, _get_search_fields, _get_title_value, \
     _build_meta_fields_query, _get_response_fields_from_meta_fields, \
-    _build_predicate_values_query
+    _build_predicate_values_query, _get_instance_fields
 
 
 class SuggestTestCase(TestCase):
+
+    def setUp(self):
+        self.maxDiff = None
 
     @patch("brainiak.suggest.suggest._build_type_filters", return_value={})
     @patch("brainiak.suggest.suggest.calculate_offset", return_value=10)
@@ -213,7 +216,11 @@ class SuggestTestCase(TestCase):
         }
         title_fields = []  # mocked _get_title_value
         response_fields = []  # mocked _get_instance_fields
-        items_response, item_count = _build_items(elasticsearch_result, class_label_dict, title_fields, response_fields)
+        query_params = []  # needed to _get_instance_fields, mocked
+
+        items_response, item_count = _build_items(
+            query_params, elasticsearch_result, class_label_dict, title_fields, response_fields)
+
         self.assertEqual(len(items_response), 1)
         self.assertDictEqual(expected, items_response[0])
 
@@ -271,7 +278,7 @@ SELECT DISTINCT ?meta_field_value {
 
     def test_build_predicate_values_query(self):
         expected = """
-SELECT ?object_value ?object_value_label ?predicate_title {
+SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
   <http://instance-uri> ?predicate ?object_value OPTION(inference "http://semantica.globo.com/ruleset") .
   OPTIONAL { ?object_value rdfs:label ?object_value_label OPTION(inference "http://semantica.globo.com/ruleset") }
   ?predicate rdfs:label ?predicate_title .
@@ -281,3 +288,41 @@ SELECT ?object_value ?object_value_label ?predicate_title {
         instance_uri = "http://instance-uri"
         instance_fields = ["http://predicate-a", "http://predicate-b"]
         self.assertEqual(expected, _build_predicate_values_query(instance_uri, instance_fields))
+
+    @patch("brainiak.suggest.suggest._get_predicate_values", return_value=[
+        {
+            "predicate": "http://predicate1",
+            "predicate_title": "predicate1_title",
+            "object_value": "predicate1_value"
+        },
+        {
+            "predicate": "http://predicate2",
+            "predicate_title": "predicate2_title",
+            "object_value": "http://predicate2_value",
+            "object_value_label": "predicate2_value_label"
+        }
+    ])
+    def test_get_instance_fields(self, mocked_get_predicate_values):
+        expected = {
+            "instance_fields": [
+                {
+                    "predicate_id": "http://predicate1",
+                    "predicate_title": "predicate1_title",
+                    "object_title": "predicate1_value"
+                },
+                {
+                    "predicate_id": "http://predicate2",
+                    "predicate_title": "predicate2_title",
+                    "object_id": "http://predicate2_value",
+                    "object_title": "predicate2_value_label"
+                }
+            ]
+        }
+        query_params = {}  # mocked
+        instance_uri = "instance-uri"
+        klass = "klass"
+        response_fields = ["http://predicate1", "http://predicate2", "http://predicate3"]
+        title_field = "http://predicate3"
+        instance_fields = _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field)
+        mocked_get_predicate_values.assert_called_with({}, "instance-uri", ["http://predicate1", "http://predicate2"])
+        self.assertDictEqual(expected, instance_fields)

@@ -205,7 +205,9 @@
 ##########################################
 
 :York a :City ;
-      rdfs:label "York" .
+      rdfs:label "York" ;
+      :nickname "City of York" ;
+      :description "York is a walled city, situated at the confluence of the Rivers Ouse and Foss in North Yorkshire, England." .
 
 :Male a :Gender .
 :Female a :Gender .

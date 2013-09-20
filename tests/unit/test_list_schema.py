@@ -288,7 +288,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
     def test_convert_bindings_dict_two_predicates_single_range(self):
         class ContextMock(prefixes.MemorizeContext):
             object_properties = {}
-            context = {'G1': 'http://semantica.globo.com/G1/'}
+            context = {'g1': 'http://semantica.globo.com/G1/'}
 
         context = ContextMock(normalize_keys=SHORTEN, normalize_values=SHORTEN)
         cardinalities = {}
@@ -311,8 +311,8 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         ]
         computed = convert_bindings_dict(context, bindings, cardinalities)
         expected = {
-            'G1:cita_a_entidade': {
-                'graph': 'G1',
+            'g1:cita_a_entidade': {
+                'graph': 'g1',
                 'range': {
                     'graph': 'glb',
                     '@id': 'base:Criatura',
@@ -324,11 +324,11 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                 'items': {'type': 'string', 'format': 'uri'}
 
             },
-            'G1:trata_do_assunto': {
-                'graph': 'G1',
+            'g1:trata_do_assunto': {
+                'graph': 'g1',
                 'range': {
                     'graph': 'base',
-                    '@id': 'G1:AssuntoCarro',
+                    '@id': 'g1:AssuntoCarro',
                     'title': '',
                     'type': 'string',
                     'format': 'uri'},

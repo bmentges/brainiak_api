@@ -56,7 +56,7 @@ def fetch_all_pages(url, update_key):
      {u'resource_id': u'esportes', u'@id': u'http://semantica.globo.com/esportes/', u'title': u'esportes'},
      {u'resource_id': u'place', u'@id': u'http://semantica.globo.com/place/', u'title': u'place'},
      {u'resource_id': u'organization', u'@id': u'http://semantica.globo.com/organization/', u'title': u'organization'},
-     {u'resource_id': u'G1', u'@id': u'http://semantica.globo.com/G1/', u'title': u'g1'},
+     {u'resource_id': u'g1', u'@id': u'http://semantica.globo.com/G1/', u'title': u'g1'},
      {u'resource_id': u'tvg', u'@id': u'http://semantica.globo.com/tvg/', u'title': u'tvg'},
      {u'resource_id': u'eureka', u'@id': u'http://semantica.globo.com/eureka/', u'title': u'eureka'}]
     """

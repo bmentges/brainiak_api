@@ -94,7 +94,7 @@ def do_range_search(query_params, suggest_params):
 
     request_body = _build_body_query(query_params, search_params, classes, search_fields, response_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)
-    items, item_count = _build_items(elasticsearch_result, class_label_dict, title_fields)
+    items, item_count = _build_items(elasticsearch_result, class_label_dict, title_fields, response_fields)
 
     if not items:
         return None
@@ -283,23 +283,57 @@ def _get_title_value(elasticsearch_fields, title_fields):
     for field in reversed(title_fields):
         title = elasticsearch_fields.get(field)
         if title:
-            return title
+            return (field, title)
     raise RuntimeError("No title fields in search engine")
 
 
-def _build_items(result, class_label_dict, title_fields):
+QUERY_PREDICATE_VALUES = """
+SELECT ?object_value ?object_value_label ?predicate_title {
+  <%(instance_uri)s> ?predicate ?object_value OPTION(inference "http://semantica.globo.com/ruleset") .
+  OPTIONAL { ?object_value rdfs:label ?object_value_label OPTION(inference "http://semantica.globo.com/ruleset") }
+  ?predicate rdfs:label ?predicate_title .
+  %(filter_clause)s
+}
+"""
+
+
+def _build_predicate_values_query(instance_uri, instance_fields):
+    conditions = ["?predicate = <{0}>".format(predicate) for predicate in instance_fields]
+    conditions = " OR ".join(conditions)
+    filter_clause = "FILTER(" + conditions + ")"
+    query = QUERY_PREDICATE_VALUES % {
+        "instance_uri": instance_uri,
+        "filter_clause": filter_clause
+    }
+    return query
+
+
+def _get_predicate_information():
+    pass
+
+
+def _get_instance_fields(instance_uri, klass, response_fields, title_field):
+    # TODO set required
+    instance_fields = response_fields.remove(title_field)
+    return {}
+
+
+def _build_items(result, class_label_dict, title_fields, response_fields):
     items = []
     item_count = result["hits"]["total"]
     if item_count:
         for item in result["hits"]["hits"]:
+            instance_uri = item["_id"]
+            title_field, title_value = _get_title_value(item["fields"], title_fields)
+            klass = item["_type"]
             item_dict = {
-                "@id": item["_id"],
-                "title": _get_title_value(item["fields"], title_fields),
-                "@type": item["_type"],
-                "type_title": class_label_dict[item["_type"]]
+                "@id": instance_uri,
+                "title": title_value,
+                "@type": klass,
+                "type_title": class_label_dict[klass]
             }
-            # return other fields only when fields in response_params is specified
-            # item_dict.update(item["fields"])
+            item_dict.update(_get_instance_fields(instance_uri, klass, response_fields, title_field))
+            # TODO class fields
             items.append(item_dict)
 
     return items, item_count

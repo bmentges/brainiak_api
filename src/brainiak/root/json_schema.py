@@ -12,7 +12,7 @@ def schema():
         "properties": {
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
-            "base_url": {"type": "string", "format": "url"},
+            "base_url": {"type": "string", "format": "uri"},
             "items": {
                 "type": "array",
                 "items": {

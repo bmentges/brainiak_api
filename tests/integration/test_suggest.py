@@ -42,8 +42,7 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         entry = {
             "http://www.w3.org/2000/01/rdf-schema#label": "York",
             "http://example.onto/nickname": "City of York",
-            "http://example.onto/description":
-                "York is a walled city, situated at the confluence of the Rivers Ouse and Foss in North Yorkshire, England."
+            "http://example.onto/description": "York is a walled city, situated at the confluence of the Rivers Ouse and Foss in North Yorkshire, England."
         }
 
         requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
@@ -131,8 +130,8 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     def test_suggest_without_required_param_target(self):
         response = self.fetch('/_suggest',
-                                method='POST',
-                                body=json.dumps({'search': {'pattern': 1}}))
+                              method='POST',
+                              body=json.dumps({'search': {'pattern': 1}}))
         self.assertEqual(response.code, 400)
         json_received = json.loads(response.body)
         self.assertIn("'target' is a required property", json_received['errors'][0])
@@ -141,8 +140,8 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         d = {'invalid': 3}
         d.update(self.VALID_BODY_PARAMS)
         response = self.fetch('/_suggest',
-                                method='POST',
-                                body=json.dumps(d))
+                              method='POST',
+                              body=json.dumps(d))
         self.assertEqual(response.code, 400)
         json_received = json.loads(response.body)
         self.assertIn("Additional properties are not allowed (u'invalid' was unexpected)", json_received['errors'][0])

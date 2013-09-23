@@ -48,9 +48,9 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                              '@id': 'test:Gender',
                                              'title': u'G\xeanero da Pessoa',
                                              'type': 'string',
-                                             'format': 'uri'},
+                                             'format': 'url'},
                                    'graph': 'test',
-                                   'format': 'uri',
+                                   'format': 'url',
                                    'title': u'Sexo',
                                    'type': 'string'}
         name = u'http://test/person/gender'
@@ -274,11 +274,11 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     'graph': '',
                     '@id': 'http://test.graph/Person',
                     'title': '',
-                    'format': 'uri',
+                    'format': 'url',
                     'type': 'string'},
                 'title': u'Has parent',
                 'type': 'array',
-                'items': {'type': 'string', 'format': 'uri'}
+                'items': {'type': 'string', 'format': 'url'}
 
             }
         }
@@ -318,10 +318,10 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     '@id': 'base:Criatura',
                     'title': '',
                     'type': 'string',
-                    'format': 'uri'},
+                    'format': 'url'},
                 'title': u'Entidades',
                 'type': 'array',
-                'items': {'type': 'string', 'format': 'uri'}
+                'items': {'type': 'string', 'format': 'url'}
 
             },
             'g1:trata_do_assunto': {
@@ -331,10 +331,10 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                     '@id': 'g1:AssuntoCarro',
                     'title': '',
                     'type': 'string',
-                    'format': 'uri'},
+                    'format': 'url'},
                 'title': u'Assuntos',
                 'type': 'array',
-                'items': {'type': 'string', 'format': 'uri'}
+                'items': {'type': 'string', 'format': 'url'}
             }
         }
 

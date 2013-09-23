@@ -5,37 +5,39 @@ from brainiak.utils.links import merge_schemas, pagination_schema
 
 def schema():
     base = {
-        "$schema": "http://json-schema.org/draft-03/schema#",
+        "$schema": "http://json-schema.org/draft-04/schema#",
         "title": "Suggest Result List Schema",
         "type": "object",
+        "required": ["items"],
         "properties": {
             #"do_item_count": {"type": "integer"},
             #"item_count": {"type": "integer"},
-            "base_url": {"type": "string", "format": "uri"},
+            "base_url": {"type": "string", "format": "url"},
             "items": {
                 "type": "array",
-                "required": True,
                 "items": {
                     "type": "object",
+                    "required": ["@id", "title", "@type", "type_title"],
                     "properties": {
-                        "@id": {"type": "string", "required": True},
-                        "title": {"type": "string", "required": True},
-                        "@type": {"type": "string", "required": True},
-                        "type_title": {"type": "string", "required": True},
+                        "@id": {"type": "string"},
+                        "title": {"type": "string"},
+                        "@type": {"type": "string"},
+                        "type_title": {"type": "string"},
                         "class_fields": {"type": "object"},
                         "instance_fields": {
                             "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": False,
+                                "required": ["predicate_id", "predicate_title", "object_title", "required"],
                                 "properties": {
-                                    "predicate_id": {"type": "string", "required": True},
-                                    "predicate_title": {"type": "string", "required": True},
-                                    "object_id": {"type": "string", "required": False},
-                                    "object_title": {"type": "string", "required": True},
-                                    "required": {"type": "boolean", "required": True}
+                                    "predicate_id": {"type": "string"},
+                                    "predicate_title": {"type": "string"},
+                                    "object_id": {"type": "string"},
+                                    "object_title": {"type": "string"},
+                                    "required": {"type": "boolean"}
                                 }
-                            },
+                            }
                         }
                     },
                     "links": [

@@ -46,6 +46,29 @@ SUGGEST_PARAM_SCHEMA = {
             "type": "object",
             "additionalProperties": False,
             "properties": {
+                "required_fields": {"type": "boolean"},
+                "classes_fields": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "url"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                },
+                "classes": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "@type": {"type": "string", "format": "url"},
+                            "instance_fields": {
+                                "type": "array",
+                                "items": {"type": "string", "format": "url"},
+                                "minItems": 1,
+                                "uniqueItems": True
+                            }
+                        }
+                    },
+                    "minItems": 1,
+                },
                 "instance_fields": {
                     "type": "array",
                     "items": {"type": "string", "format": "url"},

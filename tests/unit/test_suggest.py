@@ -8,7 +8,7 @@ from brainiak.suggest.suggest import _build_body_query, _validate_class_restrict
     _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
     _build_class_label_dict, _build_items, _get_search_fields, _get_title_value, \
     _build_meta_fields_query, _get_response_fields_from_meta_fields, \
-    _build_predicate_values_query, _get_instance_fields
+    _build_predicate_values_query, _get_instance_fields, _get_response_fields_from_classes_dict
 
 
 class SuggestTestCase(TestCase):
@@ -217,9 +217,10 @@ class SuggestTestCase(TestCase):
         title_fields = []  # mocked _get_title_value
         response_fields = []  # mocked _get_instance_fields
         query_params = []  # needed to _get_instance_fields, mocked
+        fields_by_class_dict = {}  # needed to _get_instance_fields, mocked
 
-        items_response, item_count = _build_items(
-            query_params, elasticsearch_result, class_label_dict, title_fields, response_fields)
+        items_response, item_count = _build_items(query_params, elasticsearch_result, class_label_dict, title_fields,
+                                                  response_fields, fields_by_class_dict)
 
         self.assertEqual(len(items_response), 1)
         self.assertDictEqual(expected, items_response[0])
@@ -323,6 +324,69 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         klass = "klass"
         response_fields = ["http://predicate1", "http://predicate2", "http://predicate3"]
         title_field = "http://predicate3"
-        instance_fields = _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field)
+        fields_by_class_dict = {}
+
+        instance_fields = _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field, fields_by_class_dict)
         mocked_get_predicate_values.assert_called_with({}, "instance-uri", ["http://predicate1", "http://predicate2"])
         self.assertDictEqual(expected, instance_fields)
+
+
+    @patch("brainiak.suggest.suggest._get_predicate_values", return_value=[
+        {
+            "predicate": "http://predicate1",
+            "predicate_title": "predicate1_title",
+            "object_value": "predicate1_value"
+        }
+    ])
+    def test_get_instance_fields_with_fields_restriction(self, mocked_get_predicate_values):
+        expected = {
+            "instance_fields": [
+                {
+                    "predicate_id": "http://predicate1",
+                    "predicate_title": "predicate1_title",
+                    "object_title": "predicate1_value"
+                }
+            ]
+        }
+        query_params = {}  # mocked
+        instance_uri = "instance-uri"
+        klass = "klass"
+        response_fields = ["http://predicate1", "http://predicate2", "http://predicate3"]
+        title_field = "http://predicate3"
+        fields_by_class_dict = {"klass": ["http://predicate1"]}
+
+        instance_fields = _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field, fields_by_class_dict)
+        mocked_get_predicate_values.assert_called_with({}, "instance-uri", ["http://predicate1"])
+        self.assertDictEqual(expected, instance_fields)
+
+    def test_get_response_fields_from_classes_dict(self):
+        expected_dict = {
+            "type1": ["field1", "field2"],
+            "type2": ["field2", "field3"]
+        }
+        expected_set = set(["field1", "field2", "field3"])
+
+        fields_by_class_list = [
+            {
+                "@type": "type1",
+                "instance_fields": ["field1", "field2"]
+            },
+            {
+                "@type": "type2",
+                "instance_fields": ["field2", "field3"]
+            }
+        ]
+
+        response_dict, response_set = _get_response_fields_from_classes_dict(fields_by_class_list)
+        self.assertEqual(expected_dict, response_dict)
+        self.assertEqual(expected_set, response_set)
+
+    def test_get_response_fields_from_classes_dict_empty(self):
+        expected_dict = {}
+        expected_set = set([])
+
+        fields_by_class_list = []
+
+        response_dict, response_set = _get_response_fields_from_classes_dict(fields_by_class_list)
+        self.assertEqual(expected_dict, response_dict)
+        self.assertEqual(expected_set, response_set)

@@ -463,7 +463,7 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(body['title'], 'Humano')
         self.assertEqual(body['type'], 'object')
         self.assertEqual(body['@context'], {u'@language': u'pt'})
-        self.assertEqual(body['$schema'], 'http://json-schema.org/draft-03/schema#')
+        self.assertEqual(body['$schema'], 'http://json-schema.org/draft-04/schema#')
         properties = body['properties']
         expected_properties = {
             u'http://example.onto/birthPlace': {

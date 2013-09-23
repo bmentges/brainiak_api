@@ -80,6 +80,23 @@ SUGGEST_PARAM_SCHEMA = {
                     "items": {"type": "string", "format": "uri"},
                     "minItems": 1,
                     "uniqueItems": True
+                },
+                "classes": {
+                    "type": "array",
+                    "items": {"type": "object"},
+                    "minItems": 1,
+                    "uniqueItems": True,
+                    "additionalProperties": False,
+                    "required": ["@type", "instance_fields"],
+                    "properties": {
+                        "@type": {"type": "string", "format": "url"},
+                        "instance_fields": {
+                            "type": "array",
+                            "items": {"type": "string", "format": "url"},
+                            "minItems": 1,
+                            "uniqueItems": True
+                        }
+                    }
                 }
             }
         }

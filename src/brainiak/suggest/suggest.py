@@ -88,7 +88,10 @@ def do_range_search(query_params, suggest_params):
 
     range_result = _get_predicate_ranges(query_params, search_params)
     if is_result_empty(range_result):
-        raise HTTPError(400, "Either the predicate {0} does not exists or it does not have any rdfs:range defined in the triplestore".format(search_params["target"]))
+        message = "Either the predicate {0} does not exists or it does not have" + \
+            " any rdfs:range defined in the triplestore"
+        message = message.format(search_params["target"])
+        raise HTTPError(400, message)
 
     classes = _validate_class_restriction(query_params, range_result)
     graphs = _validate_graph_restriction(query_params, range_result)
@@ -107,11 +110,19 @@ def do_range_search(query_params, suggest_params):
     response_fields.update(meta_fields)
 
     response_fields.update(set(response_params.get("instance_fields", [])))
+
+    fields_by_class_dict, fields_by_class_set = _get_response_fields_from_classes_dict(
+        response_params.get("classes", []))
+    response_fields.update(fields_by_class_set)
+
     response_fields = list(response_fields)
 
-    request_body = _build_body_query(query_params, search_params, classes, search_fields, response_fields)
+    request_body = _build_body_query(query_params, search_params, classes,
+                                     search_fields, response_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)
-    items, item_count = _build_items(query_params, elasticsearch_result, class_label_dict, title_fields, response_fields)
+
+    items, item_count = _build_items(query_params, elasticsearch_result, class_label_dict,
+                                     title_fields, response_fields, fields_by_class_dict)
 
     if not items:
         return None
@@ -258,6 +269,20 @@ def _get_response_fields_from_meta_fields(query_params, response_params, classes
     return meta_fields_response
 
 
+def _get_response_fields_from_classes_dict(fields_by_class_list):
+    if not fields_by_class_list:
+        return {}, set([])
+    else:
+        fields_by_class_dict = {}
+        fields_by_class_set = set([])
+        for fields_by_class in fields_by_class_list:
+            klass = fields_by_class["@type"]
+            fields = fields_by_class["instance_fields"]
+            fields_by_class_dict[klass] = fields
+            fields_by_class_set.update(set(fields))
+        return fields_by_class_dict, fields_by_class_set
+
+
 def _build_body_query(query_params, search_params, classes, search_fields, response_fields):
     patterns = search_params["pattern"].lower().split()
     query_string = " AND ".join(patterns) + "*"
@@ -331,10 +356,15 @@ def _get_predicate_values(query_params, instance_uri, predicates):
     return compress_keys_and_values(query_response)
 
 
-def _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field):
+def _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field, fields_by_class_dict):
     # TODO set required
     predicates = list(response_fields)
     predicates.remove(title_field)  # title_field is already in response
+
+    fields_to_return = fields_by_class_dict.get(klass, [])
+    if fields_to_return:
+        predicates = list(fields_to_return)
+
     predicate_values = _get_predicate_values(query_params, instance_uri, predicates)
 
     instance_fields = {}
@@ -359,7 +389,8 @@ def _get_instance_fields(query_params, instance_uri, klass, response_fields, tit
     return instance_fields
 
 
-def _build_items(query_params, result, class_label_dict, title_fields, response_fields):
+def _build_items(query_params, result, class_label_dict, title_fields,
+                 response_fields, fields_by_class_dict):
     items = []
     item_count = result["hits"]["total"]
     if item_count:
@@ -373,7 +404,9 @@ def _build_items(query_params, result, class_label_dict, title_fields, response_
                 "@type": klass,
                 "type_title": class_label_dict[klass]
             }
-            instance_fields = _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field)
+            instance_fields = _get_instance_fields(query_params, instance_uri, klass,
+                                                   response_fields, title_field,
+                                                   fields_by_class_dict)
             item_dict.update(instance_fields)
             # TODO class fields
             items.append(item_dict)

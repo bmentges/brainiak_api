@@ -46,7 +46,7 @@ SUGGEST_PARAM_SCHEMA = {
             "type": "object",
             "additionalProperties": False,
             "properties": {
-                "fields": {
+                "instance_fields": {
                     "type": "array",
                     "items": {"type": "string", "format": "url"},
                     "minItems": 1,
@@ -89,7 +89,7 @@ def do_range_search(query_params, suggest_params):
     meta_fields = _get_response_fields_from_meta_fields(query_params, response_params, classes)
     response_fields.update(meta_fields)
 
-    response_fields.update(set(response_params.get("fields", [])))
+    response_fields.update(set(response_params.get("instance_fields", [])))
     response_fields = list(response_fields)
 
     request_body = _build_body_query(query_params, search_params, classes, search_fields, response_fields)

@@ -74,7 +74,7 @@ class TestSuggestParams(TestCase):
                 "graphs": ["http://semantica.globo.com/esportes/"],
             },
             "response": {
-                "fields": ["esportes:nome_popular_sde", "esportes:composite"]
+                "instance_fields": ["esportes:nome_popular_sde", "esportes:composite"]
             }
         }
         validate(valid_simple_case, SUGGEST_PARAM_SCHEMA)

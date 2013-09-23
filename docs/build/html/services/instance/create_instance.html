@@ -161,14 +161,14 @@
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X POST -T <span class="s2">&quot;new_york_city.json&quot;</span> http://brainiak.semantica.dev.globoi.com/place/City
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 201 Created
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 500 Internal Server Error
 Server: nginx
-Date: Fri, 20 Sep 2013 14:15:21 GMT
-Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/place/City/_schema_list
-Content-Length: 0
+Date: Mon, 23 Sep 2013 17:37:03 GMT
+Content-Type: application/json; charset=UTF-8
+Content-Length: 1513
 Connection: keep-alive
-Location: http://brainiak.semantica.dev.globoi.com/place/City/985be3fe-1f3e-4e33-97d4-d4d2d2155481
-Access-Control-Allow-Origin: *
+
+{&quot;errors&quot;: [&quot;HTTP error: 500\nAccess to backend service failed.  HTTP 500: Internal Server Error.\nResponse:\nVirtuoso RDF02 Error SR619: SPARUL INSERT access denied: database user 117 (api-semantica) has no write permission on graph http://semantica.globo.com/place/\n\nSPARQL query:\n\n#output-format:application/sparql-results+json\n\nPREFIX upper: &lt;http://semantica.globo.com/upper/&gt;\nPREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;\nPREFIX place: &lt;http://semantica.globo.com/place/&gt;\nPREFIX base: &lt;http://semantica.globo.com/base/&gt;\nPREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;\nINSERT DATA INTO &lt;http://semantica.globo.com/place/&gt;\n{\n   &lt;http://semantica.globo.com/place/City/7a6595fa-0f6c-470c-b5e1-7525511e456c&gt; rdfs:comment \&quot;City of Globo\\&#39;s companies. Historically known as PROJAC.\&quot; .\n   &lt;http://semantica.globo.com/place/City/7a6595fa-0f6c-470c-b5e1-7525511e456c&gt; place:longitude \&quot;-43.407133\&quot; .\n   &lt;http://semantica.globo.com/place/City/7a6595fa-0f6c-470c-b5e1-7525511e456c&gt; upper:name \&quot;Globoland\&quot; .\n   &lt;http://semantica.globo.com/place/City/7a6595fa-0f6c-470c-b5e1-7525511e456c&gt; place:latitude \&quot;-22.958314\&quot; .\n   &lt;http://semantica.globo.com/place/City/7a6595fa-0f6c-470c-b5e1-7525511e456c&gt; place:partOfState base:UF_RJ .\n   &lt;http://semantica.globo.com/place/City/7a6595fa-0f6c-470c-b5e1-7525511e456c&gt; upper:fullName \&quot;Globoland (RJ)\&quot; .\n   &lt;http://semantica.globo.com/place/City/7a6595fa-0f6c-470c-b5e1-7525511e456c&gt; a &lt;http://semantica.globo.com/place/City&gt; .\n}\n&quot;]}
 </pre></div>
 </div>
 <div class="admonition warning">

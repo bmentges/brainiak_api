@@ -20,22 +20,22 @@ SUGGEST_PARAM_SCHEMA = {
             "additionalProperties": False,
             "properties": {
                 "pattern": {"type": "string"},
-                "target": {"type": "string", "format": "url"},
+                "target": {"type": "string", "format": "uri"},
                 "graphs": {
                     "type": "array",
-                    "items": {"type": "string", "format": "url"},
+                    "items": {"type": "string", "format": "uri"},
                     "minItems": 1,
                     "uniqueItems": True
                 },
                 "classes": {
                     "type": "array",
-                    "items": {"type": "string", "format": "url"},
+                    "items": {"type": "string", "format": "uri"},
                     "minItems": 1,
                     "uniqueItems": True
                 },
                 "fields": {
                     "type": "array",
-                    "items": {"type": "string", "format": "url"},
+                    "items": {"type": "string", "format": "uri"},
                     "minItems": 1,
                     "uniqueItems": True
                 },
@@ -49,7 +49,7 @@ SUGGEST_PARAM_SCHEMA = {
                 "required_fields": {"type": "boolean"},
                 "classes_fields": {
                     "type": "array",
-                    "items": {"type": "string", "format": "url"},
+                    "items": {"type": "string", "format": "uri"},
                     "minItems": 1,
                     "uniqueItems": True
                 },
@@ -58,10 +58,10 @@ SUGGEST_PARAM_SCHEMA = {
                     "items": {
                         "type": "object",
                         "properties": {
-                            "@type": {"type": "string", "format": "url"},
+                            "@type": {"type": "string", "format": "uri"},
                             "instance_fields": {
                                 "type": "array",
-                                "items": {"type": "string", "format": "url"},
+                                "items": {"type": "string", "format": "uri"},
                                 "minItems": 1,
                                 "uniqueItems": True
                             }
@@ -71,13 +71,13 @@ SUGGEST_PARAM_SCHEMA = {
                 },
                 "instance_fields": {
                     "type": "array",
-                    "items": {"type": "string", "format": "url"},
+                    "items": {"type": "string", "format": "uri"},
                     "minItems": 1,
                     "uniqueItems": True
                 },
                 "meta_fields": {
                     "type": "array",
-                    "items": {"type": "string", "format": "url"},
+                    "items": {"type": "string", "format": "uri"},
                     "minItems": 1,
                     "uniqueItems": True
                 }

@@ -19,8 +19,9 @@ Two parameters must be defined in ``search``:
 The ``target`` parameter represents the target predicate.
 
 For example, the target in the example below is ``place:partOfCity``.
+
 The range (types of possible values) of this predicate is ``place:City``.
-Therefore, the ``_suggest`` service will only try to match instances of ``place:City`` set as the value of ``place:partOfCity`.
+Therefore, the ``_suggest`` service will only try to match instances of ``place:City`` set as the value of ``place:partOfCity``.
 
 **pattern**
 

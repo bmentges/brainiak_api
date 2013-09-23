@@ -19,8 +19,9 @@ Two parameters must be defined in ``search``:
 The ``target`` parameter represents the target predicate.
 
 For example, the target in the example below is ``place:partOfCity``.
+
 The range (types of possible values) of this predicate is ``place:City``.
-Therefore, the ``_suggest`` service will only try to match instances of ``place:City`` set as the value of ``place:partOfCity`.
+Therefore, the ``_suggest`` service will only try to match instances of ``place:City`` set as the value of ``place:partOfCity``.
 
 **pattern**
 
@@ -57,7 +58,7 @@ Some optional parameters can be passed in request body:
 Optional search fields
 ----------------------
 
-``fields`` list of optional fields to search on. Each field must be an URI or a CURIE. Without this parameter, only ``rdfs:label`` and its subproperties are matched.
+``instance_fields`` list of optional fields to search on. Each field must be an URI or a CURIE. Without this parameter, only ``rdfs:label`` and its subproperties are matched.
 
 ``classes`` list of classes whose instances will be searched, thus restricting the result of the predicate range. Each class must be an URI or a CURIE. If this parameter has classes that are not in the predicate range, a 400 error is returned.
 

@@ -55,6 +55,8 @@ SUGGEST_PARAM_SCHEMA = {
                 },
                 "classes": {
                     "type": "array",
+                    "uniqueItems": True,
+                    "minItems": 1,
                     "items": {
                         "type": "object",
                         "required": ["@type", "instance_fields"],
@@ -69,7 +71,6 @@ SUGGEST_PARAM_SCHEMA = {
                             }
                         }
                     },
-                    "minItems": 1,
                 },
                 "instance_fields": {
                     "type": "array",
@@ -239,36 +240,36 @@ def _validate_graph_restriction(search_params, range_result):
     return list(graphs)
 
 
-QUERY_META_FIELDS = """
-SELECT DISTINCT ?meta_field_value {
-  ?s <%(meta_field)s> ?meta_field_value
+QUERY_CLASS_FIELDS = """
+SELECT DISTINCT ?field_value {
+  ?s <%(field)s> ?field_value
   %(filter_clause)s
 }
 """
 
 
-def _build_meta_fields_query(classes, meta_field):
+def _build_class_fields_query(classes, field):
     conditions = ["?s = <{0}>".format(klass) for klass in classes]
     conditions = " OR ".join(conditions)
     filter_clause = "FILTER(" + conditions + ")"
-    query = QUERY_META_FIELDS % {
-        "meta_field": meta_field,
+    query = QUERY_CLASS_FIELDS % {
+        "field": field,
         "filter_clause": filter_clause
     }
     return query
 
 
-def _get_meta_fields_value(query_params, classes, meta_field):
-    query = _build_meta_fields_query(classes, meta_field)
-    meta_field_query_response = triplestore.query_sparql(query, query_params.triplestore_config)
-    meta_field_values = filter_values(meta_field_query_response, "meta_field_value")
-    return meta_field_values
+def _get_class_fields_value(query_params, classes, meta_field):
+    query = _build_class_fields_query(classes, meta_field)
+    class_field_query_response = triplestore.query_sparql(query, query_params.triplestore_config)
+    class_field_values = filter_values(class_field_query_response, "field_value")
+    return class_field_values
 
 
 def _get_response_fields_from_meta_fields(query_params, response_params, classes):
     meta_fields_response = set([])
     for meta_field in response_params.get("meta_fields", []):
-        meta_field_values = _get_meta_fields_value(query_params, classes, meta_field)
+        meta_field_values = _get_class_fields_value(query_params, classes, meta_field)
         for meta_field_value in meta_field_values:
             values = meta_field_value.split(",")
             values = [v.strip() for v in values]

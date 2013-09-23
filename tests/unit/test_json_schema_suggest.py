@@ -87,6 +87,17 @@ class TestSuggestParams(TestCase):
         }
         validate(valid_simple_case, SUGGEST_PARAM_SCHEMA)
 
+    def test_valid_with_fields(self):
+        valid_simple_case = {
+            "search": {
+                "pattern": "Ronaldo",
+                "target": "http://semantica.globo.com/esportes/tem_como_conteudo",
+                "graphs": ["http://semantica.globo.com/esportes/"],
+                "fields": ["base:dados_buscaveis"]
+            }
+        }
+        validate(valid_simple_case, SUGGEST_PARAM_SCHEMA)
+
     def test_valid_with_graphs_and_response(self):
         valid_simple_case = {
             "search": {

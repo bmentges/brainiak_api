@@ -313,7 +313,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
                               'graph': compressed_range_graph,
                               'title': range_label,
                               'type': 'string',
-                              'format': 'url'}
+                              'format': 'uri'}
 
         # todo: unittest
         max_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('maxItems', 2)
@@ -321,10 +321,10 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
         if (min_items > 1) or (max_items > 1) or (not min_items and not max_items):
             predicate["type"] = "array"
-            predicate["items"] = {"type": "string", "format": "url"}
+            predicate["items"] = {"type": "string", "format": "uri"}
         else:
             predicate["type"] = "string"
-            predicate["format"] = "url"
+            predicate["format"] = "uri"
 
     elif predicate_type == DATATYPE_PROPERTY:
         # add predicate['type'] and (optional) predicate['format']

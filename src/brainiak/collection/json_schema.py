@@ -22,7 +22,7 @@ def schema(context_name, class_name, class_prefix):
             "_class_prefix": {"type": "string"},
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
-            "@id": {"type": "string", "format": "url"},
+            "@id": {"type": "string", "format": "uri"},
             "items": {
                 "type": "array",
                 "items": {
@@ -32,7 +32,7 @@ def schema(context_name, class_name, class_prefix):
                         "title": {"type": "string"},
                         "@id": {"type": "string"},
                         "resource_id": {"type": "string"},
-                        "instance_prefix": {"type": "string", "format": "url"},
+                        "instance_prefix": {"type": "string", "format": "uri"},
                     },
                     "links": [
                         {

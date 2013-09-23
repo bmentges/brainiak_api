@@ -47,6 +47,27 @@ class TestSuggestParams(TestCase):
         invalid_case = {"search": {"target": "some_target_url", "pattern": "Bla", "fields": ["a", "a"]}}
         self.assertRaises(ValidationError, validate, invalid_case, SUGGEST_PARAM_SCHEMA)
 
+    def test_invalid_response_fields_with_additional_param(self):
+        invalid_case = {
+            "search": {"target": "url", "pattern": "bla"},
+            "response": {
+                "invalid_param": "param"
+            }
+        }
+        self.assertRaises(ValidationError, validate, invalid_case, SUGGEST_PARAM_SCHEMA)
+
+    def test_invalid_response_fields_with_duplicated_classes_items(self):
+        invalid_case = {
+            "search": {"target": "url", "pattern": "bla"},
+            "response": {
+                "classes": [
+                    {"@type": "type", "instance_fields": ["field"]},
+                    {"@type": "type", "instance_fields": ["field"]}
+                ]
+            }
+        }
+        self.assertRaises(ValidationError, validate, invalid_case, SUGGEST_PARAM_SCHEMA)
+
     def test_valid_simple_case(self):
         valid_simple_case = {
             "search": {
@@ -78,6 +99,24 @@ class TestSuggestParams(TestCase):
             }
         }
         validate(valid_simple_case, SUGGEST_PARAM_SCHEMA)
+
+    def test_valid_with_details_response(self):
+        valid_case = {
+            "search": {
+                "pattern": "Ronaldo",
+                "target": "http://semantica.globo.com/esportes/tem_como_conteudo",
+            },
+            "response": {
+                "meta_fields": ["base:detalhes_da_cortina"],
+                "classes": [
+                    {
+                        "@type": "esportes:Atleta",
+                        "instance_fields": ["esportes:nome_popular_sde", "esportes:composite"]
+                    }
+                ]
+            }
+        }
+        validate(valid_case, SUGGEST_PARAM_SCHEMA)
 
 
 class TestSuggestResponseJson(TestCase):

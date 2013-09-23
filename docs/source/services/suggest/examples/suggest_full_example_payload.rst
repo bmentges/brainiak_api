@@ -6,13 +6,13 @@
         "search": {
             "pattern": "Ronaldo",
             "target": "http://semantica.globo.com/base/cita_a_entidade",
-            "fields": ["http://semantica.globo.com/upper/name", 
-                          "http://semantica.globo.com/upper/fullName", 
-                          "base:dados_buscaveis"],
+            "instance_fields": ["http://semantica.globo.com/upper/name",
+                                "http://semantica.globo.com/upper/fullName",
+                                "base:dados_buscaveis"],
             "graphs": ["http://semantica.globo.com/esportes/"],
             "classes": [
                 "http://semantica.globo.com/esportes/Atleta",
-                "http://semantica.globo.com/esportes/Equipe" 
+                "http://semantica.globo.com/esportes/Equipe"
             ]
 
         },

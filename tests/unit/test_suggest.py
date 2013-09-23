@@ -7,7 +7,7 @@ from tornado.web import HTTPError
 from brainiak.suggest.suggest import _build_body_query, _validate_class_restriction, \
     _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
     _build_class_label_dict, _build_items, _get_search_fields, _get_title_value, \
-    _build_meta_fields_query, _get_response_fields_from_meta_fields, \
+    _build_class_fields_query, _get_response_fields_from_meta_fields, \
     _build_predicate_values_query, _get_instance_fields, _get_response_fields_from_classes_dict
 
 
@@ -255,18 +255,18 @@ class SuggestTestCase(TestCase):
 
         self.assertRaises(RuntimeError, _get_title_value, elasticsearch_fields, title_fields)
 
-    def test_build_meta_fields_query(self):
+    def test_build_class_fields_query(self):
         expected = """
-SELECT DISTINCT ?meta_field_value {
-  ?s <meta_field> ?meta_field_value
+SELECT DISTINCT ?field_value {
+  ?s <field> ?field_value
   FILTER(?s = <class_a> OR ?s = <class_b>)
 }
 """
         classes = ["class_a", "class_b"]
-        meta_field = "meta_field"
-        self.assertEqual(expected, _build_meta_fields_query(classes, meta_field))
+        meta_field = "field"
+        self.assertEqual(expected, _build_class_fields_query(classes, meta_field))
 
-    @patch("brainiak.suggest.suggest._get_meta_fields_value",
+    @patch("brainiak.suggest.suggest._get_class_fields_value",
            return_value=["metafield1, metafield2", "metafield2", "metafield2, metafield3"])
     def test_get_response_fields_from_meta_fields(self, mocked_get_meta_fields_value):
         expected = ["metafield3", "metafield2", "metafield1"]

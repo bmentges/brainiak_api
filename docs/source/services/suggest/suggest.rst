@@ -58,7 +58,7 @@ Some optional parameters can be passed in request body:
 Optional search fields
 ----------------------
 
-``instance_fields`` list of optional fields to search on. Each field must be an URI or a CURIE. Without this parameter, only ``rdfs:label`` and its subproperties are matched.
+``fields`` list of optional fields to search on. Each field must be an URI or a CURIE. Without this parameter, only ``rdfs:label`` and its subproperties are matched.
 
 ``classes`` list of classes whose instances will be searched, thus restricting the result of the predicate range. Each class must be an URI or a CURIE. If this parameter has classes that are not in the predicate range, a 400 error is returned.
 

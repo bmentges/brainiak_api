@@ -47,7 +47,7 @@ SUGGEST_PARAM_SCHEMA = {
             "additionalProperties": False,
             "properties": {
                 "required_fields": {"type": "boolean"},
-                "classes_fields": {
+                "class_fields": {
                     "type": "array",
                     "items": {"type": "string", "format": "uri"},
                     "minItems": 1,
@@ -130,8 +130,11 @@ def do_range_search(query_params, suggest_params):
                                      search_fields, response_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)
 
+    class_fields = response_params.get("class_fields", [])
+
     items, item_count = _build_items(query_params, elasticsearch_result, class_label_dict,
-                                     title_fields, response_fields, fields_by_class_dict)
+                                     title_fields, response_fields, fields_by_class_dict,
+                                     class_fields)
 
     if not items:
         return None
@@ -398,8 +401,21 @@ def _get_instance_fields(query_params, instance_uri, klass, response_fields, tit
     return instance_fields
 
 
+def _get_class_fields_to_response(query_params, classes, class_fields):
+    class_fields_to_return = {}
+    for field in class_fields:
+        field_value = _get_class_fields_value(query_params, classes, field)
+        if field_value:
+            # Assuming there is only one value to a class_field (annotation property)
+            class_fields_to_return[field] = field_value[0]
+    if class_fields_to_return:
+        return {"class_fields": class_fields_to_return}
+    else:
+        return class_fields_to_return
+
+
 def _build_items(query_params, result, class_label_dict, title_fields,
-                 response_fields, fields_by_class_dict):
+                 response_fields, fields_by_class_dict, class_fields):
     items = []
     item_count = result["hits"]["total"]
     if item_count:
@@ -417,7 +433,8 @@ def _build_items(query_params, result, class_label_dict, title_fields,
                                                    response_fields, title_field,
                                                    fields_by_class_dict)
             item_dict.update(instance_fields)
-            # TODO class fields
+            class_fields = _get_class_fields_to_response(query_params, [klass], class_fields)
+            item_dict.update(class_fields)
             items.append(item_dict)
 
     return items, item_count

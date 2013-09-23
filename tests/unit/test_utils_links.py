@@ -9,8 +9,8 @@ class SetContentTypeProfileTestCase(unittest.TestCase):
     maxDiff = None
 
     def test_set_content_type_profile(self):
-        self.assertEqual(content_type_profile("http://domain.com?a=1"), "application/json; profile=http://domain.com?a%3D1")
-        self.assertEqual(content_type_profile("http://domain.com#beta?a=1"), "application/json; profile=http://domain.com#beta%3Fa%3D1")
+        self.assertEqual(content_type_profile("http://domain.com?a=1"), "application/json; profile=http://domain.com?a=1")
+        self.assertEqual(content_type_profile("http://domain.com#beta?a=1"), "application/json; profile=http://domain.com#beta?a=1")
 
 
 class TestBuildSchema(unittest.TestCase):

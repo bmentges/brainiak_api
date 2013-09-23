@@ -1,26 +1,10 @@
-from urlparse import parse_qs, urlparse, urlsplit, urlunsplit
+from urlparse import parse_qs, urlsplit, urlunsplit
 from math import ceil
-from urllib import urlencode, quote, unquote
+from urllib import urlencode, unquote
 
 
 def content_type_profile(schema_url):
     """Set header Content-Type + profile pointing to URL of the json-schema"""
-    parsed_url = urlparse(schema_url)
-
-    # The escaping of parameters is to allow JsonBrowser to work
-    #  later this can be replaced by the line below:
-    #    content_type = "application/json; profile={0}".format(quote(schema_url))
-    schema_url = "{0}://{1}{2}".format(
-        parsed_url.scheme,
-        parsed_url.netloc,
-        parsed_url.path
-    )
-    if parsed_url.query:
-        schema_url += "?{0}".format(quote(parsed_url.query))
-
-    if parsed_url.fragment:
-        schema_url += "#{0}".format(quote(parsed_url.fragment))
-
     content_type = "application/json; profile={0}".format(schema_url)
     return content_type
 

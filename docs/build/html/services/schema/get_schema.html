@@ -163,214 +163,214 @@
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;$schema&quot;: &quot;http://json-schema.org/draft-03/schema#&quot;,
+    &quot;$schema&quot;: &quot;http://json-schema.org/draft-03/schema#&quot;, 
     &quot;@context&quot;: {
-        &quot;@language&quot;: &quot;pt&quot;,
-        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;,
-        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;,
-        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;,
+        &quot;@language&quot;: &quot;pt&quot;, 
+        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;, 
+        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;, 
+        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;, 
         &quot;xsd&quot;: &quot;http://www.w3.org/2001/XMLSchema#&quot;
-    },
-    &quot;description&quot;: &quot;Lugar perene e urbanizado onde pessoas habitam.&quot;,
-    &quot;id&quot;: &quot;place:City&quot;,
+    }, 
+    &quot;description&quot;: &quot;Lugar perene e urbanizado onde pessoas habitam.&quot;, 
+    &quot;id&quot;: &quot;place:City&quot;, 
     &quot;links&quot;: [
         {
-            &quot;href&quot;: &quot;{+_base_url}&quot;,
-            &quot;method&quot;: &quot;GET&quot;,
+            &quot;href&quot;: &quot;{+_base_url}&quot;, 
+            &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;self&quot;
-        },
+        }, 
         {
-            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;,
-            &quot;method&quot;: &quot;GET&quot;,
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;, 
+            &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;class&quot;
-        },
+        }, 
         {
-            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http://semantica.globo.com/place/&quot;,
-            &quot;method&quot;: &quot;GET&quot;,
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http://semantica.globo.com/place/&quot;, 
+            &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;collection&quot;
-        },
+        }, 
         {
-            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/{_resource_id}&quot;,
-            &quot;method&quot;: &quot;DELETE&quot;,
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/{_resource_id}&quot;, 
+            &quot;method&quot;: &quot;DELETE&quot;, 
             &quot;rel&quot;: &quot;delete&quot;
-        },
+        }, 
         {
-            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/{_resource_id}&quot;,
-            &quot;method&quot;: &quot;PUT&quot;,
-            &quot;rel&quot;: &quot;update&quot;,
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/{_resource_id}&quot;, 
+            &quot;method&quot;: &quot;PUT&quot;, 
+            &quot;rel&quot;: &quot;update&quot;, 
             &quot;schema&quot;: {
                 &quot;$ref&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;
             }
         }
-    ],
+    ], 
     &quot;properties&quot;: {
         &quot;place:geonameId&quot;: {
-            &quot;description&quot;: &quot;ID para uso da API do Geonames.&quot;,
-            &quot;format&quot;: &quot;xsd:integer&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
-            &quot;title&quot;: &quot;ID no Geoname&quot;,
+            &quot;description&quot;: &quot;ID para uso da API do Geonames.&quot;, 
+            &quot;format&quot;: &quot;xsd:integer&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;title&quot;: &quot;ID no Geoname&quot;, 
             &quot;type&quot;: &quot;integer&quot;
-        },
+        }, 
         &quot;place:hasSubRegion&quot;: {
-            &quot;description&quot;: &quot;Um lugar pode ser subdividido em regi\u00f5es.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;description&quot;: &quot;Um lugar pode ser subdividido em regi\u00f5es.&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: {
-                &quot;@id&quot;: &quot;place:Region&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;place&quot;,
-                &quot;title&quot;: &quot;Regi\u00e3o&quot;,
+                &quot;@id&quot;: &quot;place:Region&quot;, 
+                &quot;format&quot;: &quot;uri&quot;, 
+                &quot;graph&quot;: &quot;place&quot;, 
+                &quot;title&quot;: &quot;Regi\u00e3o&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;Tem sub-regi\u00e3o&quot;,
+            }, 
+            &quot;title&quot;: &quot;Tem sub-regi\u00e3o&quot;, 
             &quot;type&quot;: &quot;array&quot;
-        },
+        }, 
         &quot;place:latitude&quot;: {
-            &quot;description&quot;: &quot;Coordenada de latitude de acordo com WGS84.&quot;,
-            &quot;format&quot;: &quot;xsd:float&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
-            &quot;title&quot;: &quot;Latitude&quot;,
+            &quot;description&quot;: &quot;Coordenada de latitude de acordo com WGS84.&quot;, 
+            &quot;format&quot;: &quot;xsd:float&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;title&quot;: &quot;Latitude&quot;, 
             &quot;type&quot;: &quot;number&quot;
-        },
+        }, 
         &quot;place:longitude&quot;: {
-            &quot;description&quot;: &quot;Coordenada de longitude de acordo com WGS84.&quot;,
-            &quot;format&quot;: &quot;xsd:float&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
-            &quot;title&quot;: &quot;Longitude&quot;,
+            &quot;description&quot;: &quot;Coordenada de longitude de acordo com WGS84.&quot;, 
+            &quot;format&quot;: &quot;xsd:float&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;title&quot;: &quot;Longitude&quot;, 
             &quot;type&quot;: &quot;number&quot;
-        },
+        }, 
         &quot;place:partOfCountry&quot;: {
-            &quot;description&quot;: &quot;Estado est\u00e1 no pa\u00eds.&quot;,
-            &quot;format&quot;: &quot;uri&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;description&quot;: &quot;Estado est\u00e1 no pa\u00eds.&quot;, 
+            &quot;format&quot;: &quot;uri&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: [
                 {
-                    &quot;@id&quot;: &quot;place:Country&quot;,
-                    &quot;format&quot;: &quot;uri&quot;,
-                    &quot;graph&quot;: &quot;place&quot;,
-                    &quot;title&quot;: &quot;Pa\u00eds&quot;,
+                    &quot;@id&quot;: &quot;place:Country&quot;, 
+                    &quot;format&quot;: &quot;uri&quot;, 
+                    &quot;graph&quot;: &quot;place&quot;, 
+                    &quot;title&quot;: &quot;Pa\u00eds&quot;, 
                     &quot;type&quot;: &quot;string&quot;
                 }
-            ],
-            &quot;title&quot;: &quot;Est\u00e1 no estado&quot;,
+            ], 
+            &quot;title&quot;: &quot;Est\u00e1 no estado&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;place:partOfState&quot;: {
-            &quot;description&quot;: &quot;Cidade est\u00e1 no estado.&quot;,
-            &quot;format&quot;: &quot;uri&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;description&quot;: &quot;Cidade est\u00e1 no estado.&quot;, 
+            &quot;format&quot;: &quot;uri&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: [
                 {
-                    &quot;@id&quot;: &quot;place:State&quot;,
-                    &quot;format&quot;: &quot;uri&quot;,
-                    &quot;graph&quot;: &quot;place&quot;,
-                    &quot;title&quot;: &quot;Estado&quot;,
+                    &quot;@id&quot;: &quot;place:State&quot;, 
+                    &quot;format&quot;: &quot;uri&quot;, 
+                    &quot;graph&quot;: &quot;place&quot;, 
+                    &quot;title&quot;: &quot;Estado&quot;, 
                     &quot;type&quot;: &quot;string&quot;
                 }
-            ],
-            &quot;title&quot;: &quot;Est\u00e1 no estado&quot;,
+            ], 
+            &quot;title&quot;: &quot;Est\u00e1 no estado&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:acronym&quot;: {
-            &quot;description&quot;: &quot;Sigla. Ex: SP, RJ, NYC&quot;,
-            &quot;format&quot;: &quot;xsd:string&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Sigla&quot;,
+            &quot;description&quot;: &quot;Sigla. Ex: SP, RJ, NYC&quot;, 
+            &quot;format&quot;: &quot;xsd:string&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;title&quot;: &quot;Sigla&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:description&quot;: {
-            &quot;description&quot;: &quot;Descri\u00e7\u00e3o textual da entidade.&quot;,
-            &quot;format&quot;: &quot;xsd:string&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Descri\u00e7\u00e3o&quot;,
+            &quot;description&quot;: &quot;Descri\u00e7\u00e3o textual da entidade.&quot;, 
+            &quot;format&quot;: &quot;xsd:string&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;title&quot;: &quot;Descri\u00e7\u00e3o&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:foundingDate&quot;: {
-            &quot;description&quot;: &quot;Data de funda\u00e7\u00e3o de uma organiza\u00e7\u00e3o ou cidade.&quot;,
-            &quot;format&quot;: &quot;date&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Data de funda\u00e7\u00e3o&quot;,
+            &quot;description&quot;: &quot;Data de funda\u00e7\u00e3o de uma organiza\u00e7\u00e3o ou cidade.&quot;, 
+            &quot;format&quot;: &quot;date&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;title&quot;: &quot;Data de funda\u00e7\u00e3o&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:fullName&quot;: {
-            &quot;description&quot;: &quot;Nome completo de Agente ou Objeto.&quot;,
-            &quot;format&quot;: &quot;xsd:string&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Nome Completo&quot;,
+            &quot;description&quot;: &quot;Nome completo de Agente ou Objeto.&quot;, 
+            &quot;format&quot;: &quot;xsd:string&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;title&quot;: &quot;Nome Completo&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:hasPart&quot;: {
-            &quot;description&quot;: &quot;Rela\u00e7\u00e3o inversa a &#39;isPartOf&#39;, onde quem &#39;domina&#39; a rela\u00e7\u00e3o \u00e9 o elemento &#39;maior&#39; (e.g. &lt;Country_Brazil&gt; dc:isPartOf &lt;UF_RJ&gt;).&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;description&quot;: &quot;Rela\u00e7\u00e3o inversa a &#39;isPartOf&#39;, onde quem &#39;domina&#39; a rela\u00e7\u00e3o \u00e9 o elemento &#39;maior&#39; (e.g. &lt;Country_Brazil&gt; dc:isPartOf &lt;UF_RJ&gt;).&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: {
-                &quot;@id&quot;: &quot;upper:Entity&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
-                &quot;title&quot;: &quot;Entidade&quot;,
+                &quot;@id&quot;: &quot;upper:Entity&quot;, 
+                &quot;format&quot;: &quot;uri&quot;, 
+                &quot;graph&quot;: &quot;upper&quot;, 
+                &quot;title&quot;: &quot;Entidade&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;Tem parte&quot;,
+            }, 
+            &quot;title&quot;: &quot;Tem parte&quot;, 
             &quot;type&quot;: &quot;array&quot;
-        },
+        }, 
         &quot;upper:isPartOf&quot;: {
-            &quot;description&quot;: &quot;Um recurso (sujeito) que est\u00e1 f\u00edsica ou logicamente inclu\u00eddo em outro (objeto ou valor) (e.g. &lt;UF_RJ&gt; upper:isPartOf &lt;Country_Brazil&gt; ou &lt;Pessoa_Romario&gt; upper:isPartOf &lt;Partido_PSB&gt;).&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;description&quot;: &quot;Um recurso (sujeito) que est\u00e1 f\u00edsica ou logicamente inclu\u00eddo em outro (objeto ou valor) (e.g. &lt;UF_RJ&gt; upper:isPartOf &lt;Country_Brazil&gt; ou &lt;Pessoa_Romario&gt; upper:isPartOf &lt;Partido_PSB&gt;).&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: {
-                &quot;@id&quot;: &quot;upper:Entity&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
-                &quot;title&quot;: &quot;Entidade&quot;,
+                &quot;@id&quot;: &quot;upper:Entity&quot;, 
+                &quot;format&quot;: &quot;uri&quot;, 
+                &quot;graph&quot;: &quot;upper&quot;, 
+                &quot;title&quot;: &quot;Entidade&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;\u00c9 parte de&quot;,
+            }, 
+            &quot;title&quot;: &quot;\u00c9 parte de&quot;, 
             &quot;type&quot;: &quot;array&quot;
-        },
+        }, 
         &quot;upper:name&quot;: {
-            &quot;description&quot;: &quot;Nomes populares de uma inst\u00e2ncia. Exemplo: nomes pelo quais uma pessoa \u00e9 conhecida (e.g. Ronaldinho, Zico, Lula). N\u00e3o confundir com nome completo, uma outra propriedade com valor \u00fanico e formal.&quot;,
-            &quot;format&quot;: &quot;xsd:string&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;required&quot;: true,
-            &quot;title&quot;: &quot;Nome&quot;,
+            &quot;description&quot;: &quot;Nomes populares de uma inst\u00e2ncia. Exemplo: nomes pelo quais uma pessoa \u00e9 conhecida (e.g. Ronaldinho, Zico, Lula). N\u00e3o confundir com nome completo, uma outra propriedade com valor \u00fanico e formal.&quot;, 
+            &quot;format&quot;: &quot;xsd:string&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;required&quot;: true, 
+            &quot;title&quot;: &quot;Nome&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:sociallyRelatedWith&quot;: {
-            &quot;description&quot;: &quot;Rela\u00e7\u00e3o social abstrata entre qualquer combina\u00e7\u00e3o de (Agente, Objeto) tomados dois-a-dois.&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;description&quot;: &quot;Rela\u00e7\u00e3o social abstrata entre qualquer combina\u00e7\u00e3o de (Agente, Objeto) tomados dois-a-dois.&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: {
-                &quot;@id&quot;: &quot;upper:Substance&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
-                &quot;title&quot;: &quot;Subst\u00e2ncia&quot;,
+                &quot;@id&quot;: &quot;upper:Substance&quot;, 
+                &quot;format&quot;: &quot;uri&quot;, 
+                &quot;graph&quot;: &quot;upper&quot;, 
+                &quot;title&quot;: &quot;Subst\u00e2ncia&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;Socialmente relacionado a&quot;,
+            }, 
+            &quot;title&quot;: &quot;Socialmente relacionado a&quot;, 
             &quot;type&quot;: &quot;array&quot;
         }
-    },
-    &quot;title&quot;: &quot;Cidade&quot;,
+    }, 
+    &quot;title&quot;: &quot;Cidade&quot;, 
     &quot;type&quot;: &quot;object&quot;
 }
 </pre></div>
@@ -411,194 +411,194 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;$schema&quot;: &quot;http://json-schema.org/draft-03/schema#&quot;,
+    &quot;$schema&quot;: &quot;http://json-schema.org/draft-03/schema#&quot;, 
     &quot;@context&quot;: {
-        &quot;@language&quot;: &quot;pt&quot;,
-        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;,
-        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;,
-        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;,
+        &quot;@language&quot;: &quot;pt&quot;, 
+        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;, 
+        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;, 
+        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;, 
         &quot;xsd&quot;: &quot;http://www.w3.org/2001/XMLSchema#&quot;
-    },
-    &quot;description&quot;: &quot;Sub-divis\u00e3o pol\u00edtica do Mundo.&quot;,
-    &quot;id&quot;: &quot;place:Country&quot;,
+    }, 
+    &quot;description&quot;: &quot;Sub-divis\u00e3o pol\u00edtica do Mundo.&quot;, 
+    &quot;id&quot;: &quot;place:Country&quot;, 
     &quot;links&quot;: [
         {
-            &quot;href&quot;: &quot;{+_base_url}&quot;,
-            &quot;method&quot;: &quot;GET&quot;,
+            &quot;href&quot;: &quot;{+_base_url}&quot;, 
+            &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;self&quot;
-        },
+        }, 
         {
-            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/_schema&quot;,
-            &quot;method&quot;: &quot;GET&quot;,
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/_schema&quot;, 
+            &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;class&quot;
-        },
+        }, 
         {
-            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/?class_prefix=http://semantica.globo.com/place/&quot;,
-            &quot;method&quot;: &quot;GET&quot;,
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/?class_prefix=http://semantica.globo.com/place/&quot;, 
+            &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;collection&quot;
-        },
+        }, 
         {
-            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/{_resource_id}&quot;,
-            &quot;method&quot;: &quot;DELETE&quot;,
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/{_resource_id}&quot;, 
+            &quot;method&quot;: &quot;DELETE&quot;, 
             &quot;rel&quot;: &quot;delete&quot;
-        },
+        }, 
         {
-            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/{_resource_id}&quot;,
-            &quot;method&quot;: &quot;PUT&quot;,
-            &quot;rel&quot;: &quot;update&quot;,
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/{_resource_id}&quot;, 
+            &quot;method&quot;: &quot;PUT&quot;, 
+            &quot;rel&quot;: &quot;update&quot;, 
             &quot;schema&quot;: {
                 &quot;$ref&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/_schema&quot;
             }
         }
-    ],
+    ], 
     &quot;properties&quot;: {
         &quot;place:geonameId&quot;: {
-            &quot;description&quot;: &quot;ID para uso da API do Geonames.&quot;,
-            &quot;format&quot;: &quot;xsd:integer&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
-            &quot;title&quot;: &quot;ID no Geoname&quot;,
+            &quot;description&quot;: &quot;ID para uso da API do Geonames.&quot;, 
+            &quot;format&quot;: &quot;xsd:integer&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;title&quot;: &quot;ID no Geoname&quot;, 
             &quot;type&quot;: &quot;integer&quot;
-        },
+        }, 
         &quot;place:hasSubRegion&quot;: {
-            &quot;description&quot;: &quot;Um lugar pode ser subdividido em regi\u00f5es.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;description&quot;: &quot;Um lugar pode ser subdividido em regi\u00f5es.&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: {
-                &quot;@id&quot;: &quot;place:Region&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;place&quot;,
-                &quot;title&quot;: &quot;Regi\u00e3o&quot;,
+                &quot;@id&quot;: &quot;place:Region&quot;, 
+                &quot;format&quot;: &quot;uri&quot;, 
+                &quot;graph&quot;: &quot;place&quot;, 
+                &quot;title&quot;: &quot;Regi\u00e3o&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;Tem sub-regi\u00e3o&quot;,
+            }, 
+            &quot;title&quot;: &quot;Tem sub-regi\u00e3o&quot;, 
             &quot;type&quot;: &quot;array&quot;
-        },
+        }, 
         &quot;place:latitude&quot;: {
-            &quot;description&quot;: &quot;Coordenada de latitude de acordo com WGS84.&quot;,
-            &quot;format&quot;: &quot;xsd:float&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
-            &quot;title&quot;: &quot;Latitude&quot;,
+            &quot;description&quot;: &quot;Coordenada de latitude de acordo com WGS84.&quot;, 
+            &quot;format&quot;: &quot;xsd:float&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;title&quot;: &quot;Latitude&quot;, 
             &quot;type&quot;: &quot;number&quot;
-        },
+        }, 
         &quot;place:longitude&quot;: {
-            &quot;description&quot;: &quot;Coordenada de longitude de acordo com WGS84.&quot;,
-            &quot;format&quot;: &quot;xsd:float&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
-            &quot;title&quot;: &quot;Longitude&quot;,
+            &quot;description&quot;: &quot;Coordenada de longitude de acordo com WGS84.&quot;, 
+            &quot;format&quot;: &quot;xsd:float&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;title&quot;: &quot;Longitude&quot;, 
             &quot;type&quot;: &quot;number&quot;
-        },
+        }, 
         &quot;place:partOfContinent&quot;: {
-            &quot;description&quot;: &quot;Pa\u00eds est\u00e1 no contiente.&quot;,
-            &quot;format&quot;: &quot;uri&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;description&quot;: &quot;Pa\u00eds est\u00e1 no contiente.&quot;, 
+            &quot;format&quot;: &quot;uri&quot;, 
+            &quot;graph&quot;: &quot;place&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: [
                 {
-                    &quot;@id&quot;: &quot;place:Continent&quot;,
-                    &quot;format&quot;: &quot;uri&quot;,
-                    &quot;graph&quot;: &quot;place&quot;,
-                    &quot;title&quot;: &quot;Continente&quot;,
+                    &quot;@id&quot;: &quot;place:Continent&quot;, 
+                    &quot;format&quot;: &quot;uri&quot;, 
+                    &quot;graph&quot;: &quot;place&quot;, 
+                    &quot;title&quot;: &quot;Continente&quot;, 
                     &quot;type&quot;: &quot;string&quot;
                 }
-            ],
-            &quot;title&quot;: &quot;Est\u00e1 na continente&quot;,
+            ], 
+            &quot;title&quot;: &quot;Est\u00e1 na continente&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:acronym&quot;: {
-            &quot;description&quot;: &quot;Sigla. Ex: SP, RJ, NYC&quot;,
-            &quot;format&quot;: &quot;xsd:string&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Sigla&quot;,
+            &quot;description&quot;: &quot;Sigla. Ex: SP, RJ, NYC&quot;, 
+            &quot;format&quot;: &quot;xsd:string&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;title&quot;: &quot;Sigla&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:description&quot;: {
-            &quot;description&quot;: &quot;Descri\u00e7\u00e3o textual da entidade.&quot;,
-            &quot;format&quot;: &quot;xsd:string&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Descri\u00e7\u00e3o&quot;,
+            &quot;description&quot;: &quot;Descri\u00e7\u00e3o textual da entidade.&quot;, 
+            &quot;format&quot;: &quot;xsd:string&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;title&quot;: &quot;Descri\u00e7\u00e3o&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:foundingDate&quot;: {
-            &quot;description&quot;: &quot;Data de funda\u00e7\u00e3o de uma organiza\u00e7\u00e3o ou cidade.&quot;,
-            &quot;format&quot;: &quot;date&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Data de funda\u00e7\u00e3o&quot;,
+            &quot;description&quot;: &quot;Data de funda\u00e7\u00e3o de uma organiza\u00e7\u00e3o ou cidade.&quot;, 
+            &quot;format&quot;: &quot;date&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;title&quot;: &quot;Data de funda\u00e7\u00e3o&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:fullName&quot;: {
-            &quot;description&quot;: &quot;Nome completo de Agente ou Objeto.&quot;,
-            &quot;format&quot;: &quot;xsd:string&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Nome Completo&quot;,
+            &quot;description&quot;: &quot;Nome completo de Agente ou Objeto.&quot;, 
+            &quot;format&quot;: &quot;xsd:string&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;title&quot;: &quot;Nome Completo&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:hasPart&quot;: {
-            &quot;description&quot;: &quot;Rela\u00e7\u00e3o inversa a &#39;isPartOf&#39;, onde quem &#39;domina&#39; a rela\u00e7\u00e3o \u00e9 o elemento &#39;maior&#39; (e.g. &lt;Country_Brazil&gt; dc:isPartOf &lt;UF_RJ&gt;).&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;description&quot;: &quot;Rela\u00e7\u00e3o inversa a &#39;isPartOf&#39;, onde quem &#39;domina&#39; a rela\u00e7\u00e3o \u00e9 o elemento &#39;maior&#39; (e.g. &lt;Country_Brazil&gt; dc:isPartOf &lt;UF_RJ&gt;).&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: {
-                &quot;@id&quot;: &quot;upper:Entity&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
-                &quot;title&quot;: &quot;Entidade&quot;,
+                &quot;@id&quot;: &quot;upper:Entity&quot;, 
+                &quot;format&quot;: &quot;uri&quot;, 
+                &quot;graph&quot;: &quot;upper&quot;, 
+                &quot;title&quot;: &quot;Entidade&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;Tem parte&quot;,
+            }, 
+            &quot;title&quot;: &quot;Tem parte&quot;, 
             &quot;type&quot;: &quot;array&quot;
-        },
+        }, 
         &quot;upper:isPartOf&quot;: {
-            &quot;description&quot;: &quot;Um recurso (sujeito) que est\u00e1 f\u00edsica ou logicamente inclu\u00eddo em outro (objeto ou valor) (e.g. &lt;UF_RJ&gt; upper:isPartOf &lt;Country_Brazil&gt; ou &lt;Pessoa_Romario&gt; upper:isPartOf &lt;Partido_PSB&gt;).&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;description&quot;: &quot;Um recurso (sujeito) que est\u00e1 f\u00edsica ou logicamente inclu\u00eddo em outro (objeto ou valor) (e.g. &lt;UF_RJ&gt; upper:isPartOf &lt;Country_Brazil&gt; ou &lt;Pessoa_Romario&gt; upper:isPartOf &lt;Partido_PSB&gt;).&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: {
-                &quot;@id&quot;: &quot;upper:Entity&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
-                &quot;title&quot;: &quot;Entidade&quot;,
+                &quot;@id&quot;: &quot;upper:Entity&quot;, 
+                &quot;format&quot;: &quot;uri&quot;, 
+                &quot;graph&quot;: &quot;upper&quot;, 
+                &quot;title&quot;: &quot;Entidade&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;\u00c9 parte de&quot;,
+            }, 
+            &quot;title&quot;: &quot;\u00c9 parte de&quot;, 
             &quot;type&quot;: &quot;array&quot;
-        },
+        }, 
         &quot;upper:name&quot;: {
-            &quot;description&quot;: &quot;Nomes populares de uma inst\u00e2ncia. Exemplo: nomes pelo quais uma pessoa \u00e9 conhecida (e.g. Ronaldinho, Zico, Lula). N\u00e3o confundir com nome completo, uma outra propriedade com valor \u00fanico e formal.&quot;,
-            &quot;format&quot;: &quot;xsd:string&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;required&quot;: true,
-            &quot;title&quot;: &quot;Nome&quot;,
+            &quot;description&quot;: &quot;Nomes populares de uma inst\u00e2ncia. Exemplo: nomes pelo quais uma pessoa \u00e9 conhecida (e.g. Ronaldinho, Zico, Lula). N\u00e3o confundir com nome completo, uma outra propriedade com valor \u00fanico e formal.&quot;, 
+            &quot;format&quot;: &quot;xsd:string&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;required&quot;: true, 
+            &quot;title&quot;: &quot;Nome&quot;, 
             &quot;type&quot;: &quot;string&quot;
-        },
+        }, 
         &quot;upper:sociallyRelatedWith&quot;: {
-            &quot;description&quot;: &quot;Rela\u00e7\u00e3o social abstrata entre qualquer combina\u00e7\u00e3o de (Agente, Objeto) tomados dois-a-dois.&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;description&quot;: &quot;Rela\u00e7\u00e3o social abstrata entre qualquer combina\u00e7\u00e3o de (Agente, Objeto) tomados dois-a-dois.&quot;, 
+            &quot;graph&quot;: &quot;upper&quot;, 
             &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
+                &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
+            }, 
             &quot;range&quot;: {
-                &quot;@id&quot;: &quot;upper:Substance&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
-                &quot;title&quot;: &quot;Subst\u00e2ncia&quot;,
+                &quot;@id&quot;: &quot;upper:Substance&quot;, 
+                &quot;format&quot;: &quot;uri&quot;, 
+                &quot;graph&quot;: &quot;upper&quot;, 
+                &quot;title&quot;: &quot;Subst\u00e2ncia&quot;, 
                 &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;Socialmente relacionado a&quot;,
+            }, 
+            &quot;title&quot;: &quot;Socialmente relacionado a&quot;, 
             &quot;type&quot;: &quot;array&quot;
         }
-    },
-    &quot;title&quot;: &quot;Pa\u00eds&quot;,
+    }, 
+    &quot;title&quot;: &quot;Pa\u00eds&quot;, 
     &quot;type&quot;: &quot;object&quot;
 }
 </pre></div>

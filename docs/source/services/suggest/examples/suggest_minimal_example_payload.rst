@@ -4,7 +4,7 @@
 
      {
         "search": {
-            "pattern": "ronal",
+            "pattern": "ronaldo",
             "target": "esportes:trata_da_entidade"
         },
         "response": {

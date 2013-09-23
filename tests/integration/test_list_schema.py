@@ -470,20 +470,20 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'graph': u'http://example.onto/',
                 u'range': {
                     u'@id': u'http://example.onto/Place',
-                    u'format': u'uri',
+                    u'format': u'url',
                     u'graph': u'http://example.onto/',
                     u'title': u'Place',
                     u'type': u'string'
                 },
                 u'title': u'Birth place of first known member of Species',
                 u'type': u'array',
-                u'items': {u'type': 'string', u'format': 'uri'}
+                u'items': {u'type': 'string', u'format': 'url'}
             },
             u'http://example.onto/hasChild': {
                 u'graph': u'http://example.onto/',
                 u'range': {
                     u'@id': u'http://example.onto/Human',
-                    u'format': u'uri',
+                    u'format': u'url',
                     u'graph': u'http://example.onto/',
                     u'title': u'Humano',
                     u'type': u'string'
@@ -491,14 +491,14 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'maxItems': 888,
                 u'title': u"Has child (son or daughter)",
                 u'type': u'array',
-                u'items': {u'type': 'string', u'format': 'uri'}
+                u'items': {u'type': 'string', u'format': 'url'}
             },
             u'http://example.onto/furColour': {
                 u'graph': u'http://example.onto/',
                 u'minItems': 1,
                 u'range': {
                     u'@id': u'http://example.onto/FurColour',
-                    u'format': u'uri',
+                    u'format': u'url',
                     u'graph': u'',
                     u'title': u'',
                     u'type': u'string'
@@ -506,14 +506,14 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'required': True,
                 u'title': u'Fur or hair colour',
                 u'type': u'array',
-                u'items': {u'type': 'string', u'format': 'uri'}
+                u'items': {u'type': 'string', u'format': 'url'}
 
             },
             u'http://example.onto/gender': {
-                u'format': u'uri',
+                u'format': u'url',
                 u'graph': u'http://example.onto/',
                 u'range': {u'@id': u'http://example.onto/Gender',
-                           u'format': u'uri',
+                           u'format': u'url',
                            u'graph': u'',
                            u'title': u'',
                            u'type': u'string'},
@@ -526,14 +526,14 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'maxItems': 2,
                 u'minItems': 2,
                 u'range': {u'@id': u'http://example.onto/Human',
-                          u'format': u'uri',
+                          u'format': u'url',
                           u'graph': u'http://example.onto/',
                           u'title': u'Humano',
                           u'type': u'string'},
                 u'required': True,
                 u'title': u'Has parent (mother or father)',
                 u'type': u'array',
-                u'items': {u'type': 'string', u'format': 'uri'}
+                u'items': {u'type': 'string', u'format': 'url'}
 
             }
 
@@ -613,13 +613,13 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                 'description': u'G\xeanero.',
                 'title': 'Sexo',
                 'graph': 'http://test/person/',
-                'format': 'uri',
+                'format': 'url',
                 'required': True,
                 'type': 'string',
                 'range': {'graph': 'http://test/person/',
                           '@id': 'http://test/person/Gender',
                           'title': u'G\xeanero da Pessoa',
-                          'format': 'uri',
+                          'format': 'url',
                           'type': 'string'
                           }
             }

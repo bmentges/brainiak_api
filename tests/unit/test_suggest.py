@@ -8,7 +8,8 @@ from brainiak.suggest.suggest import _build_body_query, _validate_class_restrict
     _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
     _build_class_label_dict, _build_items, _get_search_fields, _get_title_value, \
     _build_class_fields_query, _get_response_fields_from_meta_fields, \
-    _build_predicate_values_query, _get_instance_fields, _get_response_fields_from_classes_dict
+    _build_predicate_values_query, _get_instance_fields, _get_response_fields_from_classes_dict, \
+    _get_class_fields_to_response
 
 
 class SuggestTestCase(TestCase):
@@ -176,9 +177,11 @@ class SuggestTestCase(TestCase):
         response = _build_class_label_dict(compressed_result)
         self.assertEqual(expected, response)
 
+    @patch("brainiak.suggest.suggest._get_class_fields_to_response", return_value={})
     @patch("brainiak.suggest.suggest._get_instance_fields", return_value={})
     @patch("brainiak.suggest.suggest._get_title_value", return_value=("rdfs:label", "Globoland"))
-    def test_build_items(self, mocked_get_title_value, mocked_get_instance_fields):
+    def test_build_items(self, mocked_get_title_value,
+                         mocked_get_instance_fields, mocked_get_class_fields_to_response):
         expected = {
             "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
             "title": "Globoland",
@@ -218,9 +221,12 @@ class SuggestTestCase(TestCase):
         response_fields = []  # mocked _get_instance_fields
         query_params = []  # needed to _get_instance_fields, mocked
         fields_by_class_dict = {}  # needed to _get_instance_fields, mocked
+        class_fields = []  # needed to _get_class_fields_to_response, mocked
 
-        items_response, item_count = _build_items(query_params, elasticsearch_result, class_label_dict, title_fields,
-                                                  response_fields, fields_by_class_dict)
+        items_response, item_count = _build_items(query_params, elasticsearch_result,
+                                                  class_label_dict, title_fields,
+                                                  response_fields, fields_by_class_dict,
+                                                  class_fields)
 
         self.assertEqual(len(items_response), 1)
         self.assertDictEqual(expected, items_response[0])
@@ -326,10 +332,12 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         title_field = "http://predicate3"
         fields_by_class_dict = {}
 
-        instance_fields = _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field, fields_by_class_dict)
-        mocked_get_predicate_values.assert_called_with({}, "instance-uri", ["http://predicate1", "http://predicate2"])
+        instance_fields = _get_instance_fields(query_params, instance_uri, klass,
+                                               response_fields, title_field,
+                                               fields_by_class_dict)
+        mocked_get_predicate_values.assert_called_with({}, "instance-uri",
+                                                       ["http://predicate1", "http://predicate2"])
         self.assertDictEqual(expected, instance_fields)
-
 
     @patch("brainiak.suggest.suggest._get_predicate_values", return_value=[
         {
@@ -355,8 +363,10 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         title_field = "http://predicate3"
         fields_by_class_dict = {"klass": ["http://predicate1"]}
 
-        instance_fields = _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field, fields_by_class_dict)
-        mocked_get_predicate_values.assert_called_with({}, "instance-uri", ["http://predicate1"])
+        instance_fields = _get_instance_fields(query_params, instance_uri, klass,
+                                               response_fields, title_field, fields_by_class_dict)
+        mocked_get_predicate_values.assert_called_with({}, "instance-uri",
+                                                       ["http://predicate1"])
         self.assertDictEqual(expected, instance_fields)
 
     def test_get_response_fields_from_classes_dict(self):
@@ -390,3 +400,28 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         response_dict, response_set = _get_response_fields_from_classes_dict(fields_by_class_list)
         self.assertEqual(expected_dict, response_dict)
         self.assertEqual(expected_set, response_set)
+
+    @patch("brainiak.suggest.suggest._get_class_fields_value", return_value=["value1"])
+    def test_get_class_fields_to_response(self, mocked_get_class_fields_value):
+        expected = {
+            "class_fields": {
+                "field1": "value1"
+            }
+        }
+        query_params = {}  # needed to _get_class_fields_value mocked
+        classes = []  # needed to _get_class_fields_value mocked
+        class_fields = ["field1"]
+
+        response = _get_class_fields_to_response(query_params, classes, class_fields)
+        self.assertEqual(expected, response)
+
+    @patch("brainiak.suggest.suggest._get_class_fields_value", return_value=[])
+    def test_get_class_fields_to_response_no_value(self, mocked_get_class_fields_value):
+        expected = {}
+        query_params = {}  # needed to _get_class_fields_value mocked
+        classes = []  # needed to _get_class_fields_value mocked
+        class_fields = ["field1"]
+
+        response = _get_class_fields_to_response(query_params, classes, class_fields)
+        self.assertEqual(expected, response)
+

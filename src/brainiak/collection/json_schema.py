@@ -14,23 +14,24 @@ def schema(context_name, class_name, class_prefix):
         link = "/{0}/{1}/{{resource_id}}?class_prefix={{class_prefix}}&instance_prefix={{instance_prefix}}".format(*args)
 
     base = {
-        "$schema": "http://json-schema.org/draft-03/schema#",
-        "title": "Collection Schema",
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "title": "Collection Schema that lists instances",
         "type": "object",
+        "required": ["items", "_class_prefix", "@id"],
         "properties": {
-            "_class_prefix": {"type": "string", "required": True},
+            "_class_prefix": {"type": "string"},
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
-            "@id": {"type": "string", "format": "uri", "required": True},
+            "@id": {"type": "string", "format": "uri"},
             "items": {
-                "required": True,
                 "type": "array",
                 "items": {
                     "type": "object",
+                    "required": ["title", "@id", "resource_id", "instance_prefix"],
                     "properties": {
-                        "title": {"type": "string", "required": True},
-                        "@id": {"type": "string", "required": True},
-                        "resource_id": {"type": "string", "required": True},
+                        "title": {"type": "string"},
+                        "@id": {"type": "string"},
+                        "resource_id": {"type": "string"},
                         "instance_prefix": {"type": "string", "format": "uri"},
                     },
                     "links": [

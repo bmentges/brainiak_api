@@ -2,9 +2,13 @@
 
 ::
 
-    {
+     {
         "search": {
-            "target": "http://semantica.globo.com/place/partOfCity",
-            "pattern": "rio"
+            "pattern": "ronaldo",
+            "target": "esportes:trata_da_entidade"
+        },
+        "response": {
+            "meta_fields": ["base:detalhe_da_cortina"]
         }
-    }
+     }
+

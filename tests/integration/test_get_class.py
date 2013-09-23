@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from jsonschema import Draft4Validator, SchemaError
 from mock import patch
 
 from brainiak import settings
@@ -52,8 +53,13 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_with_default_uri_normalization(self):
         response = self.fetch('/person/Gender/_schema')
         self.assertEqual(response.code, 200)
-        json_received = json.loads(response.body)
-        self.assertEqual(json_received['id'], u'person:Gender')
+        schema = json.loads(response.body)
+        self.assertEqual(schema['id'], u'person:Gender')
+        self.assertEqual(schema['$schema'], 'http://json-schema.org/draft-04/schema#')
+        try:
+            Draft4Validator.check_schema(schema)
+        except SchemaError as ex:
+            self.fail("Json-schema for class {0} is not valid. Failed for {1:s}".format('person:Gender', ex))
 
     def test_schema_handler_with_uri_normalization_shorten(self):
         response = self.fetch('/person/Gender/_schema?expand_uri=0')

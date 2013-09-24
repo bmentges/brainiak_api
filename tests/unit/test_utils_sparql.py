@@ -246,7 +246,8 @@ class CreateExplicitTriples(unittest.TestCase):
             "personpedia:gender": "personpedia:Male",
             "personpedia:wife": "personpedia:ConstanceLloyd"
         }
-        response = create_explicit_triples(instance_uri, instance_data)
+        class_object = None
+        response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthPlace", "place:Dublin"),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:gender", "personpedia:Male"),
@@ -262,7 +263,8 @@ class CreateExplicitTriples(unittest.TestCase):
             "http://personpedia.com/gender": "http://personpedia.com/Male",
             "http://personpedia.com/wife": "http://personpedia.com/ConstanceLloyd"
         }
-        response = create_explicit_triples(instance_uri, instance_data)
+        class_object = None
+        response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthPlace>", "<http://placepedia.com/Dublin>"),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/gender>", "<http://personpedia.com/Male>"),
@@ -278,13 +280,29 @@ class CreateExplicitTriples(unittest.TestCase):
             "personpedia:birthPlace": "place:Dublin",
             "personpedia:occupation": "writer",
         }
-        response = create_explicit_triples(instance_uri, instance_data)
+        class_object = None
+        response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthDate", '"16/10/1854"'),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthPlace", "place:Dublin"),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:occupation", '"writer"')
         ]
         self.assertEqual(sorted(response), sorted(expected))
+
+    # def test_create_explicit_triples_objects_are_urls_as_strings(self):
+    #     instance_uri = "http://personpedia.com/Person/OscarWilde"
+    #     instance_data = {
+    #         "@context": {},
+    #         "personpedia:occupation": "http://someurl/profession/writer",
+    #     }
+    #     class_object = None
+    #     response = create_explicit_triples(instance_uri, instance_data, class_object)
+    #     expected = [
+    #         ("<http://personpedia.com/Person/OscarWilde>",
+    #          "personpedia:occupation",
+    #          '"http://someurl/profession/writer"')
+    #     ]
+    #     self.assertEqual(sorted(response), sorted(expected))
 
     def test_create_explicit_triples_predicates_are_uris_and_one_object_is_literal_and_is_translated(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
@@ -294,7 +312,8 @@ class CreateExplicitTriples(unittest.TestCase):
             "personpedia:birthPlace": "place:Dublin",
             "personpedia:occupation": "'writer'@en",
         }
-        response = create_explicit_triples(instance_uri, instance_data)
+        class_object = None
+        response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthDate", '"16/10/1854"'),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthPlace", "place:Dublin"),
@@ -310,7 +329,8 @@ class CreateExplicitTriples(unittest.TestCase):
             "personpedia:gender": "personpedia:Male",
             "personpedia:child": ["personpedia:VyvyanHolland", "personpedia:CyrilHolland"]
         }
-        response = create_explicit_triples(instance_uri, instance_data)
+        class_object = None
+        response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "rdfs:label", '"Oscar Wilde"'),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:gender", "personpedia:Male"),

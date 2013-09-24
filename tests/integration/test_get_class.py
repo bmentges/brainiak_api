@@ -10,7 +10,7 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 class TestClassResource(TornadoAsyncHTTPTestCase):
 
     SAMPLE_SCHEMA_JSON = {
-        u'$schema': u'http://json-schema.org/draft-03/schema#',
+        u'$schema': u'http://json-schema.org/draft-04/schema#',
         u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
         u'id': u'person:Gender',
         u'links': [

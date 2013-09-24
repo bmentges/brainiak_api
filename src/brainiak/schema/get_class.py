@@ -63,7 +63,7 @@ def assemble_schema_dict(query_params, normalized_uri, title, predicates, contex
         "type": "object",
         "id": normalized_uri,
         "@context": effective_context,
-        "$schema": "http://json-schema.org/draft-03/schema#",
+        "$schema": "http://json-schema.org/draft-04/schema#",
         "title": title,
         "links": links,
         "properties": predicates

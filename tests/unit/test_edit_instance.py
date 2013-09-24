@@ -34,7 +34,7 @@ class TestCaseRaise500(unittest.TestCase):
         edit_instance.is_modify_response_successful = lambda x: False
 
         self.original_create_explicit_triples = edit_instance.create_explicit_triples
-        edit_instance.create_explicit_triples = lambda x, y: []
+        edit_instance.create_explicit_triples = lambda x, y, z: []
 
         self.original_create_implicit_triples = edit_instance.create_implicit_triples
         edit_instance.create_implicit_triples = lambda x, y: []

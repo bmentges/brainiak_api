@@ -11,7 +11,9 @@ def create_instance(query_params, instance_data, instance_uri=None):
     if not instance_uri:
         instance_uri = create_instance_uri(class_uri)
 
-    triples = create_explicit_triples(instance_uri, instance_data)
+    # FIXME:
+    class_object = None
+    triples = create_explicit_triples(instance_uri, instance_data, class_object)
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
     triples.extend(implicit_triples)
     string_triples = join_triples(triples)

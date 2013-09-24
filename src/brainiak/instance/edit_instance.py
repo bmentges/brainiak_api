@@ -12,7 +12,9 @@ def edit_instance(query_params, instance_data):
     except KeyError as ex:
         raise HTTPError(404, log_message="Parameter <{0:s}> is missing in order to update instance.".format(ex))
 
-    triples = create_explicit_triples(instance_uri, instance_data)
+    # FIXME:
+    class_object = None
+    triples = create_explicit_triples(instance_uri, instance_data, class_object)
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
     triples.extend(implicit_triples)
     unique_triples = set(triples)

@@ -257,7 +257,7 @@ def clean_up_reserved_attributes(instance_data):
     return clean_instance
 
 
-def create_explicit_triples(instance_uri, instance_data):
+def create_explicit_triples(instance_uri, instance_data, class_object):
     # TODO-2:
     # lang = query_params["lang"]
     # if lang is "undefined":

@@ -7,6 +7,10 @@ from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO_JSON_TYPE
 
 
+def get_cached_schema(query_params):
+    return get_schema(query_params)
+
+
 def get_schema(query_params):
 
     context = MemorizeContext(normalize_keys=query_params['expand_uri_keys'],
@@ -59,7 +63,7 @@ def assemble_schema_dict(query_params, normalized_uri, title, predicates, contex
         "type": "object",
         "id": normalized_uri,
         "@context": effective_context,
-        "$schema": "http://json-schema.org/draft-04/schema#",
+        "$schema": "http://json-schema.org/draft-03/schema#",
         "title": title,
         "links": links,
         "properties": predicates

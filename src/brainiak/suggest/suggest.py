@@ -91,7 +91,7 @@ SUGGEST_PARAM_SCHEMA = {
 }
 
 
-def do_range_search(query_params, suggest_params):
+def do_suggest(query_params, suggest_params):
     search_params = suggest_params["search"]
     response_params = suggest_params.get("response", {})
 

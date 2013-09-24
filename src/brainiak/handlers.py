@@ -24,7 +24,7 @@ from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
 from brainiak.prefix.get_prefixes import list_prefixes
 from brainiak.prefixes import expand_all_uris_recursively
-from brainiak.suggest.suggest import do_range_search, SUGGEST_PARAM_SCHEMA
+from brainiak.suggest.suggest import do_suggest, SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
@@ -486,8 +486,7 @@ class SuggestHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, **valid_params)
             self.query_params.validate_required(valid_params)
 
-        #self.query_params.update(body_params)
-        response = do_range_search(self.query_params, body_params)
+        response = do_suggest(self.query_params, body_params)
 
         self.finalize(response)
 

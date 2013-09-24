@@ -5,10 +5,10 @@ from mock import patch
 from tornado.web import HTTPError
 
 from brainiak.suggest.suggest import _build_body_query, _validate_class_restriction, \
-    _validate_graph_restriction, _build_type_filters, _graph_uri_to_index_name, \
-    _build_class_label_dict, _build_items, _get_search_fields, _get_title_value, \
-    _build_class_fields_query, _get_response_fields_from_meta_fields, \
-    _build_predicate_values_query, _get_instance_fields, _get_response_fields_from_classes_dict, \
+    _validate_graph_restriction, _build_type_filters, _build_class_label_dict, \
+    _build_items, _get_search_fields, _get_title_value, _build_class_fields_query, \
+    _get_response_fields_from_meta_fields, _build_predicate_values_query, \
+    _get_instance_fields, _get_response_fields_from_classes_dict, \
     _get_class_fields_to_response
 
 
@@ -144,18 +144,6 @@ class SuggestTestCase(TestCase):
 
         response = _build_type_filters(classes)
         self.assertEqual(expected, response)
-
-    def test_graph_uri_to_index_name_base(self):
-        graph_uri = "http://semantica.globo.com/"
-        expected = "semantica.glb"
-        result = _graph_uri_to_index_name(graph_uri)
-        self.assertEqual(result, expected)
-
-    def test_graph_uri_to_index_name_place(self):
-        graph_uri = "http://semantica.globo.com/place/"
-        expected = "semantica.place"
-        result = _graph_uri_to_index_name(graph_uri)
-        self.assertEqual(result, expected)
 
     def test_build_class_label_dict(self):
         expected = {

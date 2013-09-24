@@ -1,6 +1,7 @@
 from tornado.web import HTTPError
 
 from brainiak import settings, triplestore
+from brainiak.prefixes import uri_to_slug
 from brainiak.search_engine import run_search
 from brainiak.utils.sparql import add_language_support, compress_keys_and_values, filter_values, is_result_empty
 from brainiak.utils.resources import calculate_offset, decorate_dict_with_pagination
@@ -104,7 +105,7 @@ def do_suggest(query_params, suggest_params):
 
     classes = _validate_class_restriction(query_params, range_result)
     graphs = _validate_graph_restriction(query_params, range_result)
-    indexes = [_graph_uri_to_index_name(graph) for graph in graphs]
+    indexes = ["semantica." + uri_to_slug(graph) for graph in graphs]
 
     compressed_result = compress_keys_and_values(range_result)
     class_label_dict = _build_class_label_dict(compressed_result)
@@ -438,13 +439,3 @@ def _build_items(query_params, result, class_label_dict, title_fields,
             items.append(item_dict)
 
     return items, item_count
-
-GRAPH_PREFIX = "http://semantica.globo.com/"
-
-
-def _graph_uri_to_index_name(graph_uri):
-    if graph_uri == GRAPH_PREFIX:
-        return "semantica.glb"
-    else:
-        # http://semantica.globo.com/place/ > semantica.place
-        return "semantica." + graph_uri.split("/")[-2]

@@ -412,4 +412,3 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
 
         response = _get_class_fields_to_response(query_params, classes, class_fields)
         self.assertEqual(expected, response)
-

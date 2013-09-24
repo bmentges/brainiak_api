@@ -1,16 +1,44 @@
 Releases
 ========
 
-Version 2.2.0 - 2013/08/29
+Version 2.2.3 - 2013/09/25
 --------------------------
 
 New features
 ____________
+
+ - Evolution of the  _suggest service, now supporting retrieval of instances referred by a given target predicate where a textual pattern occurs.
+ - New expand_object_properties parameter used in instance retrieval.
+ - New direct_instances_only parameter used in instance lists (collection retrieval).
+
+Refactor
+________
+
+ - New endpoint was created for the isolated Braniak deploy.  api.semantica -> brainiak.semantica
+ - Json-schema descriptions are now compliant with Draft-04, and no longer compliant with Draft-03
+
+Fixes
+_____
+
+ - Removed the disk cache from Nginx.
+ - The graph G1 is now known as g1
+ - Remove escaping of URL parameters for the profile directive (specifies the json-schema URL) in the Content-Type header.
+ - Response body of backend erros appear in log files even if the log level is not set to DEBUG
+ - Removal of restricted attributes (@ and _ prefixes) from the notification sent to the backstage bus
+
+
+Version 2.2.0 - 2.2.2 - 2013/08/29
+-----------------------------------
+
+New features
+____________
+
  - Suggest resource (_suggest) with pagination (uses ElasticSearch)
  - Support to multiple triplestore endpoints
 
 Refactor
 ________
+
  - Add @id to context and collection
  - Rename hosts barramento.baas -> barramento.backstage
  - Refactor error messages to adhere to CPM2
@@ -22,6 +50,7 @@ ________
 
 Fixes
 _____
+
  - Fix at GET <instance>: instance_prefix == null
  - Fix at PUT <instance> expansion URI not being applied to string literals
  - Fix double unicode escaping, so we can use JSON Browser
@@ -32,6 +61,7 @@ Developers' notes
 _________________
  - Add automate tests to check compliance to JSON-Schema Version 3
  - query_sparql interface was refactored
+ - The versions 2.2.1 and 2.2.2 were mere adjustments in the deploy procedure with no new features
 
 
 Version 2.1.0 - 2013/08/01

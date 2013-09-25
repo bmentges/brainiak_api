@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from brainiak.prefixes import MemorizeContext
+from brainiak.prefixes import MemorizeContext, expand_all_uris_recursively
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties
 from brainiak import triplestore
@@ -8,7 +8,7 @@ from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO
 
 
 def get_cached_schema(query_params):
-    return get_schema(query_params)
+    return expand_all_uris_recursively(get_schema(query_params))
 
 
 def get_schema(query_params):

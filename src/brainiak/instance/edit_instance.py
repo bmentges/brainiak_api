@@ -1,5 +1,6 @@
 from tornado.web import HTTPError
 from brainiak import triplestore
+from brainiak.schema.get_class import get_cached_schema
 from brainiak.utils.sparql import is_result_true, create_explicit_triples, create_implicit_triples,\
     join_triples, is_modify_response_successful, join_prefixes
 
@@ -12,8 +13,7 @@ def edit_instance(query_params, instance_data):
     except KeyError as ex:
         raise HTTPError(404, log_message="Parameter <{0:s}> is missing in order to update instance.".format(ex))
 
-    # FIXME:
-    class_object = None
+    class_object = get_cached_schema(query_params)
     triples = create_explicit_triples(instance_uri, instance_data, class_object)
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
     triples.extend(implicit_triples)

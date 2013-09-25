@@ -211,7 +211,7 @@ class ParamDict(dict):
             self[key] = value
 
     def _set_defaults(self):
-        "Define a set of predefined keys that "
+        """Define a set of predefined keys"""
         self["lang"] = self.optionals.get("lang", settings.DEFAULT_LANG)
 
         self._set_if_optional("context_name", self.optionals.get("context_name", "invalid_context"))

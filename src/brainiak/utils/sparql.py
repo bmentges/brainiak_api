@@ -2,6 +2,8 @@
 import re
 import uuid
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, PrefixError, shorten_uri
+from brainiak.prefixes import expand_uri
+from brainiak.type_mapper import _MAP_JSON_TO_XSD_TYPE
 
 
 PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
@@ -257,6 +259,14 @@ def clean_up_reserved_attributes(instance_data):
     return clean_instance
 
 
+def get_predicate_datatype(class_object, expanded_predicate_name):
+    predicate = class_object['properties'][expanded_predicate_name]
+    if 'range' in predicate:
+        return None
+    # Without range it is a datatype property
+    return _MAP_JSON_TO_XSD_TYPE.get(predicate['type'], None)
+
+
 def create_explicit_triples(instance_uri, instance_data, class_object):
     # TODO-2:
     # lang = query_params["lang"]
@@ -272,24 +282,37 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
     for (predicate_uri, object_value) in predicate_object_tuples:
         if not is_reserved_attribute(predicate_uri):
 
-            # predicate: has to be uri (compressed or not)
+            if '@context' in instance_data:
+                instance_context = instance_data['@context']
+            else:
+                instance_context = None
+
+            normalized_predicate_name = expand_uri(predicate_uri, context=instance_context)
+            predicate_datatype = get_predicate_datatype(class_object, normalized_predicate_name)
+
             predicate = shorten_uri(predicate_uri)
             if is_uri(predicate):
                 predicate = "<%s>" % predicate_uri
 
             # object: can be uri (compressed or not) or literal
-            if is_uri(object_value):
-                object_ = "<%s>" % object_value
-            elif is_compressed_uri(object_value, instance_data.get("@context", {})):
-                object_ = object_value
-            else:
-                # TODO: add literal type
+
+            if predicate_datatype is not None:
+                # Datatype property
                 # TODO-2: if literal is string and not i18n, add lang
                 if has_lang(object_value):
                     object_ = object_value
                 else:
                     object_value = escape_quotes(object_value)
-                    object_ = '"%s"' % object_value
+                    object_ = '"{0}"^^{1}'.format(object_value,  predicate_datatype)
+            else:
+                # Object property
+                if is_uri(object_value):
+                    object_ = "<%s>" % object_value
+                elif is_compressed_uri(object_value, instance_data.get("@context", {})):
+                    object_ = object_value
+                else:
+                    raise Exception('Unexpected value for object property')
+
             triple = (instance, predicate, object_)
             triples.append(triple)
 

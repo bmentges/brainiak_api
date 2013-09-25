@@ -136,12 +136,17 @@ def is_compressed_uri(candidate, extra_prefixes=None):
     return False
 
 
-def expand_uri(short_uri, translation_map=_MAP_SLUG_TO_PREFIX):
+def expand_uri(short_uri, translation_map=_MAP_SLUG_TO_PREFIX, context=None):
     if is_uri(short_uri):
         return short_uri
     try:
         slug, item = short_uri.split(":")
-        prefix = slug_to_prefix(slug, translation_map)
+        local_map = {}
+        if translation_map is not None:
+            local_map.update(translation_map)
+        if context is not None:
+            local_map.update(context)
+        prefix = slug_to_prefix(slug, local_map)
         return "{0}{1}".format(prefix, item)
     except ValueError:
         return short_uri

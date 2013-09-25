@@ -16,6 +16,7 @@ def is_available():
     log_line = run('git log -1')
     return 'commit' in log_line
 
+
 def checkout(state):
     run("git checkout %s" % state)
 

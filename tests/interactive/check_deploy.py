@@ -16,8 +16,8 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.2.2"
-mercury_version = "1.2.3"
+brainiak_version = "2.2.3"
+mercury_version = "1.2.4"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",
@@ -150,6 +150,9 @@ class BrainiakChecker(Checker):
         # Remove if instance exist
         self.put("place/City/globoland", "new_city.json")
         self.delete("place/City/globoland")
+
+        time.sleep(5)
+
         # SOLR read URL
         solr_host = solr_endpoint[self.environ]
         solr_relative_url = 'solr/select/?q=uri%3A%22http%3A%2F%2Fsemantica.globo.com%2Fplace%2FCity%2Fgloboland%22'
@@ -247,10 +250,10 @@ if __name__ == "__main__":
         sys.stdout.write("Run:\n   python check_deploy.py <environ>\nWhere environ in [local, dev, qa01, qa02, stg, prod]")
         exit()
 
-    sys.stdout.write("[Checking Brainiak]")
-    brainiak = BrainiakChecker(environ)
-    brainiak_functions = [function() for name, function in inspect.getmembers(brainiak) if name.startswith("check")]
-    sys.stdout.write("\n")
+    #sys.stdout.write("[Checking Brainiak]")
+    #brainiak = BrainiakChecker(environ)
+    #brainiak_functions = [function() for name, function in inspect.getmembers(brainiak) if name.startswith("check")]
+    #sys.stdout.write("\n")
 
     sys.stdout.write("[Checking New Brainiak]")
     brainiak = NewBrainiakChecker(environ)

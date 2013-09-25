@@ -434,8 +434,9 @@ def _build_items(query_params, result, class_label_dict, title_fields,
                                                    response_fields, title_field,
                                                    fields_by_class_dict)
             item_dict.update(instance_fields)
-            class_fields = _get_class_fields_to_response(query_params, [klass], class_fields)
-            item_dict.update(class_fields)
+
+            class_fields_to_response = _get_class_fields_to_response(query_params, [klass], class_fields)
+            item_dict.update(class_fields_to_response)
             items.append(item_dict)
 
     return items, item_count

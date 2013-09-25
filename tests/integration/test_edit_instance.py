@@ -3,6 +3,7 @@ import json
 from brainiak import server
 from brainiak.instance import create_instance, edit_instance
 from brainiak.utils.sparql import is_modify_response_successful
+from tests.mocks import mock_schema
 
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
@@ -69,17 +70,23 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 400)
 
     @patch("brainiak.handlers.logger")
-    def test_edit_instance_that_doesnt_exist_201(self, log):  # Bus notification test is in a separated test file
-        response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='PUT', body=json.dumps({"rdfs:label": "Inexistent city"}))
+    @patch("brainiak.instance.create_instance.get_cached_schema",
+           return_value=mock_schema({"rdfs:label": "string",
+                                     "rdfs:comment": "string",
+                                     "http://tatipedia.org/speak": "string"}))
+    def test_edit_instance_that_doesnt_exist_201(self, mock_schema, mock_log):  # Bus notification test is in a separated test file
+        response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+                              method='PUT',
+                              body=json.dumps({"rdfs:label": "Inexistent city"}))
         self.assertEqual(response.code, 201)
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))
         self.assertTrue(location.endswith("/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/"))
 
     @patch("brainiak.handlers.logger")
-    def test_edit_instance_200_adding_predicate(self, log):
-        actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
-            method='GET')
+    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}))
+    def test_edit_instance_200_adding_predicate(self, mock_schema, mock_log):
+        actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='GET')
         self.assertEqual(actual_new_york.code, 200)
         actual_new_york_dict = json.loads(actual_new_york.body)
         self.assertIn("rdfs:label", actual_new_york_dict)

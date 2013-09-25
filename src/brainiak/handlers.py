@@ -34,7 +34,7 @@ from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
 from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, DEFAULT_PARAMS, RequiredParamMissing, DefaultParamsDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
-from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes
+from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InvalidSchema
 
 
 logger = LazyObject(get_logger)
@@ -334,7 +334,11 @@ class CollectionHandler(BrainiakRequestHandler):
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
 
-        (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
+        try:
+            (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
+        except InvalidSchema as ex:
+            raise HTTPError(500, log_message=str(ex))
+
         instance_url = self.build_resource_url(instance_id)
 
         self.set_header("location", instance_url)
@@ -406,17 +410,20 @@ class InstanceHandler(BrainiakRequestHandler):
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
 
-        if not instance_exists(self.query_params):
-            schema = schema_resource.get_schema(self.query_params)
-            if schema is None:
-                raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
-            instance_uri, instance_id = create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
-            resource_url = self.request.full_url()
-            status = 201
-            self.set_header("location", resource_url)
-        else:
-            edit_instance(self.query_params, instance_data)
-            status = 200
+        try:
+            if not instance_exists(self.query_params):
+                schema = schema_resource.get_schema(self.query_params)
+                if schema is None:
+                    raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
+                instance_uri, instance_id = create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
+                resource_url = self.request.full_url()
+                status = 201
+                self.set_header("location", resource_url)
+            else:
+                edit_instance(self.query_params, instance_data)
+                status = 200
+        except InvalidSchema as ex:
+            raise HTTPError(500, log_message=str(ex))
 
         instance_data = get_instance(self.query_params)
 

@@ -114,18 +114,9 @@ def do_suggest(query_params, suggest_params):
     title_fields += _get_subproperties(query_params, RDFS_LABEL)
     search_fields = list(set(_get_search_fields(query_params, suggest_params) + title_fields))
 
-    response_fields = set(title_fields)
-
-    meta_fields = _get_response_fields_from_meta_fields(query_params, response_params, classes)
-    response_fields.update(meta_fields)
-
-    response_fields.update(set(response_params.get("instance_fields", [])))
-
-    fields_by_class_dict, fields_by_class_set = _get_response_fields_from_classes_dict(
-        response_params.get("classes", []))
-    response_fields.update(fields_by_class_set)
-
-    response_fields = list(response_fields)
+    response_fields, response_fields_by_class = _get_response_fields(query_params,
+                                                                     response_params,
+                                                                     classes, title_fields)
 
     request_body = _build_body_query(query_params, search_params, classes,
                                      search_fields, response_fields)
@@ -134,7 +125,7 @@ def do_suggest(query_params, suggest_params):
     class_fields = response_params.get("class_fields", [])
 
     items, item_count = _build_items(query_params, elasticsearch_result, class_label_dict,
-                                     title_fields, response_fields, fields_by_class_dict,
+                                     title_fields, response_fields, response_fields_by_class,
                                      class_fields)
 
     if not items:
@@ -270,6 +261,28 @@ def _get_class_fields_value(query_params, classes, meta_field):
     return class_field_values
 
 
+def _get_response_fields(query_params, response_params, classes, title_fields):
+    response_fields = set([])
+    response_fields_by_class = {}
+
+    response_fields.update(title_fields)
+
+    meta_fields = _get_response_fields_from_meta_fields(query_params, response_params, classes)
+    response_fields.update(meta_fields)
+
+    if response_params.get("instance_fields"):
+        instance_fields = set(response_params.get("instance_fields", []))
+        response_fields.update(instance_fields)
+    elif response_params.get("classes"):
+        classes_dict = response_params.get("classes")
+        response_fields_by_class, fields_by_class_set = _get_response_fields_from_classes_dict(classes_dict)
+        response_fields.update(fields_by_class_set)
+
+    response_fields = list(response_fields)
+
+    return response_fields, response_fields_by_class
+
+
 def _get_response_fields_from_meta_fields(query_params, response_params, classes):
     meta_fields_response = set([])
     for meta_field in response_params.get("meta_fields", []):
@@ -283,17 +296,14 @@ def _get_response_fields_from_meta_fields(query_params, response_params, classes
 
 
 def _get_response_fields_from_classes_dict(fields_by_class_list):
-    if not fields_by_class_list:
-        return {}, set([])
-    else:
-        fields_by_class_dict = {}
-        fields_by_class_set = set([])
-        for fields_by_class in fields_by_class_list:
-            klass = fields_by_class["@type"]
-            fields = fields_by_class["instance_fields"]
-            fields_by_class_dict[klass] = fields
-            fields_by_class_set.update(set(fields))
-        return fields_by_class_dict, fields_by_class_set
+    fields_by_class_dict = {}
+    fields_by_class_set = set([])
+    for fields_by_class in fields_by_class_list:
+        klass = fields_by_class["@type"]
+        fields = fields_by_class["instance_fields"]
+        fields_by_class_dict[klass] = fields
+        fields_by_class_set.update(set(fields))
+    return fields_by_class_dict, fields_by_class_set
 
 
 def _build_body_query(query_params, search_params, classes, search_fields, response_fields):
@@ -369,18 +379,23 @@ def _get_predicate_values(query_params, instance_uri, predicates):
     return compress_keys_and_values(query_response)
 
 
-def _get_instance_fields(query_params, instance_uri, klass, response_fields, title_field, fields_by_class_dict):
+def _get_instance_fields(query_params, instance_uri, klass, title_field, response_fields, fields_by_class_dict):
     # TODO set required
-    predicates = list(response_fields)
-    predicates.remove(title_field)  # title_field is already in response
 
-    fields_to_return = fields_by_class_dict.get(klass, [])
-    if fields_to_return:
-        predicates = list(fields_to_return)
+    instance_fields = {}
+    if fields_by_class_dict.get(klass, []):
+        predicates = fields_by_class_dict.get(klass)
+    else:
+        predicates = response_fields
+
+    if predicates and title_field in predicates:  # title_field is already in response
+        predicates.remove(title_field)
+
+    if not predicates:
+        return instance_fields
 
     predicate_values = _get_predicate_values(query_params, instance_uri, predicates)
 
-    instance_fields = {}
     if not predicate_values:
         return instance_fields
     else:
@@ -431,7 +446,7 @@ def _build_items(query_params, result, class_label_dict, title_fields,
                 "type_title": class_label_dict[klass]
             }
             instance_fields = _get_instance_fields(query_params, instance_uri, klass,
-                                                   response_fields, title_field,
+                                                   title_field, response_fields,
                                                    fields_by_class_dict)
             item_dict.update(instance_fields)
 

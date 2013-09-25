@@ -1,16 +1,18 @@
 import unittest
 from mock import patch
-
 from tornado.web import HTTPError
-
 from brainiak.instance.create_instance import create_instance
+from brainiak.utils.params import ParamDict
+from tests.mocks import MockHandler, mock_schema
 
 
 class TestCaseInstanceCreateResource(unittest.TestCase):
 
     @patch("brainiak.instance.create_instance.query_create_instances")
     @patch("brainiak.instance.create_instance.is_insert_response_successful", return_value=False)
-    def test_instance_not_inserted(self, mocked_response_successful, mocked_query_create_instances):
-        query_params = {"class_uri": "class", "graph_uri": "graph"}
+    @patch("brainiak.instance.create_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string"}))
+    def test_instance_not_inserted(self, mock_get_cached_schema, mocked_response_successful, mocked_query_create_instances):
+        handler = MockHandler()
+        params = ParamDict(handler, class_uri="class", graph_uri="graph")
         instance_data = {"rdfs:label": "teste"}
-        self.assertRaises(HTTPError, create_instance, query_params, instance_data, "http://uri-teste")
+        self.assertRaises(HTTPError, create_instance, params, instance_data, "http://uri-teste")

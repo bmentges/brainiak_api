@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from urlparse import urlparse
+from brainiak.prefixes import expand_uri
 from brainiak.utils.params import normalize_last_slash
 
 
@@ -10,6 +11,17 @@ triplestore_config = {
     'auth_username': 'api-semantica',
     'auth_password': 'api-semantica'
 }
+
+
+def mock_schema(properties_and_types_dict, context=None):
+    properties_schema = {}
+    for property_name, type_value in properties_and_types_dict.items():
+        property_uri = expand_uri(property_name, context=context)
+        if type_value is None:
+            properties_schema[property_uri] = {'range': {'type': 'string', 'format': 'uri'}}
+        else:
+            properties_schema[property_uri] = {'type': type_value}
+    return {'properties': properties_schema}
 
 
 class MockSimpleRequest(object):

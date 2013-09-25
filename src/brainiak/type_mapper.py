@@ -28,5 +28,12 @@ _MAP_XSD_TO_JSON_TYPE = {
     "xsd:boolean": "boolean"
 }
 
+# TODO: Use annotations in json-schema and remove this dict
+_MAP_JSON_TO_XSD_TYPE = {
+    "string": "xsd:string",
+    "number": "xsd:double",
+    "integer": "xsd:integer",
+    "boolean": "xsd:boolean"
+}
 
 # TODO: support other JSON types: "boolean", "object", "array"

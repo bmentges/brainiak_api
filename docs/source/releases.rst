@@ -16,10 +16,14 @@ ________
 
  - New endpoint was created for the isolated Braniak deploy.  api.semantica -> brainiak.semantica
  - Json-schema descriptions are now compliant with Draft-04, and no longer compliant with Draft-03
+ - Removed the rdf:type property from the retrieved instance definition
+
 
 Fixes
 _____
 
+ - During insertion of instance, property values now receive type cast.
+   The mapping of json types to semantic types is still simplified. A precise mapping will be implemented in the future.
  - Removed the disk cache from Nginx.
  - The graph G1 is now known as g1
  - Remove escaping of URL parameters for the profile directive (specifies the json-schema URL) in the Content-Type header.

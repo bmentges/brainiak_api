@@ -7,6 +7,7 @@ from dad.mom import MiddlewareError
 from brainiak import server, settings
 from brainiak import handlers
 from brainiak.event_bus import NotificationFailure
+from tests.mocks import mock_schema
 
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
@@ -38,7 +39,8 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.notify_bus")
     @patch("brainiak.handlers.logger")
     @patch("brainiak.event_bus.logger")
-    def test_notify_event_bus_on_put(self, log, log2, mock_notify_bus):
+    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}))
+    def test_notify_event_bus_on_put(self, mock_schema, log, log2, mock_notify_bus):
         expected_message = {
             "instance": "http://tatipedia.org/new_york",
             "klass": "http://tatipedia.org/Place",
@@ -81,7 +83,8 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.notify_bus")
     @patch("brainiak.event_bus.logger")
     @patch("brainiak.handlers.logger")
-    def test_notify_event_bus_on_post(self, log, log2, mock_notify_bus):
+    @patch("brainiak.instance.create_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "http://tatipedia.org/stadium": "string"}))
+    def test_notify_event_bus_on_post(self, mock_schema, log, log2, mock_notify_bus):
         CSA_FOOTBALL_TEAM = {
             "@context": {
                 "rdfs": "http://www.w3.org/2000/01/rdf-schema#",

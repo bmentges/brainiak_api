@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from tornado.web import HTTPError
 from brainiak import triplestore
+from brainiak.schema.get_class import get_cached_schema
 from brainiak.utils.sparql import create_explicit_triples, create_instance_uri, create_implicit_triples, \
     extract_instance_id, join_triples, join_prefixes, is_insert_response_successful
 
@@ -11,9 +12,10 @@ def create_instance(query_params, instance_data, instance_uri=None):
     if not instance_uri:
         instance_uri = create_instance_uri(class_uri)
 
-    # FIXME:
-    class_object = None
+    class_object = get_cached_schema(query_params)
+
     triples = create_explicit_triples(instance_uri, instance_data, class_object)
+
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
     triples.extend(implicit_triples)
     string_triples = join_triples(triples)

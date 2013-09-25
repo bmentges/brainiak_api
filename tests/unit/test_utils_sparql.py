@@ -3,6 +3,32 @@ import uuid
 
 from brainiak.prefixes import MemorizeContext, SHORTEN
 from brainiak.utils.sparql import *
+from tests.mocks import mock_schema
+
+
+class MockSchemaTestCase(unittest.TestCase):
+
+    def test_mock_schema(self):
+        class_object = mock_schema(
+            {"personpedia:birthPlace": None,
+             "personpedia:gender": None,
+             "personpedia:wife": None},
+            context={"personpedia": "http://personpedia.com/"}
+        )
+        expected_object = {
+            'properties': {
+                'http://personpedia.com/birthPlace': {
+                    'range': {'type': 'string', 'format': 'uri'}
+                },
+                'http://personpedia.com/gender': {
+                    'range': {'type': 'string', 'format': 'uri'}
+                },
+                'http://personpedia.com/wife': {
+                    'range': {'type': 'string', 'format': 'uri'}
+                }
+            }
+        }
+        self.assertEqual(class_object, expected_object)
 
 
 class ResultHandlerTestCase(unittest.TestCase):
@@ -241,12 +267,17 @@ class CreateExplicitTriples(unittest.TestCase):
     def test_create_explicit_triples_all_predicates_and_objects_are_compressed_uris(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
-            "@context": {"personpedia": "http://personpedia.com"},
+            "@context": {"personpedia": "http://personpedia.com/"},
             "personpedia:birthPlace": "place:Dublin",
             "personpedia:gender": "personpedia:Male",
             "personpedia:wife": "personpedia:ConstanceLloyd"
         }
-        class_object = None
+        class_object = mock_schema(
+            {"personpedia:birthPlace": None,
+             "personpedia:gender": None,
+             "personpedia:wife": None},
+            context=instance_data['@context']
+        )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthPlace", "place:Dublin"),
@@ -258,12 +289,17 @@ class CreateExplicitTriples(unittest.TestCase):
     def test_create_explicit_triples_predicates_and_objects_are_full_uris(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
-            "@context": {},
+            "@context": {"personpedia": "http://personpedia.com/"},
             "http://personpedia.com/birthPlace": "http://placepedia.com/Dublin",
             "http://personpedia.com/gender": "http://personpedia.com/Male",
             "http://personpedia.com/wife": "http://personpedia.com/ConstanceLloyd"
         }
-        class_object = None
+        class_object = mock_schema(
+            {"personpedia:birthPlace": None,
+             "personpedia:gender": None,
+             "personpedia:wife": None},
+            context=instance_data['@context']
+        )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthPlace>", "<http://placepedia.com/Dublin>"),
@@ -275,47 +311,57 @@ class CreateExplicitTriples(unittest.TestCase):
     def test_create_explicit_triples_predicates_are_uris_and_objects_are_literals(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
-            "@context": {},
+            "@context": {"personpedia": "http://personpedia.com/"},
             "personpedia:birthDate": "16/10/1854",
             "personpedia:birthPlace": "place:Dublin",
             "personpedia:occupation": "writer",
         }
-        class_object = None
+        class_object = mock_schema(
+            {"personpedia:birthDate": 'string',
+             "personpedia:birthPlace": None,
+             "personpedia:occupation": 'string'},
+            context=instance_data['@context']
+        )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthDate", '"16/10/1854"'),
+            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthDate", '"16/10/1854"^^xsd:string'),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthPlace", "place:Dublin"),
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:occupation", '"writer"')
+            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:occupation", '"writer"^^xsd:string')
         ]
         self.assertEqual(sorted(response), sorted(expected))
 
-    # def test_create_explicit_triples_objects_are_urls_as_strings(self):
-    #     instance_uri = "http://personpedia.com/Person/OscarWilde"
-    #     instance_data = {
-    #         "@context": {},
-    #         "personpedia:occupation": "http://someurl/profession/writer",
-    #     }
-    #     class_object = None
-    #     response = create_explicit_triples(instance_uri, instance_data, class_object)
-    #     expected = [
-    #         ("<http://personpedia.com/Person/OscarWilde>",
-    #          "personpedia:occupation",
-    #          '"http://someurl/profession/writer"')
-    #     ]
-    #     self.assertEqual(sorted(response), sorted(expected))
+    def test_create_explicit_triples_objects_are_urls_as_strings(self):
+        instance_uri = "http://personpedia.com/Person/OscarWilde"
+        instance_data = {
+            "@context": {"personpedia": "http://personpedia.com/"},
+            "personpedia:occupation": "http://someurl/profession/writer",
+        }
+        class_object = mock_schema({"personpedia:occupation": 'string'}, context=instance_data['@context'])
+        response = create_explicit_triples(instance_uri, instance_data, class_object)
+        expected = [
+            ("<http://personpedia.com/Person/OscarWilde>",
+             "personpedia:occupation",
+             '"http://someurl/profession/writer"^^xsd:string')
+        ]
+        self.assertEqual(sorted(response), sorted(expected))
 
     def test_create_explicit_triples_predicates_are_uris_and_one_object_is_literal_and_is_translated(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
-            "@context": {},
+            "@context": {"personpedia": "http://personpedia.com/"},
             "personpedia:birthDate": "16/10/1854",
             "personpedia:birthPlace": "place:Dublin",
             "personpedia:occupation": "'writer'@en",
         }
-        class_object = None
+        class_object = mock_schema(
+            {"personpedia:birthDate": 'string',
+             "personpedia:birthPlace": None,
+             "personpedia:occupation": 'string'},
+            context=instance_data['@context']
+        )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthDate", '"16/10/1854"'),
+            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthDate", '"16/10/1854"^^xsd:string'),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthPlace", "place:Dublin"),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:occupation", "'writer'@en")
         ]
@@ -324,15 +370,20 @@ class CreateExplicitTriples(unittest.TestCase):
     def test_create_explicit_triples_predicates_are_uris_and_one_object_is_list(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
-            "@context": {"personpedia": "http://personpedia.com"},
+            "@context": {"personpedia": "http://personpedia.com/"},
             "rdfs:label": "Oscar Wilde",
             "personpedia:gender": "personpedia:Male",
             "personpedia:child": ["personpedia:VyvyanHolland", "personpedia:CyrilHolland"]
         }
-        class_object = None
+        class_object = mock_schema(
+            {"rdfs:label": 'string',
+             "personpedia:gender": None,
+             "personpedia:child": None},
+            context=instance_data['@context']
+        )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
-            ("<http://personpedia.com/Person/OscarWilde>", "rdfs:label", '"Oscar Wilde"'),
+            ("<http://personpedia.com/Person/OscarWilde>", "rdfs:label", '"Oscar Wilde"^^xsd:string'),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:gender", "personpedia:Male"),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:child", "personpedia:VyvyanHolland"),
             ("<http://personpedia.com/Person/OscarWilde>", "personpedia:child", "personpedia:CyrilHolland")

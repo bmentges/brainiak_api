@@ -36,7 +36,7 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
     def setUp(self):
         super(TestRangeSearch, self).setUp()
         # ONLY VALID FOR VALID_BODY_PARAMS
-        self.elastic_request_url = "http://" + settings.ELASTICSEARCH_ENDPOINT + "/example.onto/"
+        self.elastic_request_url = "http://" + settings.ELASTICSEARCH_ENDPOINT + "/semantica.example.onto/"
         self.elastic_request_url += quote_plus("http://example.onto/City") + "/"
         self.elastic_request_url += quote_plus("http://example.onto/York")
         entry = {

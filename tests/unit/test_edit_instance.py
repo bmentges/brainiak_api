@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+from mock import patch
 from tornado.web import HTTPError
 from brainiak.instance import edit_instance
+from brainiak.utils.params import ParamDict
+from tests.mocks import MockHandler, mock_schema
 
 
 class TestCaseInstanceResource(unittest.TestCase):
@@ -47,8 +50,10 @@ class TestCaseRaise500(unittest.TestCase):
         edit_instance.create_explicit_triples = self.original_create_explicit_triples
         edit_instance.create_implicit_triples = self.original_create_implicit_triples
 
-    def test_edit_instance_raise500(self):
-        query_params = {'instance_uri': 'anything', 'graph_uri': 'anything', 'class_uri': 'anything'}
+    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string"}))
+    def test_edit_instance_raise500(self, mock_get_cached_schema):
+        handler = MockHandler()
+        query_params = ParamDict(handler, instance_uri='anything', graph_uri='anything', class_uri='anything')
         self.assertRaises(HTTPError, edit_instance.edit_instance, query_params, {'@context': {}})
         with self.assertRaises(HTTPError) as ex:
             edit_instance.edit_instance(query_params, {'@context': {}})

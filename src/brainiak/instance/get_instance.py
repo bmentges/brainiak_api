@@ -60,6 +60,21 @@ def remove_super_properties(context, items_dict, super_predicates):
                 items_dict.pop(analyzed_predicate)
 
 
+def check_and_clean_rdftype(instance_type, items):
+    """Validate actual type and remove rdf:type from the instance to be returned"""
+    if 'rdf:type' in items:
+        rdftype = 'rdf:type'
+    elif 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' in items:
+        rdftype = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
+    else:
+        rdftype = None
+    if rdftype is not None:
+        msg = "The type specified={0} is not the same informed from the triplestore={1}"
+        if instance_type != items[rdftype]:
+            raise Exception(msg.format(instance_type, items[rdftype]))
+        del items[rdftype]
+
+
 def assemble_instance_json(query_params, query_result_dict, context=None):
     if context is None:
         context = MemorizeContext(normalize_keys=query_params['expand_uri_keys'],
@@ -76,6 +91,9 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
         "@type": context.normalize_uri_value(query_params["class_uri"]),
         "@context": context.context,
     }
+
+    check_and_clean_rdftype(instance['@type'], items)
+
     if 'instance_prefix' in query_params:
         instance["_instance_prefix"] = query_params['instance_prefix']
 

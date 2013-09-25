@@ -66,8 +66,8 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         json_received = json.loads(response.body)
         self.assertIn(expected_error_msg, json_received['errors'])
 
-    @patch("brainiak.suggest.suggest._graph_uri_to_index_name", return_value="example.onto")
-    def test_successful_request(self, mocked_graph_uri_to_index_name):
+    @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
+    def test_successful_request(self, mocked_uri_to_slug):
         expected_items = [
             {
                 u'@id': u'http://example.onto/York', u'title': u'York',
@@ -81,8 +81,8 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         response_json = json.loads(response.body)
         self.assertEqual(expected_items, response_json["items"])
 
-    @patch("brainiak.suggest.suggest._graph_uri_to_index_name", return_value="example.onto")
-    def test_successful_request_with_metafields(self, mocked_graph_uri_to_index_name):
+    @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
+    def test_successful_request_with_metafields(self, mocked_uri_to_slug):
         expected_items = [
             {
                 u'@id': u'http://example.onto/York', u'title': u'York',
@@ -115,8 +115,8 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         response_json = json.loads(response.body)
         self.assertEqual(expected_items, response_json["items"])
 
-    @patch("brainiak.suggest.suggest._graph_uri_to_index_name", return_value="example.onto")
-    def test_zero_results(self, mocked_graph_uri_to_index_name):
+    @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
+    def test_zero_results(self, mocked_uri_to_slug):
         zero_results_parameters = {
             "search": {
                 "pattern": "non existent keywords",

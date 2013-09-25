@@ -4,6 +4,7 @@ from mock import patch
 from brainiak.instance import create_instance
 from brainiak.instance.get_instance import QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE
 from brainiak.schema import get_class as schema_resource
+from tests.mocks import mock_schema
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -92,7 +93,9 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.instance.get_instance.settings", DEFAULT_RULESET_URI="{0}ruleset".format(graph_uri))
     @patch("brainiak.instance.get_instance.triplestore")
     @patch("brainiak.handlers.settings", NOTIFY_BUS=True)
-    def test_create_instance_201(self, mocked_handler_settings, mockeed_triplestore, mocked_settings,
+    @patch("brainiak.instance.create_instance.get_cached_schema",
+           return_value=mock_schema({"rdfs:label": "string", "http://example.onto/name": "string"}))
+    def test_create_instance_201(self, mock_get_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
                                  mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
         mockeed_triplestore.query_sparql = self.query
         payload = JSON_CITY_GLOBOLAND
@@ -107,8 +110,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(mocked_notify_bus.called)
         expected = {
             'action': 'POST',
-            'instance_data': {'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://example.onto/City',
-                              u'http://example.onto/name': u'Globoland'},
+            'instance_data': {u'http://example.onto/name': u'Globoland'},
             'instance': 'http://example.onto/City/123',
             'klass': 'http://example.onto/City',
             'graph': 'http://example.onto/'

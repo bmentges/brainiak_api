@@ -267,6 +267,10 @@ def get_predicate_datatype(class_object, expanded_predicate_name):
     return _MAP_JSON_TO_XSD_TYPE.get(predicate['type'], None)
 
 
+class InvalidSchema(Exception):
+    pass
+
+
 def create_explicit_triples(instance_uri, instance_data, class_object):
     # TODO-2:
     # lang = query_params["lang"]
@@ -279,16 +283,20 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
     predicate_object_tuples = unpack_tuples(instance_data)
     triples = []
 
+    if '@context' in instance_data:
+        instance_context = instance_data['@context']
+    else:
+        instance_context = None
+
     for (predicate_uri, object_value) in predicate_object_tuples:
         if not is_reserved_attribute(predicate_uri):
 
-            if '@context' in instance_data:
-                instance_context = instance_data['@context']
-            else:
-                instance_context = None
-
             normalized_predicate_name = expand_uri(predicate_uri, context=instance_context)
-            predicate_datatype = get_predicate_datatype(class_object, normalized_predicate_name)
+            try:
+                predicate_datatype = get_predicate_datatype(class_object, normalized_predicate_name)
+            except KeyError:
+                msg = 'Property {0} was not found in the schema of instance {1}'
+                raise InvalidSchema(msg.format(normalized_predicate_name, instance_uri))
 
             predicate = shorten_uri(predicate_uri)
             if is_uri(predicate):
@@ -303,15 +311,15 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                     object_ = object_value
                 else:
                     object_value = escape_quotes(object_value)
-                    object_ = '"{0}"^^{1}'.format(object_value,  predicate_datatype)
+                    object_ = u'"{0}"^^{1}'.format(object_value, predicate_datatype)
             else:
                 # Object property
                 if is_uri(object_value):
-                    object_ = "<%s>" % object_value
+                    object_ = u"<%s>" % object_value
                 elif is_compressed_uri(object_value, instance_data.get("@context", {})):
                     object_ = object_value
                 else:
-                    raise Exception('Unexpected value for object property')
+                    raise InvalidSchema('Unexpected value {0} for object property {1}'.format(object_value, predicate))
 
             triple = (instance, predicate, object_)
             triples.append(triple)

@@ -37,12 +37,11 @@ def normalize_term(term, language=""):
     language_tag = "@%s" % language if language else ""
     if (not term.startswith("?")):
         if (":" in term):
-            try:
-                term = "<%s>" % expand_uri(term)
-            except PrefixError:
-                pass
+            expanded_term = expand_uri(term)
+            if expanded_term != term or is_uri(expanded_term):
+                term = u"<%s>" % expanded_term
         else:
-            term = '"%s"%s' % (term, language_tag)
+            term = u'"%s"%s' % (term, language_tag)
     return term
 
 

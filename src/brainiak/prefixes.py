@@ -82,7 +82,7 @@ def slug_to_prefix(slug, translation_map=_MAP_SLUG_TO_PREFIX):
     try:
         prefix = translation_map[slug]
     except KeyError:
-        raise PrefixError("Prefix is not defined for slug {0}".format(slug))
+        raise PrefixError(u"Prefix is not defined for slug {0}".format(slug))
     return prefix
 
 
@@ -141,15 +141,21 @@ def expand_uri(short_uri, translation_map=_MAP_SLUG_TO_PREFIX, context=None):
         return short_uri
     try:
         slug, item = short_uri.split(":")
-        local_map = {}
-        if translation_map is not None:
-            local_map.update(translation_map)
-        if context is not None:
-            local_map.update(context)
-        prefix = slug_to_prefix(slug, local_map)
-        return "{0}{1}".format(prefix, item)
     except ValueError:
         return short_uri
+
+    local_map = {}
+    if translation_map is not None:
+        local_map.update(translation_map)
+    if context is not None:
+        local_map.update(context)
+
+    if slug not in local_map:
+        return short_uri
+
+    prefix = slug_to_prefix(slug, local_map)
+
+    return u"{0}{1}".format(prefix, item)
 
 
 def normalize_uri(uri, mode, shorten_uri_function=shorten_uri):
@@ -157,7 +163,7 @@ def normalize_uri(uri, mode, shorten_uri_function=shorten_uri):
         return shorten_uri_function(uri)
     elif mode == EXPAND:
         return expand_uri(uri)
-    raise InvalidModeForNormalizeUriError('Unrecognized mode {0:s}'.format(mode))
+    raise InvalidModeForNormalizeUriError(u'Unrecognized mode {0:s}'.format(mode))
 
 
 def expand_all_uris_recursively(instance, ctx=_MAP_SLUG_TO_PREFIX):

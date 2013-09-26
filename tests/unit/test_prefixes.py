@@ -63,6 +63,10 @@ class PrefixesTestCase(unittest.TestCase):
     def test_expand_uri_that_is_already_a_uri_with_https(self):
         self.assertEqual("https://secure", expand_uri("https://secure"))
 
+    def test_expand_uri_with_value_string_containing_double_colon(self):
+        misleading_value = "Some value: this is no CURIE"
+        self.assertEqual(misleading_value, expand_uri(misleading_value))
+
     def test_is_compressed_uri_given_a_literal(self):
         self.assertEqual(is_compressed_uri("oi"), False)
 

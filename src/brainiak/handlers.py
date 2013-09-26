@@ -423,7 +423,7 @@ class InstanceHandler(BrainiakRequestHandler):
                 edit_instance(self.query_params, instance_data)
                 status = 200
         except InvalidSchema as ex:
-            raise HTTPError(500, log_message=str(ex))
+            raise HTTPError(400, log_message=str(ex))
 
         instance_data = get_instance(self.query_params)
 

@@ -13,7 +13,7 @@ class SchemaNotFound(Exception):
 
 def get_cached_schema(query_params):
     class_object = expand_all_uris_recursively(get_schema(query_params))
-    if class_object:
+    if not class_object:
         msg = "The class definition for {0} was not found in graph {1}"
         raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['instance_uri']))
     return class_object

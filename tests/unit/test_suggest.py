@@ -329,7 +329,6 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
                                                        ["http://predicate1", "http://predicate2"])
         self.assertDictEqual(expected, instance_fields)
 
-
     def test_get_instance_fields_only_title_field(self):
         expected = {}
 
@@ -345,7 +344,6 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
                                                response_fields,
                                                response_fields_by_class)
         self.assertDictEqual(expected, instance_fields)
-
 
     @patch("brainiak.suggest.suggest._get_predicate_values", return_value=[
         {

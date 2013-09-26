@@ -1,8 +1,8 @@
 Releases
 ========
 
-Version 2.2.3 - 2013/09/25
---------------------------
+Version 2.2.3 - 2.2.4 - 2013/09/25
+-----------------------------------
 
 New features
 ____________
@@ -25,7 +25,6 @@ _____
  - During insertion of instance, property values now receive type cast.
    The mapping of json types to semantic types is still simplified. A precise mapping will be implemented in the future.
  - Removed the disk cache from Nginx.
- - The graph G1 is now known as g1
  - Remove escaping of URL parameters for the profile directive (specifies the json-schema URL) in the Content-Type header.
  - Response body of backend erros appear in log files even if the log level is not set to DEBUG
  - Removal of restricted attributes (@ and _ prefixes) from the notification sent to the backstage bus

@@ -206,14 +206,15 @@ class SuggestTestCase(TestCase):
             "http://semantica.globo.com/place/City": "Cidade"
         }
         title_fields = []  # mocked _get_title_value
-        response_fields = []  # mocked _get_instance_fields
         query_params = []  # needed to _get_instance_fields, mocked
-        fields_by_class_dict = {}  # needed to _get_instance_fields, mocked
+        response_fields = []  # needed to _get_instance_fields, mocked
+        response_fields_by_class = {}  # needed to _get_instance_fields, mocked
         class_fields = []  # needed to _get_class_fields_to_response, mocked
 
         items_response, item_count = _build_items(query_params, elasticsearch_result,
                                                   class_label_dict, title_fields,
-                                                  response_fields, fields_by_class_dict,
+                                                  response_fields,
+                                                  response_fields_by_class,
                                                   class_fields)
 
         self.assertEqual(len(items_response), 1)
@@ -316,16 +317,35 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         query_params = {}  # mocked
         instance_uri = "instance-uri"
         klass = "klass"
-        response_fields = ["http://predicate1", "http://predicate2", "http://predicate3"]
         title_field = "http://predicate3"
-        fields_by_class_dict = {}
+        response_fields = []  # ignored because response_fields_by_class is not empty for klass
+        response_fields_by_class = {"klass": ["http://predicate1", "http://predicate2"]}
 
-        instance_fields = _get_instance_fields(query_params, instance_uri, klass,
-                                               response_fields, title_field,
-                                               fields_by_class_dict)
+        instance_fields = _get_instance_fields(query_params, instance_uri,
+                                               klass, title_field,
+                                               response_fields,
+                                               response_fields_by_class)
         mocked_get_predicate_values.assert_called_with({}, "instance-uri",
                                                        ["http://predicate1", "http://predicate2"])
         self.assertDictEqual(expected, instance_fields)
+
+
+    def test_get_instance_fields_only_title_field(self):
+        expected = {}
+
+        query_params = {}
+        instance_uri = "instance-uri"
+        klass = "klass"
+        title_field = "http://predicate3"
+        response_fields = []  # ignored because response_fields_by_class is not empty for klass
+        response_fields_by_class = {"klass": ["http://predicate3"]}
+
+        instance_fields = _get_instance_fields(query_params, instance_uri,
+                                               klass, title_field,
+                                               response_fields,
+                                               response_fields_by_class)
+        self.assertDictEqual(expected, instance_fields)
+
 
     @patch("brainiak.suggest.suggest._get_predicate_values", return_value=[
         {
@@ -347,12 +367,14 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         query_params = {}  # mocked
         instance_uri = "instance-uri"
         klass = "klass"
-        response_fields = ["http://predicate1", "http://predicate2", "http://predicate3"]
         title_field = "http://predicate3"
-        fields_by_class_dict = {"klass": ["http://predicate1"]}
+        response_fields = []  # ignored because response_fields_by_class is not empty for klass
+        response_fields_by_class = {"klass": ["http://predicate1"]}
 
-        instance_fields = _get_instance_fields(query_params, instance_uri, klass,
-                                               response_fields, title_field, fields_by_class_dict)
+        instance_fields = _get_instance_fields(query_params, instance_uri,
+                                               klass, title_field,
+                                               response_fields,
+                                               response_fields_by_class)
         mocked_get_predicate_values.assert_called_with({}, "instance-uri",
                                                        ["http://predicate1"])
         self.assertDictEqual(expected, instance_fields)

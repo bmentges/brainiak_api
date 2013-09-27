@@ -114,11 +114,9 @@ namespace :deploy do
     end
 
     task :restart, :roles => :be do
-        monit.stop
         utils.askpass("brainiak")
         run "sudo /etc/init.d/brainiak-gunicorn-be restart"
         run "sudo /etc/init.d/brainiak-nginx-be restart"
-        monit.start
     end
 
     task :clean_local do

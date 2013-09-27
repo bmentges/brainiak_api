@@ -16,7 +16,7 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.2.3"
+brainiak_version = "2.2.4"
 mercury_version = "1.2.4"
 
 brainiak_endpoint = {
@@ -189,7 +189,7 @@ class BrainiakChecker(Checker):
         solr_response = requests.get(solr_url, proxies=self.proxies)
         nose.assert_equal(solr_response.status_code, 200)
         nose.assert_in('numFound="1"', solr_response.text)
-        nose.assert_in('<str name="label">Globoland</str>', solr_response.text)
+        nose.assert_in('<str name="label">Globoland: is the best</str>', solr_response.text)
 
         # Check if instance was written in ElasticSearch
         es_response = requests.get(es_url, proxies=self.proxies)

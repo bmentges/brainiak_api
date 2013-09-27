@@ -114,9 +114,11 @@ namespace :deploy do
     end
 
     task :restart, :roles => :be do
+        monit.stop if not stage.to_s.eql?('prod')
         utils.askpass("brainiak")
         run "sudo /etc/init.d/brainiak-gunicorn-be restart"
         run "sudo /etc/init.d/brainiak-nginx-be restart"
+        monit.start if not stage.to_s.eql?('prod')
     end
 
     task :clean_local do

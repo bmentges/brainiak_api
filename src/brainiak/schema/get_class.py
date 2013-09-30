@@ -298,6 +298,7 @@ def items_from_range(context, range_uri):
     predicate["datatype"] = short_range
     return predicate
 
+
 def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
     predicate_graph = binding_row["predicate_graph"]['value']

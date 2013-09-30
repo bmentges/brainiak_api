@@ -263,7 +263,7 @@ def get_predicate_datatype(class_object, expanded_predicate_name):
     if 'range' in predicate:
         return None
     # Without range it is a datatype property
-    return _MAP_JSON_TO_XSD_TYPE.get(predicate['type'], None)
+    return predicate['datatype']
 
 
 class InvalidSchema(Exception):
@@ -298,6 +298,11 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                 raise InvalidSchema(msg.format(normalized_predicate_name, instance_uri))
 
             predicate = shorten_uri(predicate_uri)
+            if is_uri(predicate_datatype):
+                typecast_template = u'"{0}"^^<{1}>'
+            else:
+                typecast_template = u'"{0}"^^{1}'
+
             if is_uri(predicate):
                 predicate = "<%s>" % predicate_uri
 
@@ -310,7 +315,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                     object_ = object_value
                 else:
                     object_value = escape_quotes(object_value)
-                    object_ = u'"{0}"^^{1}'.format(object_value, predicate_datatype)
+                    object_ = typecast_template.format(object_value, predicate_datatype)
             else:
                 # Object property
                 if is_uri(object_value):

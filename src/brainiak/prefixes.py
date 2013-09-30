@@ -118,7 +118,7 @@ def shorten_uri(uri):
 
 
 def is_uri(something):
-    if something.startswith("http://") or something.startswith("https://"):
+    if (something is not None) and (something.startswith("http://") or something.startswith("https://")):
         return True
     return False
 

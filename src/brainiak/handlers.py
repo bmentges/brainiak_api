@@ -24,6 +24,7 @@ from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
 from brainiak.prefix.get_prefixes import list_prefixes
 from brainiak.prefixes import expand_all_uris_recursively
+from brainiak.schema.get_class import SchemaNotFound
 from brainiak.suggest.suggest import do_suggest, SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.root.get_root import list_all_contexts
@@ -423,7 +424,9 @@ class InstanceHandler(BrainiakRequestHandler):
                 edit_instance(self.query_params, instance_data)
                 status = 200
         except InvalidSchema as ex:
-            raise HTTPError(500, log_message=str(ex))
+            raise HTTPError(400, log_message=str(ex))
+        except SchemaNotFound as ex:
+            raise HTTPError(404, log_message=str(ex))
 
         instance_data = get_instance(self.query_params)
 

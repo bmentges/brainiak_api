@@ -16,8 +16,8 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.2.2"
-mercury_version = "1.2.3"
+brainiak_version = "2.2.3"
+mercury_version = "1.2.4"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",
@@ -150,13 +150,16 @@ class BrainiakChecker(Checker):
         # Remove if instance exist
         self.put("place/City/globoland", "new_city.json")
         self.delete("place/City/globoland")
+
+        time.sleep(5)
+
         # SOLR read URL
         solr_host = solr_endpoint[self.environ]
         solr_relative_url = 'solr/select/?q=uri%3A%22http%3A%2F%2Fsemantica.globo.com%2Fplace%2FCity%2Fgloboland%22'
         solr_url = "{0}{1}".format(solr_host, solr_relative_url)
 
         # ElasticSearch read URL
-        es_relative_url = 'semantica.place/_search?q=_resource_id:globoland'
+        es_relative_url = 'semantica.place/http%3A%2F%2Fsemantica.globo.com%2Fplace%2FCity/http%3A%2F%2Fsemantica.globo.com%2Fplace%2FCity%2Fgloboland'
         es_host = elastic_search_endpoint[self.environ]
         es_url = "{0}{1}".format(es_host, es_relative_url)
 
@@ -168,9 +171,7 @@ class BrainiakChecker(Checker):
 
         # Check if instance does not exist in ElasticSearch
         es_response = requests.get(es_url, proxies=self.proxies)
-        nose.assert_in(es_response.status_code, [200, 404])
-        if es_response.status_code == 200:
-            nose.assert_in('"total":0', es_response.text)
+        nose.assert_in(es_response.status_code, [404])
 
         # Add instance
         response = self.put("place/City/globoland", "new_city.json")
@@ -193,7 +194,6 @@ class BrainiakChecker(Checker):
         # Check if instance was written in ElasticSearch
         es_response = requests.get(es_url, proxies=self.proxies)
         nose.assert_equal(response_after.status_code, 200)
-        nose.assert_in('"total":1', es_response.text)
 
         sys.stdout.write("\ncheck_instance_create - pass")
 
@@ -247,10 +247,10 @@ if __name__ == "__main__":
         sys.stdout.write("Run:\n   python check_deploy.py <environ>\nWhere environ in [local, dev, qa01, qa02, stg, prod]")
         exit()
 
-    sys.stdout.write("[Checking Brainiak]")
-    brainiak = BrainiakChecker(environ)
-    brainiak_functions = [function() for name, function in inspect.getmembers(brainiak) if name.startswith("check")]
-    sys.stdout.write("\n")
+    # sys.stdout.write("[Checking Brainiak]")
+    # brainiak = BrainiakChecker(environ)
+    # brainiak_functions = [function() for name, function in inspect.getmembers(brainiak) if name.startswith("check")]
+    # sys.stdout.write("\n")
 
     sys.stdout.write("[Checking New Brainiak]")
     brainiak = NewBrainiakChecker(environ)

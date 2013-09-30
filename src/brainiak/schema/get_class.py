@@ -7,8 +7,16 @@ from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO_JSON_TYPE
 
 
+class SchemaNotFound(Exception):
+    pass
+
+
 def get_cached_schema(query_params):
-    return expand_all_uris_recursively(get_schema(query_params))
+    class_object = expand_all_uris_recursively(get_schema(query_params))
+    if not class_object:
+        msg = "The class definition for {0} was not found in graph {1}"
+        raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['instance_uri']))
+    return class_object
 
 
 def get_schema(query_params):

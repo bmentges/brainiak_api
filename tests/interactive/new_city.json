@@ -6,7 +6,7 @@
         "base": "http://semantica.globo.com/base/",
         "upper": "http://semantica.globo.com/upper/"
     },
-    "upper:name": "Globoland",
+    "upper:name": "Globoland: is the best",
     "upper:fullName": "Globoland (RJ)",
     "upper:description": "City of Globo's companies. Historically known as PROJAC.",
     "place:partOfState": "base:UF_RJ",

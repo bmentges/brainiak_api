@@ -15,7 +15,7 @@ class PrefixesTestCase(unittest.TestCase):
     def test_prefix_contains_obligatory_keys(self):
         existing_keys = sorted(prefixes._MAP_SLUG_TO_PREFIX.keys())
         expected_keys = ['nodeID', 'base', 'dbpedia', 'dc', 'dct', 'ego', 'esportes',
-                         'eureka', 'event', 'foaf', 'g1', 'geo', 'glb', 'organization',
+                         'eureka', 'event', 'foaf', 'G1', 'geo', 'glb', 'organization',
                          'owl', 'person', 'place', 'rdf', 'rdfs', 'schema', 'time', 'tvg',
                          'upper', 'xsd']
         self.assertEqual(sorted(existing_keys), sorted(expected_keys))
@@ -62,6 +62,10 @@ class PrefixesTestCase(unittest.TestCase):
 
     def test_expand_uri_that_is_already_a_uri_with_https(self):
         self.assertEqual("https://secure", expand_uri("https://secure"))
+
+    def test_expand_uri_with_value_string_containing_double_colon(self):
+        misleading_value = "Some value: this is no CURIE"
+        self.assertEqual(misleading_value, expand_uri(misleading_value))
 
     def test_is_compressed_uri_given_a_literal(self):
         self.assertEqual(is_compressed_uri("oi"), False)

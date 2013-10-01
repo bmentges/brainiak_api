@@ -47,7 +47,9 @@ SUGGEST_PARAM_SCHEMA = {
             "type": "object",
             "additionalProperties": False,
             "properties": {
-                "required_fields": {"type": "boolean"},
+                "required_fields": {
+                    "type": "boolean"
+                },
                 "class_fields": {
                     "type": "array",
                     "items": {"type": "string", "format": "uri"},
@@ -84,7 +86,7 @@ SUGGEST_PARAM_SCHEMA = {
                     "items": {"type": "string", "format": "uri"},
                     "minItems": 1,
                     "uniqueItems": True
-                }
+                },
             }
         }
 
@@ -265,7 +267,7 @@ def _get_response_fields(query_params, response_params, classes, class_graph_dic
 
     response_fields.update(title_fields)
 
-    if "required_fields" not in response_params or response_params["response_fields"]:
+    if "required_fields" not in response_params or response_params["required_fields"]:
         required_fields = _get_required_fields(query_params, response_params, classes, class_graph_dict)
         response_fields.update(required_fields)
     else:

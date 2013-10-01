@@ -207,13 +207,11 @@ class SuggestTestCase(TestCase):
         }
         title_fields = []  # mocked _get_title_value
         query_params = []  # needed to _get_instance_fields, mocked
-        response_fields = []  # needed to _get_instance_fields, mocked
         response_fields_by_class = {}  # needed to _get_instance_fields, mocked
         class_fields = []  # needed to _get_class_fields_to_response, mocked
 
         items_response, item_count = _build_items(query_params, elasticsearch_result,
                                                   class_label_dict, title_fields,
-                                                  response_fields,
                                                   response_fields_by_class,
                                                   class_fields)
 
@@ -318,12 +316,10 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         instance_uri = "instance-uri"
         klass = "klass"
         title_field = "http://predicate3"
-        response_fields = []  # ignored because response_fields_by_class is not empty for klass
         response_fields_by_class = {"klass": ["http://predicate1", "http://predicate2"]}
 
         instance_fields = _get_instance_fields(query_params, instance_uri,
                                                klass, title_field,
-                                               response_fields,
                                                response_fields_by_class)
         mocked_get_predicate_values.assert_called_with({}, "instance-uri",
                                                        ["http://predicate1", "http://predicate2"])
@@ -336,12 +332,10 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         instance_uri = "instance-uri"
         klass = "klass"
         title_field = "http://predicate3"
-        response_fields = []  # ignored because response_fields_by_class is not empty for klass
         response_fields_by_class = {"klass": ["http://predicate3"]}
 
         instance_fields = _get_instance_fields(query_params, instance_uri,
                                                klass, title_field,
-                                               response_fields,
                                                response_fields_by_class)
         self.assertDictEqual(expected, instance_fields)
 
@@ -366,23 +360,23 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         instance_uri = "instance-uri"
         klass = "klass"
         title_field = "http://predicate3"
-        response_fields = []  # ignored because response_fields_by_class is not empty for klass
         response_fields_by_class = {"klass": ["http://predicate1"]}
 
         instance_fields = _get_instance_fields(query_params, instance_uri,
                                                klass, title_field,
-                                               response_fields,
                                                response_fields_by_class)
         mocked_get_predicate_values.assert_called_with({}, "instance-uri",
                                                        ["http://predicate1"])
         self.assertDictEqual(expected, instance_fields)
 
     def test_get_response_fields_from_classes_dict(self):
-        expected_dict = {
-            "type1": ["field1", "field2"],
-            "type2": ["field2", "field3"]
-        }
+        expected_dict_type1 = ["field1", "field2", "field4"]
+        expected_dict_type2 = ["field2", "field3", "field4"]
+        expected_dict_type3 = ["field4"]
+
         expected_set = set(["field1", "field2", "field3"])
+        response_fields = set(["field4"])
+        classes = ["type1", "type2", "type3"]
 
         fields_by_class_list = [
             {
@@ -395,17 +389,24 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
             }
         ]
 
-        response_dict, response_set = _get_response_fields_from_classes_dict(fields_by_class_list)
-        self.assertEqual(expected_dict, response_dict)
+        response_dict, response_set = _get_response_fields_from_classes_dict(fields_by_class_list, response_fields, classes)
+        self.assertEqual(sorted(response_dict["type1"]), sorted(expected_dict_type1))
+        self.assertEqual(sorted(response_dict["type2"]), sorted(expected_dict_type2))
+        self.assertEqual(sorted(response_dict["type3"]), sorted(expected_dict_type3))
         self.assertEqual(expected_set, response_set)
 
     def test_get_response_fields_from_classes_dict_empty(self):
-        expected_dict = {}
+        expected_dict = {
+            "type": ["field1"]
+        }
         expected_set = set([])
+        response_fields = set(["field1"])
+        classes = ["type"]
 
         fields_by_class_list = []
 
-        response_dict, response_set = _get_response_fields_from_classes_dict(fields_by_class_list)
+        response_dict, response_set = _get_response_fields_from_classes_dict(fields_by_class_list,
+                                                                             response_fields, classes)
         self.assertEqual(expected_dict, response_dict)
         self.assertEqual(expected_set, response_set)
 

@@ -76,7 +76,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                    'graph': 'test',
                                    'title': u'Nome',
                                    'type': 'string',
-                                   'format': 'xsd:string'}
+                                   'datatype': 'xsd:string'}
         name = u'http://test/person/gender'
         predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/name'},
                      u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
@@ -242,7 +242,8 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                 'graph': 'http://test.graph/',
                 'title': u'Creation Date',
                 'type': 'string',
-                'format': 'date'
+                'format': 'date',
+                'datatype': 'xsd:dateTime'
             }
         }
 

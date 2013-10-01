@@ -108,15 +108,14 @@ def do_suggest(query_params, suggest_params):
     indexes = ["semantica." + uri_to_slug(graph) for graph in graphs]
 
     compressed_result = compress_keys_and_values(range_result)
-    class_label_dict = _build_class_label_dict(compressed_result)
+    class_label_dict, class_graph_dict = _build_class_label_and_class_graph_dicts(compressed_result)
 
     title_fields = [RDFS_LABEL]
     title_fields += _get_subproperties(query_params, RDFS_LABEL)
     search_fields = list(set(_get_search_fields(query_params, suggest_params) + title_fields))
 
-    response_fields, response_fields_by_class = _get_response_fields(query_params,
-                                                                     response_params,
-                                                                     classes, title_fields)
+    response_fields, response_fields_by_class, required_fields = _get_response_fields(
+        query_params, response_params, classes, class_graph_dict, title_fields)
 
     request_body = _build_body_query(query_params, search_params, classes,
                                      search_fields, response_fields)
@@ -126,8 +125,7 @@ def do_suggest(query_params, suggest_params):
 
     items, item_count = _build_items(query_params, elasticsearch_result, class_label_dict,
                                      title_fields, response_fields_by_class,
-                                     class_fields)
-
+                                     class_fields, required_fields)
     if not items:
         return {}
     else:
@@ -261,11 +259,17 @@ def _get_class_fields_value(query_params, classes, meta_field):
     return class_field_values
 
 
-def _get_response_fields(query_params, response_params, classes, title_fields):
+def _get_response_fields(query_params, response_params, classes, class_graph_dict, title_fields):
     response_fields = set([])
     response_fields_by_class = {}
 
     response_fields.update(title_fields)
+
+    if "required_fields" not in response_params or response_params["response_fields"]:
+        required_fields = _get_required_fields(query_params, response_params, classes, class_graph_dict)
+        response_fields.update(required_fields)
+    else:
+        required_fields = []
 
     meta_fields = _get_response_fields_from_meta_fields(query_params, response_params, classes)
     response_fields.update(meta_fields)
@@ -280,7 +284,30 @@ def _get_response_fields(query_params, response_params, classes, title_fields):
 
     response_fields = list(response_fields)
 
-    return response_fields, response_fields_by_class
+    return response_fields, response_fields_by_class, required_fields
+
+
+def _get_required_fields(query_params, response_params, classes, class_graph_dict):
+    from brainiak.schema.get_class import get_cached_schema
+    required_fields = set([])
+
+    for klass in classes:
+        query_params["class_uri"] = klass
+        query_params["graph_uri"] = class_graph_dict[klass]
+        schema = get_cached_schema(query_params)
+        required_from_class = _get_required_fields_from_schema_response(schema)
+        required_fields.update(required_from_class)
+
+    return required_fields
+
+
+def _get_required_fields_from_schema_response(schema):
+    required_fields = []
+    for prop in schema["properties"]:
+        if "required" in schema["properties"][prop] and schema["properties"][prop]["required"]:
+            required_fields.append(prop)
+
+    return required_fields
 
 
 def _get_response_fields_from_meta_fields(query_params, response_params, classes):
@@ -341,11 +368,13 @@ def _build_type_filters(classes):
     return type_filters
 
 
-def _build_class_label_dict(compressed_result):
+def _build_class_label_and_class_graph_dicts(compressed_result):
     class_label_dict = {}
+    class_graph_dict = {}
     for result in compressed_result:
         class_label_dict[result["range"]] = result["range_label"]
-    return class_label_dict
+        class_graph_dict[result["range"]] = result["range_graph"]
+    return class_label_dict, class_graph_dict
 
 
 def _get_title_value(elasticsearch_fields, title_fields):
@@ -383,8 +412,7 @@ def _get_predicate_values(query_params, instance_uri, predicates):
     return compress_keys_and_values(query_response)
 
 
-def _get_instance_fields(query_params, instance_uri, klass, title_field, fields_by_class_dict):
-    # TODO set required
+def _get_instance_fields(query_params, instance_uri, klass, title_field, fields_by_class_dict, required_fields):
 
     instance_fields = {}
 
@@ -407,11 +435,17 @@ def _get_instance_fields(query_params, instance_uri, klass, title_field, fields_
                 "predicate_id": value["predicate"],
                 "predicate_title": value["predicate_title"],
             }
+            if value["predicate"] in required_fields:
+                instance_field_dict["required"] = True
+            else:
+                instance_field_dict["required"] = False
+
             if "object_value_label" in value:
                 instance_field_dict["object_id"] = value["object_value"]
                 instance_field_dict["object_title"] = value["object_value_label"]
             else:
                 instance_field_dict["object_title"] = value["object_value"]
+
 
             instance_fields_list.append(instance_field_dict)
         instance_fields["instance_fields"] = instance_fields_list
@@ -432,8 +466,9 @@ def _get_class_fields_to_response(query_params, classes, class_fields):
         return class_fields_to_return
 
 
-def _build_items(query_params, result, class_label_dict, title_fields,
-                 fields_by_class_dict, class_fields):
+def _build_items(query_params, result, class_label_dict,
+                 title_fields, fields_by_class_dict,
+                 class_fields, required_fields):
     items = []
     item_count = result["hits"]["total"]
     if item_count:
@@ -448,7 +483,8 @@ def _build_items(query_params, result, class_label_dict, title_fields,
                 "type_title": class_label_dict[klass]
             }
             instance_fields = _get_instance_fields(query_params, instance_uri, klass,
-                                                   title_field, fields_by_class_dict)
+                                                   title_field, fields_by_class_dict,
+                                                   required_fields)
             item_dict.update(instance_fields)
 
             class_fields_to_response = _get_class_fields_to_response(query_params, [klass], class_fields)

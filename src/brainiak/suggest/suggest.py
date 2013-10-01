@@ -129,7 +129,7 @@ def do_suggest(query_params, suggest_params):
                                      class_fields)
 
     if not items:
-        return None
+        return {}
     else:
         return build_json(items, item_count, query_params)
 

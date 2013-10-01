@@ -126,7 +126,8 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         response = self.fetch('/_suggest',
                               method='POST',
                               body=json.dumps(zero_results_parameters))
-        self.assertEqual(response.code, 404)
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, '{}')
 
     def test_suggest_without_required_param_target(self):
         response = self.fetch('/_suggest',

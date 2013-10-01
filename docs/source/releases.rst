@@ -1,6 +1,28 @@
 Releases
 ========
 
+Version 2.2.5 - 2013//
+-----------------------------------
+
+New features
+____________
+
+
+Refactor
+________
+
+ - #10645 Adding ``datatype`` property to the schema (class description), documenting
+   precisely the semantic type of the range of a datatype predicate.
+   The ``format`` field was used to convey that information, it is no longer used for this purpose.
+
+
+Fixes
+_____
+
+ - Adding unicode conversion to queries, that would break with special unicode chars.
+
+
+
 Version 2.2.3 - 2.2.4 - 2013/09/25
 -----------------------------------
 

@@ -32,7 +32,7 @@ def create_instance(query_params, instance_data, instance_uri=None):
     return (instance_uri, instance_id)
 
 
-QUERY_INSERT_TRIPLES = """
+QUERY_INSERT_TRIPLES = u"""
 %(prefix)s
 INSERT DATA INTO <%(graph_uri)s>
 {

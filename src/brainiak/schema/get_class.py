@@ -292,9 +292,11 @@ def _query_superclasses(query_params):
 def items_from_range(context, range_uri):
     short_range = context.normalize_uri_value(range_uri)
     if short_range == 'xsd:date' or short_range == 'xsd:dateTime':
-        return {"type": "string", "format": "date"}
+        predicate = {"type": "string", "format": "date"}
     else:
-        return {"type": _MAP_XSD_TO_JSON_TYPE.get(short_range, 'object'), "format": short_range}
+        predicate = {"type": _MAP_XSD_TO_JSON_TYPE.get(short_range, 'object')}
+    predicate["datatype"] = short_range
+    return predicate
 
 
 def assemble_predicate(predicate_uri, binding_row, cardinalities, context):

@@ -164,8 +164,8 @@ def build_class_url(query_params, include_query_string=False):
     class_url = "{0}://{1}/{2}/{3}".format(
         query_params['request'].protocol,
         query_params['request'].host,
-        query_params['context_name'],
-        query_params['class_name'])
+        query_params.get('context_name', ''),
+        query_params.get('class_name', ''))
     if include_query_string:
         query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
         class_url = assemble_url(class_url, query_string)

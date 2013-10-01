@@ -48,7 +48,7 @@ def assemble_schema_dict(query_params, normalized_uri, title, predicates, contex
     query_params.resource_url = query_params.base_url
     base_url = remove_last_slash(query_params.base_url)
 
-    href = assemble_url(base_url, {"class_prefix": query_params["class_prefix"]})
+    href = assemble_url(base_url, {"class_prefix": query_params.get("class_prefix", "")})
 
     links = [
         {

@@ -5,11 +5,11 @@ from mock import patch
 from tornado.web import HTTPError
 
 from brainiak.suggest.suggest import _build_body_query, _validate_class_restriction, \
-    _validate_graph_restriction, _build_type_filters, _build_class_label_dict, \
+    _validate_graph_restriction, _build_type_filters, _build_class_label_and_class_graph_dicts, \
     _build_items, _get_search_fields, _get_title_value, _build_class_fields_query, \
     _get_response_fields_from_meta_fields, _build_predicate_values_query, \
     _get_instance_fields, _get_response_fields_from_classes_dict, \
-    _get_class_fields_to_response
+    _get_class_fields_to_response, _get_required_fields_from_schema_response
 
 
 class SuggestTestCase(TestCase):
@@ -145,11 +145,18 @@ class SuggestTestCase(TestCase):
         response = _build_type_filters(classes)
         self.assertEqual(expected, response)
 
-    def test_build_class_label_dict(self):
-        expected = {
+    def test_build_class_label_and_graph_dict(self):
+        class_label_dict = {
             "class1": "label1",
             "class2": "label2"
         }
+        class_graph_dict = {
+            "class1": "graph1",
+            "class2": "graph2"
+        }
+
+        expected = class_label_dict, class_graph_dict
+
         compressed_result = [
             {
                 "range": "class1",
@@ -162,7 +169,7 @@ class SuggestTestCase(TestCase):
                 "range_label": "label2"
             }
         ]
-        response = _build_class_label_dict(compressed_result)
+        response = _build_class_label_and_class_graph_dicts(compressed_result)
         self.assertEqual(expected, response)
 
     @patch("brainiak.suggest.suggest._get_class_fields_to_response", return_value={})
@@ -207,13 +214,14 @@ class SuggestTestCase(TestCase):
         }
         title_fields = []  # mocked _get_title_value
         query_params = []  # needed to _get_instance_fields, mocked
+        required_fields = []  # needed to _get_instance_fields, mocked
         response_fields_by_class = {}  # needed to _get_instance_fields, mocked
         class_fields = []  # needed to _get_class_fields_to_response, mocked
 
         items_response, item_count = _build_items(query_params, elasticsearch_result,
                                                   class_label_dict, title_fields,
                                                   response_fields_by_class,
-                                                  class_fields)
+                                                  class_fields, required_fields)
 
         self.assertEqual(len(items_response), 1)
         self.assertDictEqual(expected, items_response[0])
@@ -317,10 +325,11 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         klass = "klass"
         title_field = "http://predicate3"
         response_fields_by_class = {"klass": ["http://predicate1", "http://predicate2"]}
+        required_fields = []
 
         instance_fields = _get_instance_fields(query_params, instance_uri,
                                                klass, title_field,
-                                               response_fields_by_class)
+                                               response_fields_by_class, required_fields)
         mocked_get_predicate_values.assert_called_with({}, "instance-uri",
                                                        ["http://predicate1", "http://predicate2"])
         self.assertDictEqual(expected, instance_fields)
@@ -332,11 +341,13 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         instance_uri = "instance-uri"
         klass = "klass"
         title_field = "http://predicate3"
+        required_fields = []
         response_fields_by_class = {"klass": ["http://predicate3"]}
 
         instance_fields = _get_instance_fields(query_params, instance_uri,
                                                klass, title_field,
-                                               response_fields_by_class)
+                                               response_fields_by_class,
+                                               required_fields)
         self.assertDictEqual(expected, instance_fields)
 
     @patch("brainiak.suggest.suggest._get_predicate_values", return_value=[
@@ -357,6 +368,7 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
             ]
         }
         query_params = {}  # mocked
+        required_fields = []  # mocked
         instance_uri = "instance-uri"
         klass = "klass"
         title_field = "http://predicate3"
@@ -364,7 +376,8 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
 
         instance_fields = _get_instance_fields(query_params, instance_uri,
                                                klass, title_field,
-                                               response_fields_by_class)
+                                               response_fields_by_class,
+                                               required_fields)
         mocked_get_predicate_values.assert_called_with({}, "instance-uri",
                                                        ["http://predicate1"])
         self.assertDictEqual(expected, instance_fields)
@@ -432,4 +445,22 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         class_fields = ["field1"]
 
         response = _get_class_fields_to_response(query_params, classes, class_fields)
+        self.assertEqual(expected, response)
+
+    def test_get_required_fields_from_schema_response(self):
+        expected = ["prop2"]
+        schema = {
+            "properties": {
+                "prop1": {
+                    "graph": "",
+                    "range": ""
+                },
+                "prop2": {
+                    "graph": "",
+                    "range": "",
+                    "required": True
+                }
+            }
+        }
+        response = _get_required_fields_from_schema_response(schema)
         self.assertEqual(expected, response)

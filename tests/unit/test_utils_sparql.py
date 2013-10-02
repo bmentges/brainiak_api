@@ -653,3 +653,33 @@ class POTestCase(unittest.TestCase):
         expected_object_value = 'Aos 15 anos, lan\xe7ou o 1\xba disco com o sucesso \\"Musa do ver\xe3o\\"'
 
         self.assertEqual(expected_object_value, escape_quotes(object_value))
+
+
+class GetPredicatedDatatypeTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.class_object = {
+            "properties": {
+                "http://www.w3.org/2000/01/rdf-schema#label": {
+                    "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral",
+                },
+                "http://example.onto/description": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "http://example.onto/partOfCountry": {
+                    "range": {}
+                }
+            }
+        }
+
+    def test_get_predicate_datatype_object_property(self):
+        result = get_predicate_datatype(self.class_object, "http://example.onto/partOfCountry")
+        self.assertIsNone(result)
+
+    def test_get_predicate_datatype_xml_literal(self):
+        result = get_predicate_datatype(self.class_object, "http://www.w3.org/2000/01/rdf-schema#label")
+        self.assertIsNone(result)
+
+    def test_get_predicate_datatype_xsd_string(self):
+        result = get_predicate_datatype(self.class_object, "http://example.onto/description")
+        self.assertIsNotNone(result)

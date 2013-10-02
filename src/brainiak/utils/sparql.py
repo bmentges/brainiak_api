@@ -9,6 +9,7 @@ from brainiak.type_mapper import _MAP_JSON_TO_XSD_TYPE
 PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
 PATTERN_O = re.compile(r'o(?P<index>\d*)$')  # o, o1, o2, o3 ...
 
+XML_LITERAL = u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'
 
 def get_super_properties(context, bindings):
     super_properties = {}
@@ -263,8 +264,12 @@ def get_predicate_datatype(class_object, expanded_predicate_name):
     if 'range' in predicate:
         return None
     # Without range it is a datatype property
-    return predicate['datatype']
 
+    # Typecasted XMLLiteral is causing bugs on triplestore
+    if predicate['datatype'] != XML_LITERAL:
+        return predicate['datatype']
+    else:
+        return None
 
 class InvalidSchema(Exception):
     pass

@@ -310,13 +310,15 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
                 {
                     "predicate_id": "http://predicate1",
                     "predicate_title": "predicate1_title",
-                    "object_title": "predicate1_value"
+                    "object_title": "predicate1_value",
+                    "required": True
                 },
                 {
                     "predicate_id": "http://predicate2",
                     "predicate_title": "predicate2_title",
                     "object_id": "http://predicate2_value",
-                    "object_title": "predicate2_value_label"
+                    "object_title": "predicate2_value_label",
+                    "required": False
                 }
             ]
         }
@@ -325,7 +327,7 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
         klass = "klass"
         title_field = "http://predicate3"
         response_fields_by_class = {"klass": ["http://predicate1", "http://predicate2"]}
-        required_fields = []
+        required_fields = ["http://predicate1"]
 
         instance_fields = _get_instance_fields(query_params, instance_uri,
                                                klass, title_field,
@@ -363,7 +365,8 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
                 {
                     "predicate_id": "http://predicate1",
                     "predicate_title": "predicate1_title",
-                    "object_title": "predicate1_value"
+                    "object_title": "predicate1_value",
+                    "required": False
                 }
             ]
         }

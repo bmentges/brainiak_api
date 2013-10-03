@@ -678,8 +678,25 @@ class GetPredicatedDatatypeTestCase(unittest.TestCase):
 
     def test_get_predicate_datatype_xml_literal(self):
         result = get_predicate_datatype(self.class_object, "http://www.w3.org/2000/01/rdf-schema#label")
-        self.assertIsNone(result)
+        self.assertEqual(result, "")
 
     def test_get_predicate_datatype_xsd_string(self):
+        expected = u"http://www.w3.org/2001/XMLSchema#string"
         result = get_predicate_datatype(self.class_object, "http://example.onto/description")
         self.assertIsNotNone(result)
+        self.assertEqual(result, expected)
+
+
+class ConvertBooleanTestCase(unittest.TestCase):
+
+    def test_convert_0(self):
+        result = convert_boolean("1")
+        self.assertEqual(result, "true")
+
+    def test_convert_1(self):
+        result = convert_boolean("0")
+        self.assertEqual(result, "false")
+
+    def test_convert_other_value(self):
+        result = convert_boolean("aaa")
+        self.assertEqual(result, "aaa")

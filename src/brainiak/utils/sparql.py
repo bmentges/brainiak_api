@@ -10,6 +10,9 @@ PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
 PATTERN_O = re.compile(r'o(?P<index>\d*)$')  # o, o1, o2, o3 ...
 
 XML_LITERAL = u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'
+XSD_BOOLEAN = u'http://www.w3.org/2001/XMLSchema#boolean'
+XSD_BOOLEAN_SHORT = u'xsd:boolean'
+
 
 def get_super_properties(context, bindings):
     super_properties = {}
@@ -269,7 +272,7 @@ def get_predicate_datatype(class_object, expanded_predicate_name):
     if predicate['datatype'] != XML_LITERAL:
         return predicate['datatype']
     else:
-        return None
+        return ""
 
 class InvalidSchema(Exception):
     pass
@@ -303,10 +306,6 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                 raise InvalidSchema(msg.format(normalized_predicate_name, instance_uri))
 
             predicate = shorten_uri(predicate_uri)
-            if is_uri(predicate_datatype):
-                typecast_template = u'"{0}"^^<{1}>'
-            else:
-                typecast_template = u'"{0}"^^{1}'
 
             if is_uri(predicate):
                 predicate = "<%s>" % predicate_uri
@@ -314,12 +313,24 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
             # object: can be uri (compressed or not) or literal
 
             if predicate_datatype is not None:
+
                 # Datatype property
                 # TODO-2: if literal is string and not i18n, add lang
                 if has_lang(object_value):
                     object_ = object_value
                 else:
                     object_value = escape_quotes(object_value)
+
+                    if predicate_datatype == XSD_BOOLEAN or predicate_datatype == XSD_BOOLEAN_SHORT:
+                        object_value = convert_boolean(object_value)
+
+                    if is_uri(predicate_datatype):
+                        typecast_template = u'"{0}"^^<{1}>'
+                    elif predicate_datatype:
+                        typecast_template = u'"{0}"^^{1}'
+                    else:
+                        typecast_template = u'"{0}"{1}'  # {1} empty not typecasted
+
                     object_ = typecast_template.format(object_value, predicate_datatype)
             else:
                 # Object property
@@ -348,6 +359,15 @@ def escape_quotes(object_value):
         escaped_value = escaped_value.replace(char, ESCAPED_QUOTES[char])
 
     return escaped_value
+
+
+def convert_boolean(object_value):
+    if object_value == '0':
+        return "false"
+    elif object_value == '1':
+        return "true"
+    else:
+        return object_value
 
 
 def create_implicit_triples(instance_uri, class_uri):

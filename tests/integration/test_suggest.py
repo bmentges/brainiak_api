@@ -91,12 +91,14 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
                     {
                         u"predicate_id": u"http://example.onto/description",
                         u"predicate_title": u"Description of a place",
-                        u"object_title": u"York is a walled city, situated at the confluence of the Rivers Ouse and Foss in North Yorkshire, England."
+                        u"object_title": u"York is a walled city, situated at the confluence of the Rivers Ouse and Foss in North Yorkshire, England.",
+                        u"required": False
                     },
                     {
                         u"predicate_id": u"http://example.onto/nickname",
                         u"predicate_title": u"Nickname of a place",
-                        u"object_title": u"City of York"
+                        u"object_title": u"City of York",
+                        u"required": False
                     }
                 ]
             }

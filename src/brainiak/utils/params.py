@@ -65,7 +65,7 @@ LIST_PARAMS = PAGING_PARAMS + DefaultParamsDict(sort_by="",
                                                 sort_order="ASC",
                                                 sort_include_empty="1")
 
-INSTANCE_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri', 'instance_prefix', 'instance_uri', 'expand_object_properties')
+INSTANCE_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri', 'instance_prefix', 'instance_uri', 'expand_object_properties', 'meta_properties')
 
 CLASS_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri')
 
@@ -87,7 +87,9 @@ VALID_PARAMS = ['lang',
                 'purge',
                 'do_item_count',
                 'direct_instances_only',
-                'expand_object_properties']
+                'expand_object_properties',
+                'meta_properties'
+               ]
 
 VALID_PATTERNS = (
     PATTERN_P,

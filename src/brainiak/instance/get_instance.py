@@ -81,21 +81,26 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
                                   normalize_values=query_params['expand_uri_values'])
 
     expand_object_properties = query_params.get("expand_object_properties") == "1"
+    include_meta_properties = query_params.get("meta_properties", "1") == "1"
     items = build_items_dict(context, query_result_dict['results']['bindings'], query_params["class_uri"], expand_object_properties)
-    class_url = build_class_url(query_params)
-    query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
-    instance = {
-        "_base_url": query_params.base_url,
-        "_resource_id": query_params['instance_id'],
-        "@id": query_params['instance_uri'],
-        "@type": context.normalize_uri_value(query_params["class_uri"]),
-        "@context": context.context,
-    }
 
-    check_and_clean_rdftype(instance['@type'], items)
+    if include_meta_properties:
+        class_url = build_class_url(query_params)
+        query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
+        instance = {
+            "_base_url": query_params.base_url,
+            "_resource_id": query_params['instance_id'],
+            "@id": query_params['instance_uri'],
+            "@type": context.normalize_uri_value(query_params["class_uri"]),
+            "@context": context.context,
+        }
 
-    if 'instance_prefix' in query_params:
-        instance["_instance_prefix"] = query_params['instance_prefix']
+        check_and_clean_rdftype(instance['@type'], items)
+
+        if 'instance_prefix' in query_params:
+            instance["_instance_prefix"] = query_params['instance_prefix']
+    else:
+        instance = {}
 
     instance.update(items)
     return instance

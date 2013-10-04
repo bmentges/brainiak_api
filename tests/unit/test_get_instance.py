@@ -130,12 +130,14 @@ class AssembleTestCase(unittest.TestCase):
     def tearDown(self):
         get_instance.build_items_dict = self.original_build_items
 
-    def prepare_params(self, instance_uri="http://mock.test.com/schema/klass/instance"):
+    def prepare_params(self, instance_uri="http://mock.test.com/schema/klass/instance", meta_properties=None):
         param_dict = {'context_name': 'schema',
                       'class_name': 'klass',
                       'instance_prefix': 'http://schema.org/klass/',
                       'instance_id': 'instance',
                       'expand_uri': SHORTEN}
+        if meta_properties:
+            param_dict.update({'meta_properties': meta_properties})
         handler = MockHandler(uri=instance_uri, **param_dict)
         self.query_params = ParamDict(handler, **param_dict)
         self.query_result_dict = {'results': {'bindings': []}}
@@ -161,6 +163,12 @@ class AssembleTestCase(unittest.TestCase):
         context = MemorizeContext(normalize_keys=EXPAND, normalize_values=EXPAND)
         computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, context)
         self.assertEqual(computed["@type"], "http://schema.org/klass")
+
+    def test_assemble_instance_json_with_no_meta_properties(self):
+        self.prepare_params(meta_properties="0")
+        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict)
+        expected = {}  # because build_items is empty
+        self.assertEqual(computed, expected)
 
 
 class BuildItemsDictTestCase(unittest.TestCase):

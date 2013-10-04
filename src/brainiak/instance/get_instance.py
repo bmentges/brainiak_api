@@ -81,7 +81,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
                                   normalize_values=query_params['expand_uri_values'])
 
     expand_object_properties = query_params.get("expand_object_properties") == "1"
-    include_meta_properties = query_params.get("meta_properties", "1") == "1"
+    include_meta_properties = query_params.get("meta_properties") is None or query_params.get("meta_properties") == "1"
     items = build_items_dict(context, query_result_dict['results']['bindings'], query_params["class_uri"], expand_object_properties)
 
     if include_meta_properties:

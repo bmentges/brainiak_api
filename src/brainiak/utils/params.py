@@ -77,19 +77,20 @@ def normalize_last_slash(url):
 
 
 # Define possible params and their processing order
-VALID_PARAMS = ['lang',
-                'expand_uri', 'expand_uri_values', 'expand_uri_keys',
-                'graph_uri',
-                'context_name', 'class_name', 'class_prefix', 'class_uri',
-                'instance_id', 'instance_prefix', 'instance_uri',
-                'page', 'per_page',
-                'sort_by', 'sort_order', 'sort_include_empty',
-                'purge',
-                'do_item_count',
-                'direct_instances_only',
-                'expand_object_properties',
-                'meta_properties'
-               ]
+VALID_PARAMS = [
+    'lang',
+    'expand_uri', 'expand_uri_values', 'expand_uri_keys',
+    'graph_uri',
+    'context_name', 'class_name', 'class_prefix', 'class_uri',
+    'instance_id', 'instance_prefix', 'instance_uri',
+    'page', 'per_page',
+    'sort_by', 'sort_order', 'sort_include_empty',
+    'purge',
+    'do_item_count',
+    'direct_instances_only',
+    'expand_object_properties',
+    'meta_properties'
+]
 
 VALID_PATTERNS = (
     PATTERN_P,

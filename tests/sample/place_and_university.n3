@@ -39,3 +39,23 @@
                            ] ;
                rdfs:range :Country ;
                rdfs:comment "Estado está no país." .
+
+:isBasedIn a owl:ObjectProperty ;
+           rdfs:label "is based in" ;
+           rdfs:domain :ResearchGroup ;
+           rdfs:range [
+                         a owl:Class ;
+                         owl:unionOf (:University :Institute)
+                      ] .
+
+# http://test.onto/ResearchGroup
+:ResearchGroup a owl:Class ;
+               rdfs:label "Research Group".
+
+# http://test.onto/University
+:University a owl:Class ;
+            rdfs:label "University".
+
+# http://test.onto/Institute
+:Institute a owl:Class ;
+           rdfs:label "Institute".

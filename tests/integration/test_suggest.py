@@ -21,9 +21,6 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
     fixtures = ["tests/sample/animalia.n3"]
     graph_uri = "http://example.onto/"
 
-    retries = 3
-    sleep_between_retries = 1000
-
     maxDiff = None
 
     VALID_BODY_PARAMS = {

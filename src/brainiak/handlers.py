@@ -346,6 +346,7 @@ class CollectionHandler(BrainiakRequestHandler):
 
         self.query_params["instance_uri"] = instance_uri
         self.query_params["instance_id"] = instance_id
+        self.query_params["expand_object_properties"] = "1"
 
         instance_data = get_instance(self.query_params)
 
@@ -428,6 +429,7 @@ class InstanceHandler(BrainiakRequestHandler):
         except SchemaNotFound as ex:
             raise HTTPError(404, log_message=str(ex))
 
+        self.query_params["expand_object_properties"] = "1"
         instance_data = get_instance(self.query_params)
 
         if instance_data and settings.NOTIFY_BUS:

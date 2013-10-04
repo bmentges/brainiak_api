@@ -4,6 +4,9 @@ Releases
 Version 2.2.5 - 2013//
 -----------------------------------
 
+.. TODO meta_properties on releases.
+.. TODO review all other changes.
+
 New features
 ____________
 

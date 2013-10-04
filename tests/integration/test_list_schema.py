@@ -349,32 +349,32 @@ class PredicatesQueryTestCaseMultipleDomainRange(QueryTestCase):
 
     maxDiff = None
     allow_triplestore_connection = True
-    fixtures = ["tests/sample/place.n3"]
+    fixtures = ["tests/sample/place_and_university.n3"]
     graph_uri = "http://example.onto/"
 
     def test_query_predicate_multiple_ranges(self):
-        filter_ = "FILTER (?domain_class IN (<http://test.onto/ResearchGroup>))"
+        filter_ = "FILTER (?domain_class IN (<http://example.onto/ResearchGroup>))"
         params = {"filter_classes_clause": filter_}
         query = QUERY_PREDICATE_WITHOUT_LANG % params
         computed = self.query(query)['results']['bindings']
         expected = [
             {
-                "predicate": {"type": "uri", "value": "http://test.onto/isBasedIn"},
-                "predicate_graph": {"type": "uri", "value": "http://test.onto/"},
-                "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
-                "range": {"type": "uri", "value": "http://test.onto/University"},
-                "title": {"type": "literal", "value": "is based in"},
-                "range_graph": {"type": "uri", "value": "http://test.onto/"},
-                "range_label": {"type": "literal", "value": "University"}
+                u"predicate": {u"type": u"uri", u"value": u"http://example.onto/isBasedIn"},
+                u"predicate_graph": {u"type": u"uri", u"value": u"http://example.onto/"},
+                u"type": {u"type": u"uri", u"value": u"http://www.w3.org/2002/07/owl#ObjectProperty"},
+                u"range": {u"type": u"uri", u"value": u"http://example.onto/University"},
+                u"title": {u"type": u"literal", u"value": u"is based in"},
+                u"range_graph": {u"type": u"uri", u"value": u"http://example.onto/"},
+                u"range_label": {u"type": u"literal", u"value": u"University"}
             },
             {
-                "predicate": {"type": "uri", "value": "http://test.onto/isBasedIn"},
-                "predicate_graph": {"type": "uri", "value": "http://test.onto/"},
-                "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
-                "range": {"type": "uri", "value": "http://test.onto/Institute"},
-                "title": {"type": "literal", "value": "is based in"},
-                "range_graph": {"type": "uri", "value": "http://test.onto/"},
-                "range_label": {"type": "literal", "value": "Institute"}
+                u"predicate": {u"type": u"uri", u"value": u"http://example.onto/isBasedIn"},
+                u"predicate_graph": {u"type": u"uri", u"value": u"http://example.onto/"},
+                u"type": {u"type": u"uri", u"value": u"http://www.w3.org/2002/07/owl#ObjectProperty"},
+                u"range": {u"type": u"uri", u"value": u"http://example.onto/Institute"},
+                u"title": {u"type": u"literal", u"value": u"is based in"},
+                u"range_graph": {u"type": u"uri", u"value": u"http://example.onto/"},
+                u"range_label": {u"type": u"literal", u"value": u"Institute"}
             }
         ]
         self.assertEqual(sorted(expected), sorted(computed))

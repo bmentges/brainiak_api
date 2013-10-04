@@ -448,7 +448,6 @@ def _get_instance_fields(query_params, instance_uri, klass, title_field, fields_
             else:
                 instance_field_dict["object_title"] = value["object_value"]
 
-
             instance_fields_list.append(instance_field_dict)
         instance_fields["instance_fields"] = instance_fields_list
 

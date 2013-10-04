@@ -1,9 +1,7 @@
 # coding: utf-8
 import re
 import uuid
-from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, PrefixError, shorten_uri
-from brainiak.prefixes import expand_uri
-from brainiak.type_mapper import _MAP_JSON_TO_XSD_TYPE
+from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, shorten_uri
 
 
 PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
@@ -114,7 +112,7 @@ def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=Non
 
     Usage:
 
-    >>> result_dict = {'results': {'bindings': [{'key': {'type': 'some type', 'value': 'some value'}},
+    >>> result_dict = {'results': {'bindings': [{'key': {'type': 'some type', 'value': 'some value'}}, \
                                                 {'key': {'type': 'some type', 'value': 'another value'}}]}}
     >>> compress_keys_and_values(result_dict)
     [{'key': 'some value'}, {'key': 'another value'}]
@@ -199,8 +197,8 @@ def some_triples_deleted(result_dict, graph_uri):
 
     If no patterns matched, raise an Exception, probably Virtuoso message changed
 
-    >>> result_dict = { "head": { "link": [], "vars": ["callret-0"] }, "results": { "distinct": false, "ordered": true, "bindings": [{ "callret-0": { "type": "literal", "value": "Delete from <a>, 1 (or less) triples -- done" }} ] } }
-    >>> zero_triples_deleted(result_dict)
+    >>> result_dict = { "head": { "link": [], "vars": ["callret-0"] }, "results": { "distinct": False, "ordered": True, "bindings": [{ "callret-0": { "type": "literal", "value": "Delete from <a>, 1 (or less) triples -- done" }} ] } }
+    >>> some_triples_deleted(result_dict)
     >>> True
 
     """
@@ -273,6 +271,7 @@ def get_predicate_datatype(class_object, expanded_predicate_name):
         return predicate['datatype']
     else:
         return ""
+
 
 class InvalidSchema(Exception):
     pass

@@ -57,16 +57,13 @@ class GetContextTestCase(unittest.TestCase):
         query_result_dict = {'results': {'bindings': [item]}}
         computed = get_context.assemble_list_json(params, query_result_dict)
 
-        expected_context = {
-            '@language': settings.DEFAULT_LANG,
-            'dbpedia': 'http://dbpedia.org/ontology/'
-        }
+        expected_context = {'@language': settings.DEFAULT_LANG}
         expected_items = [
             {
-                '@id': 'dbpedia:Company',
-                'resource_id': 'Company',
+                '@id': u'http://dbpedia.org/ontology/Company',
+                'resource_id': u'Company',
                 'title': u'Company',
-                'class_prefix': 'dbpedia'
+                'class_prefix': u'http://dbpedia.org/ontology/'
             }
         ]
 

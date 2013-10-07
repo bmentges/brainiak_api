@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Caching &mdash; brainiak 2.2.3 documentation</title>
+    <title>Caching &mdash; brainiak 2.2.4 documentation</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '2.2.3',
+        VERSION:     '2.2.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.2.3 documentation" href="../index.html" />
+    <link rel="top" title="brainiak 2.2.4 documentation" href="../index.html" />
     <link rel="up" title="Services" href="../services.html" />
     <link rel="next" title="Internationalization" href="i18n.html" />
     <link rel="prev" title="Handling Errors" href="errors.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.2.3</b></span>
+      <span class="navbar-text pull-left"><b>2.2.4</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -66,7 +66,8 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../releases.html">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-2-3-2013-09-25">Version 2.2.3 - 2013/09/25</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-2-5-2013">Version 2.2.5 - 2013//</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-2-3-2-2-4-2013-09-25">Version 2.2.3 - 2.2.4 - 2013/09/25</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-2-0-2-2-2-2013-08-29">Version 2.2.0 - 2.2.2 - 2013/08/29</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a></li>
@@ -168,16 +169,7 @@ To check if cache is enabled for some resource, run:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X OPTIONS http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 204 No Content
-Server: nginx
-Date: Tue, 24 Sep 2013 18:07:52 GMT
-Content-Type: text/html; charset=UTF-8
-Content-Length: 0
-Connection: keep-alive
-Access-Control-Allow-Methods: GET, OPTIONS, PURGE
-Access-Control-Max-Age: 86400
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Headers: Content-Type, Authorization
+<div class="highlight-text"><div class="highlight"><pre>
 </pre></div>
 </div>
 <p>If cache is enabled, <tt class="docutils literal"><span class="pre">PURGE</span></tt> will be shown on the response header <tt class="docutils literal"><span class="pre">Access-Control-Allow-Methods</span></tt>.</p>
@@ -198,32 +190,14 @@ Access-Control-Allow-Headers: Content-Type, Authorization
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X GET http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
-Server: nginx
-Date: Tue, 24 Sep 2013 18:07:53 GMT
-Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
-Content-Length: 999
-Connection: keep-alive
-X-Cache: MISS from brainiak.semantica.dev.globoi.com
-Last-Modified: Tue, 24 Sep 2013 15:07:53 -0300
-Etag: &quot;afb1664adb66bb724b4532e60df91f92594fb457&quot;
-Access-Control-Allow-Origin: *
+<div class="highlight-text"><div class="highlight"><pre>
 </pre></div>
 </div>
 <p>From the second time on, <tt class="docutils literal"><span class="pre">X-Cache</span></tt> will contain <tt class="docutils literal"><span class="pre">HIT</span></tt> and <tt class="docutils literal"><span class="pre">Last-Modified</span></tt> will be the same:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X GET http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
-Server: nginx
-Date: Tue, 24 Sep 2013 18:07:54 GMT
-Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
-Content-Length: 999
-Connection: keep-alive
-X-Cache: HIT from brainiak.semantica.dev.globoi.com
-Last-Modified: Tue, 24 Sep 2013 15:07:53 -0300
-Etag: &quot;1bdff4eddf3bc8d0368a221d13c6660e308c1a54&quot;
-Access-Control-Allow-Origin: *
+<div class="highlight-text"><div class="highlight"><pre>
 </pre></div>
 </div>
 </div>
@@ -234,13 +208,7 @@ Access-Control-Allow-Origin: *
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X PURGE http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
-Server: nginx
-Date: Tue, 24 Sep 2013 18:07:54 GMT
-Content-Type: text/html; charset=UTF-8
-Content-Length: 0
-Connection: keep-alive
-Access-Control-Allow-Origin: *
+<div class="highlight-text"><div class="highlight"><pre>
 </pre></div>
 </div>
 <p>Note that for purging purposes, query string parameters are ignored.</p>

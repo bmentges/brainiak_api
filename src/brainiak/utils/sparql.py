@@ -106,7 +106,7 @@ def filter_values(result_dict, key):
     return [item[key]['value'] for item in result_dict['results']['bindings'] if item.get(key)]
 
 
-def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=None):
+def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=None, expand_keys=False, expand_values=False):
     """
     Return a list of compressed items of the 'bindings' list of a Virtuoso response dict.
 
@@ -142,9 +142,10 @@ def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=Non
         for key in item:
             if not key in ignore_keys:
                 value = item[key]['value']
-                if item[key]['type'] == 'uri' and context:
+                effective_key = keymap.get(key, key)
+                if item[key]['type'] == 'uri' and context and effective_key != '@id' and not expand_values:
                     value = context.shorten_uri(value)
-                row[keymap.get(key, key)] = value
+                row[effective_key] = value
         result_list.append(row)
     return result_list
 

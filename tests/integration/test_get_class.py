@@ -9,22 +9,6 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 class TestClassResource(TornadoAsyncHTTPTestCase):
 
-    SAMPLE_SCHEMA_JSON = {
-        u'$schema': u'http://json-schema.org/draft-04/schema#',
-        u'@context': {u'@language': u'pt', u'person': u'http://semantica.globo.com/person/'},
-        u'id': u'person:Gender',
-        u'links': [
-            {u'href': u'http://localhost:10023/person/Gender/{_resource_id}?lang=pt', u'method': u'GET', u'rel': u'self'},
-            {u'href': u'http://localhost:10023/person/Gender/_schema?lang=pt', u'method': u'GET', u'rel': u'class'},
-            {u'href': u'http://localhost:10023/person/Gender/{@resource_id}?lang=pt', u'method': u'DELETE', u'rel': u'delete'},
-            {u'href': u'http://localhost:10023/person/Gender/{@resource_id}?lang=pt', u'method': u'PUT', u'rel': u'update', u'schema': {u'$ref': u'http://localhost:10023/person/Gender/_schema'}},
-            {u'href': u'http://localhost:10023/person/Gender?class_prefix=http%3A%2F%2Fsemantica.globo.com%2Fperson%2F', u'method': u'GET', u'rel': u'collection'}],
-        u'properties': {},
-        u'title': u"Gênero da Pessoa",
-        u'comment': u"Gênero de uma pessoa.",
-        u'type': u'object'
-    }
-
     maxDiff = None
 
     def test_collection_has_options(self):

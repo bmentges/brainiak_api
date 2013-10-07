@@ -15,7 +15,7 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 
-class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
+class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
@@ -31,7 +31,7 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
     }
 
     def setUp(self):
-        super(TestRangeSearch, self).setUp()
+        super(TestSuggest, self).setUp()
         # ONLY VALID FOR VALID_BODY_PARAMS
         self.elastic_request_url = "http://" + settings.ELASTICSEARCH_ENDPOINT + "/semantica.example.onto/"
         self.elastic_request_url += quote_plus("http://example.onto/City") + "/"
@@ -45,7 +45,7 @@ class TestRangeSearch(TornadoAsyncHTTPTestCase, QueryTestCase):
         requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
 
     def tearDown(self):
-        super(TestRangeSearch, self).setUp()
+        super(TestSuggest, self).setUp()
         requests.delete(self.elastic_request_url)
 
     def test_request_with_invalid_predicate(self):

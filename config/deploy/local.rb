@@ -6,7 +6,7 @@ set :barramento_backstage_host,   'localhost'
 set :filer_host,                  ''
 set :redis_host,                  'localhost'
 set :syslog_host,                 ''
-set :elasticsearch_host,          'esearch.dev.globoi.com'
+set :elasticsearch_host,          'localhost:9200'
 
 # Ports
 set :redis_port,                  6379

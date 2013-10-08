@@ -1,5 +1,5 @@
-Create a Instance
-=================
+Create an Instance
+==================
 
 This service allows the creation of a new instance, provided its context, class name and JSON.
 

@@ -2,7 +2,7 @@
 
 from brainiak.prefixes import MemorizeContext, expand_all_uris_recursively
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
-from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties
+from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InvalidSchema
 from brainiak import triplestore
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO_JSON_TYPE
 
@@ -127,7 +127,10 @@ def _extract_cardinalities(bindings):
     cardinalities = {}
     for binding in bindings:
         property_ = binding["predicate"]["value"]
-        range_ = binding["range"]["value"]
+        try:
+            range_ = binding["range"]["value"]
+        except KeyError as ex:
+            raise InvalidSchema(u"The property {0} does not have  a range definition".format(property_))
 
         if not property_ in cardinalities:
             cardinalities[property_] = {}

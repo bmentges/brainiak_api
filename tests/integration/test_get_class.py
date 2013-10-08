@@ -4,7 +4,9 @@ from jsonschema import Draft4Validator, SchemaError
 from mock import patch
 
 from brainiak import settings
+from brainiak.schema.get_class import get_cached_schema, SchemaNotFound
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
+from tests.mocks import MockRequest
 
 
 class TestClassResource(TornadoAsyncHTTPTestCase):
@@ -91,3 +93,61 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
         self.assertEqual(response.code, 404)
         self.assertEqual(response.body, '{"errors": ["HTTP error: 404\\nClass (animalsOrnithorhynchus) in graph (animals) was not found."]}')
+
+    @patch("brainiak.utils.cache.retrieve", return_value=None)
+    @patch("brainiak.schema.get_class.get_schema", return_value={"cached": "false"})
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_get_cached_schema_miss(self, settings_mock, get_schema_mock, retrieve_mock):
+        uri = "http://example.onto/Place/_schema"
+        query_params = {
+            'class_uri': u'http://example.onto/Place',
+            'do_item_count': '0',
+            'expand_uri': '0',
+            'expand_uri_keys': '0',
+            'expand_uri_values': '0',
+            'graph_uri': u'http://example.onto/',
+            'lang': 'pt',
+            'request': MockRequest(uri=uri)
+        }
+        schema = get_cached_schema(query_params)
+        self.assertEqual(schema, {"cached": "false"})
+
+    @patch("brainiak.utils.cache.retrieve", return_value={"body": {"cached": "true"}, "meta": {"cache": "HIT"}})
+    @patch("brainiak.schema.get_class.get_schema", return_value={"cached": "false"})
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_get_cached_schema_hit(self, settings_mock, get_schema_mock, retrieve_mock):
+        uri = "http://example.onto/Place/_schema"
+        query_params = {
+            'class_uri': u'http://example.onto/Place',
+            'do_item_count': '0',
+            'expand_uri': '0',
+            'expand_uri_keys': '0',
+            'expand_uri_values': '0',
+            'graph_uri': u'http://example.onto/',
+            'lang': 'pt',
+            'request': MockRequest(uri=uri)
+        }
+        schema = get_cached_schema(query_params)
+        self.assertEqual(schema, {"cached": "true"})
+
+    @patch("brainiak.schema.get_class.expand_all_uris_recursively", return_value={})
+    @patch("brainiak.schema.get_class.get_schema", return_value={"cached": "false"})
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_get_cached_schema_raise_schema_not_found_exception(self, settings_mock, get_schema_mock, expand_all_uris_recursively_mock):
+        uri = "http://example.onto/Place/_schema"
+        query_params = {
+            'class_uri': u'http://example.onto/Place',
+            'do_item_count': '0',
+            'expand_uri': '0',
+            'expand_uri_keys': '0',
+            'expand_uri_values': '0',
+            'graph_uri': u'http://example.onto/',
+            'lang': 'pt',
+            'request': MockRequest(uri=uri)
+        }
+        with self.assertRaises(SchemaNotFound) as exception:
+            schema = get_cached_schema(query_params)
+            self.assertEqual(
+                "SchemaNotFound: The class definition for http://example.onto/Place was not found in graph http://example.onto/",
+                str(exception.exception)
+            )

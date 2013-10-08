@@ -150,4 +150,4 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
             self.assertEqual(
                 "SchemaNotFound: The class definition for http://example.onto/Place was not found in graph http://example.onto/",
                 str(exception.exception)
-                )
+            )

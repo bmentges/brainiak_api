@@ -26,7 +26,7 @@ class MemoizeTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=False)
     @patch("brainiak.utils.cache.create")
     @patch("brainiak.utils.cache.retrieve")
-    @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
+    @patch("brainiak.utils.cache.redis", StrictRedis=StrictRedisMock)
     def test_memoize_cache_disabled(self, strict_redis, redis_get, redis_set, settings):
 
         def clean_up():
@@ -43,7 +43,7 @@ class MemoizeTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=False)
     @patch("brainiak.utils.cache.create")
     @patch("brainiak.utils.cache.retrieve")
-    @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
+    @patch("brainiak.utils.cache.redis", StrictRedis=StrictRedisMock)
     def test_memoize_cache_disabled_delegatee_receive_params(self, strict_redis, redis_get, redis_set, settings):
 
         def clean_up(param_value):
@@ -62,7 +62,7 @@ class MemoizeTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     @patch("brainiak.utils.cache.create", return_value=True)
     @patch("brainiak.utils.cache.retrieve", return_value=None)
-    @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
+    @patch("brainiak.utils.cache.redis", StrictRedis=StrictRedisMock)
     def test_memoize_cache_enabled_but_without_cache(self, strict_redis, redis_get, redis_set, settings, isoformat):
 
         def clean_up():
@@ -85,8 +85,8 @@ class MemoizeTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     @patch("brainiak.utils.cache.create", return_value=True)
     @patch("brainiak.utils.cache.retrieve", return_value={"status": "Dishes cleaned up", "meta": {}})
-    @patch("brainiak.utils.cache.redis", StrictRedisMock=StrictRedisMock)
-    def test_memoize_cache_enabled_but_miss(self, strict_redis, redis_get, redis_set, settings):
+    @patch("brainiak.utils.cache.redis", StrictRedis=StrictRedisMock)
+    def test_memoize_cache_enabled_and_hit(self, strict_redis, redis_get, redis_set, settings):
 
         def clean_up():
             return {"status": "Laundry done"}

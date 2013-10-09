@@ -61,7 +61,7 @@
            rdfs:domain :Bird ;
            rdfs:range xsd:string .
 
-# http://example.onto/canFlight
+# http://example.onto/name
 :name a owl:DatatypeProperty ;
            rdfs:subPropertyOf  rdfs:label ;
            rdfs:label "Upper name"@en;
@@ -76,8 +76,10 @@
 
 :description a owl:DatatypeProperty ;
              rdfs:label "Description of a place" ;
-             rdfs:domain :Place ;
+             rdfs:domain :Place ,
+                         :Canidae ;
              rdfs:range xsd:string .
+
 
 #######################
 # Annotation Properties
@@ -178,6 +180,7 @@
 
 # http://example.onto/Yorkshire_Terrier
 :Yorkshire_Terrier a owl:Class ;
+    rdfs:label "Yorkshire Terrier" ;
     rdfs:subClassOf :Canidae .
 
 # http://example.onto/Human

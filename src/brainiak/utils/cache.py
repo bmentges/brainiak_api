@@ -9,6 +9,11 @@ from brainiak import settings
 from brainiak import log
 
 
+def build_schema_key(query_params):
+    key = "{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
+    return key
+
+
 class CacheError(redis.exceptions.RedisError):
     pass
 
@@ -47,13 +52,13 @@ def _fresh_retrieve(function, params):
     return fresh_json
 
 
-def memoize(params, function, function_arguments=None, url=False):
+def memoize(params, function, function_arguments=None, key=False):
     if settings.ENABLE_CACHE:
-        url = url or params['request'].uri
-        cached_json = retrieve(url)
+        key = key or params['request'].uri
+        cached_json = retrieve(key)
         if (cached_json is None) or (params.get('purge') == '1'):
             fresh_json = _fresh_retrieve(function, function_arguments)
-            create(url, ujson.dumps(fresh_json))
+            create(key, ujson.dumps(fresh_json))
             return fresh_json
         else:
             cached_json["meta"]["cache"] = "HIT"

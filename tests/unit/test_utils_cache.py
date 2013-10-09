@@ -1,9 +1,10 @@
+import logging
 import unittest
 
 import redis
 from mock import patch
 
-from brainiak.utils.cache import CacheError, connect, memoize, ping, safe_redis, status
+from brainiak.utils.cache import build_schema_key, CacheError, connect, memoize, ping, safe_redis, status
 from tests.mocks import MockRequest
 
 
@@ -139,9 +140,11 @@ class SafeRedisTestCase(unittest.TestCase):
     def setUp(self):
         self.ncalls = 0
 
+    @patch("brainiak.utils.cache.log.logger.error")
+    @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
     @patch("brainiak.utils.cache.connect")
     @patch("brainiak.utils.cache.redis_client.ping", return_value=True)
-    def test_safe_redis_fails_first_time_passes_second(self, ping, connect):
+    def test_safe_redis_fails_first_time_passes_second(self, ping, connect, logger, error):
 
         @safe_redis
         def some_function(self):
@@ -166,9 +169,10 @@ class SafeRedisTestCase(unittest.TestCase):
         self.assertEqual(response, "ru")
 
     @patch("brainiak.utils.cache.log.logger.error")
+    @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
     @patch("brainiak.utils.cache.connect")
     @patch("brainiak.utils.cache.redis_client.ping", return_value=True)
-    def test_safe_redis_fails_all_times(self, ping, connect, error):
+    def test_safe_redis_fails_all_times(self, ping, connect, logger, error):
 
         @safe_redis
         def some_function(self):
@@ -177,3 +181,15 @@ class SafeRedisTestCase(unittest.TestCase):
         response = some_function(self)
         self.assertIsNone(response)
         self.assertIn('CacheError: Second try returned Traceback', str(error.call_args))
+
+
+class CacheUtilsTestCase(unittest.TestCase):
+
+    def test_build_schema_key(self):
+        params = {
+            "graph_uri": "graph",
+            "class_uri": "Class"
+        }
+        computed = build_schema_key(params)
+        expected = "graph@@Class##class"
+        self.assertEqual(computed, expected)

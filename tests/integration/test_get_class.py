@@ -5,8 +5,9 @@ from mock import patch
 
 from brainiak import settings
 from brainiak.schema.get_class import get_cached_schema, SchemaNotFound
-from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.mocks import MockRequest
+from tests.sparql import QueryTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
 class TestClassResource(TornadoAsyncHTTPTestCase):
@@ -151,3 +152,35 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
                 "SchemaNotFound: The class definition for http://example.onto/Place was not found in graph http://example.onto/",
                 str(exception.exception)
             )
+
+
+class GetClassTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+
+    fixtures_by_graph = {
+        "http://example.onto/": ["tests/sample/animalia.n3"],
+        "http://extra.onto/": ["tests/sample/animalia_extension.n3"],
+    }
+    maxDiff = None
+    allow_triplestore_connection = True
+
+    def test_property_redefined_in_subclass(self):
+        response = self.fetch('/_/_/_schema?graph_uri=http://extra.onto/&class_uri=http://example.onto/Golden_Retriever')
+        self.assertEqual(response.code, 200)
+        computed = json.loads(response.body)["properties"]["http://example.onto/description"]
+        expected = {
+            u'format': u'',
+            u'datatype': u'xsd:string',
+            u'graph': u'http://example.onto/',
+            u'required': True,
+            u'range': [{u'type': u'string'}],
+            u'title': u'Description of a place',
+            u'type': u'string'
+        }
+        # expected = {
+        #     u'datatype': u'xsd:string',
+        #     u'graph': u'http://extra.onto/',
+        #     u'required': True,
+        #     u'title': u'Description of a place',
+        #     u'type': u'string'
+        # }
+        self.assertEqual(computed, expected)

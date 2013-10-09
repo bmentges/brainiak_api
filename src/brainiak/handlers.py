@@ -362,7 +362,12 @@ class CollectionHandler(BrainiakRequestHandler):
                     filter_message.append(" with o{0}=({1})".format(index, o))
             self.query_params["filter_message"] = "".join(filter_message)
             msg = "Instances of class ({class_uri}) in graph ({graph_uri}){filter_message} and in language=({lang}) were not found."
-            raise HTTPError(404, log_message=msg.format(**self.query_params))
+
+            response = {
+                "warning": msg.format(**self.query_params),
+                "items": []
+            }
+            self.write(response)
         elif isinstance(response, int):  # status code
             self.set_status(response)
         else:
@@ -446,13 +451,12 @@ class InstanceHandler(BrainiakRequestHandler):
             if settings.NOTIFY_BUS:
                 self._notify_bus(action="DELETE")
         else:
-            response = None
+            raise HTTPError(404, log_message="Instance not found")
         self.finalize(response)
 
     def finalize(self, response):
         if response is None:
-            msg = "Instance ({instance_uri}) of class ({class_uri}) in graph ({graph_uri}) was not found."
-            raise HTTPError(404, log_message=msg.format(**self.query_params))
+            self.write({})
         elif isinstance(response, dict):
             self.write(response)
             schema_url = build_schema_url_for_instance(self.query_params)

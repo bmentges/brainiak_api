@@ -258,8 +258,7 @@ class ContextHandler(BrainiakRequestHandler):
 
     def finalize(self, response):
         if response is None:
-            msg = "No classes found in graph ({graph_uri})."
-            raise HTTPError(404, log_message=msg.format(**self.query_params))
+            self.write({})
         else:
             self.write(response)
             self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))

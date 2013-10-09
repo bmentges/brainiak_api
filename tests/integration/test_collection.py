@@ -213,11 +213,11 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
     @patch("brainiak.handlers.logger")
     def test_filter_with_no_results(self, log):
         response = self.fetch('/person/Gender/?o=Xubiru&lang=pt', method='GET')
-        self.assertEqual(response.code, 404)
+        self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         expected_body = {
-            u'errors':
-            [u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with o=(Xubiru) and in language=(pt) were not found.']
+            u'items': [],
+            u'warning': u'Instances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with o=(Xubiru) and in language=(pt) were not found.'
         }
         self.assertEqual(body, expected_body)
 
@@ -225,10 +225,11 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
     def test_filter_with_no_results_and_multiple_predicates(self, log):
         get_collection.filter_instances = lambda params: None
         response = self.fetch('/person/Gender/?o=object&p=rdfs:label&o1=object1&lang=pt', method='GET')
-        self.assertEqual(response.code, 404)
+        self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         expected_body = {
-            u'errors': [u'HTTP error: 404\nInstances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1) and in language=(pt) were not found.']
+            u'items': [],
+            u'warning': u'Instances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1) and in language=(pt) were not found.'
         }
         self.assertEqual(body, expected_body)
 
@@ -938,4 +939,4 @@ class GetCollectionDirectObjectTestCase(TornadoAsyncHTTPTestCase, QueryTestCase)
     @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://example.onto/ruleset")
     def test_get_collection_includes_only_direct_instances(self, settings):
         response = self.fetch('/_/_/?graph_uri=http://example.onto/&class_uri=http://example.onto/Animal&direct_instances_only=1', method='GET')
-        self.assertEqual(response.code, 404)
+        self.assertEqual(response.code, 200)

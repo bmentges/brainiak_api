@@ -91,8 +91,8 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
     @patch("brainiak.handlers.logger")
     def test_schema_handler_class_undefined(self, log):
         response = self.fetch('/animals/Ornithorhynchus/_schema')
-        self.assertEqual(response.code, 404)
-        self.assertEqual(response.body, '{"errors": ["HTTP error: 404\\nClass (animalsOrnithorhynchus) in graph (animals) was not found."]}')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, '{}')
 
     @patch("brainiak.utils.cache.retrieve", return_value=None)
     @patch("brainiak.schema.get_class.get_schema", return_value={"cached": "false"})

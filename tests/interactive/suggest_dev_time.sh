@@ -1,0 +1,1 @@
+curl -i -XPOST http://0.0.0.0:5100/_suggest -T "suggest_time.json"

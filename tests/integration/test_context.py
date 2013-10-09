@@ -47,11 +47,12 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         patcher.stop()
 
     @patch("brainiak.handlers.logger")
-    def test_list_classes_404(self, log):
+    def test_list_classes_empty(self, log):
         original_graph_uri = self.graph_uri
         self.graph_uri = "http://empty.graph"
         response = self.fetch('/test/?graph_uri=' + self.graph_uri)
-        self.assertEqual(response.code, 404)
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body, '{}')
         self.graph_uri = original_graph_uri
 
     @patch("brainiak.handlers.logger")

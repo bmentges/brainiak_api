@@ -276,6 +276,13 @@ class PredicatesQueryTestCase(QueryTestCase):
         computed = self.query(query)['results']['bindings']
         expected = [
             {
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/description'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
+                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
+                u'title': {u'type': u'literal', u'value': u'Description of a place'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
+            },
+            {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furLenght'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'},

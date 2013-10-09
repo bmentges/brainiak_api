@@ -47,13 +47,13 @@ def _fresh_retrieve(function, params):
     return fresh_json
 
 
-def memoize(params, function, function_arguments=None):
+def memoize(params, function, function_arguments=None, key=False):
     if settings.ENABLE_CACHE:
-        url = params['request'].uri
-        cached_json = retrieve(url)
+        key = key or params['request'].uri
+        cached_json = retrieve(key)
         if (cached_json is None) or (params.get('purge') == '1'):
             fresh_json = _fresh_retrieve(function, function_arguments)
-            create(url, ujson.dumps(fresh_json))
+            create(key, ujson.dumps(fresh_json))
             return fresh_json
         else:
             cached_json["meta"]["cache"] = "HIT"

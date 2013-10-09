@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from brainiak import triplestore
 from brainiak.prefixes import MemorizeContext, expand_all_uris_recursively
+from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO_JSON_TYPE
+from brainiak.utils.cache import memoize
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InvalidSchema
-from brainiak import triplestore
-from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO_JSON_TYPE
 
 
 class SchemaNotFound(Exception):
@@ -12,10 +13,11 @@ class SchemaNotFound(Exception):
 
 
 def get_cached_schema(query_params):
-    class_object = expand_all_uris_recursively(get_schema(query_params))
+    schema = memoize(query_params, get_schema, query_params)["body"]
+    class_object = expand_all_uris_recursively(schema)
     if not class_object:
         msg = "The class definition for {0} was not found in graph {1}"
-        raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['instance_uri']))
+        raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['graph_uri']))
     return class_object
 
 

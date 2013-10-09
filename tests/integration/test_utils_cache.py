@@ -1,20 +1,26 @@
+import logging
 import unittest
 
 from mock import patch
 
-from brainiak.utils.cache import create, delete, keys, ping, purge, retrieve
+from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, retrieve
+from tests.mocks import MockRequest
 
 
-class GeneralFunctionsTestCase(unittest.TestCase):
+class CacheTestCase(unittest.TestCase):
 
     def setUp(self):
         self.assertTrue(ping())  # assert Redis is up
         create("key_xubiru", '{"key": "value"}')
         create("key_xubiru2", '{"key": "value"}')
+        create("/home", '{"status": "Dishes cleaned up", "meta": {"cache": "HIT"}}')
+        create("/grave", '{"status": "Sleeping", "meta": {"cache": "HIT"}}')
 
     def tearDown(self):
         delete("key_xubiru")
         delete("new_key")
+        delete("/home")
+        delete("/grave")
 
     def test_create(self):
         response = create("new_key", "some value")
@@ -36,6 +42,26 @@ class GeneralFunctionsTestCase(unittest.TestCase):
         response = keys("key_xubiru")
         self.assertEqual(sorted(response), ["key_xubiru", "key_xubiru2"])
 
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_memoize_cache_enabled_and_hit(self, settings):
+
+        def clean_up():
+            return {"status": "Laundry done"}
+
+        params = {'request': MockRequest(uri="/home")}
+        answer = memoize(params, clean_up)
+        self.assertEqual(answer, {"status": "Dishes cleaned up", "meta": {"cache": "HIT"}})
+
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_memoize_cache_enabled_and_hit_with_different_key(self, settings):
+
+        def ressurect():
+            return {"status": "Ressurected"}
+
+        params = {'request': MockRequest(uri="/home")}
+        answer = memoize(params, ressurect, key="/grave")
+        self.assertEqual(answer, {"status": "Sleeping", "meta": {"cache": "HIT"}})
+
 
 class PurgeTestCase(unittest.TestCase):
 
@@ -53,7 +79,8 @@ class PurgeTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.cache.log.logger.debug")
     @patch("brainiak.utils.cache.log.logger.info")
-    def test_cleanup_inexistent_url(self, info, debug):
+    @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
+    def test_cleanup_inexistent_url(self, logger, info, debug):
         purge("inexistent_url")
         self.assertEqual(info.call_count, 1)
         info.assert_called_with('Cache: 0 key(s), matching the pattern: inexistent_url')
@@ -62,7 +89,8 @@ class PurgeTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.cache.log.logger.debug")
     @patch("brainiak.utils.cache.log.logger.info")
-    def test_cleanup_existent_url(self, info, debug):
+    @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
+    def test_cleanup_existent_url(self, logger, info, debug):
         purge("some_url")
         self.assertEqual(info.call_count, 1)
         info.assert_called_with('Cache: purged with success 1 key(s), matching the pattern: some_url')
@@ -71,7 +99,8 @@ class PurgeTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.cache.log.logger.debug")
     @patch("brainiak.utils.cache.log.logger.info")
-    def test_cleanup_2_existent_url(self, info, debug):
+    @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
+    def test_cleanup_2_existent_url(self, logger, info, debug):
         purge("some")
         self.assertEqual(info.call_count, 1)
         info.assert_called_with('Cache: purged with success 2 key(s), matching the pattern: some')
@@ -84,7 +113,8 @@ class PurgeTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.delete", return_value=False)
     @patch("brainiak.utils.cache.log.logger.debug")
     @patch("brainiak.utils.cache.log.logger.info")
-    def test_cleanup_fails(self, info, debug, delete):
+    @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
+    def test_cleanup_fails(self, logger, info, debug, delete):
         purge("problematic_key")
         self.assertEqual(info.call_count, 1)
         info.assert_called_with("Cache: failed purging 1 key(s), matching the pattern: problematic_key")

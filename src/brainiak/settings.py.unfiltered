@@ -11,7 +11,7 @@ if ENVIRONMENT == 'local':
     REDIS_PASSWORD = None
     LOG_LEVEL = logging.DEBUG
 else:
-    ENABLE_CACHE = True
+    ENABLE_CACHE = False
     REDIS_PASSWORD = '<%= redis_password %>'
     LOG_LEVEL = logging.ERROR
 

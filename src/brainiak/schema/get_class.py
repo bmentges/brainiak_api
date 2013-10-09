@@ -13,6 +13,7 @@ class SchemaNotFound(Exception):
 
 
 def get_cached_schema(query_params):
+
     schema_key = build_schema_key(query_params)
     schema = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
     class_object = expand_all_uris_recursively(schema)

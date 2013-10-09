@@ -121,6 +121,7 @@ def do_suggest(query_params, suggest_params):
 
     request_body = _build_body_query(query_params, search_params, classes,
                                      search_fields, response_fields)
+
     elasticsearch_result = run_search(request_body, indexes=indexes)
 
     class_fields = response_params.get("class_fields", [])
@@ -347,10 +348,22 @@ def _build_body_query(query_params, search_params, classes, search_fields, respo
         "size": int(query_params.get("per_page", settings.DEFAULT_PER_PAGE)),
         "fields": response_fields,
         "query": {
-            "query_string": {
-                "query": query_string,
-                "fields": search_fields
-            }
+                "bool": {
+                    "must": {
+                        "query_string": {
+                            "fields": search_fields,
+                            "query": query_string,
+                            "analyze_wildcard": True
+                        }
+                    },
+                    "should": {
+                        "query_string": {
+                            "fields": search_fields,
+                            "query": '\"{0}\"'.format(query_string),
+                            "analyze_wildcard": True
+                        }
+                    }
+                }
         },
         "filter": _build_type_filters(classes)
     }

@@ -285,13 +285,6 @@ class ClassHandler(BrainiakRequestHandler):
         response = schema_resource.get_schema(self.query_params)
         self.finalize(response)
 
-    def finalize(self, response):
-        if response is None:
-            msg = "Class ({class_uri}) in graph ({graph_uri}) was not found."
-            raise HTTPError(404, log_message=msg.format(**self.query_params))
-        else:
-            self.write(response)
-
 
 class CollectionJsonSchemaHandler(BrainiakRequestHandler):
 

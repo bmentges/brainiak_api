@@ -9,6 +9,11 @@ from brainiak import settings
 from brainiak import log
 
 
+def build_schema_key(query_params):
+    key = "{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
+    return key
+
+
 class CacheError(redis.exceptions.RedisError):
     pass
 

@@ -20,18 +20,6 @@ class SuggestTestCase(TestCase):
     @patch("brainiak.suggest.suggest._build_type_filters", return_value={})
     @patch("brainiak.suggest.suggest.calculate_offset", return_value=10)
     def test_build_query_body(self, mocked_calculate_offset, mocked_build_type_filters):
-        expected = {
-            "from": 10,
-            "size": 10,
-            "fields": ["upper:name"],
-            "query": {
-                "query_string": {
-                    "query": "rio AND de AND jan*",
-                    "fields": ["rdfs:label", "upper:name"],
-                }
-            },
-            "filter": {}
-        }
 
         query_params = {
             "page": "1"
@@ -44,6 +32,32 @@ class SuggestTestCase(TestCase):
         response_fields = ["upper:name"]
 
         response = _build_body_query(query_params, search_params, classes, search_fields, response_fields)
+
+        expected = {
+            'filter': {},
+            'fields': ['upper:name'],
+            'query': {
+                'bool': {
+                    'should': {
+                        'query_string': {
+                            'fields': ['rdfs:label', 'upper:name'],
+                            'analyze_wildcard': True,
+                            'query': '"rio AND de AND jan*"'
+                        }
+                    },
+                    'must': {
+                        'query_string': {
+                            'fields': ['rdfs:label', 'upper:name'],
+                            'analyze_wildcard': True,
+                            'query': 'rio AND de AND jan*'
+                        }
+                    }
+                }
+            },
+            'from': 10,
+            'size': 10
+        }
+
         self.assertEqual(expected, response)
 
     @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])

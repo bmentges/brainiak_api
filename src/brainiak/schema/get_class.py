@@ -124,7 +124,10 @@ def get_predicates_and_cardinalities(context, query_params):
 
     predicates = query_predicates(query_params)
 
-    return convert_bindings_dict(context, predicates['results']['bindings'], cardinalities)
+    return convert_bindings_dict(context,
+                                 predicates['results']['bindings'],
+                                 cardinalities,
+                                 query_params['superclasses'])
 
 
 def _extract_cardinalities(bindings):
@@ -193,7 +196,7 @@ def query_predicates(query_params):
 
 
 QUERY_PREDICATE_WITH_LANG = """
-SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property
+SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
 WHERE {
     {
       GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
@@ -322,8 +325,9 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
     # build up predicate dictionary
     predicate = {}
-    predicate["title"] = binding_row["title"]['value']
+    predicate["class"] = binding_row["domain_class"]['value']
     predicate["graph"] = compressed_graph
+    predicate["title"] = binding_row["title"]['value']
 
     if "predicate_comment" in binding_row:
         predicate["description"] = binding_row["predicate_comment"]['value']
@@ -411,7 +415,13 @@ def join_predicates(old, new):
     return merged_predicate
 
 
-def convert_bindings_dict(context, bindings, cardinalities):
+def most_specialized_predicate(class_hierarchy, predicate_a, predicate_b):
+    index_a = class_hierarchy.index(predicate_a['class'])
+    index_b = class_hierarchy.index(predicate_b['class'])
+    return predicate_a if index_a < index_b else predicate_b
+
+
+def convert_bindings_dict(context, bindings, cardinalities, superclasses):
 
     super_predicates = get_super_properties(context, bindings)
     assembled_predicates = {}
@@ -419,13 +429,27 @@ def convert_bindings_dict(context, bindings, cardinalities):
     for binding_row in bindings:
         predicate_uri = binding_row['predicate']['value']
         predicate_key = context.normalize_uri_key(predicate_uri)
-        if not predicate_uri in super_predicates.keys():
-            predicate = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
-            existing_predicate = assembled_predicates.get(predicate_key, False)
-            if existing_predicate:
-                if existing_predicate != predicate:
-                    assembled_predicates[predicate_key] = join_predicates(existing_predicate, predicate)
+
+        # super_predicate is when we use rdfs:subPropertyOf
+        # this case does not consider inherited predicates
+        if predicate_uri in super_predicates.keys():
+            continue
+
+        predicate = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
+        existing_predicate = assembled_predicates.get(predicate_key, False)
+        if existing_predicate:
+            if 'datatype' in existing_predicate and 'datatype' in predicate:
+                assembled_predicates[predicate_key] = most_specialized_predicate(superclasses,
+                                                                                 existing_predicate,
+                                                                                 predicate)
+            elif existing_predicate != predicate:
+                assembled_predicates[predicate_key] = join_predicates(existing_predicate, predicate)
+
             else:
-                assembled_predicates[predicate_key] = predicate
+                msg = u"The property {0} seems to be duplicated in class {1}"
+                raise InvalidSchema(msg.format(predicate_key, predicate["class"]))
+
+        else:
+            assembled_predicates[predicate_key] = predicate
 
     return assembled_predicates

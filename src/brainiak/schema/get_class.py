@@ -83,7 +83,6 @@ def assemble_schema_dict(query_params, normalized_uri, title, predicates, contex
     comment = kw.get("comment", None)
     if comment:
         schema["description"] = comment
-
     return schema
 
 
@@ -137,7 +136,7 @@ def _extract_cardinalities(bindings):
         try:
             range_ = binding["range"]["value"]
         except KeyError as ex:
-            raise InvalidSchema(u"The property {0} does not have  a range definition".format(property_))
+            raise InvalidSchema(u"The property {0} does not have a range definition".format(property_))
 
         if not property_ in cardinalities:
             cardinalities[property_] = {}
@@ -149,13 +148,25 @@ def _extract_cardinalities(bindings):
 
         if "min" in binding:
             min_value = binding["min"]["value"]
-            if int(min_value):
-                current_property[range_].update({"minItems": int(min_value)})
-                current_property[range_].update({"required": True})
+            try:
+                min_value = int(min_value)
+            except ValueError:
+                msg = u"The property {0} defines a non-integer owl:minQualifiedCardinality {1}".format(property_, min_value)
+                raise InvalidSchema(msg)
+            else:
+                current_property[range_].update({"minItems": min_value})
+                if min_value:
+                    current_property[range_].update({"required": True})
+
         elif "max" in binding:
             max_value = binding["max"]["value"]
-            if int(max_value):
-                current_property[range_].update({"maxItems": int(max_value)})
+            try:
+                max_value = int(max_value)
+            except ValueError:
+                msg = u"The property {0} defines a non-integer owl:maxQualifiedCardinality {1}".format(property_, max_value)
+                raise InvalidSchema(msg)
+            else:
+                current_property[range_].update({"maxItems": max_value})
 
     return cardinalities
 
@@ -354,6 +365,10 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     elif predicate_type == DATATYPE_PROPERTY:
         # add predicate['type'] and (optional) predicate['format']
         predicate.update(items_from_range(context, range_uri))
+
+    else:  # TODO: owl:AnnotationProperty
+        msg = u"Predicates of type {0} are not supported yet".format(predicate_type)
+        raise InvalidSchema(msg)
 
     if predicate["type"] == "array":
         if (predicate_uri in cardinalities) and (range_uri in cardinalities[predicate_uri]):

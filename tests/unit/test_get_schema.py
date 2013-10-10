@@ -16,6 +16,43 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         del prefixes._MAP_SLUG_TO_PREFIX['test']
         del prefixes._MAP_PREFIX_TO_SLUG['http://test/person/']
 
+    def test_extract_cardinalities_raises_exception_due_to_lack_of_range(self):
+        binding = [{
+            u'predicate': {u'type': u'uri',
+                           u'value': u'http://test/person/gender'},
+            u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                     u'type': u'typed-literal', u'value': u'1'}
+        }]
+        with self.assertRaises(schema.InvalidSchema) as error:
+            _extract_cardinalities(binding)
+            self.assertEqual(error.exception, "InvalidSchema: The property http://test/person/gender does not have a range definition")
+
+    def test_extract_cardinalities_raises_exception_due_to_improper_min_value(self):
+        binding = [{
+            u'predicate': {u'type': u'uri',
+                           u'value': u'http://test/person/gender'},
+            u'range': {u'type': u'uri',
+                       u'value': u'http://test/person/Gender'},
+            u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                     u'type': u'typed-literal', u'value': u'abc'}
+        }]
+        with self.assertRaises(schema.InvalidSchema) as error:
+            _extract_cardinalities(binding)
+            self.assertEqual(error.exception, "InvalidSchema: The property http://test/person/gender defines a non-integer owl:minQualifiedCardinality abc")
+
+    def test_extract_cardinalities_raises_exception_due_to_improper_max_value(self):
+        binding = [{
+            u'predicate': {u'type': u'uri',
+                           u'value': u'http://test/person/gender'},
+            u'range': {u'type': u'uri',
+                       u'value': u'http://test/person/Gender'},
+            u'max': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                     u'type': u'typed-literal', u'value': u'abc'}
+        }]
+        with self.assertRaises(schema.InvalidSchema) as error:
+            _extract_cardinalities(binding)
+            self.assertEqual(error.exception, "InvalidSchema: The property http://test/person/gender defines a non-integer owl:maxQualifiedCardinality abc")
+
     def test_extract_min_1_required_true(self):
         binding = [{
             u'predicate': {u'type': u'uri',
@@ -27,6 +64,19 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         }]
         extracted = _extract_cardinalities(binding)
         expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'required': True, 'minItems': 1}}}
+        self.assertEqual(extracted, expected)
+
+    def test_extract_min_0(self):
+        binding = [{
+            u'predicate': {u'type': u'uri',
+                           u'value': u'http://test/person/gender'},
+            u'range': {u'type': u'uri',
+                       u'value': u'http://test/person/Gender'},
+            u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                     u'type': u'typed-literal', u'value': u'0'}
+        }]
+        extracted = _extract_cardinalities(binding)
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': 0}}}
         self.assertEqual(extracted, expected)
 
     def test_extract_max_1_show_omit(self):
@@ -73,6 +123,24 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         self.assertEqual(context.object_properties, {'test:gender': 'test:Gender'})
         self.assertEqual(context.context, {'test': u'http://test/person/'})
         self.assertEqual(expected_predicate_dict, effective_predicate_dict)
+
+    def test_ignore_annotation_properties(self):
+        name = u'http://test/person/gender'
+        predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/gender'},
+                     u'domain_class': {u'type': u'uri', u'value': u'http://test/person/AnyClass'},
+                     u'range': {u'type': u'uri', u'value': u'http://test/person/Gender'},
+                     u'range_graph': {u'type': u'uri', u'value': u'http://test/person/'},
+                     u'range_label': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero da Pessoa'},
+                     u'title': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Sexo'},
+                     u'predicate_graph': {u'typce': u'uri', u'value': u'http://test/person/'},
+                     u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero.'},
+                     u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#AnnotationProperty'}}
+        cardinalities = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': 1, 'maxItems': 1}}}
+        context = prefixes.MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context.prefix_to_slug('http://test/person')
+        with self.assertRaises(schema.InvalidSchema) as error:
+            assemble_predicate(name, predicate, cardinalities, context)
+            self.assertEqual(error.exception, "InvalidSchema: Predicates of type http://www.w3.org/2002/07/owl#AnnotationProperty are not supported yet")
 
     def test_assemble_predicate_with_datatype_property(self):
         expected_predicate_dict = {'description': u'Nome completo da pessoa',
@@ -356,6 +424,39 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         }
 
         self.assertEqual(computed, expected)
+
+    def test_convert_bindings_dict_raise_exception(self):
+        class ContextMock(prefixes.MemorizeContext):
+            object_properties = {}
+            context = {'g1': 'http://semantica.globo.com/G1/'}
+
+        context = ContextMock(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        cardinalities = {}
+        bindings = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_entidade'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
+                u'range_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Criatura'},
+                u'title': {u'type': u'literal', u'value': u'Entidades'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
+                u'domain_class': {u'type': u'uri', u'value': u'http://test/person/AnyClass'},
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/cita_a_entidade'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/G1/'},
+                u'range_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
+                u'range': {u'type': u'uri', u'value': u'http://semantica.globo.com/base/Criatura'},
+                u'title': {u'type': u'literal', u'value': u'Entidades'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
+                u'domain_class': {u'type': u'uri', u'value': u'http://test/person/AnyClass'},
+            }
+        ]
+        hierarchy = [u'http://test/person/AnyClass']
+
+        with self.assertRaises(schema.InvalidSchema) as error:
+            convert_bindings_dict(context, bindings, cardinalities, hierarchy)
+            self.assertEqual(error.exception, "InvalidSchema: The property g1:cita_a_entidade seems to be duplicated in class http://test/person/AnyClass")
 
     def test_convert_bindings_dict_single_predicate_multiple_ranges_of_same_type(self):
 

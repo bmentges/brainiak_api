@@ -69,7 +69,6 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         context.prefix_to_slug('http://test/person')
         # test call
 
-
         effective_predicate_dict = assemble_predicate(name, predicate, cardinalities, context)
         self.assertEqual(context.object_properties, {'test:gender': 'test:Gender'})
         self.assertEqual(context.context, {'test': u'http://test/person/'})

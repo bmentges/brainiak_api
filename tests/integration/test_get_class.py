@@ -667,7 +667,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
 
     def test_schema_has_cors(self):
         response = self.fetch('/person/Gender/_schema', method='OPTIONS')
-        response.headers['Access-Control-Allow-Methods']
+        self.assertIn('Access-Control-Allow-Methods', response.headers)
 
     def test_schema_handler_with_lang(self):
         response = self.fetch('/person/Gender/_schema?lang=pt')

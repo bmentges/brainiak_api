@@ -2,8 +2,9 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-:Golden_Retriever a owl:Class ;
-    rdfs:label "Golden Retriever" ;
+
+:Golden a owl:Class ;
+    rdfs:label "Golden" ;
     rdfs:subClassOf :Canidae ,
         [ rdf:type owl:Restriction ;
           owl:onProperty :description ;
@@ -16,4 +17,23 @@
           owl:onDataRange xsd:string
         ] .
 
-:description rdfs:domain :Golden_Retriever .
+:Golden_Retriever a owl:Class ;
+    rdfs:label "Golden Retriever" ;
+    rdfs:subClassOf :Golden ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :description ;
+          owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+          owl:onDataRange xsd:string 
+        ] ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :description ;
+          owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+          owl:onDataRange xsd:string
+        ] .
+
+:Mini_Golden_Retriever a owl:Class ;
+    rdfs:label "Golden Retriever" ;
+    rdfs:subClassOf :Golden_Retriever .
+
+:description rdfs:domain :Golden,
+                         :Golden_Retriever .

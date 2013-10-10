@@ -366,9 +366,9 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
         # add predicate['type'] and (optional) predicate['format']
         predicate.update(items_from_range(context, range_uri))
 
-    else: # TODO: owl:AnnotationProperty
+    else:  # TODO: owl:AnnotationProperty
         msg = u"Predicates of type {0} are not supported yet".format(predicate_type)
-        raise InvalidSchema(msg) 
+        raise InvalidSchema(msg)
 
     if predicate["type"] == "array":
         if (predicate_uri in cardinalities) and (range_uri in cardinalities[predicate_uri]):

@@ -650,7 +650,6 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         self.stop()
 
 
-
 class TestClassResource(TornadoAsyncHTTPTestCase):
 
     maxDiff = None
@@ -819,6 +818,20 @@ class InheritedPredicateRedifinitionTestCase(TornadoAsyncHTTPTestCase, QueryTest
         self.assertEqual(computed, expected)
 
     def test_property_re_redefined_predicate_in_hierarchy(self):
+        response = self.fetch('/_/_/_schema?graph_uri=http://extra.onto/&class_uri=http://example.onto/Golden_Retriever')
+        self.assertEqual(response.code, 200)
+        computed = json.loads(response.body)["properties"]["http://example.onto/description"]
+        expected = {
+            u'class': u'http://example.onto/Golden_Retriever',
+            u'datatype': u'xsd:string',
+            u'graph': u'http://extra.onto/',
+            u'required': True,
+            u'title': u'Description of a place',
+            u'type': u'string'
+        }
+        self.assertEqual(computed, expected)
+
+    def test_property_re_redefined_predicate_in_parent_class(self):
         response = self.fetch('/_/_/_schema?graph_uri=http://extra.onto/&class_uri=http://example.onto/Mini_Golden_Retriever')
         self.assertEqual(response.code, 200)
         computed = json.loads(response.body)["properties"]["http://example.onto/description"]

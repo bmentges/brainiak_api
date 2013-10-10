@@ -330,7 +330,8 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
                 u'title': {u'type': u'literal', u'value': u'Can flight', u'xml:lang': u'en'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'},
+                u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/Bird'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthPlace'},
@@ -339,14 +340,16 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/Place'},
                 u'title': {u'type': u'literal', u'value': u'Birth place of first known member of Species'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
+                u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/Animal'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/gender'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/Gender'},
                 u'title': {u'type': u'literal', u'value': u'Gender'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'},
+                u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/Animal'}
             }
         ]
         self.assertEqual(sorted(expected), sorted(computed))
@@ -480,8 +483,9 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                     u'format': u'uri',
                     u'graph': u'http://example.onto/',
                     u'title': u'Place',
-                    u'type': u'string'
+                    u'type': 'string'
                 },
+                u'class': u'http://example.onto/Animal',
                 u'title': u'Birth place of first known member of Species',
                 u'type': u'array',
                 u'items': {u'type': 'string', u'format': 'uri'}
@@ -493,8 +497,9 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                     u'format': u'uri',
                     u'graph': u'http://example.onto/',
                     u'title': u'Humano',
-                    u'type': u'string'
+                    u'type': 'string'
                 },
+                u'class': u'http://example.onto/Human',
                 u'maxItems': 888,
                 u'title': u"Has child (son or daughter)",
                 u'type': u'array',
@@ -508,8 +513,9 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                     u'format': u'uri',
                     u'graph': u'',
                     u'title': u'',
-                    u'type': u'string'
+                    u'type': 'string'
                 },
+                u'class': u'http://example.onto/Mammalia',
                 u'required': True,
                 u'title': u'Fur or hair colour',
                 u'type': u'array',
@@ -518,6 +524,7 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             },
             u'http://example.onto/gender': {
                 u'format': u'uri',
+                u'class': u'http://example.onto/Animal',
                 u'graph': u'http://example.onto/',
                 u'range': {u'@id': u'http://example.onto/Gender',
                            u'format': u'uri',
@@ -530,6 +537,7 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             },
             u'http://example.onto/hasParent': {
                 u'graph': u'http://example.onto/',
+                u'class': u'http://example.onto/Human',
                 u'maxItems': 2,
                 u'minItems': 2,
                 u'range': {u'@id': u'http://example.onto/Human',
@@ -573,7 +581,9 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                 "type": {"type": "uri", "value": "http://www.w3.org/2002/07/owl#ObjectProperty"},
                 "range": {"type": "uri", "value": "http://test/person/Gender"},
                 "title": {"type": "literal", "xml:lang": "pt", "value": "Root (to be removed from answer)"},
-                "range_graph": {"type": "uri", "value": "http://test/person/"}
+                "range_graph": {"type": "uri", "value": "http://test/person/"},
+                "domain_class": {"type": "uri", "value": "http://test/person/Gender"},
+
             },
             {
                 "predicate": {"type": "uri", "value": "http://test/person/gender"},
@@ -584,7 +594,8 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                 "range": {"type": "uri", "value": "http://test/person/Gender"},
                 "title": {"type": "literal", "xml:lang": "pt", "value": "Sexo"},
                 "range_label": {"type": "literal", "xml:lang": "pt", "value": u"G\u00EAnero da Pessoa"},
-                "range_graph": {"type": "uri", "value": "http://test/person/"}
+                "range_graph": {"type": "uri", "value": "http://test/person/"},
+                "domain_class": {"type": "uri", "value": "http://test/person/Gender"},
             }
         ]}}
 
@@ -612,7 +623,8 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
 
         context = prefixes.MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
         params = {"class_uri": "http://test/person/gender",
-                  "class_schema": None}
+                  "class_schema": None,
+                  "superclasses": ["http://test/person/Gender"]}
 
         response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(context, params)
         expected_predicates_and_cardinalities = {
@@ -623,6 +635,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
                 'format': 'uri',
                 'required': True,
                 'type': 'string',
+                'class': 'http://test/person/Gender',
                 'range': {'graph': 'http://test/person/',
                           '@id': 'http://test/person/Gender',
                           'title': u'G\xeanero da Pessoa',

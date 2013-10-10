@@ -154,7 +154,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
             )
 
 
-class GetClassTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+class InheritedPredicateRedifinitionTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     fixtures_by_graph = {
         "http://example.onto/": ["tests/sample/animalia.n3"],
@@ -164,25 +164,17 @@ class GetClassTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     allow_triplestore_connection = True
 
     def test_property_redefined_in_subclass(self):
-        response = self.fetch('/_/_/_schema?graph_uri=http://extra.onto/&class_uri=http://example.onto/Golden_Retriever')
+        response = self.fetch('/_/_/_schema?graph_uri=http://extra.onto/&class_uri=http://example.onto/Golden')
         self.assertEqual(response.code, 200)
         computed = json.loads(response.body)["properties"]["http://example.onto/description"]
         expected = {
-            u'format': u'',
+            u'class': u'http://example.onto/Golden',
             u'datatype': u'xsd:string',
-            u'graph': u'http://example.onto/',
+            u'graph': u'http://extra.onto/',
             u'required': True,
-            u'range': [{u'type': u'string'}],
             u'title': u'Description of a place',
             u'type': u'string'
         }
-        # expected = {
-        #     u'datatype': u'xsd:string',
-        #     u'graph': u'http://extra.onto/',
-        #     u'required': True,
-        #     u'title': u'Description of a place',
-        #     u'type': u'string'
-        # }
         self.assertEqual(computed, expected)
 
     def test_property_re_redefined_predicate_in_hierarchy(self):
@@ -190,13 +182,11 @@ class GetClassTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 200)
         computed = json.loads(response.body)["properties"]["http://example.onto/description"]
         expected = {
+            u'class': u'http://example.onto/Golden_Retriever',
+            u'datatype': u'xsd:string',
+            u'graph': u'http://extra.onto/',
+            u'required': True,
+            u'title': u'Description of a place',
+            u'type': u'string'
         }
-        # import pdb; pdb.set_trace()
-        # # expected = {
-        # #     u'datatype': u'xsd:string',
-        # #     u'graph': u'http://extra.onto/',
-        # #     u'required': True,
-        # #     u'title': u'Description of a place',
-        # #     u'type': u'string'
-        # # }
-        # self.assertEqual(computed, expected)
+        self.assertEqual(computed, expected)

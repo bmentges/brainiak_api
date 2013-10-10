@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-"""
-This module uses the following nomenclature:
- uri = http://a/b/cD
- prefix = http://a/b/c/ or http://a/b/c#
- item_ = D
- slug = x
- short_uri = x:D
-"""
+# """
+# This module uses the following nomenclature:
+#  uri = http://a/b/cD
+#  prefix = http://a/b/c/ or http://a/b/c#
+#  item_ = D
+#  slug = x
+#  short_uri = x:D
+# """
 
 from brainiak import settings
 
@@ -68,6 +68,12 @@ _MAP_PREFIX_TO_SLUG = {v: k for k, v in _MAP_SLUG_TO_PREFIX.items()}
 
 class PrefixError(Exception):
     pass
+
+
+def list_prefixes():
+    prefixes_dict = get_prefixes_dict()
+    result_dict = dict([("@context", prefixes_dict), ("root_context", ROOT_CONTEXT)])
+    return result_dict
 
 
 def prefix_from_uri(uri):
@@ -215,6 +221,13 @@ class MemorizeContext(object):
         if slug != prefix:
             self.context[slug] = prefix
         return slug
+
+    def normalize_prefix_value(self, slug_or_uri):
+        if self._normalize_uri_values == SHORTEN:
+            return self.prefix_to_slug(slug_or_uri)
+        elif self._normalize_uri_values == EXPAND:
+            return safe_slug_to_prefix(slug_or_uri)
+        raise InvalidModeForNormalizeUriError(u'Unrecognized mode {0:s}'.format(self._normalize_uri_values))
 
     def normalize_uri_key(self, uri):
         return normalize_uri(uri, self._normalize_uri_keys, shorten_uri_function=self.shorten_uri)

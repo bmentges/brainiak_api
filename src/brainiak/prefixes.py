@@ -216,6 +216,13 @@ class MemorizeContext(object):
             self.context[slug] = prefix
         return slug
 
+    def normalize_prefix_value(self, slug_or_uri):
+        if self._normalize_uri_values == SHORTEN:
+            return self.prefix_to_slug(slug_or_uri)
+        elif self._normalize_uri_values == EXPAND:
+            return safe_slug_to_prefix(slug_or_uri)
+        raise InvalidModeForNormalizeUriError(u'Unrecognized mode {0:s}'.format(self._normalize_uri_values))
+
     def normalize_uri_key(self, uri):
         return normalize_uri(uri, self._normalize_uri_keys, shorten_uri_function=self.shorten_uri)
 

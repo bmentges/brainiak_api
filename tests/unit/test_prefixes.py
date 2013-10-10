@@ -5,7 +5,7 @@ from mock import patch
 from brainiak import prefixes
 from brainiak.prefixes import (expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri,
                                prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix,
-                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, expand_all_uris_recursively, get_prefixes_dict)
+                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, expand_all_uris_recursively, get_prefixes_dict, list_prefixes, _MAP_SLUG_TO_PREFIX)
 
 
 class PrefixesTestCase(unittest.TestCase):
@@ -158,6 +158,40 @@ class NormalizationTestCase(unittest.TestCase):
         context = MemorizeContext(normalize_keys='INVALID_MODE')
         self.assertRaises(InvalidModeForNormalizeUriError, context.normalize_uri_value, "rdf:type")
 
+    def test_normalize_prefix_value_to_shorten(self):
+        prefix = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        context = MemorizeContext(normalize_values=SHORTEN)
+        normalized = context.normalize_prefix_value(prefix)
+        self.assertEqual(normalized, 'rdf')
+
+    def test_normalize_prefix_value_to_shorten(self):
+        prefix = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        context = MemorizeContext(normalize_values=SHORTEN)
+        normalized = context.normalize_prefix_value(prefix)
+        self.assertEqual(normalized, 'rdf')
+
+    def test_normalize_prefix_value_to_expand(self):
+        prefix = "rdf"
+        context = MemorizeContext(normalize_values=EXPAND)
+        normalized = context.normalize_prefix_value(prefix)
+        self.assertEqual(normalized, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+
+    def test_normalize_prefix_value_to_shorten_inversed(self):
+        prefix = "rdf"
+        context = MemorizeContext(normalize_values=SHORTEN)
+        normalized = context.normalize_prefix_value(prefix)
+        self.assertEqual(normalized, 'rdf')
+
+    def test_normalize_prefix_value_to_expand_inversed(self):
+        prefix = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        context = MemorizeContext(normalize_values=EXPAND)
+        normalized = context.normalize_prefix_value(prefix)
+        self.assertEqual(normalized, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+
+    def test_normalize_prefix_value_invalid_mode(self):
+        context = MemorizeContext(normalize_keys='INVALID_MODE')
+        self.assertRaises(InvalidModeForNormalizeUriError, context.normalize_prefix_value, "rdf:type")
+
 
 VALID_COMPRESSED_INSTANCE_DATA = {
     'rdf:type': 'place:City',
@@ -202,6 +236,11 @@ EXPECTED_UNCOMPRESSED_INSTANCE_DATA = {
 class ExpansionTestCase(unittest.TestCase):
     maxDiff = None
 
+    @patch("brainiak.prefixes.expand_uri", side_effect=PrefixError('Anything'))
+    def test_normalize_recusively_with_invalid_prefix(self, mock):
+        expected = compressed = 'invalid_prefix'
+        self.assertEqual(expand_all_uris_recursively(compressed), expected)
+
     def test_normalize_recusively_with_valid_input(self):
         self.assertDictEqual(expand_all_uris_recursively(VALID_COMPRESSED_INSTANCE_DATA), EXPECTED_UNCOMPRESSED_INSTANCE_DATA)
 
@@ -213,3 +252,12 @@ class ExpansionTestCase(unittest.TestCase):
         input_data = {'rdfs:comment': u'Some kind of monster.'}
         expected_output = {'http://www.w3.org/2000/01/rdf-schema#comment': u'Some kind of monster.'}
         self.assertDictEqual(expand_all_uris_recursively(input_data), expected_output)
+
+
+class ListPrefixesTestCase(unittest.TestCase):
+    maxDiff = None
+
+    def test_list_prefixes(self):
+        list_of_prefixes = list_prefixes()
+        for key in list_of_prefixes['@context']:
+            self.assertIn(key, _MAP_SLUG_TO_PREFIX)

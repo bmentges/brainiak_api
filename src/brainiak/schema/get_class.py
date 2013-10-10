@@ -330,28 +330,28 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     range_label = binding_row.get('range_label', {}).get('value', "")
 
     # compression-related
-    compressed_range_uri = context.normalize_uri_value(range_uri)
-    compressed_range_graph = context.prefix_to_slug(range_graph)
-    compressed_graph = context.prefix_to_slug(predicate_graph)
+    normalized_range_uri = context.normalize_uri_value(range_uri)
+    normalized_range_graph = context.normalize_prefix_value(range_graph)
+    normalized_graph = context.normalize_prefix_value(predicate_graph)
+    normalized_class_uri = context.normalize_uri_value(binding_row["domain_class"]['value'])
 
     # build up predicate dictionary
     predicate = {}
-    predicate["class"] = binding_row["domain_class"]['value']
-    predicate["graph"] = compressed_graph
+    predicate["class"] = normalized_class_uri
+    predicate["graph"] = normalized_graph
     predicate["title"] = binding_row["title"]['value']
 
     if "predicate_comment" in binding_row:
         predicate["description"] = binding_row["predicate_comment"]['value']
 
     if predicate_type == OBJECT_PROPERTY:
-        context.add_object_property(predicate_uri, compressed_range_uri)
-        predicate["range"] = {'@id': compressed_range_uri,
-                              'graph': compressed_range_graph,
+        context.add_object_property(predicate_uri, normalized_range_uri)
+        predicate["range"] = {'@id': normalized_range_uri,
+                              'graph': normalized_range_graph,
                               'title': range_label,
                               'type': 'string',
                               'format': 'uri'}
 
-        # todo: unittest
         max_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('maxItems', 2)
         min_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('minItems', 2)
 

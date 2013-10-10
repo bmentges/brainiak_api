@@ -100,7 +100,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                              'type': 'string',
                                              'format': 'uri'},
                                    'graph': 'test',
-                                   'class': u'http://test/person/AnyClass',
+                                   'class': u'test:AnyClass',
                                    'format': 'uri',
                                    'title': u'Sexo',
                                    'type': 'string'}
@@ -147,7 +147,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                                    'graph': 'test',
                                    'title': u'Nome',
                                    'type': 'string',
-                                   'class': u'http://test/person/AnyClass',
+                                   'class': u'test:AnyClass',
                                    'datatype': 'xsd:string'}
         name = u'http://test/person/gender'
         predicate = {u'predicate': {u'type': u'uri', u'value': u'http://test/person/name'},

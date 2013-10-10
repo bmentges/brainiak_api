@@ -22,8 +22,7 @@ from brainiak.instance.delete_instance import delete_instance
 from brainiak.instance.edit_instance import edit_instance, instance_exists
 from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
-from brainiak.prefix.get_prefixes import list_prefixes
-from brainiak.prefixes import expand_all_uris_recursively
+from brainiak.prefixes import expand_all_uris_recursively, list_prefixes
 from brainiak.schema.get_class import SchemaNotFound
 from brainiak.suggest.suggest import do_suggest, SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.json_schema import schema as suggest_schema

@@ -10,6 +10,10 @@ Version 2.2.5 - 2013//
 New features
 ____________
 
+ - Any class definition (returned by ``_schema``) now includes a new attribute for each predicate dictionary.
+   The new attribute is ``class`` and it identifies the class uri in which this predicate was defined in the ontology.
+   This serves to identify predicates that were inherited or direct declared in the class.
+
 
 Refactor
 ________
@@ -23,7 +27,9 @@ Fixes
 _____
 
  - Adding unicode conversion to queries, that would break with special unicode chars.
-
+ - ``graph`` property on any class definition was not expanded when parameter expand_uri was set to 1
+ - Some predicates dictionaries in a class definition had inconsitencies when there was a clash between conflicting
+   homonimous predicates defined in the same inheritance hierarchy.
 
 
 Version 2.2.3 - 2.2.4 - 2013/09/25

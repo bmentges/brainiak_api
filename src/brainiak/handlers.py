@@ -360,7 +360,8 @@ class CollectionHandler(BrainiakRequestHandler):
                 if not o.startswith("?"):
                     filter_message.append(" with o{0}=({1})".format(index, o))
             self.query_params["filter_message"] = "".join(filter_message)
-            msg = "Instances of class ({class_uri}) in graph ({graph_uri}){filter_message} and in language=({lang}) were not found."
+            self.query_params["page"] = int(self.query_params["page"]) + 1  # Showing real page in response
+            msg = "Instances of class ({class_uri}) in graph ({graph_uri}){filter_message}, language=({lang}) and in page=({page}) were not found."
 
             response = {
                 "warning": msg.format(**self.query_params),

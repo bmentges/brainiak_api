@@ -5,7 +5,7 @@ from mock import patch
 from brainiak import prefixes
 from brainiak.prefixes import (expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri,
                                prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix,
-                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, expand_all_uris_recursively, get_prefixes_dict, list_prefixes, _MAP_SLUG_TO_PREFIX)
+                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, normalize_all_uris_recursively, get_prefixes_dict, list_prefixes, _MAP_SLUG_TO_PREFIX)
 
 
 class PrefixesTestCase(unittest.TestCase):
@@ -221,19 +221,19 @@ class ExpansionTestCase(unittest.TestCase):
     @patch("brainiak.prefixes.expand_uri", side_effect=PrefixError('Anything'))
     def test_normalize_recusively_with_invalid_prefix(self, mock):
         expected = compressed = 'invalid_prefix'
-        self.assertEqual(expand_all_uris_recursively(compressed), expected)
+        self.assertEqual(normalize_all_uris_recursively(compressed), expected)
 
     def test_normalize_recusively_with_valid_input(self):
-        self.assertDictEqual(expand_all_uris_recursively(VALID_COMPRESSED_INSTANCE_DATA), EXPECTED_UNCOMPRESSED_INSTANCE_DATA)
+        self.assertDictEqual(normalize_all_uris_recursively(VALID_COMPRESSED_INSTANCE_DATA), EXPECTED_UNCOMPRESSED_INSTANCE_DATA)
 
     def test_normalize_recursively_with_invalid_type(self):
         d = {'invalid': 3}
-        self.assertDictEqual(expand_all_uris_recursively(d), d)
+        self.assertDictEqual(normalize_all_uris_recursively(d), d)
 
     def test_real_resource(self):
         input_data = {'rdfs:comment': u'Some kind of monster.'}
         expected_output = {'http://www.w3.org/2000/01/rdf-schema#comment': u'Some kind of monster.'}
-        self.assertDictEqual(expand_all_uris_recursively(input_data), expected_output)
+        self.assertDictEqual(normalize_all_uris_recursively(input_data), expected_output)
 
 
 class ListPrefixesTestCase(unittest.TestCase):

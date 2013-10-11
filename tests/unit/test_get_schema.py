@@ -115,7 +115,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero.'},
                      u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}}
         cardinalities = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': 1, 'maxItems': 1}}}
-        context = prefixes.MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = prefixes.MemorizeContext(normalize_uri=SHORTEN)
         context.prefix_to_slug('http://test/person')
         # test call
 
@@ -136,7 +136,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'G\xeanero.'},
                      u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#AnnotationProperty'}}
         cardinalities = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': 1, 'maxItems': 1}}}
-        context = prefixes.MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = prefixes.MemorizeContext(normalize_uri=SHORTEN)
         context.prefix_to_slug('http://test/person')
         with self.assertRaises(schema.InvalidSchema) as error:
             assemble_predicate(name, predicate, cardinalities, context)
@@ -160,7 +160,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                      u'predicate_comment': {u'xml:lang': u'pt', u'type': u'literal', u'value': u'Nome completo da pessoa'},
                      u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}}
         cardinalities = {}
-        context = prefixes.MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = prefixes.MemorizeContext(normalize_uri=SHORTEN)
         context.prefix_to_slug('http://test/person')
         # test call
         effective_predicate_dict = assemble_predicate(name, predicate, cardinalities, context)
@@ -194,7 +194,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
                 u'http://example.onto/Human': {'maxItems': 2}
             }
         }
-        context = prefixes.MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = prefixes.MemorizeContext(normalize_uri=SHORTEN)
         context.prefix_to_slug('http://test/person')
         computed = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
         expected = {
@@ -345,7 +345,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
             object_properties = {}
             context = {'test': 'http://test.graph/'}
 
-        context = ContextMock(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = ContextMock(normalize_uri=SHORTEN)
         cardinalities = {}
         bindings = [
             {
@@ -378,7 +378,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
             object_properties = {}
             context = {'test': 'http://test.graph/'}
 
-        context = ContextMock(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = ContextMock(normalize_uri=SHORTEN)
         cardinalities = {}
         bindings = [
             {
@@ -417,7 +417,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
             object_properties = {}
             context = {'g1': 'http://semantica.globo.com/G1/'}
 
-        context = ContextMock(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = ContextMock(normalize_uri=SHORTEN)
         cardinalities = {}
         bindings = [
             {
@@ -478,7 +478,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
             object_properties = {}
             context = {'g1': 'http://semantica.globo.com/G1/'}
 
-        context = ContextMock(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = ContextMock(normalize_uri=SHORTEN)
         cardinalities = {}
         bindings = [
             {
@@ -512,7 +512,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
             object_properties = {}
             context = {'test': 'http://test.graph/'}
 
-        context = ContextMock(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = ContextMock(normalize_uri=SHORTEN)
         cardinalities = {}
         bindings = [
             {

@@ -108,6 +108,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
@@ -177,13 +178,45 @@
 <p><strong>Status 200</strong></p>
 <p>The response body is a JSON containing the prefixes in a &#8220;&#64;context&#8221; section
 and the root context, which is a context whose name is not in the prefix URI.</p>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;@context&quot;: {
+        &quot;base&quot;: &quot;http://semantica.globo.com/base/&quot;,
+        &quot;dbpedia&quot;: &quot;http://dbpedia.org/ontology/&quot;,
+        &quot;dc&quot;: &quot;http://purl.org/dc/elements/1.1/&quot;,
+        &quot;dct&quot;: &quot;http://purl.org/dc/terms/&quot;,
+        &quot;ego&quot;: &quot;http://semantica.globo.com/ego/&quot;,
+        &quot;esportes&quot;: &quot;http://semantica.globo.com/esportes/&quot;,
+        &quot;eureka&quot;: &quot;http://semantica.globo.com/eureka/&quot;,
+        &quot;event&quot;: &quot;http://purl.org/NET/c4dm/event.owl#&quot;,
+        &quot;foaf&quot;: &quot;http://xmlns.com/foaf/0.1/&quot;,
+        &quot;g1&quot;: &quot;http://semantica.globo.com/G1/&quot;,
+        &quot;geo&quot;: &quot;http://www.w3.org/2003/01/geo/wgs84_pos#&quot;,
+        &quot;glb&quot;: &quot;http://semantica.globo.com/&quot;,
+        &quot;nodeID&quot;: &quot;nodeID&quot;,
+        &quot;organization&quot;: &quot;http://semantica.globo.com/organization/&quot;,
+        &quot;owl&quot;: &quot;http://www.w3.org/2002/07/owl#&quot;,
+        &quot;person&quot;: &quot;http://semantica.globo.com/person/&quot;,
+        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;,
+        &quot;rdf&quot;: &quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;,
+        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;,
+        &quot;schema&quot;: &quot;http://schema.org/&quot;,
+        &quot;time&quot;: &quot;http://www.w3.org/2006/time#&quot;,
+        &quot;tvg&quot;: &quot;http://semantica.globo.com/tvg/&quot;,
+        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;,
+        &quot;xsd&quot;: &quot;http://www.w3.org/2001/XMLSchema#&quot;
+    },
+    &quot;root_context&quot;: &quot;glb&quot;
+}
 </pre></div>
 </div>
 <p><strong>Status 400</strong></p>
 <p>If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.</p>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;errors&quot;: [
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: do_item_count, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, lang, page, per_page, sort_by, sort_include_empty, sort_order.&quot;
+    ]
+}
 </pre></div>
 </div>
 <p><strong>Status 500</strong></p>

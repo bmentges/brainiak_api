@@ -16,8 +16,8 @@ def get_super_properties(context, bindings):
     super_properties = {}
     for item in bindings:
         if 'super_property' in item:
-            key = context.normalize_uri_key(item['super_property']['value'])
-            value = context.normalize_uri_value(item['predicate']['value'])
+            key = context.normalize_uri(item['super_property']['value'])
+            value = context.normalize_uri(item['predicate']['value'])
             super_properties[key] = value
     return super_properties
 
@@ -106,7 +106,7 @@ def filter_values(result_dict, key):
     return [item[key]['value'] for item in result_dict['results']['bindings'] if item.get(key)]
 
 
-def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=None, expand_keys=False, expand_values=False):
+def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=None, expand_uri=False):
     """
     Return a list of compressed items of the 'bindings' list of a Virtuoso response dict.
 
@@ -143,7 +143,7 @@ def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=Non
             if not key in ignore_keys:
                 value = item[key]['value']
                 effective_key = keymap.get(key, key)
-                if item[key]['type'] == 'uri' and context and effective_key != '@id' and not expand_values:
+                if item[key]['type'] == 'uri' and context and effective_key != '@id' and not expand_uri:
                     value = context.shorten_uri(value)
                 row[effective_key] = value
         result_list.append(row)

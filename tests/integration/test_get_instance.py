@@ -67,24 +67,8 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(body[u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'], URI_PREFIX + u'person/Gender')
         self.assertEqual(body[URI_PREFIX + u'upper/name'], u'Feminino')
 
-    def test_get_instance_200_with_expanded_keys(self):
-        response = self.fetch('/person/Gender/Female?expand_uri_keys=1', method='GET')
-        body = json.loads(response.body)
-        self.assertEqual(response.code, 200)
-        self.assertEqual(body[u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'], u'person:Gender')
-        self.assertEqual(body[URI_PREFIX + u'upper/name'], u'Feminino')
-        self.assertEqual(body['@type'], 'person:Gender')
-
-    def test_get_instance_200_with_expanded_values(self):
-        response = self.fetch('/person/Gender/Female?expand_uri_values=1', method='GET')
-        body = json.loads(response.body)
-        self.assertEqual(response.code, 200)
-        self.assertEqual(body[u'rdf:type'], URI_PREFIX + u'person/Gender')
-        self.assertEqual(body[u'upper:name'], u'Feminino')
-        self.assertEqual(body['@type'], URI_PREFIX + u'person/Gender')
-
     def test_get_instance_200_with_expanded_both(self):
-        response = self.fetch('/person/Gender/Female?expand_uri_keys=1&expand_uri_values=1', method='GET')
+        response = self.fetch('/person/Gender/Female?expand_uri=1', method='GET')
         body = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertEqual(body[u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'], URI_PREFIX + u'person/Gender')

@@ -108,6 +108,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
@@ -251,6 +252,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
 <p><strong>instance_id</strong>: Unique word identifier for an instance. This is composed with <tt class="docutils literal"><span class="pre">instance_prefix</span></tt> to form an equivalent of <tt class="docutils literal"><span class="pre">instance_uri</span></tt>.</p>
 <p><strong>instance_uri</strong>: Set the instance URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME/INSTANCE_ID</span></tt></p>
 <p><strong>expand_object_properties</strong>: If set to 1 determines that the ObjectProperties of the response will map objects as <tt class="docutils literal"><span class="pre">{&quot;&#64;id&quot;:</span> <span class="pre">&quot;object:uri&quot;,</span> <span class="pre">&quot;title&quot;:</span> <span class="pre">&quot;object</span> <span class="pre">label&quot;}</span></tt>. The default value for <tt class="docutils literal"><span class="pre">expand_object_properties</span></tt> is 0 and the objects of ObjectProperties are represented as strings such as <tt class="docutils literal"><span class="pre">&quot;object:uri&quot;</span></tt>.</p>
+<p><strong>meta_properties</strong>: If set to 0 excludes from response JSON properties like <tt class="docutils literal"><span class="pre">_base_url</span></tt>, <tt class="docutils literal"><span class="pre">&#64;id</span></tt>, <tt class="docutils literal"><span class="pre">&#64;type</span></tt>, etc. The default value is 1.</p>
 </div>
 <div class="section" id="possible-responses">
 <h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>
@@ -259,7 +261,11 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
 <p><strong>Status 400</strong></p>
 <p>If there are unknown parameters in the request, the response status code
 is 400 and the body contains a JSON containing valid and invalid parameters.</p>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;errors&quot;: [
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_object_properties, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang, meta_properties.&quot;
+    ]
+}
 </pre></div>
 </div>
 <p>The 400 status may also happen when the JSON provided is invalid:</p>
@@ -273,7 +279,11 @@ is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 <div class="highlight-http"><div class="highlight"><pre>
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;errors&quot;: [
+        &quot;HTTP error: 404\nClass InexistentClass doesn&#39;t exist in context place.&quot;
+    ]
+}
 </pre></div>
 </div>
 <p><strong>Status 500</strong></p>

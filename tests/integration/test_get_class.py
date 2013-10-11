@@ -767,10 +767,10 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         schema = get_cached_schema(query_params)
         self.assertEqual(schema, {"cached": "true"})
 
-    @patch("brainiak.schema.get_class.expand_all_uris_recursively", return_value={})
+    @patch("brainiak.schema.get_class.normalize_all_uris_recursively", return_value={})
     @patch("brainiak.schema.get_class.get_schema", return_value={"cached": "false"})
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
-    def test_get_cached_schema_raise_schema_not_found_exception(self, settings_mock, get_schema_mock, expand_all_uris_recursively_mock):
+    def test_get_cached_schema_raise_schema_not_found_exception(self, settings_mock, get_schema_mock, normalize_all_uris_recursively_mock):
         uri = "http://example.onto/Place/_schema"
         query_params = {
             'class_uri': u'http://example.onto/Place',

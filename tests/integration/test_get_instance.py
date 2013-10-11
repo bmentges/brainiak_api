@@ -153,7 +153,8 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
-                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'}
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'object_label': {u'type': u'literal', u'value': u'News'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
@@ -161,7 +162,6 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
                 u'object_label': {u'type': u'literal', u'value': u'Cricket'}
             }
         ]
-
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_instance_query_expand_object_properties_is_not_defined(self):

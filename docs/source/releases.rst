@@ -21,7 +21,8 @@ ________
  - #10645 Adding ``datatype`` property to the schema (class description), documenting
    precisely the semantic type of the range of a datatype predicate.
    The ``format`` field was used to convey that information, it is no longer used for this purpose.
-
+ - #10694 Removing  parameters for optional URI expansion in responses: expand_uri_keys and expand_uri_values.
+   We still support expand_uri to control expansion in the response, but it always impacts keys and values.
 
 Fixes
 _____

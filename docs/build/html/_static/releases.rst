@@ -4,8 +4,15 @@ Releases
 Version 2.2.5 - 2013//
 -----------------------------------
 
+.. TODO meta_properties on releases.
+.. TODO review all other changes.
+
 New features
 ____________
+
+ - Any class definition (returned by ``_schema``) now includes a new attribute for each predicate dictionary.
+   The new attribute is ``class`` and it identifies the class uri in which this predicate was defined in the ontology.
+   This serves to identify predicates that were inherited or direct declared in the class.
 
 
 Refactor
@@ -14,13 +21,16 @@ ________
  - #10645 Adding ``datatype`` property to the schema (class description), documenting
    precisely the semantic type of the range of a datatype predicate.
    The ``format`` field was used to convey that information, it is no longer used for this purpose.
-
+ - #10694 Removing  parameters for optional URI expansion in responses: expand_uri_keys and expand_uri_values.
+   We still support expand_uri to control expansion in the response, but it always impacts keys and values.
 
 Fixes
 _____
 
  - Adding unicode conversion to queries, that would break with special unicode chars.
-
+ - ``graph`` property on any class definition was not expanded when parameter expand_uri was set to 1
+ - Some predicates dictionaries in a class definition had inconsitencies when there was a clash between conflicting
+   homonimous predicates defined in the same inheritance hierarchy.
 
 
 Version 2.2.3 - 2.2.4 - 2013/09/25

@@ -25,14 +25,13 @@ def get_cached_schema(query_params):
 
 def get_schema(query_params):
 
-    context = MemorizeContext(normalize_keys=query_params['expand_uri_keys'],
-                              normalize_values=query_params['expand_uri_values'])
+    context = MemorizeContext(normalize_uri=query_params['expand_uri'])
 
     class_schema = query_class_schema(query_params)
     if not class_schema["results"]["bindings"]:
         return
 
-    normalized_uri = context.normalize_uri_value(query_params["class_uri"])
+    normalized_uri = context.normalize_uri(query_params["class_uri"])
 
     query_params["superclasses"] = query_superclasses(query_params)
     predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
@@ -311,7 +310,7 @@ def _query_superclasses(query_params):
 
 
 def items_from_range(context, range_uri):
-    short_range = context.normalize_uri_value(range_uri)
+    short_range = context.normalize_uri(range_uri)
     if short_range == 'xsd:date' or short_range == 'xsd:dateTime':
         predicate = {"type": "string", "format": "date"}
     else:
@@ -329,10 +328,10 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     range_label = binding_row.get('range_label', {}).get('value', "")
 
     # compression-related
-    normalized_range_uri = context.normalize_uri_value(range_uri)
+    normalized_range_uri = context.normalize_uri(range_uri)
     normalized_range_graph = context.normalize_prefix_value(range_graph)
     normalized_graph = context.normalize_prefix_value(predicate_graph)
-    normalized_class_uri = context.normalize_uri_value(binding_row["domain_class"]['value'])
+    normalized_class_uri = context.normalize_uri(binding_row["domain_class"]['value'])
 
     # build up predicate dictionary
     predicate = {}
@@ -451,7 +450,7 @@ def convert_bindings_dict(context, bindings, cardinalities, superclasses):
 
     for binding_row in bindings:
         predicate_uri = binding_row['predicate']['value']
-        predicate_key = context.normalize_uri_key(predicate_uri)
+        predicate_key = context.normalize_uri(predicate_uri)
 
         # super_predicate is when we use rdfs:subPropertyOf
         # this case does not consider inherited predicates

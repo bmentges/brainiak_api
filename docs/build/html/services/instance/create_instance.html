@@ -108,6 +108,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
@@ -163,7 +164,14 @@
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X POST -T <span class="s2">&quot;new_york_city.json&quot;</span> http://brainiak.semantica.dev.globoi.com/place/City
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 500 Internal Server Error
+Server: nginx
+Date: Fri, 11 Oct 2013 18:47:47 GMT
+Content-Type: application/json; charset=UTF-8
+Content-Length: 1281
+Connection: keep-alive
+
+{&quot;errors&quot;: [&quot;HTTP error: 500\nProperty http://www.w3.org/2000/01/rdf-schema#comment was not found in the schema of instance http://semantica.globo.com/place/City/e0ec716d-9060-42c1-8ee7-1bcf63d0c4dc\nException:\nTraceback (most recent call last):\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/web.py\&quot;, line 1115, in _stack_context_handle_exception\n    raise_exc_info((type, value, traceback))\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/stack_context.py\&quot;, line 302, in wrapped\n    ret = fn(*args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131010191449/brainiak/greenlet_tornado.py\&quot;, line 77, in callback\n    gr.switch(response)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131010191449/brainiak/greenlet_tornado.py\&quot;, line 104, in greenlet_base_func\n    wrapped_method(self, *args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131010191449/brainiak/handlers.py\&quot;, line 332, in post\n    raise HTTPError(500, log_message=str(ex))\n\nHTTPError: HTTP 500: Internal Server Error (Property http://www.w3.org/2000/01/rdf-schema#comment was not found in the schema of instance http://semantica.globo.com/place/City/e0ec716d-9060-42c1-8ee7-1bcf63d0c4dc)\n&quot;]}
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -216,7 +224,11 @@ a instance from the API. For retrieving it, use the retrieve instance primitive 
 <p><strong>Status 400</strong></p>
 <p>If there are unknown parameters in the request, the response status code
 is 400 and the body contains a JSON containing valid and invalid parameters.</p>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;errors&quot;: [
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_object_properties, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang, meta_properties.&quot;
+    ]
+}
 </pre></div>
 </div>
 <p>The 400 status may also happen when the JSON provided is invalid:</p>
@@ -228,7 +240,11 @@ is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 </div>
 <p><strong>Status 404</strong></p>
 <p>If the class does not exist, the response status code is 404.</p>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;errors&quot;: [
+        &quot;HTTP error: 404\nClass Person doesn&#39;t exist in context place.&quot;
+    ]
+}
 </pre></div>
 </div>
 <p><strong>Status 500</strong></p>

@@ -252,7 +252,7 @@ def _query_predicate_with_lang(query_params):
 
 
 QUERY_PREDICATE_WITHOUT_LANG = """
-SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property
+SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
 WHERE {
     {
       GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .

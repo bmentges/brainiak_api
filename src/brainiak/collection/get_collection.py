@@ -1,10 +1,14 @@
 import inspect
 from urllib import unquote
+
+from tornado.web import HTTPError
+
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
 from brainiak.utils.links import build_schema_url_for_instance, remove_last_slash
 from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination, calculate_offset
-from brainiak.utils.sparql import compress_keys_and_values, is_literal, is_url, normalize_term, get_one_value, extract_po_tuples
+from brainiak.utils.sparql import compress_keys_and_values, is_literal, is_url, normalize_term, get_one_value, \
+        extract_po_tuples, is_result_true
 
 
 class Query(object):
@@ -264,6 +268,11 @@ def add_prefix(items_list, class_prefix):
 
 
 def filter_instances(query_params):
+    if not class_exists(query_params):
+        error_message = "Class {0} in context {1} does not exist".format(
+            query_params["class_name"], query_params["context_name"])
+        raise HTTPError(404, log_message=error_message)
+
     keymap = {
         "label": "title",
         "subject": "@id",
@@ -302,3 +311,16 @@ def build_json(items_list, query_params):
     decorate_dict_with_pagination(json, query_params, calculate_total_items)
 
     return json
+
+
+QUERY_CLASS_EXISTS = u"""
+ASK {
+  GRAPH <%(graph_uri)s> {<%(class_uri)s> a owl:Class}
+}
+"""
+
+
+def class_exists(query_params):
+    query = QUERY_CLASS_EXISTS % query_params
+    query_result = triplestore.query_sparql(query, query_params.triplestore_config)
+    return is_result_true(query_result)

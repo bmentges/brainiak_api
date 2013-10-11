@@ -40,6 +40,10 @@ By default, the first page containing 10 items is returned (``?page=1&per_page=1
 .. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/place/?page=1&per_page=10' | python -mjson.tool
   :shell:
 
+If there are no instances, the response will contain a warning.
+
+.. include :: examples/list_collections_no_results.rst
+
 
 **Status 400**
 
@@ -52,7 +56,7 @@ A JSON containing both the wrong parameters and the accepted ones is returned.
 
 **Status 404**
 
-If there are no instances, the response status code is a 404.
+If the graph does not exist, the response status code is 404.
 
 .. include :: examples/list_collections_404.rst
 

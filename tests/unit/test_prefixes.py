@@ -134,62 +134,44 @@ class MemorizeContextTestCase(unittest.TestCase):
 
 class NormalizationTestCase(unittest.TestCase):
 
-    def test_expand_uri_keys(self):
-        context = MemorizeContext(normalize_keys=EXPAND)
-        self.assertEqual(context.normalize_uri_key("rdf:type"), "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+    def test_expand_uri(self):
+        context = MemorizeContext(normalize_uri=EXPAND)
+        self.assertEqual(context.normalize_uri("rdf:type"), "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 
-    def test_expand_uri_values(self):
-        context = MemorizeContext(normalize_values=EXPAND)
-        self.assertEqual(context.normalize_uri_value("rdf:type"), "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+    def test_shorten_uri(self):
+        context = MemorizeContext(normalize_uri=SHORTEN)
+        self.assertEqual(context.normalize_uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), "rdf:type")
 
-    def test_shorten_uri_keys(self):
-        context = MemorizeContext(normalize_keys=SHORTEN)
-        self.assertEqual(context.normalize_uri_key("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), "rdf:type")
+    def test_normalize_uri_invalid_mode(self):
+        context = MemorizeContext(normalize_uri='INVALID_MODE')
+        self.assertRaises(InvalidModeForNormalizeUriError, context.normalize_uri, "rdf:type")
 
-    def test_shorten_uri_values(self):
-        context = MemorizeContext(normalize_values=SHORTEN)
-        self.assertEqual(context.normalize_uri_value("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), "rdf:type")
-
-    def test_normalize_uri_key_invalid_mode(self):
-        context = MemorizeContext(normalize_keys='INVALID_MODE')
-        self.assertRaises(InvalidModeForNormalizeUriError, context.normalize_uri_key, "rdf:type")
-
-    def test_normalize_uri_value_invalid_mode(self):
-        context = MemorizeContext(normalize_keys='INVALID_MODE')
-        self.assertRaises(InvalidModeForNormalizeUriError, context.normalize_uri_value, "rdf:type")
-
-    def test_normalize_prefix_value_to_shorten(self):
+    def test_normalize_prefix_to_shorten(self):
         prefix = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-        context = MemorizeContext(normalize_values=SHORTEN)
+        context = MemorizeContext(normalize_uri=SHORTEN)
         normalized = context.normalize_prefix_value(prefix)
         self.assertEqual(normalized, 'rdf')
 
-    def test_normalize_prefix_value_to_shorten(self):
-        prefix = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-        context = MemorizeContext(normalize_values=SHORTEN)
-        normalized = context.normalize_prefix_value(prefix)
-        self.assertEqual(normalized, 'rdf')
-
-    def test_normalize_prefix_value_to_expand(self):
+    def test_normalize_prefix_to_expand(self):
         prefix = "rdf"
-        context = MemorizeContext(normalize_values=EXPAND)
+        context = MemorizeContext(normalize_uri=EXPAND)
         normalized = context.normalize_prefix_value(prefix)
         self.assertEqual(normalized, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 
-    def test_normalize_prefix_value_to_shorten_inversed(self):
+    def test_normalize_prefix_to_shorten_inversed(self):
         prefix = "rdf"
-        context = MemorizeContext(normalize_values=SHORTEN)
+        context = MemorizeContext(normalize_uri=SHORTEN)
         normalized = context.normalize_prefix_value(prefix)
         self.assertEqual(normalized, 'rdf')
 
-    def test_normalize_prefix_value_to_expand_inversed(self):
+    def test_normalize_prefix_to_expand_inversed(self):
         prefix = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-        context = MemorizeContext(normalize_values=EXPAND)
+        context = MemorizeContext(normalize_uri=EXPAND)
         normalized = context.normalize_prefix_value(prefix)
         self.assertEqual(normalized, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 
-    def test_normalize_prefix_value_invalid_mode(self):
-        context = MemorizeContext(normalize_keys='INVALID_MODE')
+    def test_normalize_prefix_invalid_mode(self):
+        context = MemorizeContext(normalize_uri='INVALID_MODE')
         self.assertRaises(InvalidModeForNormalizeUriError, context.normalize_prefix_value, "rdf:type")
 
 

@@ -217,9 +217,14 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         body = json.loads(response.body)
         expected_body = {
             u'items': [],
-            u'warning': u'Instances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with o=(Xubiru) and in language=(pt) were not found.'
+            u'warning': u'Instances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with o=(Xubiru), language=(pt) and in page=(1) were not found.'
         }
         self.assertEqual(body, expected_body)
+
+    @patch("brainiak.handlers.logger")
+    def test_class_does_not_exist(self, log):
+        response = self.fetch('/person/Xubiru', method='GET')
+        self.assertEqual(response.code, 404)
 
     @patch("brainiak.handlers.logger")
     def test_filter_with_no_results_and_multiple_predicates(self, log):
@@ -229,7 +234,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         body = json.loads(response.body)
         expected_body = {
             u'items': [],
-            u'warning': u'Instances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1) and in language=(pt) were not found.'
+            u'warning': u'Instances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1), language=(pt) and in page=(1) were not found.'
         }
         self.assertEqual(body, expected_body)
 
@@ -895,10 +900,10 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(len(computed_bindings), 2)
         self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 
-    def test_filter_instances_result_is_empty_raises_404(self):
-        # mock
-        get_collection.query_filter_instances = lambda params: {"results": {"bindings": []}}
-        get_collection.query_count_filter_instances = lambda params: {"results": {"bindings": []}}
+    @patch("brainiak.collection.get_collection.query_filter_instances", return_value={"results": {"bindings": []}})
+    @patch("brainiak.collection.get_collection.query_count_filter_instances", return_value={"results": {"bindings": []}})
+    @patch("brainiak.collection.get_collection.class_exists", return_value=True)
+    def test_filter_instances_result_is_empty_raises_404(self, mocked_class_exists, mocked_query_count, mocked_query):
         params = Params({
             "o": "",
             "p": "",

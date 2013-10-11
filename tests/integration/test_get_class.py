@@ -278,13 +278,7 @@ class PredicatesQueryTestCase(QueryTestCase):
         computed = self.query(query)['results']['bindings']
         expected = [
             {
-                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/description'},
-                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
-                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
-                u'title': {u'type': u'literal', u'value': u'Description of a place'},
-                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
-            },
-            {
+                u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/Canidae'},
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furLenght'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurLenght'},
@@ -292,6 +286,15 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             },
             {
+                u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/Canidae'},
+                u'predicate': {u'type': u'uri', u'value': u'http://example.onto/description'},
+                u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
+                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/2001/XMLSchema#string'},
+                u'title': {u'type': u'literal', u'value': u'Description of a place'},
+                u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}
+            },
+            {
+                u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/Mammalia'},
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/furColour'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/FurColour'},
@@ -299,7 +302,7 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             }
         ]
-        self.assertEqual(sorted(expected), sorted(computed))
+        self.assertListEqual(expected, computed)
 
     def test_query_predicate_subproperty(self):
         filter_ = "FILTER (?domain_class IN (<http://example.onto/Yorkshire_Terrier>))"
@@ -308,6 +311,7 @@ class PredicatesQueryTestCase(QueryTestCase):
         computed = self.query(query)['results']['bindings']
         expected = [
             {
+                u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/Yorkshire_Terrier'},
                 u'predicate': {u'type': u'uri', u'value': u'http://example.onto/birthCity'},
                 u'predicate_graph': {u'type': u'uri', u'value': u'http://example.onto/'},
                 u'range': {u'type': u'uri', u'value': u'http://example.onto/City'},
@@ -371,6 +375,7 @@ class PredicatesQueryTestCaseMultipleDomainRange(QueryTestCase):
         computed = self.query(query)['results']['bindings']
         expected = [
             {
+                u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/ResearchGroup'},
                 u"predicate": {u"type": u"uri", u"value": u"http://example.onto/isBasedIn"},
                 u"predicate_graph": {u"type": u"uri", u"value": u"http://example.onto/"},
                 u"type": {u"type": u"uri", u"value": u"http://www.w3.org/2002/07/owl#ObjectProperty"},
@@ -380,6 +385,7 @@ class PredicatesQueryTestCaseMultipleDomainRange(QueryTestCase):
                 u"range_label": {u"type": u"literal", u"value": u"University"}
             },
             {
+                u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/ResearchGroup'},
                 u"predicate": {u"type": u"uri", u"value": u"http://example.onto/isBasedIn"},
                 u"predicate_graph": {u"type": u"uri", u"value": u"http://example.onto/"},
                 u"type": {u"type": u"uri", u"value": u"http://www.w3.org/2002/07/owl#ObjectProperty"},
@@ -398,6 +404,7 @@ class PredicatesQueryTestCaseMultipleDomainRange(QueryTestCase):
         computed = self.query(query)['results']['bindings']
         expected = [
             {
+                u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/City'},
                 u"predicate": {u"type": u"uri", u"value": u"http://example.onto/partOfCountry"},
                 u"predicate_graph": {u"type": u"uri", u"value": u"http://example.onto/"},
                 u"type": {u"type": u"uri", u"value": u"http://www.w3.org/2002/07/owl#ObjectProperty"},

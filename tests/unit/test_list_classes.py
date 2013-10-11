@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
+
+from mock import patch
+
 from brainiak import settings
 
 from brainiak.context import get_context
@@ -31,14 +34,16 @@ class GetContextTestCase(unittest.TestCase):
         get_context.assemble_list_json = self.original_assemble_list_json
         get_context.query_classes_list = self.original_query_classes_list
 
-    def test_list_classes_with_no_result(self):
+    @patch("brainiak.context.get_context.graph_exists", return_value=True)
+    def test_list_classes_with_no_result(self, mocked_graph_exists):
         get_context.get_one_value = lambda x, y: "0"
         handler = MockHandler(page="1")
         params = ParamDict(handler, context_name="context_name", class_name="class_name", **LIST_PARAMS)
         result = get_context.list_classes(params)
         self.assertEqual(result["items"], [])
 
-    def test_list_classes_return_result(self):
+    @patch("brainiak.context.get_context.graph_exists", return_value=True)
+    def test_list_classes_return_result(self, mocked_graph_exists):
         get_context.get_one_value = lambda x, y: "1"
         get_context.assemble_list_json = lambda x, y: "expected result"
         get_context.query_classes_list = lambda x: {'results': {'bindings': 'do not remove this'}}

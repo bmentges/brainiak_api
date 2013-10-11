@@ -39,6 +39,10 @@ By default, the first page containing 10 items is returned (``?page=1&per_page=1
 .. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/place/Continent?page=1&per_page=10' | python -mjson.tool
   :shell:
 
+If there are no instances for this class, the response will contain a warning and a items list empty.
+
+.. include :: examples/list_instance_no_results.rst
+
 **Status 400**
 
 If there are unknown parameters in the request query string, the response status code is 400.
@@ -49,7 +53,7 @@ A JSON containing both the wrong parameters and the accepted ones is returned.
 
 **Status 404**
 
-If there are no instances, the response status code is a 404.
+If the class does not exist, the response status code is a 404.
 
 .. include :: examples/list_instance_404.rst
 

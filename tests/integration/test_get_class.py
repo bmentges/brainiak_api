@@ -630,7 +630,7 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         schema.query_cardinalities = lambda query: fake_response_cardinalities
         schema.query_predicates = lambda query: fake_response_predicates
 
-        context = prefixes.MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = prefixes.MemorizeContext(normalize_uri=SHORTEN)
         params = {"class_uri": "http://test/person/gender",
                   "class_schema": None,
                   "superclasses": ["http://test/person/Gender"]}
@@ -707,22 +707,8 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         json_received = json.loads(response.body)
         self.assertEqual(json_received['id'], u'http://semantica.globo.com/person/Gender')
 
-    def test_schema_handler_with_uri_normalization_expand_just_keys(self):
-        response = self.fetch('/person/Gender/_schema?expand_uri_keys=1')
-        self.assertEqual(response.code, 200)
-        json_received = json.loads(response.body)
-        self.assertIn('http://semantica.globo.com/upper/isPartOf', json_received['properties'].keys())
-        self.assertEqual(json_received['id'], u'person:Gender')
-
-    def test_schema_handler_with_uri_normalization_expand_just_values(self):
-        response = self.fetch('/person/Gender/_schema?expand_uri_values=1')
-        self.assertEqual(response.code, 200)
-        json_received = json.loads(response.body)
-        self.assertEqual('http://www.w3.org/2001/XMLSchema#string', json_received['properties']['upper:description']['datatype'])
-        self.assertEqual(json_received['id'], u'http://semantica.globo.com/person/Gender')
-
     def test_schema_handler_with_uri_normalization_expand_both(self):
-        response = self.fetch('/person/Gender/_schema?expand_uri_keys=1&expand_uri_values=1')
+        response = self.fetch('/person/Gender/_schema?expand_uri=1')
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         self.assertEqual(json_received['id'], u'http://semantica.globo.com/person/Gender')
@@ -734,7 +720,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_with_invalid_params(self, log):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
-        self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, expand_uri_keys, expand_uri_values, graph_uri, lang."]}')
+        self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, graph_uri, lang."]}')
 
     @patch("brainiak.handlers.logger")
     def test_schema_handler_class_undefined(self, log):
@@ -751,8 +737,6 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
             'class_uri': u'http://example.onto/Place',
             'do_item_count': '0',
             'expand_uri': '0',
-            'expand_uri_keys': '0',
-            'expand_uri_values': '0',
             'graph_uri': u'http://example.onto/',
             'lang': 'pt',
             'request': MockRequest(uri=uri)
@@ -769,8 +753,6 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
             'class_uri': u'http://example.onto/Place',
             'do_item_count': '0',
             'expand_uri': '0',
-            'expand_uri_keys': '0',
-            'expand_uri_values': '0',
             'graph_uri': u'http://example.onto/',
             'lang': 'pt',
             'request': MockRequest(uri=uri)
@@ -787,8 +769,6 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
             'class_uri': u'http://example.onto/Place',
             'do_item_count': '0',
             'expand_uri': '0',
-            'expand_uri_keys': '0',
-            'expand_uri_values': '0',
             'graph_uri': u'http://example.onto/',
             'lang': 'pt',
             'request': MockRequest(uri=uri)

@@ -36,7 +36,7 @@ class GetContextTestCase(unittest.TestCase):
         handler = MockHandler(page="1")
         params = ParamDict(handler, context_name="context_name", class_name="class_name", **LIST_PARAMS)
         result = get_context.list_classes(params)
-        self.assertEqual(result, None)
+        self.assertEqual(result["items"], [])
 
     def test_list_classes_return_result(self):
         get_context.get_one_value = lambda x, y: "1"

@@ -16,8 +16,7 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
     @patch("brainiak.handlers.logger")
     def test_get_instance_with_nonexistent_uri(self, log):
         response = self.fetch('/person/Gender/Alien')
-        self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, '{}')
+        self.assertEqual(response.code, 404)
 
     def test_get_instance(self):
         response = self.fetch('/person/Gender/Male')
@@ -152,13 +151,14 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
                 u'object': {u'type': u'literal', u'value': u'Cricket becomes the most popular sport of Brazil'}
             },
             {
-                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
-                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'}
-            },
-            {
                 u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
                 u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/Cricket'},
                 u'object_label': {u'type': u'literal', u'value': u'Cricket'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'object_label': {u'type': u'literal', u'value': u'News'}
             }
         ]
 

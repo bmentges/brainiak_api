@@ -166,12 +166,12 @@
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 500 Internal Server Error
 Server: nginx
-Date: Fri, 11 Oct 2013 18:47:47 GMT
+Date: Fri, 11 Oct 2013 20:14:09 GMT
 Content-Type: application/json; charset=UTF-8
 Content-Length: 1281
 Connection: keep-alive
 
-{&quot;errors&quot;: [&quot;HTTP error: 500\nProperty http://www.w3.org/2000/01/rdf-schema#comment was not found in the schema of instance http://semantica.globo.com/place/City/e0ec716d-9060-42c1-8ee7-1bcf63d0c4dc\nException:\nTraceback (most recent call last):\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/web.py\&quot;, line 1115, in _stack_context_handle_exception\n    raise_exc_info((type, value, traceback))\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/stack_context.py\&quot;, line 302, in wrapped\n    ret = fn(*args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131010191449/brainiak/greenlet_tornado.py\&quot;, line 77, in callback\n    gr.switch(response)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131010191449/brainiak/greenlet_tornado.py\&quot;, line 104, in greenlet_base_func\n    wrapped_method(self, *args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131010191449/brainiak/handlers.py\&quot;, line 332, in post\n    raise HTTPError(500, log_message=str(ex))\n\nHTTPError: HTTP 500: Internal Server Error (Property http://www.w3.org/2000/01/rdf-schema#comment was not found in the schema of instance http://semantica.globo.com/place/City/e0ec716d-9060-42c1-8ee7-1bcf63d0c4dc)\n&quot;]}
+{&quot;errors&quot;: [&quot;HTTP error: 500\nProperty http://www.w3.org/2000/01/rdf-schema#comment was not found in the schema of instance http://semantica.globo.com/place/City/b1ae96f6-9a7a-4de4-a493-4b40569fb2eb\nException:\nTraceback (most recent call last):\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/web.py\&quot;, line 1115, in _stack_context_handle_exception\n    raise_exc_info((type, value, traceback))\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/stack_context.py\&quot;, line 302, in wrapped\n    ret = fn(*args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131011201054/brainiak/greenlet_tornado.py\&quot;, line 77, in callback\n    gr.switch(response)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131011201054/brainiak/greenlet_tornado.py\&quot;, line 104, in greenlet_base_func\n    wrapped_method(self, *args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131011201054/brainiak/handlers.py\&quot;, line 341, in post\n    raise HTTPError(500, log_message=str(ex))\n\nHTTPError: HTTP 500: Internal Server Error (Property http://www.w3.org/2000/01/rdf-schema#comment was not found in the schema of instance http://semantica.globo.com/place/City/b1ae96f6-9a7a-4de4-a493-4b40569fb2eb)\n&quot;]}
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -226,7 +226,7 @@ a instance from the API. For retrieving it, use the retrieve instance primitive 
 is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;errors&quot;: [
-        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_object_properties, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang, meta_properties.&quot;
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_object_properties, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang.&quot;
     ]
 }
 </pre></div>

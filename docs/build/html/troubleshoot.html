@@ -106,6 +106,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
@@ -119,6 +120,7 @@
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
 <li><a class="reference internal" href="#">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
 <li><a class="reference internal" href="#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
 <li><a class="reference internal" href="#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
 <li><a class="reference internal" href="#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
@@ -157,6 +159,14 @@
   <div class="section" id="troubleshooting">
 <h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
 <p>When Brainiak is not working as expected this is the first place to look!</p>
+<div class="section" id="i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">
+<h2>I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known<a class="headerlink" href="#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known" title="Permalink to this headline">¶</a></h2>
+<p>The Brainiak uses the triplestore.ini to multiplex access to different backend triplestore databases.
+The value passed in the header <tt class="docutils literal"><span class="pre">X-Brainiak-Client-Id</span></tt> is the key used to indentify which triplestore is the target endpoint.
+If no header <tt class="docutils literal"><span class="pre">X-Brainiak-Client-Id</span></tt> is given, the default entry is used as target.
+The message  &#8220;{&#8220;errors&#8221;: [&#8220;HTTP error: 404nClient-Id provided at &#8216;X-Brainiak-Client-Id&#8217; (My client_id) is not known&#8221;]}&#8221; is
+returned with error 404, when the key (in the example &#8216;My client_id&#8217;) is not present in the configuration file triplestore.ini.</p>
+</div>
 <div class="section" id="how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">
 <h2>How to check if Brainiak is connected with the backend triplestore?<a class="headerlink" href="#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore" title="Permalink to this headline">¶</a></h2>
 <p>Any access to /status/virtuoso will yield the connectivity status with the triple store.</p>

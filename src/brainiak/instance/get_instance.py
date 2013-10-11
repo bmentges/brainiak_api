@@ -27,8 +27,8 @@ def build_items_dict(context, bindings, class_uri, expand_object_properties, cla
 
     items_dict = {}
     for item in bindings:
-        predicate_uri = context.normalize_uri_key(item["predicate"]["value"])
-        object_uri = context.normalize_uri_value(item["object"]["value"])
+        predicate_uri = context.normalize_uri(item["predicate"]["value"])
+        object_uri = context.normalize_uri(item["object"]["value"])
         object_label = item.get("object_label", {}).get("value")
         if object_label and expand_object_properties:
             value = {"@id": object_uri, "title": object_label}
@@ -58,7 +58,7 @@ def build_items_dict(context, bindings, class_uri, expand_object_properties, cla
     remove_super_properties(context, items_dict, super_predicates)
 
     if not class_uri is None:
-        items_dict[context.normalize_uri_key("rdf:type")] = context.normalize_uri_value(class_uri)
+        items_dict[context.normalize_uri("rdf:type")] = context.normalize_uri(class_uri)
 
     return items_dict
 
@@ -67,7 +67,7 @@ def remove_super_properties(context, items_dict, super_predicates):
     for (analyzed_predicate, value) in items_dict.items():
         if analyzed_predicate in super_predicates.keys():
             sub_predicate = super_predicates[analyzed_predicate]
-            sub_value = items_dict[context.normalize_uri_key(sub_predicate)]
+            sub_value = items_dict[context.normalize_uri(sub_predicate)]
             if value == sub_value or (sub_value in value):
                 items_dict.pop(analyzed_predicate)
 
@@ -89,8 +89,7 @@ def check_and_clean_rdftype(instance_type, items):
 
 def assemble_instance_json(query_params, query_result_dict, context=None):
     if context is None:
-        context = MemorizeContext(normalize_keys=query_params['expand_uri_keys'],
-                                  normalize_values=query_params['expand_uri_values'])
+        context = MemorizeContext(normalize_uri=query_params['expand_uri'])
 
     expand_object_properties = query_params.get("expand_object_properties") == "1"
     include_meta_properties = query_params.get("meta_properties") is None or query_params.get("meta_properties") == "1"
@@ -107,7 +106,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
             "_base_url": query_params.base_url,
             "_resource_id": query_params['instance_id'],
             "@id": query_params['instance_uri'],
-            "@type": context.normalize_uri_value(query_params["class_uri"]),
+            "@type": context.normalize_uri(query_params["class_uri"]),
             "@context": context.context,
         }
 

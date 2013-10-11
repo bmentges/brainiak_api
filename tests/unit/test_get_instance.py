@@ -160,13 +160,13 @@ class AssembleTestCase(unittest.TestCase):
 
     def test_assemble_instance_json_links_with_context(self):
         self.prepare_params()
-        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = MemorizeContext(normalize_uri=SHORTEN)
         computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, context)
         self.assertResults(computed)
 
     def test_assemble_instance_json_links_with_context_expanding_uri(self):
         self.prepare_params(instance_uri="http://mock.test.com/schema/klass/instance?expand_uri=1")
-        context = MemorizeContext(normalize_keys=EXPAND, normalize_values=EXPAND)
+        context = MemorizeContext(normalize_uri=EXPAND)
         computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, context)
         self.assertEqual(computed["@type"], "http://schema.org/klass")
 
@@ -192,13 +192,12 @@ class BuildItemsDictTestCase(unittest.TestCase):
                 "rdf:type": {"type": "string"}
             }
         }
-        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
-        response = get_instance.build_items_dict(context, bindings, "some:Class", True, class_schema)
         expected = {
             "key1": ["value1", "value2"],
             "key2": "value2",
-            "rdf:type": "some:Class"
-        }
+            "rdf:type": "some:Class"}
+        context = MemorizeContext(normalize_uri=SHORTEN)
+        response = get_instance.build_items_dict(context, bindings, "some:Class", True, class_schema)
         self.assertEqual(response, expected)
 
     def test_assemble_instance_json_with_object_labels(self):
@@ -225,9 +224,8 @@ class BuildItemsDictTestCase(unittest.TestCase):
                 u'http://brmedia.com/related_to': {"type": "object"}
             }
         }
-        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = MemorizeContext(normalize_uri=SHORTEN)
         computed = get_instance.build_items_dict(context, bindings, "dbpedia:News", 1, class_schema)
-
         expected = {
             'rdfs:label': u'Cricket becomes the most popular sport of Brazil',
             'rdf:type': 'dbpedia:News',
@@ -263,8 +261,9 @@ class BuildItemsDictTestCase(unittest.TestCase):
             "birthCity": "Rio de Janeiro",
             'rdf:type': 'http://class.uri'
         }
-        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = MemorizeContext(normalize_uri=SHORTEN)
         response = get_instance.build_items_dict(context, bindings, "http://class.uri", False, class_schema)
+
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_different_values(self):
@@ -281,13 +280,13 @@ class BuildItemsDictTestCase(unittest.TestCase):
             "birthPlace": "Brasil",
             'rdf:type': 'http://class.uri'
         }
-        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = MemorizeContext(normalize_uri=SHORTEN)
         response = get_instance.build_items_dict(context, bindings, "http://class.uri", False, class_schema)
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_different_values_expanding_uri(self):
         bindings = self.prepare_input_and_expected_output(object_value="Brasil")
-        context = MemorizeContext(normalize_keys=EXPAND, normalize_values=EXPAND)
+        context = MemorizeContext(normalize_uri=EXPAND)
         class_schema = {
             "properties": {
                 "birthCity": {"type": "string"},

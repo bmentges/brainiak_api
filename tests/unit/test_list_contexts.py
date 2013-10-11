@@ -15,7 +15,8 @@ class MockedTestCase(unittest.TestCase):
     @patch('brainiak.utils.sparql.filter_values', return_value=[])
     @patch('brainiak.root.get_root.filter_and_build_contexts', return_value=[])
     def test_raises_http_error(self, mock1, mock2, mock3):
-        self.assertRaises(HTTPError, list_all_contexts, Params({}))
+        result = list_all_contexts(Params({}))
+        self.assertEqual(result["items"], [])
 
     @patch('brainiak.triplestore.query_sparql')
     @patch('brainiak.utils.sparql.filter_values', return_value=[])
@@ -23,7 +24,8 @@ class MockedTestCase(unittest.TestCase):
     def test_raises_http_error_empty_page(self, mock1, mock2, mock3):
         handler = MockHandler()
         params = ParamDict(handler, page='100')
-        self.assertRaises(HTTPError, list_all_contexts, params)
+        result = list_all_contexts(params)
+        self.assertEqual(result["items"], [])
 
     @patch('brainiak.triplestore.query_sparql')
     @patch('brainiak.utils.sparql.filter_values')
@@ -31,7 +33,8 @@ class MockedTestCase(unittest.TestCase):
     def test_raises_http_error_invalid_page(self, mock1, mock2, mock3):
         handler = MockHandler()
         params = ParamDict(handler, page='100')
-        self.assertRaises(HTTPError, list_all_contexts, params)
+        result = list_all_contexts(params)
+        self.assertEqual(result["items"], [])
 
 
 class GetContextTestCase(unittest.TestCase):
@@ -109,9 +112,10 @@ class GetContextTestCase(unittest.TestCase):
         self.assertEqual(computed, expected)
 
     @patch('brainiak.root.get_root.split_into_chunks', return_value=[])
-    def test_no_context_found_raise_404(self, mock1):
+    def test_no_context_found(self, mock1):
         param_dict = {"per_page": "3", "page": "1"}
         base_url = "http://api.semantica.dev.globoi.com"
         handler = MockHandler(uri=base_url)
         params = ParamDict(handler, **param_dict)
-        self.assertRaises(HTTPError, list_all_contexts, params)
+        result = list_all_contexts(params)
+        self.assertEqual(result["items"], [])

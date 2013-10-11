@@ -1,10 +1,9 @@
 from unittest import TestCase
 
 from mock import patch
-from tornado.web import HTTPError
 
 from brainiak.prefixes import ROOT_CONTEXT
-from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids, LazyObject, validate_pagination_or_raise_404, calculate_offset
+from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids, LazyObject, calculate_offset
 from brainiak.utils.params import ParamDict
 
 from tests.mocks import MockHandler
@@ -18,13 +17,6 @@ class TestLazyObject(TestCase):
         lazy = LazyObject(factory)
         lazy.append(2)
         self.assertEqual(1, lazy.pop())
-
-
-class TestValidatePagination(TestCase):
-
-    @patch('brainiak.utils.resources.valid_pagination', return_value=False)
-    def test_validatePagination_raises(self, mock):
-        self.assertRaises(HTTPError, validate_pagination_or_raise_404, params={'page': 0, 'per_page': 3}, total_items=10)
 
 
 class TestCaseListInstanceResource(TestCase):

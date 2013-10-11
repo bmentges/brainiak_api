@@ -570,7 +570,7 @@ class SuperPropertiesTestCase(unittest.TestCase):
             }
         ]
 
-        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = MemorizeContext(normalize_uri=SHORTEN)
         computed = get_super_properties(context, sample_bindings)
         expected = {'father': 'son'}
         self.assertEqual(computed, expected)
@@ -589,7 +589,7 @@ class SuperPropertiesTestCase(unittest.TestCase):
                 'predicate': {'value': 'grandfather'}
             }
         ]
-        context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context = MemorizeContext(normalize_uri=SHORTEN)
         computed = get_super_properties(context, sample_bindings)
         expected = {'father': 'son', 'grandfather': 'father'}
         self.assertEqual(computed, expected)

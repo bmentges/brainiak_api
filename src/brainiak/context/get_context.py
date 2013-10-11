@@ -1,4 +1,4 @@
-from brainiak import triplestore, settings
+from brainiak import triplestore
 from brainiak.utils.links import remove_last_slash
 from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, decorate_dict_with_pagination
 from brainiak.utils.sparql import add_language_support, compress_keys_and_values, get_one_value
@@ -10,7 +10,12 @@ def list_classes(query_params):
     (query_params, language_tag) = add_language_support(query_params, "label")
     query_result_dict = query_classes_list(query_params)
     if not query_result_dict or not query_result_dict['results']['bindings']:
-        return None
+        json = {
+            "items": [],
+            "warning": "No classes found for context {0} in page {1:d}".format(
+                query_params["context_name"], int(query_params["page"]) + 1)
+        }
+        return json
     return assemble_list_json(query_params, query_result_dict)
 
 

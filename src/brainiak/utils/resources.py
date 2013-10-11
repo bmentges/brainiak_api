@@ -37,7 +37,6 @@ def calculate_offset(query_params):
 def decorate_dict_with_pagination(target_dict, params, get_total_items_func):
     if params.get("do_item_count", None) == "1":
         total_items = get_total_items_func()
-        validate_pagination_or_raise_404(params, total_items)
         target_dict['item_count'] = total_items
         #target_dict['do_item_count'] = "1"
     else:
@@ -45,19 +44,6 @@ def decorate_dict_with_pagination(target_dict, params, get_total_items_func):
         #target_dict['do_item_count'] = "0"
 
     target_dict.update(pagination_items(params, total_items))
-
-
-def valid_pagination(total, page, per_page):
-    "Verify if the given pagination is valid to the existent total items"
-    return (page * per_page) < total
-
-
-def validate_pagination_or_raise_404(params, total_items):
-    "Uniform validation for a page out of range"
-    page_index = int(params["page"])
-    per_page = int(params["per_page"])
-    if not valid_pagination(total_items, page_index, per_page):
-        raise HTTPError(404, log_message="Page {0:d} not found.".format(page_index + 1))
 
 
 def decorate_with_resource_id(list_of_dicts):

@@ -16,8 +16,7 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
     @patch("brainiak.handlers.logger")
     def test_get_instance_with_nonexistent_uri(self, log):
         response = self.fetch('/person/Gender/Alien')
-        self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, '{}')
+        self.assertEqual(response.code, 404)
 
     def test_get_instance(self):
         response = self.fetch('/person/Gender/Male')

@@ -196,11 +196,8 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         return url
 
     def finalize(self, response):
-        if response is None:
-            self.write({})
-        else:
-            self.write(response)
-            # self.finish() -- this is automagically called by greenlet_asynchronous
+        self.write(response)
+        # self.finish() -- this is automagically called by greenlet_asynchronous
 
 
 class RootJsonSchemaHandler(BrainiakRequestHandler):
@@ -252,15 +249,14 @@ class ContextHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, context_name=context_name, **valid_params)
 
         response = list_classes(self.query_params)
+        if response is None:
+            raise HTTPError(404, log_message="Context {0} not found".format(context_name))
 
         self.finalize(response)
 
     def finalize(self, response):
-        if response is None:
-            self.write({})
-        else:
-            self.write(response)
-            self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
+        self.write(response)
+        self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
 
 
 class ClassHandler(BrainiakRequestHandler):
@@ -282,6 +278,10 @@ class ClassHandler(BrainiakRequestHandler):
                                           **valid_params)
 
         response = schema_resource.get_schema(self.query_params)
+        if response is None:
+            error_message = "Schema for class {0} in context {1} was not found.".format(class_name, context_name)
+            raise HTTPError(404, log_message=error_message)
+
         self.finalize(response)
 
 
@@ -391,6 +391,10 @@ class InstanceHandler(BrainiakRequestHandler):
                                           **optional_params)
 
         response = get_instance(self.query_params)
+        if response is None:
+            error_message = "Instance ({0}) of class ({1}) in graph ({2}) was not found.".format(
+                instance_id, class_name, instance_id)
+            raise HTTPError(404, log_message=error_message)
 
         self.finalize(response)
 
@@ -450,13 +454,13 @@ class InstanceHandler(BrainiakRequestHandler):
             if settings.NOTIFY_BUS:
                 self._notify_bus(action="DELETE")
         else:
-            raise HTTPError(404, log_message="Instance not found")
+            error_message = "Instance ({0}) of class ({1}) in graph ({2}) was not found.".format(
+                instance_id, class_name, context_name)
+            raise HTTPError(404, log_message=error_message)
         self.finalize(response)
 
     def finalize(self, response):
-        if response is None:
-            self.write({})
-        elif isinstance(response, dict):
+        if isinstance(response, dict):
             self.write(response)
             schema_url = build_schema_url_for_instance(self.query_params)
             header_value = content_type_profile(schema_url)

@@ -47,12 +47,21 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         patcher.stop()
 
     @patch("brainiak.handlers.logger")
-    def test_list_classes_empty(self, log):
+    @patch("brainiak.context.get_context.graph_exists", return_value=True)
+    def test_list_classes_empty(self, mocked_graph_exists, log):
         original_graph_uri = self.graph_uri
         self.graph_uri = "http://empty.graph"
         response = self.fetch('/test/?graph_uri=' + self.graph_uri)
         self.assertEqual(response.code, 200)
         self.assertEqual(json.loads(response.body)["items"], [])
+        self.graph_uri = original_graph_uri
+
+    @patch("brainiak.handlers.logger")
+    def test_graph_does_not_exists(self, log):
+        original_graph_uri = self.graph_uri
+        self.graph_uri = "http://empty.graph"
+        response = self.fetch('/test/?graph_uri=' + self.graph_uri)
+        self.assertEqual(response.code, 404)
         self.graph_uri = original_graph_uri
 
     @patch("brainiak.handlers.logger")

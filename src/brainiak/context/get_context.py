@@ -1,13 +1,18 @@
+from tornado.web import HTTPError
+
 from brainiak import triplestore
 from brainiak.utils.links import remove_last_slash
 from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, decorate_dict_with_pagination
-from brainiak.utils.sparql import add_language_support, compress_keys_and_values, get_one_value
+from brainiak.utils.sparql import add_language_support, compress_keys_and_values, get_one_value, is_result_true
 from brainiak.utils.resources import compress_duplicated_ids, calculate_offset
 from brainiak.prefixes import MemorizeContext
 
 
 def list_classes(query_params):
     (query_params, language_tag) = add_language_support(query_params, "label")
+    if not graph_exists(query_params):
+        raise HTTPError(404, log_message="Context {0} does not exist".format(query_params["context_name"]))
+
     query_result_dict = query_classes_list(query_params)
     if not query_result_dict or not query_result_dict['results']['bindings']:
         json = {
@@ -86,3 +91,16 @@ def query_classes_list(query_params):
     query = QUERY_ALL_CLASSES_OF_A_GRAPH % query_params
     del query_params['offset']
     return triplestore.query_sparql(query, query_params.triplestore_config)
+
+
+QUERY_GRAPH_EXISTS = u"""
+ASK {
+  GRAPH <%(graph_uri)s> {?s ?p ?o}
+}
+"""
+
+
+def graph_exists(query_params):
+    query = QUERY_GRAPH_EXISTS % query_params
+    query_result = triplestore.query_sparql(query, query_params.triplestore_config)
+    return is_result_true(query_result)

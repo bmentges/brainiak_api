@@ -201,9 +201,8 @@ def get_prefixes_dict():
 class MemorizeContext(object):
     """Wrap operations replace_prefix() and uri_to_prefix() remembering all substitutions in the context attribute.
     Remember how to handle URI normalization preferences."""
-    def __init__(self, normalize_keys=UNDEFINED, normalize_values=UNDEFINED):
-        self._normalize_uri_keys = normalize_keys
-        self._normalize_uri_values = normalize_values
+    def __init__(self, normalize_uri=UNDEFINED):
+        self._normalize_uri = normalize_uri
         self.context = {}
         self.object_properties = {}
 
@@ -223,17 +222,14 @@ class MemorizeContext(object):
         return slug
 
     def normalize_prefix_value(self, slug_or_uri):
-        if self._normalize_uri_values == SHORTEN:
+        if self._normalize_uri == SHORTEN:
             return self.prefix_to_slug(slug_or_uri)
-        elif self._normalize_uri_values == EXPAND:
+        elif self._normalize_uri == EXPAND:
             return safe_slug_to_prefix(slug_or_uri)
-        raise InvalidModeForNormalizeUriError(u'Unrecognized mode {0:s}'.format(self._normalize_uri_values))
+        raise InvalidModeForNormalizeUriError(u'Unrecognized mode {0:s}'.format(self._normalize_uri))
 
-    def normalize_uri_key(self, uri):
-        return normalize_uri(uri, self._normalize_uri_keys, shorten_uri_function=self.shorten_uri)
-
-    def normalize_uri_value(self, uri):
-        return normalize_uri(uri, self._normalize_uri_values, shorten_uri_function=self.shorten_uri)
+    def normalize_uri(self, uri):
+        return normalize_uri(uri, self._normalize_uri, shorten_uri_function=self.shorten_uri)
 
 # TODO: verifify if module re would give better performance
 # http://stackoverflow.com/questions/7539959/python-finding-whether-a-string-starts-with-one-of-a-lists-variable-length-pre

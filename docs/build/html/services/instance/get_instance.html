@@ -108,6 +108,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
@@ -166,10 +167,10 @@
 <div class="section" id="optional-parameters">
 <h2>Optional parameters<a class="headerlink" href="#optional-parameters" title="Permalink to this headline">¶</a></h2>
 <p><strong>lang</strong>: Specify language of labels. Options: pt, en, undefined (do not filter labels)</p>
-<p><strong>expand_uri_keys</strong>: The URIs that represent <tt class="docutils literal"><span class="pre">names</span></tt> of properties in the response are either compressed (0) or expanded (1) by this parameter.</p>
-<p><strong>expand_uri_values</strong>: The URIs that represent <tt class="docutils literal"><span class="pre">values</span></tt> of properties in the response are either compressed (0) or expanded (1) by this parameter.</p>
-<p><strong>expand_uri</strong>: This parameter sets simultaneously the parameters <tt class="docutils literal"><span class="pre">expand_uri_keys</span></tt> and <tt class="docutils literal"><span class="pre">expand_uri_values</span></tt></p>
+<p><strong>expand_uri</strong>: The URIs that represent <tt class="docutils literal"><span class="pre">names</span></tt> and  <tt class="docutils literal"><span class="pre">values</span></tt> of properties in the response are either compressed (0) or expanded (1) by this parameter.</p>
 <p>By default, this parameter is set to 0, meaning that URIs are compressed for keys and values.</p>
+<p>This is going to change in future versions, and the default will be URI expansion.
+So, we ask you to use this parameter explicitly and not rely on the default behaviour.</p>
 <p>For example, <tt class="docutils literal"><span class="pre">rdfs:label</span></tt> is the compressed form, while <tt class="docutils literal"><span class="pre">http://www.w3.org/2000/01/rdf-schema#label</span></tt> is the respective expanded form.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -191,18 +192,39 @@ It is only supported while retrieving instances and class definition.</p>
 <p><strong>instance_id</strong>: Unique word identifier for an instance. This is composed with <tt class="docutils literal"><span class="pre">instance_prefix</span></tt> to form an equivalent of <tt class="docutils literal"><span class="pre">instance_uri</span></tt>.</p>
 <p><strong>instance_uri</strong>: Set the instance URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME/INSTANCE_ID</span></tt></p>
 <p><strong>expand_object_properties</strong>: If set to 1 determines that the ObjectProperties of the response will map objects as <tt class="docutils literal"><span class="pre">{&quot;&#64;id&quot;:</span> <span class="pre">&quot;object:uri&quot;,</span> <span class="pre">&quot;title&quot;:</span> <span class="pre">&quot;object</span> <span class="pre">label&quot;}</span></tt>. The default value for <tt class="docutils literal"><span class="pre">expand_object_properties</span></tt> is 0 and the objects of ObjectProperties are represented as strings such as <tt class="docutils literal"><span class="pre">&quot;object:uri&quot;</span></tt>.</p>
+<p><strong>meta_properties</strong>: If set to 0 excludes from response JSON properties like <tt class="docutils literal"><span class="pre">_base_url</span></tt>, <tt class="docutils literal"><span class="pre">&#64;id</span></tt>, <tt class="docutils literal"><span class="pre">&#64;type</span></tt>, etc. The default value is 1.</p>
 </div>
 <div class="section" id="possible-responses">
 <h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>
 <p><strong>Status 200</strong></p>
 <p>If the instance exists, the response body is a JSON with all instance information and links to related actions.</p>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;@context&quot;: {
+        &quot;dbpedia&quot;: &quot;http://dbpedia.org/ontology/&quot;,
+        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;,
+        &quot;rdf&quot;: &quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;,
+        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;,
+        &quot;schema&quot;: &quot;http://schema.org/&quot;,
+        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;
+    },
+    &quot;@id&quot;: &quot;http://semantica.globo.com/place/Country/Brazil&quot;,
+    &quot;@type&quot;: &quot;place:Country&quot;,
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/Brazil/&quot;,
+    &quot;_instance_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;,
+    &quot;_resource_id&quot;: &quot;Brazil&quot;,
+    &quot;upper:description&quot;: &quot;Representa o pa\u00eds Brasil.&quot;,
+    &quot;upper:name&quot;: &quot;Brasil&quot;
+}
 </pre></div>
 </div>
 <p><strong>Status 400</strong></p>
 <p>If there are unknown parameters in the request, the response is a 400
 with a JSON informing the wrong parameters and the accepted ones.</p>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;errors&quot;: [
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_object_properties, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang, meta_properties.&quot;
+    ]
+}
 </pre></div>
 </div>
 <p><strong>Status 404</strong></p>

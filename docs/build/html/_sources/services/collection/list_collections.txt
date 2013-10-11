@@ -40,7 +40,7 @@ By default, the first page containing 10 items is returned (``?page=1&per_page=1
 .. program-output:: curl -s 'http://brainiak.semantica.dev.globoi.com/place/?page=1&per_page=10' | python -mjson.tool
   :shell:
 
-If there are no instances, the response will contain a warning.
+If there are no classes for this graph, the response will contain a warning and a items list empty.
 
 .. include :: examples/list_collections_no_results.rst
 

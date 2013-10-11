@@ -303,20 +303,26 @@ By default, the first page containing 10 items is returned (<tt class="docutils 
 }
 </pre></div>
 </div>
+<p>If there are no instances for this class, the response will contain a warning and a items list empty.</p>
+<div class="highlight-json"><pre>{
+    "items": [],
+    "warning": "Instances of class (http://semantica.globo.com/place/Country) in graph (http://semantica.globo.com/place/) with filter predicate=&lt;http://www.w3.org/2000/01/rdf-schema#label&gt; object=\"lalalala\"@pt were not found."]
+}</pre>
+</div>
 <p><strong>Status 400</strong></p>
 <p>If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;errors&quot;: [
-        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, direct_instances_only, do_item_count, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, lang, page, per_page, sort_by, sort_include_empty, sort_order.&quot;
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, direct_instances_only, do_item_count, expand_uri, graph_uri, graph_uri, lang, page, per_page, sort_by, sort_include_empty, sort_order.&quot;
     ]
 }
 </pre></div>
 </div>
 <p><strong>Status 404</strong></p>
-<p>If there are no instances, the response status code is a 404.</p>
+<p>If the class does not exist, the response status code is a 404.</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 404\nInstances of class (http://semantica.globo.com/place/Country) in graph (http://semantica.globo.com/place/) with filter predicate=&lt;http://www.w3.org/2000/01/rdf-schema#label&gt; object=\&quot;lalalala\&quot;@pt were not found.&quot;</span><span class="p">]</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="s2">&quot;HTTP error: 404\nClass class_example in context person does not exist&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>

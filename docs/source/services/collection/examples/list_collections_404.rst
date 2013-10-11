@@ -3,5 +3,5 @@
 ::
 
     {
-        "errors": ["HTTP error: 404\nContext xabiru does not exist."]
+        "errors": ["HTTP error: 404\nContext example_graph does not exist."]
     }

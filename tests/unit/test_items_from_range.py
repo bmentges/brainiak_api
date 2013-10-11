@@ -8,7 +8,7 @@ from brainiak.schema.get_class import items_from_range
 class ItemsFromRangeTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.context = MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        self.context = MemorizeContext(normalize_uri=SHORTEN)
 
     def test_items_from_range_date(self):
         self.assertEqual(items_from_range(self.context, "http://www.w3.org/2001/XMLSchema#date"),

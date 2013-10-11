@@ -1,5 +1,3 @@
-from tornado.web import HTTPError
-
 from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql
@@ -22,7 +20,11 @@ def list_all_contexts(query_params):
 
     filtered_contexts = filter_and_build_contexts(all_contexts_uris)
     if not filtered_contexts:
-        raise HTTPError(404, log_message="No contexts were found.")
+        json = {
+            "items": [],
+            "warning": "No contexts were found."
+        }
+        return json
 
     page_index = int(query_params["page"])
     per_page = int(query_params["per_page"])
@@ -30,7 +32,11 @@ def list_all_contexts(query_params):
     try:
         contexts = contexts_pages[page_index]
     except IndexError:
-        raise HTTPError(404, log_message="No contexts were found.")
+        json = {
+            "items": [],
+            "warning": "No contexts were found in page {0:d}.".format(int(query_params["page"]) + 1)
+        }
+        return json
 
     json = {
         '_base_url': remove_last_slash(query_params.base_url),

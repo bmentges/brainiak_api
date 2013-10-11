@@ -107,6 +107,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshoot.html#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
@@ -191,6 +192,13 @@
 <h2>Version 2.2.5 - 2013//<a class="headerlink" href="#version-2-2-5-2013" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="new-features">
 <h3>New features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Any class definition (returned by <tt class="docutils literal"><span class="pre">_schema</span></tt>) now includes a new attribute for each predicate dictionary.
+The new attribute is <tt class="docutils literal"><span class="pre">class</span></tt> and it identifies the class uri in which this predicate was defined in the ontology.
+This serves to identify predicates that were inherited or direct declared in the class.</li>
+</ul>
+</div></blockquote>
 </div>
 <div class="section" id="refactor">
 <h3>Refactor<a class="headerlink" href="#refactor" title="Permalink to this headline">¶</a></h3>
@@ -199,6 +207,8 @@
 <li>#10645 Adding <tt class="docutils literal"><span class="pre">datatype</span></tt> property to the schema (class description), documenting
 precisely the semantic type of the range of a datatype predicate.
 The <tt class="docutils literal"><span class="pre">format</span></tt> field was used to convey that information, it is no longer used for this purpose.</li>
+<li>#10694 Removing  parameters for optional URI expansion in responses: expand_uri_keys and expand_uri_values.
+We still support expand_uri to control expansion in the response, but it always impacts keys and values.</li>
 </ul>
 </div></blockquote>
 </div>
@@ -207,6 +217,9 @@ The <tt class="docutils literal"><span class="pre">format</span></tt> field was 
 <blockquote>
 <div><ul class="simple">
 <li>Adding unicode conversion to queries, that would break with special unicode chars.</li>
+<li><tt class="docutils literal"><span class="pre">graph</span></tt> property on any class definition was not expanded when parameter expand_uri was set to 1</li>
+<li>Some predicates dictionaries in a class definition had inconsitencies when there was a clash between conflicting
+homonimous predicates defined in the same inheritance hierarchy.</li>
 </ul>
 </div></blockquote>
 </div>

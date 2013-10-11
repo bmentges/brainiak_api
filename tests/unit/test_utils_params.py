@@ -4,8 +4,7 @@ from brainiak import settings
 from brainiak.utils import params
 from brainiak.prefixes import ROOT_CONTEXT, SHORTEN
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals, RequiredParamMissing
-from brainiak.utils.resources import valid_pagination
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals
 from tests.mocks import MockHandler
 
 
@@ -255,12 +254,6 @@ class ParamsTestCase(TestCase):
         params = ParamDict(handler, do_item_count='1')
         self.assertEqual(params["do_item_count"], '1')
 
-    def test_pagination_validation(self):
-        self.assertTrue(valid_pagination(total=1, page=0, per_page=10))
-        self.assertTrue(valid_pagination(total=1, page=0, per_page=1))
-        self.assertFalse(valid_pagination(total=10, page=1, per_page=10))
-        self.assertFalse(valid_pagination(total=1, page=1, per_page=1))
-
 
 class ExpandUriTestCase(TestCase):
 
@@ -274,31 +267,10 @@ class ExpandUriTestCase(TestCase):
         params = ParamDict(handler, expand_uri=1)
         self.assertEqual(params["expand_uri"], 1)
 
-    def test_default_value_for_param_expand_uri_values_and_keys(self):
+    def test_default_value_for_param_expand_uri(self):
         handler = MockHandler()
         params = ParamDict(handler, expand_uri=settings.DEFAULT_URI_EXPANSION)
-        self.assertEqual(params["expand_uri_values"], settings.DEFAULT_URI_EXPANSION)
-        self.assertEqual(params["expand_uri_keys"], settings.DEFAULT_URI_EXPANSION)
-
-    def test_set_expand_uri_reflect_in_expand_uri_values_and_keys(self):
-        handler = MockHandler()
-        params = ParamDict(handler)
-        params['expand_uri'] = '1'
-        self.assertEqual(params["expand_uri_values"], "1")
-        self.assertEqual(params["expand_uri_keys"], "1")
-
-    def test_reset_expand_uri_reflect_in_expand_uri_values_and_keys(self):
-        handler = MockHandler()
-        params = ParamDict(handler)
-        params['expand_uri'] = '1'
-        params['expand_uri'] = '0'
-        self.assertEqual(params["expand_uri_values"], "0")
-        self.assertEqual(params["expand_uri_keys"], "0")
-        params["expand_uri_keys"] = "1"
-        params["expand_uri_values"] = "1"
-        params['expand_uri'] = '0'
-        self.assertEqual(params["expand_uri_values"], "0")
-        self.assertEqual(params["expand_uri_keys"], "0")
+        self.assertEqual(params["expand_uri"], settings.DEFAULT_URI_EXPANSION)
 
 
 class OrderingTestCase(TestCase):

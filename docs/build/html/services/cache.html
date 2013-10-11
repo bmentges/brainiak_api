@@ -108,6 +108,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
@@ -169,7 +170,16 @@ To check if cache is enabled for some resource, run:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X OPTIONS http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 204 No Content
+Server: nginx
+Date: Fri, 11 Oct 2013 18:47:43 GMT
+Content-Type: text/html; charset=UTF-8
+Content-Length: 0
+Connection: keep-alive
+Access-Control-Allow-Methods: GET, OPTIONS, PURGE
+Access-Control-Max-Age: 86400
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Headers: Content-Type, Authorization
 </pre></div>
 </div>
 <p>If cache is enabled, <tt class="docutils literal"><span class="pre">PURGE</span></tt> will be shown on the response header <tt class="docutils literal"><span class="pre">Access-Control-Allow-Methods</span></tt>.</p>
@@ -190,14 +200,32 @@ To check if cache is enabled for some resource, run:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X GET http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
+Server: nginx
+Date: Fri, 11 Oct 2013 18:47:44 GMT
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
+Content-Length: 1002
+Connection: keep-alive
+X-Cache: MISS from brainiak.semantica.dev.globoi.com
+Last-Modified: Fri, 11 Oct 2013 15:47:44 -0300
+Etag: &quot;e4a29223562079386bb1ec2695cea9587a61bff9&quot;
+Access-Control-Allow-Origin: *
 </pre></div>
 </div>
 <p>From the second time on, <tt class="docutils literal"><span class="pre">X-Cache</span></tt> will contain <tt class="docutils literal"><span class="pre">HIT</span></tt> and <tt class="docutils literal"><span class="pre">Last-Modified</span></tt> will be the same:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X GET http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
+Server: nginx
+Date: Fri, 11 Oct 2013 18:47:45 GMT
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
+Content-Length: 1002
+Connection: keep-alive
+X-Cache: HIT from brainiak.semantica.dev.globoi.com
+Last-Modified: Fri, 11 Oct 2013 15:47:44 -0300
+Etag: &quot;555e4a29e333755c57c50c8f8a4ebd7c70232ea7&quot;
+Access-Control-Allow-Origin: *
 </pre></div>
 </div>
 </div>
@@ -208,7 +236,13 @@ To check if cache is enabled for some resource, run:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X PURGE http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
+Server: nginx
+Date: Fri, 11 Oct 2013 18:47:45 GMT
+Content-Type: text/html; charset=UTF-8
+Content-Length: 0
+Connection: keep-alive
+Access-Control-Allow-Origin: *
 </pre></div>
 </div>
 <p>Note that for purging purposes, query string parameters are ignored.</p>

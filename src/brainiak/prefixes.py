@@ -164,32 +164,32 @@ def expand_uri(short_uri, translation_map=_MAP_SLUG_TO_PREFIX, context=None):
     return u"{0}{1}".format(prefix, item)
 
 
-def normalize_uri(uri, mode, shorten_uri_function=shorten_uri):
+def normalize_uri(uri, mode, shorten_uri_function=shorten_uri, context=None):
     if mode == SHORTEN:
         return shorten_uri_function(uri)
     elif mode == EXPAND:
-        return expand_uri(uri)
+        return expand_uri(uri, context=context)
     raise InvalidModeForNormalizeUriError(u'Unrecognized mode {0:s}'.format(mode))
 
 
-def expand_all_uris_recursively(instance, ctx=_MAP_SLUG_TO_PREFIX):
+def normalize_all_uris_recursively(instance, mode=EXPAND, context=_MAP_SLUG_TO_PREFIX):
     if isinstance(instance, basestring):
         try:
-            response = expand_uri(instance, ctx)
+            response = normalize_uri(instance, mode, context=context)
         except PrefixError:
             response = instance
         return response
     elif isinstance(instance, list):
-        return [expand_all_uris_recursively(i, ctx) for i in instance]
+        return [normalize_all_uris_recursively(i, mode, context) for i in instance]
     elif isinstance(instance, dict):
         if '@context' in instance:
             new_ctx = {}
             new_ctx.update(instance['@context'])
-            new_ctx.update(ctx)
+            new_ctx.update(context)
             del instance['@context']
         else:
-            new_ctx = ctx
-        return {expand_all_uris_recursively(k, new_ctx): expand_all_uris_recursively(v, new_ctx)
+            new_ctx = context
+        return {normalize_all_uris_recursively(k, mode, new_ctx): normalize_all_uris_recursively(v, mode, new_ctx)
                 for (k, v) in instance.items()}
     return instance
 

@@ -1,5 +1,3 @@
-from tornado.web import HTTPError
-
 from brainiak import triplestore
 from brainiak.prefixes import prefix_to_slug, STANDARD_PREFIXES
 from brainiak.utils import sparql

@@ -38,9 +38,9 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     def test_404(self, log):
         sparql.filter_values = lambda a, b: []
         response = self.fetch("/", method='GET')
-        self.assertEqual(response.code, 404)
+        self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertEquals(body["errors"], [u'HTTP error: 404\nNo contexts were found.'])
+        self.assertEquals(body["items"], [])
 
     @patch("brainiak.handlers.logger")
     def test_500(self, log):

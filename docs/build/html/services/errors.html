@@ -108,6 +108,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
@@ -173,7 +174,11 @@
 <div class="highlight-bash"><div class="highlight"><pre>HTTP/1.1 400 Bad Request
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;errors&quot;: [
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_object_properties, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, graph_uri, instance_prefix, instance_uri, lang, meta_properties.&quot;
+    ]
+}
 </pre></div>
 </div>
 <p>If the instance does not exist, the response is a 404 with a JSON informing the error</p>

@@ -108,6 +108,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
@@ -181,13 +182,73 @@ By default <tt class="docutils literal"><span class="pre">do_item_count</span></
 <h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>
 <p><strong>Status 200</strong></p>
 <p>If there are contexts, the response body is a JSON containing contexts&#8217; titles, resources_id and &#64;ids (URIs).</p>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com&quot;,
+    &quot;_first_args&quot;: &quot;page=1&quot;,
+    &quot;_next_args&quot;: &quot;page=2&quot;,
+    &quot;items&quot;: [
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/&quot;,
+            &quot;resource_id&quot;: &quot;esportes&quot;,
+            &quot;title&quot;: &quot;esportes&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/&quot;,
+            &quot;resource_id&quot;: &quot;glb&quot;,
+            &quot;title&quot;: &quot;glb&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/G1/&quot;,
+            &quot;resource_id&quot;: &quot;g1&quot;,
+            &quot;title&quot;: &quot;g1&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/ego/&quot;,
+            &quot;resource_id&quot;: &quot;ego&quot;,
+            &quot;title&quot;: &quot;ego&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/tvg/&quot;,
+            &quot;resource_id&quot;: &quot;tvg&quot;,
+            &quot;title&quot;: &quot;tvg&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/upper/&quot;,
+            &quot;resource_id&quot;: &quot;upper&quot;,
+            &quot;title&quot;: &quot;upper&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/person/&quot;,
+            &quot;resource_id&quot;: &quot;person&quot;,
+            &quot;title&quot;: &quot;person&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/&quot;,
+            &quot;resource_id&quot;: &quot;place&quot;,
+            &quot;title&quot;: &quot;place&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/eureka/&quot;,
+            &quot;resource_id&quot;: &quot;eureka&quot;,
+            &quot;title&quot;: &quot;eureka&quot;
+        },
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/organization/&quot;,
+            &quot;resource_id&quot;: &quot;organization&quot;,
+            &quot;title&quot;: &quot;organization&quot;
+        }
+    ]
+}
 </pre></div>
 </div>
 <p><strong>Status 400</strong></p>
 <p>If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.</p>
-<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;errors&quot;: [
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: do_item_count, expand_uri, expand_uri_keys, expand_uri_values, graph_uri, lang, page, per_page, purge.&quot;
+    ]
+}
 </pre></div>
 </div>
 <p><strong>Status 404</strong></p>

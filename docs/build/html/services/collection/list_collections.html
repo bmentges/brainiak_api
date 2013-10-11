@@ -334,6 +334,13 @@ By default, the first page containing 10 items is returned (<tt class="docutils 
 }
 </pre></div>
 </div>
+<p>If there are no instances, the response will contain a warning.</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="nt">&quot;warning&quot;</span><span class="p">:</span> <span class="s2">&quot;No classes found for context graph_example in page 1.&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p><strong>Status 400</strong></p>
 <p>If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.</p>
@@ -345,9 +352,9 @@ A JSON containing both the wrong parameters and the accepted ones is returned.</
 </pre></div>
 </div>
 <p><strong>Status 404</strong></p>
-<p>If there are no instances, the response status code is a 404.</p>
+<p>If the graph does not exist, the response status code is 404.</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 404\nNo classes found in graph (http://empty-graph.com).&quot;</span><span class="p">]</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 404\nContext xabiru does not exist.&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>

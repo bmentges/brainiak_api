@@ -51,7 +51,7 @@ def optionals(*args):
 # The parameters below as given to ParamDict with other keyword arguments,
 # but they are not URL arguments because they are part of the URL path
 
-DEFAULT_PARAMS = optionals('lang', 'graph_uri', 'expand_uri', 'expand_uri_keys', 'expand_uri_values')
+DEFAULT_PARAMS = optionals('lang', 'graph_uri', 'expand_uri')
 
 NON_ARGUMENT_PARAMS = ('context_name', 'class_name', 'instance_id')
 
@@ -79,7 +79,7 @@ def normalize_last_slash(url):
 # Define possible params and their processing order
 VALID_PARAMS = [
     'lang',
-    'expand_uri', 'expand_uri_values', 'expand_uri_keys',
+    'expand_uri',
     'graph_uri',
     'context_name', 'class_name', 'class_prefix', 'class_uri',
     'instance_id', 'instance_prefix', 'instance_uri',
@@ -165,7 +165,6 @@ class ParamDict(dict):
     def __setitem__(self, key, value):
         """Process collateral effects in params that are related.
         Changes in *_prefix should reflect in *_uri.
-        Changes in expand_uri should reflect in expand_uri_values and expand_uri_keys.
         """
         if key == 'graph_uri':
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
@@ -200,11 +199,6 @@ class ParamDict(dict):
             dict.__setitem__(self, key, value)
             dict.__setitem__(self, "instance_prefix", extract_prefix(value))
 
-        elif key == "expand_uri":
-            dict.__setitem__(self, key, value)
-            dict.__setitem__(self, 'expand_uri_keys', value)
-            dict.__setitem__(self, 'expand_uri_values', value)
-
         else:
             dict.__setitem__(self, key, value)
 
@@ -222,8 +216,6 @@ class ParamDict(dict):
         self._set_if_optional("instance_id", self.optionals.get("instance_id", "invalid_instance"))
 
         self["expand_uri"] = self.optionals.get("expand_uri", settings.DEFAULT_URI_EXPANSION)
-        self["expand_uri_values"] = self.optionals.get("expand_uri_values", settings.DEFAULT_URI_EXPANSION)
-        self["expand_uri_keys"] = self.optionals.get("expand_uri_keys", settings.DEFAULT_URI_EXPANSION)
 
         # if the context name is defined, the graph_uri should follow it by default, but it can be overriden
         if "context_name" in self:

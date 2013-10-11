@@ -274,31 +274,10 @@ class ExpandUriTestCase(TestCase):
         params = ParamDict(handler, expand_uri=1)
         self.assertEqual(params["expand_uri"], 1)
 
-    def test_default_value_for_param_expand_uri_values_and_keys(self):
+    def test_default_value_for_param_expand_uri(self):
         handler = MockHandler()
         params = ParamDict(handler, expand_uri=settings.DEFAULT_URI_EXPANSION)
-        self.assertEqual(params["expand_uri_values"], settings.DEFAULT_URI_EXPANSION)
-        self.assertEqual(params["expand_uri_keys"], settings.DEFAULT_URI_EXPANSION)
-
-    def test_set_expand_uri_reflect_in_expand_uri_values_and_keys(self):
-        handler = MockHandler()
-        params = ParamDict(handler)
-        params['expand_uri'] = '1'
-        self.assertEqual(params["expand_uri_values"], "1")
-        self.assertEqual(params["expand_uri_keys"], "1")
-
-    def test_reset_expand_uri_reflect_in_expand_uri_values_and_keys(self):
-        handler = MockHandler()
-        params = ParamDict(handler)
-        params['expand_uri'] = '1'
-        params['expand_uri'] = '0'
-        self.assertEqual(params["expand_uri_values"], "0")
-        self.assertEqual(params["expand_uri_keys"], "0")
-        params["expand_uri_keys"] = "1"
-        params["expand_uri_values"] = "1"
-        params['expand_uri'] = '0'
-        self.assertEqual(params["expand_uri_values"], "0")
-        self.assertEqual(params["expand_uri_keys"], "0")
+        self.assertEqual(params["expand_uri"], settings.DEFAULT_URI_EXPANSION)
 
 
 class OrderingTestCase(TestCase):

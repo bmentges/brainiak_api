@@ -14,6 +14,7 @@ set :deploy_via,            :copy
 set :copy_dir,              "/tmp"
 set :keep_releases,         4
 set :projeto_log_dir,       "/opt/logs/#{projeto}/#{projeto}.log"
+set :triplestore_json_file, 'triplestore.json'
 set :copy_exclude,          [
                                 "*.pyc",
                                 "**/*.pyc",

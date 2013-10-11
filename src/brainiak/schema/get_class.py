@@ -321,7 +321,6 @@ def items_from_range(context, range_uri):
 
 
 def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
-
     predicate_graph = binding_row["predicate_graph"]['value']
     predicate_type = binding_row['type']['value']
 
@@ -424,9 +423,18 @@ def join_predicates(old, new):
 
     merged_predicate = old
     merged_predicate['range'] = merged_ranges
-    merged_predicate['type'] = get_common_key(merged_ranges, 'type')
-    merged_predicate['format'] = get_common_key(merged_ranges, 'format')
 
+    old_max_items = old.get('maxItems', 2)
+    old_min_items = old.get('minItems', 2)
+    new_max_items = new.get('maxItems', 2)
+    new_min_items = new.get('minItems', 2)
+
+    if (old_min_items > 1) or (old_max_items > 1) or (not old_min_items and not old_max_items) or \
+            (new_min_items > 1) or (new_max_items > 1) or (not new_min_items and not new_max_items):
+        merged_predicate["type"] = "array"
+    else:
+        merged_predicate['type'] = get_common_key(merged_ranges, 'type')
+        merged_predicate['format'] = get_common_key(merged_ranges, 'format')
     return merged_predicate
 
 

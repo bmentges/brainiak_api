@@ -168,6 +168,55 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         self.assertEqual(context.context, {'test': u'http://test/person/', 'xsd': 'http://www.w3.org/2001/XMLSchema#'})
         self.assertEqual(expected_predicate_dict, effective_predicate_dict)
 
+    def test_assemble_predicate_cardinality_influences_type(self):
+        predicate_uri = "http://example.onto/hasChild"
+        binding_row = {
+            u'domain_class': {u'type': u'uri', u'value': u'http://example.onto/Human'},
+            u'predicate': {u'type': u'uri', u'value': u'http://example.onto/hasChild'},
+            u'predicate_graph': {u'type': u'uri', u'value': u'http://test.com/'},
+            u'range': {u'type': u'uri', u'value': u'http://example.onto/Human'},
+            u'range_graph': {u'type': u'uri', u'value': u'http://test.com/'},
+            u'range_label': {u'type': u'literal', u'value': u'Humano', u'xml:lang': u'pt'},
+            u'title': {u'type': u'literal', u'value': u'Has child (son or daughter)'},
+            u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
+        }
+        cardinalities = {
+            u'http://example.onto/furColour': {
+                u'http://example.onto/FurColour': {'minItems': 1, 'required': True}
+            },
+            u'http://example.onto/gender': {
+                u'http://example.onto/Gender': {'maxItems': 1, 'minItems': 1, 'required': True}
+            },
+            u'http://example.onto/hasChild': {
+                u'http://example.onto/Human': {'maxItems': 888}
+            },
+            u'http://example.onto/hasParent': {
+                u'http://example.onto/Human': {'maxItems': 2}
+            }
+        }
+        context = prefixes.MemorizeContext(normalize_keys=SHORTEN, normalize_values=SHORTEN)
+        context.prefix_to_slug('http://test/person')
+        computed = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
+        expected = {
+            'class': u'http://example.onto/Human',
+            'graph': u'http://test.com/',
+            'items': {
+                'format': 'uri',
+                'type': 'string'
+            },
+            'maxItems': 888,
+            'range': {
+                '@id': u'http://example.onto/Human',
+                'format': 'uri',
+                'graph': u'http://test.com/',
+                'title': u'Humano',
+                'type': 'string'
+            },
+            'title': u'Has child (son or daughter)',
+            'type': 'array'
+        }
+        self.assertEqual(computed, expected)
+
     def test_normalize_predicate_range_in_predicate_without_range_without_format(self):
         sample_predicate = {'type': 'some type'}
         expected = {'type': 'some type', 'range': {'type': 'some type'}}
@@ -243,8 +292,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
             'format': 'who cares'
         }
         expected = {
-            'type': '',
-            'format': '',
+            'type': 'array',
             'range': [
                 {'type': 'not your business', 'format': 'as you like'},
                 {'type': 'who knows', 'format': 'who cares'}
@@ -252,7 +300,7 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         }
         computed = join_predicates(a_predicate, same_predicate)
         self.assertEqual(computed['type'], expected['type'])
-        self.assertEqual(computed['format'], expected['format'])
+        self.assertFalse('format' in expected)
         self.assertEqual(sorted(computed['range']), sorted(expected['range']))
 
 

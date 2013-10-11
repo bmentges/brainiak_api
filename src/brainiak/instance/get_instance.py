@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from brainiak import triplestore, settings
+from brainiak.prefixes import expand_uri, MemorizeContext
+from brainiak.schema import get_class
 from brainiak.utils.links import build_class_url
-from brainiak.prefixes import MemorizeContext
 from brainiak.utils.sparql import get_super_properties, is_result_empty
 
 
@@ -16,11 +17,12 @@ def get_instance(query_params):
     if is_result_empty(query_result_dict):
         return None
     else:
+        query_params["class_schema"] = get_class.get_cached_schema(query_params)
         return assemble_instance_json(query_params,
                                       query_result_dict)
 
 
-def build_items_dict(context, bindings, class_uri, expand_object_properties):
+def build_items_dict(context, bindings, class_uri, expand_object_properties, class_schema):
     super_predicates = get_super_properties(context, bindings)
 
     items_dict = {}
@@ -41,7 +43,17 @@ def build_items_dict(context, bindings, class_uri, expand_object_properties):
             value_list.append(value)
             items_dict[predicate_uri] = value_list
         else:
-            items_dict[predicate_uri] = value
+            base_uri = None
+            if predicate_uri in class_schema["properties"]:
+                base_uri = predicate_uri
+            elif expand_uri(predicate_uri) in class_schema["properties"]:
+                base_uri = expand_uri(predicate_uri)
+
+            if base_uri:
+                if class_schema["properties"][base_uri][u'type'] == u'array':
+                    items_dict[predicate_uri] = [value]
+                else:
+                    items_dict[predicate_uri] = value
 
     remove_super_properties(context, items_dict, super_predicates)
 
@@ -81,7 +93,11 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
     expand_object_properties = query_params.get("expand_object_properties") == "1"
     include_meta_properties = query_params.get("meta_properties") is None or query_params.get("meta_properties") == "1"
-    items = build_items_dict(context, query_result_dict['results']['bindings'], query_params["class_uri"], expand_object_properties)
+    items = build_items_dict(context,
+                             query_result_dict['results']['bindings'],
+                             query_params["class_uri"],
+                             expand_object_properties,
+                             query_params["class_schema"])
 
     if include_meta_properties:
         class_url = build_class_url(query_params)

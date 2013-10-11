@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from brainiak import triplestore
-from brainiak.prefixes import MemorizeContext, expand_all_uris_recursively
+from brainiak.prefixes import MemorizeContext, normalize_all_uris_recursively
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO_JSON_TYPE
 from brainiak.utils.cache import build_schema_key, memoize
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
@@ -16,7 +16,7 @@ def get_cached_schema(query_params):
 
     schema_key = build_schema_key(query_params)
     schema = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
-    class_object = expand_all_uris_recursively(schema)
+    class_object = normalize_all_uris_recursively(schema)
     if not class_object:
         msg = "The class definition for {0} was not found in graph {1}"
         raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['graph_uri']))

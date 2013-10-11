@@ -22,7 +22,7 @@ from brainiak.instance.delete_instance import delete_instance
 from brainiak.instance.edit_instance import edit_instance, instance_exists
 from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
-from brainiak.prefixes import expand_all_uris_recursively, list_prefixes
+from brainiak.prefixes import normalize_all_uris_recursively, list_prefixes
 from brainiak.schema.get_class import SchemaNotFound
 from brainiak.suggest.suggest import do_suggest, SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.json_schema import schema as suggest_schema
@@ -165,7 +165,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     def _notify_bus(self, **kwargs):
         if kwargs.get("instance_data"):
             instance_data = kwargs["instance_data"]
-            expanded_instance_data = expand_all_uris_recursively(instance_data)
+            expanded_instance_data = normalize_all_uris_recursively(instance_data)
             clean_instance_data = clean_up_reserved_attributes(expanded_instance_data)
             kwargs["instance_data"] = clean_instance_data
 
@@ -486,7 +486,7 @@ class SuggestHandler(BrainiakRequestHandler):
         with safe_params(valid_params):
 
             raw_body_params = json.loads(self.request.body)
-            body_params = expand_all_uris_recursively(raw_body_params)
+            body_params = normalize_all_uris_recursively(raw_body_params)
             if '@context' in body_params:
                 del body_params['@context']
 

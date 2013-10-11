@@ -3,7 +3,8 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-dbpedia:News a owl:Class .
+dbpedia:News a owl:Class ;
+             rdfs:label "News" .
 
 dbpedia:Cricket a dbpedia:Sport ;
                 rdfs:label "Cricket" .

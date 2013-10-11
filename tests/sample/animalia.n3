@@ -41,7 +41,8 @@
 :hasChild a owl:ObjectProperty ;
           rdfs:label "Has child (son or daughter)" ;
           rdfs:domain :Human ;
-          rdfs:range :Human .
+          rdfs:range :Human ,
+                     :Cat.
 
 # http://example.onto/hasParent
 :hasParent a owl:ObjectProperty ;
@@ -163,6 +164,12 @@
     :vertebraType "Vertebrate" ;
     :temperatureManagement "Endothermy" .
 
+# http://example.onto/Cat
+:Cat a owl:Class;
+     rdfs:subClassOf :Mammalia ;
+     rdfs:label "Feline" ;
+     :motionStyle :Quadruped .
+
 # http://example.onto/Canidae
 :Canidae a owl:Class;
      rdfs:subClassOf :Mammalia ,
@@ -193,11 +200,6 @@
         ] ,
         [ rdf:type owl:Restriction ;
           owl:onProperty :hasParent ;
-          owl:minQualifiedCardinality "2"^^xsd:nonNegativeInteger ;
-          owl:allValuesFrom :Human
-        ],
-        [ rdf:type owl:Restriction ;
-          owl:onProperty :hasParent ;
           owl:maxQualifiedCardinality "2"^^xsd:nonNegativeInteger ;
           owl:allValuesFrom :Human
         ] ;
@@ -219,6 +221,7 @@
 :Black a :FurColour .
 :White a :FurColour .
 :Brown a :FurColour .
+:Blonde a :FurColour .
 
 :Short a :FurLenght .
 :Medium a :FurLenght .
@@ -227,3 +230,12 @@
 :Nina a :Yorkshire_Terrier ;
      :birthCity :York ;
      rdfs:label "Nina Fox" .
+
+
+:Naruto a :Cat .
+:Chloe a :Cat .
+
+:RodrigoSenra a :Human ;
+              :hasChild :Naruto ;
+              :furColour :Blonde ;
+              :gender :Male .

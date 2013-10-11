@@ -490,22 +490,31 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'class': u'http://example.onto/Animal',
                 u'title': u'Birth place of first known member of Species',
                 u'type': u'array',
-                u'items': {u'type': 'string', u'format': 'uri'}
+                u'items': {u'type': u'string', u'format': 'uri'}
             },
             u'http://example.onto/hasChild': {
                 u'graph': u'http://example.onto/',
-                u'range': {
-                    u'@id': u'http://example.onto/Human',
-                    u'format': u'uri',
-                    u'graph': u'http://example.onto/',
-                    u'title': u'Humano',
-                    u'type': 'string'
-                },
+                u'range': [
+                    {
+                        u'@id': u'http://example.onto/Human',
+                        u'format': u'uri',
+                        u'graph': u'http://example.onto/',
+                        u'title': u'Humano',
+                        u'type': u'string'
+                    },
+                    {
+                        u'@id': u'http://example.onto/Cat',
+                        u'format': u'uri',
+                        u'graph': u'http://example.onto/',
+                        u'title': u'Feline',
+                        u'type': u'string'
+                    }
+                ],
                 u'class': u'http://example.onto/Human',
                 u'maxItems': 888,
                 u'title': u"Has child (son or daughter)",
                 u'type': u'array',
-                u'items': {u'type': 'string', u'format': 'uri'}
+                u'items': {u'type': u'string', u'format': 'uri'}
             },
             u'http://example.onto/furColour': {
                 u'graph': u'http://example.onto/',
@@ -515,13 +524,13 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                     u'format': u'uri',
                     u'graph': u'',
                     u'title': u'',
-                    u'type': 'string'
+                    u'type': u'string'
                 },
                 u'class': u'http://example.onto/Mammalia',
                 u'required': True,
                 u'title': u'Fur or hair colour',
                 u'type': u'array',
-                u'items': {u'type': 'string', u'format': 'uri'}
+                u'items': {u'type': u'string', u'format': 'uri'}
 
             },
             u'http://example.onto/gender': {
@@ -541,16 +550,14 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'graph': u'http://example.onto/',
                 u'class': u'http://example.onto/Human',
                 u'maxItems': 2,
-                u'minItems': 2,
                 u'range': {u'@id': u'http://example.onto/Human',
                           u'format': u'uri',
                           u'graph': u'http://example.onto/',
                           u'title': u'Humano',
                           u'type': u'string'},
-                u'required': True,
                 u'title': u'Has parent (mother or father)',
                 u'type': u'array',
-                u'items': {u'type': 'string', u'format': 'uri'}
+                u'items': {u'type': u'string', u'format': 'uri'}
 
             }
 

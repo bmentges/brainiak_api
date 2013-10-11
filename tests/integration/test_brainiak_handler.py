@@ -91,12 +91,6 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
         response = self.fetch('/', method='PUT', body="500")
         self.assertEqual(response.code, 500)
 
-    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
-    def test_delete_finalize_None(self, log):
-        response = self.fetch('/', method='DELETE')
-        self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, '{}')
-
 
 class TestUnmatchedHandler(TornadoAsyncHTTPTestCase):
 

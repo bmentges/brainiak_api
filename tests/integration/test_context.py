@@ -52,7 +52,7 @@ class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.graph_uri = "http://empty.graph"
         response = self.fetch('/test/?graph_uri=' + self.graph_uri)
         self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, '{}')
+        self.assertEqual(json.loads(response.body)["items"], [])
         self.graph_uri = original_graph_uri
 
     @patch("brainiak.handlers.logger")

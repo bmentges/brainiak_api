@@ -897,7 +897,6 @@ class FilterInstancesQueryTestCase(QueryTestCase):
                 u'test_filter_with_object_as_string': {u'type': u'literal', u'value': u'Ingles', u'xml:lang': u'pt'}
             }
         ]
-
         self.assertEqual(len(computed_bindings), 2)
         self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 

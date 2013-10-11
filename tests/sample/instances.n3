@@ -15,6 +15,15 @@ tpedia:Species a owl:Class .
 tpedia:SoccerClub a owl:Class ;
                   rdfs:label "Time de futebol" .
 
+rdfs:label rdfs:domain tpedia:Place ,
+                       tpedia:Person .
+
+tpedia:speak a owl:DatatypeProperty ;
+           rdfs:domain tpedia:Place ;
+           rdfs:range xsd:string ;
+           rdfs:label "Language spoken at place"  .
+
+
 tpedia:john a tpedia:Person ;
             rdfs:label "John Jones" ;
             tpedia:likes tpedia:JiuJitsu ;

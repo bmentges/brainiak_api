@@ -120,10 +120,16 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     maxDiff = None
 
     def test_instance_query_doesnt_duplicate_equal_properties_from_different_graphs(self):
-        response = self.fetch('/_/Yorkshire_Terrier/Nina?class_prefix=http://example.onto/&instance_prefix=http://example.onto/', method='GET')
+        response = self.fetch('/_/Yorkshire_Terrier/Nina?class_prefix=http://example.onto/&instance_prefix=http://example.onto/&graph_uri=http://test.com/', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertEqual(body[u'http://example.onto/birthCity'], u'http://example.onto/York')
+        self.assertEqual(body[u'http://example.onto/birthCity'], [u'http://example.onto/York'])
+
+    def test_instance_has_property_that_is_array_but_contains_a_single_value(self):
+        response = self.fetch('/_/Human/RodrigoSenra?class_prefix=http://example.onto/&instance_prefix=http://example.onto/&graph_uri=http://test.com/', method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        self.assertEqual(body[u'http://example.onto/hasChild'], [u'http://example.onto/Naruto'])
 
 
 class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
@@ -139,6 +145,7 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
         params = {
             "lang": "en",
             "class_uri": "http://dbpedia.org/ontology/News",
+            "graph_uri": "http://brmedia.com/",
             "instance_uri": "http://brmedia.com/news_cricket",
             "ruleset": "http://brmedia.com/ruleset",
             "object_label_variable": "?object_label",
@@ -148,12 +155,13 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
         computed = self.query(query, False)["results"]["bindings"]
         expected = [
             {
-                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
-                u'object': {u'type': u'literal', u'value': u'Cricket becomes the most popular sport of Brazil'}
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'object_label': {u'type': u'literal', u'value': u'News'}
             },
             {
-                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
-                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'}
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                u'object': {u'type': u'literal', u'value': u'Cricket becomes the most popular sport of Brazil'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
@@ -161,23 +169,22 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
                 u'object_label': {u'type': u'literal', u'value': u'Cricket'}
             }
         ]
-
         self.assertEqual(sorted(computed), sorted(expected))
 
     def test_instance_query_expand_object_properties_is_not_defined(self):
-        response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/', method='GET')
+        response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/&graph_uri=http://brmedia.com/', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertEqual(body[u'http://brmedia.com/related_to'], u'dbpedia:Cricket')
+        self.assertEqual(body[u'http://brmedia.com/related_to'], [u'dbpedia:Cricket'])
 
     def test_instance_query_expand_object_properties_is_false(self):
-        response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/&expand_object_properties=0', method='GET')
+        response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/&expand_object_properties=0&graph_uri=http://brmedia.com/', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertEqual(body[u'http://brmedia.com/related_to'], u'dbpedia:Cricket')
+        self.assertEqual(body[u'http://brmedia.com/related_to'], [u'dbpedia:Cricket'])
 
     def test_instance_query_expand_object_properties_is_true(self):
-        response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/&expand_object_properties=1', method='GET')
+        response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/&expand_object_properties=1&graph_uri=http://brmedia.com/', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertEqual(body[u'http://brmedia.com/related_to'], {"@id": "dbpedia:Cricket", "title": "Cricket"})
+        self.assertEqual(body[u'http://brmedia.com/related_to'], [{u"@id": u"dbpedia:Cricket", u"title": u"Cricket"}])

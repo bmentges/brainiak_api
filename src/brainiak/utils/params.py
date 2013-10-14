@@ -109,7 +109,7 @@ class ParamDict(dict):
         self.triplestore_config = None
         self._set_triplestore_config(request)
 
-        self.arguments = self._make_arguments_dict()
+        self.arguments = self._make_arguments_dict(handler)
 
         # preserve the specified optional parameters
         self.optionals = copy(kw)
@@ -150,17 +150,17 @@ class ParamDict(dict):
         self._override_with(handler)
         self._post_override()
 
+    def _make_arguments_dict(self, handler):
+        query_string = unquote(self["request"].query)
+        query_dict = parse_qs(query_string, keep_blank_values=True)
+        return {key: handler.get_argument(key) for key in query_dict}
+
     def _set_triplestore_config(self, request):
         auth_client_id = request.headers.get('X-Brainiak-Client-Id', 'default')
         try:
             self.triplestore_config = parse_section(section=auth_client_id)
         except ConfigParserNoSectionError:
             raise HTTPError(404, "Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id))
-
-    def _make_arguments_dict(self):
-        query_string = unquote(self["request"].query)
-        query_dict = parse_qs(query_string, keep_blank_values=True)
-        return {key: value[0] for key, value in query_dict.items()}
 
     def __setitem__(self, key, value):
         """Process collateral effects in params that are related.
@@ -239,6 +239,7 @@ class ParamDict(dict):
 
             value = self.arguments.get(key, None)
             if value is not None:
+
                 self[key] = value
 
     def _post_override(self):
@@ -270,9 +271,9 @@ class ParamDict(dict):
         effective_args.update(kw)
         return urlencode(effective_args, doseq=True)
 
-    def validate_required(self, required_spec):
+    def validate_required(self, handler, required_spec):
         "Check if all required params specified by required_spec are indeed present in the request"
-        arguments = self._make_arguments_dict().keys()
+        arguments = self._make_arguments_dict(handler).keys()
         for required_param in required_spec.required:
             if not required_param in arguments:
                 raise RequiredParamMissing(required_param)

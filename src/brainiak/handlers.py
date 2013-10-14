@@ -144,12 +144,12 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
 
         elif isinstance(e, HTTPError):
             if e.log_message:
-                error_message += "\n  {0}".format(e.log_message)
+                error_message += u"\n  {0}".format(e.log_message)
             if status_code == 500:
-                logger.error("Unknown HTTP error [{0}]:\n  {1}\n".format(e.status_code, error_message))
+                logger.error(u"Unknown HTTP error [{0}]:\n  {1}\n".format(e.status_code, error_message))
                 self.send_error(status_code, exc_info=sys.exc_info(), message=e.log_message)
             else:
-                logger.error("HTTP error: {0}\n".format(error_message))
+                logger.error(u"HTTP error: {0}\n".format(error_message))
                 self.send_error(status_code, message=e.log_message)
 
         else:
@@ -175,13 +175,13 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
                    **kwargs)
 
     def write_error(self, status_code, **kwargs):
-        error_message = "HTTP error: %d" % status_code
+        error_message = u"HTTP error: %d" % status_code
         if "message" in kwargs and kwargs.get("message") is not None:
-            error_message += "\n{0}".format(kwargs.get("message"))
+            error_message += u"\n{0}".format(kwargs.get("message"))
         if "exc_info" in kwargs:
             etype, value, tb = kwargs.get("exc_info")
-            exception_msg = '\n'.join(traceback.format_exception(etype, value, tb))
-            error_message += "\nException:\n{0}".format(exception_msg)
+            exception_msg = u'\n'.join(traceback.format_exception(etype, value, tb))
+            error_message += u"\nException:\n{0}".format(exception_msg)
 
         error_json = {"errors": [error_message]}
         self.finish(error_json)
@@ -393,8 +393,10 @@ class InstanceHandler(BrainiakRequestHandler):
 
         response = get_instance(self.query_params)
         if response is None:
-            error_message = "Instance ({0}) of class ({1}) in graph ({2}) was not found.".format(
-                instance_id, class_name, instance_id)
+            error_message = u"Instance ({0}) of class ({1}) in graph ({2}) was not found.".format(
+                self.query_params['instance_uri'],
+                self.query_params['class_uri'],
+                self.query_params['graph_uri'])
             raise HTTPError(404, log_message=error_message)
 
         self.finalize(response)
@@ -496,7 +498,7 @@ class SuggestHandler(BrainiakRequestHandler):
                 raise HTTPError(400, log_message="Invalid json parameter passed to suggest.\n {0:s}".format(ex))
 
             self.query_params = ParamDict(self, **valid_params)
-            self.query_params.validate_required(valid_params)
+            self.query_params.validate_required(self, valid_params)
 
         response = do_suggest(self.query_params, body_params)
 

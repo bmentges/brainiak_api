@@ -395,7 +395,7 @@ def join_prefixes(prefixes_dict):
     return "\n".join(prefix_list)
 
 
-QUERY_FILTER_LABEL_BY_LANGUAGE = """
+QUERY_FILTER_LABEL_BY_LANGUAGE = u"""
     FILTER(langMatches(lang(?%(variable)s), "%(lang)s") OR langMatches(lang(?%(variable)s), "")) .
 """
 

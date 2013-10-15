@@ -54,7 +54,7 @@ def assemble_list_json(query_params, query_result_dict):
 
     return json_dict
 
-QUERY_COUNT_ALL_CLASSES_OF_A_GRAPH = """
+QUERY_COUNT_ALL_CLASSES_OF_A_GRAPH = u"""
 SELECT COUNT(?class) AS ?total_items
 FROM <%(graph_uri)s>
 {
@@ -70,7 +70,7 @@ def query_count_classes(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-QUERY_ALL_CLASSES_OF_A_GRAPH = """
+QUERY_ALL_CLASSES_OF_A_GRAPH = u"""
 SELECT ?class ?label
 FROM <%(graph_uri)s>
 {

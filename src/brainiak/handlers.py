@@ -319,7 +319,9 @@ class CollectionHandler(BrainiakRequestHandler):
 
         schema = schema_resource.get_schema(self.query_params)
         if schema is None:
-            raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_name, context_name))
+            class_uri = self.query_params["class_uri"]
+            graph_uri = self.query_params["graph_uri"]
+            raise HTTPError(404, log_message="Class {0} doesn't exist in context {1}.".format(class_uri, graph_uri))
 
         try:
             instance_data = json.loads(self.request.body)

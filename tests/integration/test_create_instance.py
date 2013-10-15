@@ -1,10 +1,8 @@
 import json
 from mock import patch
-
 from brainiak.instance import create_instance
 from brainiak.instance.get_instance import QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE
 from brainiak.schema import get_class as schema_resource
-from tests.mocks import mock_schema
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -84,7 +82,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             body=json.dumps(payload))
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
-        self.assertEqual(body["errors"], [u"HTTP error: 404\nClass X doesn't exist in context xubiru."])
+        self.assertEqual(body["errors"], [u"HTTP error: 404\nClass xubiru/X doesn't exist in context xubiru."])
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")

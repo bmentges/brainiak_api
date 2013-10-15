@@ -85,7 +85,7 @@ def assemble_schema_dict(query_params, normalized_uri, title, predicates, contex
     return schema
 
 
-QUERY_CLASS_SCHEMA = """
+QUERY_CLASS_SCHEMA = u"""
 SELECT DISTINCT ?title ?comment
 FROM <%(graph_uri)s>
 WHERE {
@@ -170,7 +170,7 @@ def _extract_cardinalities(bindings):
     return cardinalities
 
 
-QUERY_CARDINALITIES = """
+QUERY_CARDINALITIES = u"""
 SELECT DISTINCT ?predicate ?min ?max ?range ?enumerated_value ?enumerated_value_label
 WHERE {
     <%(class_uri)s> rdfs:subClassOf ?s OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
@@ -205,7 +205,7 @@ def query_predicates(query_params):
         return response
 
 
-QUERY_PREDICATE_WITH_LANG = """
+QUERY_PREDICATE_WITH_LANG = u"""
 SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
 WHERE {
     {
@@ -251,7 +251,7 @@ def _query_predicate_with_lang(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-QUERY_PREDICATE_WITHOUT_LANG = """
+QUERY_PREDICATE_WITHOUT_LANG = u"""
 SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
 WHERE {
     {
@@ -295,7 +295,7 @@ def query_superclasses(query_params):
     return superclasses
 
 
-QUERY_SUPERCLASS = """
+QUERY_SUPERCLASS = u"""
 SELECT DISTINCT ?class
 WHERE {
     <%(class_uri)s> rdfs:subClassOf ?class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .

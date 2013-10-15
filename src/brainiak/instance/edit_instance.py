@@ -50,7 +50,7 @@ def modify_instance(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-QUERY_INSTANCE_EXISTS_TEMPLATE = """
+QUERY_INSTANCE_EXISTS_TEMPLATE = u"""
 ASK
 FROM <%(graph_uri)s>
 WHERE {

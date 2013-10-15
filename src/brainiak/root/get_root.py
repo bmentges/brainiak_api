@@ -8,7 +8,7 @@ from brainiak.utils.resources import decorate_dict_with_pagination
 # because we are filtering query results based on prefixes
 # (accessible from the application and not through SPARQL)
 
-QUERY_LIST_CONTEXT = """
+QUERY_LIST_CONTEXT = u"""
 SELECT DISTINCT ?graph
 WHERE {GRAPH ?graph { ?s a ?o }}
 """

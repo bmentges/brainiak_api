@@ -149,7 +149,7 @@ def build_json(items_list, item_count, query_params):
     return json
 
 
-QUERY_PREDICATE_RANGES = """
+QUERY_PREDICATE_RANGES = u"""
 SELECT DISTINCT ?range ?range_label ?range_graph {
   {
     <%(target)s> rdfs:range ?root_range .
@@ -181,7 +181,7 @@ def _get_predicate_ranges(query_params, search_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-QUERY_SUBPROPERTIES = """
+QUERY_SUBPROPERTIES = u"""
 DEFINE input:inference <http://semantica.globo.com/ruleset>
 SELECT DISTINCT ?property WHERE {
   ?property rdfs:subPropertyOf <%s>
@@ -236,7 +236,7 @@ def _validate_graph_restriction(search_params, range_result):
     return list(graphs)
 
 
-QUERY_CLASS_FIELDS = """
+QUERY_CLASS_FIELDS = u"""
 SELECT DISTINCT ?field_value {
   ?s <%(field)s> ?field_value
   %(filter_clause)s
@@ -400,7 +400,7 @@ def _get_title_value(elasticsearch_fields, title_fields):
     raise RuntimeError("No title fields in search engine")
 
 
-QUERY_PREDICATE_VALUES = """
+QUERY_PREDICATE_VALUES = u"""
 SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
   <%(instance_uri)s> ?predicate ?object_value OPTION(inference "http://semantica.globo.com/ruleset") .
   OPTIONAL { ?object_value rdfs:label ?object_value_label OPTION(inference "http://semantica.globo.com/ruleset") }

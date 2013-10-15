@@ -50,15 +50,15 @@ class ParamsTestCase(TestCase):
 
     def test_initialize(self):
         handler = MockHandler()
-        params = ParamDict(handler, context_name="context_name", class_name="class_name")
-        self.assertIn("context_name", params)
-        self.assertIn("class_name", params)
-        self.assertEquals("context_name", params.get("context_name"))
-        self.assertEquals("class_name", params.get("class_name"))
+        pd = ParamDict(handler, context_name="context_name", class_name="class_name")
+        self.assertIn("context_name", pd)
+        self.assertIn("class_name", pd)
+        self.assertEquals("context_name", pd.get("context_name"))
+        self.assertEquals("class_name", pd.get("class_name"))
 
     def test_instance_prefix_is_created_from_instance_id(self):
         handler = MockHandler()
-        params = {
+        pd = {
             'class_uri': None,
             'instance_prefix': None,
             'class_name': u'Activity',
@@ -68,7 +68,7 @@ class ParamsTestCase(TestCase):
             'graph_uri': None,
             'instance_uri': None
         }
-        response = ParamDict(handler, **params)
+        response = ParamDict(handler, **pd)
 
         self.assertEqual(response['class_uri'], 'http://semantica.globo.com/organization/Activity')
         self.assertEqual(response['instance_prefix'], 'http://semantica.globo.com/organization/')
@@ -267,10 +267,10 @@ class ExpandUriTestCase(TestCase):
         params = ParamDict(handler, expand_uri=1)
         self.assertEqual(params["expand_uri"], 1)
 
-    def test_default_value_for_param_expand_uri(self):
+    def test_default_value_for_param_expand_uri_with_expansion(self):
         handler = MockHandler()
-        params = ParamDict(handler, expand_uri=settings.DEFAULT_URI_EXPANSION)
-        self.assertEqual(params["expand_uri"], settings.DEFAULT_URI_EXPANSION)
+        pd = ParamDict(handler, expand_uri=settings.DEFAULT_URI_EXPANSION)
+        self.assertEqual(pd["expand_uri"], settings.DEFAULT_URI_EXPANSION)
 
 
 class OrderingTestCase(TestCase):
@@ -310,6 +310,11 @@ class OrderingTestCase(TestCase):
                            instance_uri="http://this/should/be/used",
                            instance_prefix="http://this/is/less/important/than/instance_uri")
         self.assertEquals(params["instance_uri"], "http://this/should/be/used")
+
+    def test_without_root_prefix_in_url(self):
+        handler = MockHandler()
+        pd = ParamDict(handler, context_name='xubiru', class_name='X')
+        self.assertEquals(pd["class_uri"], "xubiru/X")
 
 
 class PublicAPITestCase(TestCase):

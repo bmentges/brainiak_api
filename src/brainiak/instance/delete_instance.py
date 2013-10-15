@@ -18,7 +18,7 @@ def delete_instance(query_params):
         return True
 
 
-QUERY_DEPENDANTS_TEMPLATE = """
+QUERY_DEPENDANTS_TEMPLATE = u"""
 SELECT ?dependant {
   ?dependant ?predicate <%(instance_uri)s>
 }
@@ -31,7 +31,7 @@ def query_dependants(query_params):
     return result_dict
 
 
-QUERY_DELETE_INSTANCE = """
+QUERY_DELETE_INSTANCE = u"""
 DELETE FROM <%(graph_uri)s>
 { <%(instance_uri)s> ?p ?o }
 WHERE

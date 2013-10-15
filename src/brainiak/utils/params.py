@@ -180,7 +180,10 @@ class ParamDict(dict):
 
         elif key == "class_name":
             dict.__setitem__(self, key, value)
-            dict.__setitem__(self, "class_uri", "{0}{1}".format(self["class_prefix"], self["class_name"]))
+            class_prefix = self["class_prefix"]
+            if not class_prefix.endswith('/'):
+                class_prefix += "/"
+            dict.__setitem__(self, "class_uri", "{0}{1}".format(class_prefix, self["class_name"]))
 
         elif key == "instance_id":
             dict.__setitem__(self, key, value)

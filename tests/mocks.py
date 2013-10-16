@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from urlparse import urlparse
+from urlparse import urlparse, parse_qs
 from brainiak.prefixes import expand_uri
 from brainiak.utils.params import normalize_last_slash
 
@@ -87,6 +87,17 @@ class MockHandler():
         self._uri = uri
         if not querystring in uri:
             self._uri = "{0}?{1}".format(uri, querystring)
+
+        query_dict = parse_qs(querystring, keep_blank_values=True)
+        for key, value in query_dict.items():
+            first_value = value[0]
+            if isinstance(first_value, str):
+                unicode_value = first_value.decode('utf-8')
+            elif isinstance(first_value, unicode):
+                unicode_value = first_value
+            else:
+                raise Exception('Unexpected value {0} of type {1}'.format(first_value, type(first_value)))
+            kw[key] = unicode_value
 
     def get_argument(self, key):
         return self.kw.get(key)

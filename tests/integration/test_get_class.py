@@ -15,7 +15,7 @@ from brainiak.schema.get_class import build_class_schema_query, \
     QUERY_CARDINALITIES, QUERY_PREDICATE_WITHOUT_LANG, \
     QUERY_PREDICATE_WITH_LANG, QUERY_SUPERCLASS, SchemaNotFound
 from brainiak.utils.params import ParamDict
-
+from brainiak.utils.cache import delete
 from tests.mocks import MockHandler, MockRequest, Params
 from tests.sparql import QueryTestCase
 from tests.tornado_cases import TornadoAsyncTestCase, TornadoAsyncHTTPTestCase
@@ -668,6 +668,14 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
 
     maxDiff = None
 
+    def setUp(self):
+        TornadoAsyncHTTPTestCase.setUp(self)
+        delete('http://example.onto/@@http://example.onto/Place##class')
+
+    def tearDown(self):
+        TornadoAsyncHTTPTestCase.tearDown(self)
+        delete('http://example.onto/@@http://example.onto/Place##class')
+
     def test_collection_has_options(self):
         response = self.fetch('/person/Gender/_schema', method='OPTIONS')
         self.assertEqual(response.code, 204)
@@ -766,10 +774,9 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         schema = get_cached_schema(query_params)
         self.assertEqual(schema, {"cached": "true"})
 
-    @patch("brainiak.schema.get_class.normalize_all_uris_recursively", return_value={})
-    @patch("brainiak.schema.get_class.get_schema", return_value={"cached": "false"})
+    @patch("brainiak.schema.get_class.get_schema", return_value=None)
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
-    def test_get_cached_schema_raise_schema_not_found_exception(self, settings_mock, get_schema_mock, normalize_all_uris_recursively_mock):
+    def test_get_cached_schema_raise_schema_not_found_exception(self, settings_mock, get_schema_mock):
         uri = "http://example.onto/Place/_schema"
         query_params = {
             'class_uri': u'http://example.onto/Place',

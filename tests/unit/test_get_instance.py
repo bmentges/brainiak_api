@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from mock import Mock, patch
+from mock import patch
 
 from brainiak import settings, triplestore
 from brainiak.instance import get_instance
-from brainiak.prefixes import MemorizeContext, SHORTEN, EXPAND
+from brainiak.prefixes import SHORTEN
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip
@@ -31,8 +31,7 @@ class TestCaseInstanceResource(unittest.TestCase):
                         'class_name': 'Country',
                         'class_uri': 'http://www.onto.sample/place/Country',
                         'context_name': 'place',
-                        'expand_uri_keys': '0',
-                        'expand_uri_values': '0',
+                        'expand_uri': '0',
                         'graph_uri': 'http://www.onto.sample/place',
                         'instance_id': 'Brazil',
                         'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil',
@@ -53,8 +52,7 @@ class TestCaseInstanceResource(unittest.TestCase):
                         'class_name': 'Country',
                         'class_uri': 'http://www.onto.sample/place/Country',
                         'context_name': 'place',
-                        'expand_uri_keys': '0',
-                        'expand_uri_values': '0',
+                        'expand_uri': '0',
                         'graph_uri': 'http://www.onto.sample/place',
                         'instance_id': 'Brazil',
                         'instance_uri': settings.URI_PREFIX + 'place/Country/Brazil',
@@ -128,7 +126,7 @@ class AssembleTestCase(unittest.TestCase):
 
     def setUp(self):
         self.original_build_items = get_instance.build_items_dict
-        get_instance.build_items_dict = lambda context, bindings, class_uri, expand_direct_properties, class_schema: {}
+        get_instance.build_items_dict = lambda bindings, class_uri, expand_direct_properties, class_schema: {}
 
     def tearDown(self):
         get_instance.build_items_dict = self.original_build_items
@@ -150,8 +148,7 @@ class AssembleTestCase(unittest.TestCase):
 
     def assertResults(self, computed):
         self.assertEqual(computed["@id"], "http://schema.org/klass/instance")
-        self.assertEqual(computed["@type"], "schema:klass")
-        self.assertEqual(computed["@context"], {'schema': 'http://schema.org/'})
+        self.assertEqual(computed["@type"], "http://schema.org/klass")
 
     def test_assemble_instance_json_links(self):
         self.prepare_params()
@@ -160,14 +157,12 @@ class AssembleTestCase(unittest.TestCase):
 
     def test_assemble_instance_json_links_with_context(self):
         self.prepare_params()
-        context = MemorizeContext(normalize_uri=SHORTEN)
-        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, context)
+        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict)
         self.assertResults(computed)
 
     def test_assemble_instance_json_links_with_context_expanding_uri(self):
-        self.prepare_params(instance_uri="http://mock.test.com/schema/klass/instance?expand_uri=1")
-        context = MemorizeContext(normalize_uri=EXPAND)
-        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, context)
+        self.prepare_params(instance_uri="http://mock.test.com/schema/klass/instance")
+        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict)
         self.assertEqual(computed["@type"], "http://schema.org/klass")
 
     def test_assemble_instance_json_with_no_meta_properties(self):
@@ -178,6 +173,8 @@ class AssembleTestCase(unittest.TestCase):
 
 
 class BuildItemsDictTestCase(unittest.TestCase):
+
+    maxDiff = None
 
     def test_build_items_dict(self):
         bindings = [
@@ -195,9 +192,8 @@ class BuildItemsDictTestCase(unittest.TestCase):
         expected = {
             "key1": ["value1", "value2"],
             "key2": "value2",
-            "rdf:type": "some:Class"}
-        context = MemorizeContext(normalize_uri=SHORTEN)
-        response = get_instance.build_items_dict(context, bindings, "some:Class", True, class_schema)
+            u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': "some:Class"}
+        response = get_instance.build_items_dict(bindings, "some:Class", True, class_schema)
         self.assertEqual(response, expected)
 
     def test_assemble_instance_json_with_object_labels(self):
@@ -224,12 +220,11 @@ class BuildItemsDictTestCase(unittest.TestCase):
                 u'http://brmedia.com/related_to': {"type": "object"}
             }
         }
-        context = MemorizeContext(normalize_uri=SHORTEN)
-        computed = get_instance.build_items_dict(context, bindings, "dbpedia:News", 1, class_schema)
+        computed = get_instance.build_items_dict(bindings, "http://dbpedia.org/ontology/News", 1, class_schema)
         expected = {
-            'rdfs:label': u'Cricket becomes the most popular sport of Brazil',
-            'rdf:type': 'dbpedia:News',
-            'http://brmedia.com/related_to': {"@id": "dbpedia:Cricket", "title": "Cricket"}
+            u'http://www.w3.org/2000/01/rdf-schema#label': u'Cricket becomes the most popular sport of Brazil',
+            u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://dbpedia.org/ontology/News',
+            u'http://brmedia.com/related_to': {"@id": "http://dbpedia.org/ontology/Cricket", "title": u"Cricket"}
         }
         self.assertEqual(computed, expected)
 
@@ -259,34 +254,14 @@ class BuildItemsDictTestCase(unittest.TestCase):
         }
         expected = {
             "birthCity": "Rio de Janeiro",
-            'rdf:type': 'http://class.uri'
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://class.uri'
         }
-        context = MemorizeContext(normalize_uri=SHORTEN)
-        response = get_instance.build_items_dict(context, bindings, "http://class.uri", False, class_schema)
+        response = get_instance.build_items_dict(bindings, "http://class.uri", False, class_schema)
 
         self.assertEqual(response, expected)
 
     def test_build_items_dict_with_super_property_and_different_values(self):
         bindings = self.prepare_input_and_expected_output(object_value="Brasil")
-        class_schema = {
-            "properties": {
-                "birthCity": {"type": "string"},
-                "birthPlace": {"type": "string"},
-                "rdf:type": {"type": "string"}
-            }
-        }
-        expected = {
-            "birthCity": "Rio de Janeiro",
-            "birthPlace": "Brasil",
-            'rdf:type': 'http://class.uri'
-        }
-        context = MemorizeContext(normalize_uri=SHORTEN)
-        response = get_instance.build_items_dict(context, bindings, "http://class.uri", False, class_schema)
-        self.assertEqual(response, expected)
-
-    def test_build_items_dict_with_super_property_and_different_values_expanding_uri(self):
-        bindings = self.prepare_input_and_expected_output(object_value="Brasil")
-        context = MemorizeContext(normalize_uri=EXPAND)
         class_schema = {
             "properties": {
                 "birthCity": {"type": "string"},
@@ -299,5 +274,22 @@ class BuildItemsDictTestCase(unittest.TestCase):
             "birthPlace": "Brasil",
             'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://class.uri'
         }
-        response = get_instance.build_items_dict(context, bindings, "http://class.uri", False, class_schema)
+        response = get_instance.build_items_dict(bindings, "http://class.uri", False, class_schema)
+        self.assertEqual(response, expected)
+
+    def test_build_items_dict_with_super_property_and_different_values_expanding_uri(self):
+        bindings = self.prepare_input_and_expected_output(object_value="Brasil")
+        class_schema = {
+            "properties": {
+                "birthCity": {"type": "string"},
+                "birthPlace": {"type": "string"},
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {"type": "string"}
+            }
+        }
+        expected = {
+            "birthCity": "Rio de Janeiro",
+            "birthPlace": "Brasil",
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://class.uri'
+        }
+        response = get_instance.build_items_dict(bindings, "http://class.uri", False, class_schema)
         self.assertEqual(response, expected)

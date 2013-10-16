@@ -14,5 +14,5 @@ class TestCaseInstanceCreateResource(unittest.TestCase):
     def test_instance_not_inserted(self, mock_get_cached_schema, mocked_response_successful, mocked_query_create_instances):
         handler = MockHandler()
         params = ParamDict(handler, class_uri="class", graph_uri="graph")
-        instance_data = {"rdfs:label": "teste"}
+        instance_data = {"http://www.w3.org/2000/01/rdf-schema#label": "teste"}
         self.assertRaises(HTTPError, create_instance, params, instance_data, "http://uri-teste")

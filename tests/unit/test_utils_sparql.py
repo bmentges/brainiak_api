@@ -264,28 +264,6 @@ class IsResultTrueTestCase(unittest.TestCase):
 
 class CreateExplicitTriples(unittest.TestCase):
 
-    def test_create_explicit_triples_all_predicates_and_objects_are_compressed_uris(self):
-        instance_uri = "http://personpedia.com/Person/OscarWilde"
-        instance_data = {
-            "@context": {"personpedia": "http://personpedia.com/"},
-            "personpedia:birthPlace": "place:Dublin",
-            "personpedia:gender": "personpedia:Male",
-            "personpedia:wife": "personpedia:ConstanceLloyd"
-        }
-        class_object = mock_schema(
-            {"personpedia:birthPlace": None,
-             "personpedia:gender": None,
-             "personpedia:wife": None},
-            context=instance_data['@context']
-        )
-        response = create_explicit_triples(instance_uri, instance_data, class_object)
-        expected = [
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthPlace", "place:Dublin"),
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:gender", "personpedia:Male"),
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:wife", "personpedia:ConstanceLloyd")
-        ]
-        self.assertEqual(sorted(response), sorted(expected))
-
     def test_create_explicit_triples_predicates_and_objects_are_full_uris(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
@@ -312,21 +290,21 @@ class CreateExplicitTriples(unittest.TestCase):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
             "@context": {"personpedia": "http://personpedia.com/"},
-            "personpedia:birthDate": "16/10/1854",
-            "personpedia:birthPlace": "place:Dublin",
-            "personpedia:occupation": "writer",
+            "http://personpedia.com/birthDate": "16/10/1854",
+            "http://personpedia.com/birthPlace": "place:Dublin",
+            "http://personpedia.com/occupation": "writer",
         }
         class_object = mock_schema(
-            {"personpedia:birthDate": 'string',
-             "personpedia:birthPlace": None,
-             "personpedia:occupation": 'string'},
+            {"http://personpedia.com/birthDate": 'string',
+             "http://personpedia.com/birthPlace": None,
+             "http://personpedia.com/occupation": 'string'},
             context=instance_data['@context']
         )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthDate", '"16/10/1854"^^xsd:string'),
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthPlace", "place:Dublin"),
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:occupation", '"writer"^^xsd:string')
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthDate>", '"16/10/1854"^^xsd:string'),
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthPlace>", "place:Dublin"),
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/occupation>", '"writer"^^xsd:string')
         ]
         self.assertEqual(sorted(response), sorted(expected))
 
@@ -334,13 +312,13 @@ class CreateExplicitTriples(unittest.TestCase):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
             "@context": {"personpedia": "http://personpedia.com/"},
-            "personpedia:occupation": "http://someurl/profession/writer",
+            "http://personpedia.com/occupation": "http://someurl/profession/writer",
         }
         class_object = mock_schema({"personpedia:occupation": 'string'}, context=instance_data['@context'])
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>",
-             "personpedia:occupation",
+             "<http://personpedia.com/occupation>",
              '"http://someurl/profession/writer"^^xsd:string')
         ]
         self.assertEqual(sorted(response), sorted(expected))
@@ -349,21 +327,21 @@ class CreateExplicitTriples(unittest.TestCase):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
             "@context": {"personpedia": "http://personpedia.com/"},
-            "personpedia:birthDate": "16/10/1854",
-            "personpedia:birthPlace": "place:Dublin",
-            "personpedia:occupation": "'writer'@en",
+            "http://personpedia.com/birthDate": "16/10/1854",
+            "http://personpedia.com/birthPlace": "place:Dublin",
+            "http://personpedia.com/occupation": "'writer'@en",
         }
         class_object = mock_schema(
-            {"personpedia:birthDate": 'string',
-             "personpedia:birthPlace": None,
-             "personpedia:occupation": 'string'},
+            {"http://personpedia.com/birthDate": 'string',
+             "http://personpedia.com/birthPlace": None,
+             "http://personpedia.com/occupation": 'string'},
             context=instance_data['@context']
         )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthDate", '"16/10/1854"^^xsd:string'),
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:birthPlace", "place:Dublin"),
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:occupation", "'writer'@en")
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthDate>", '"16/10/1854"^^xsd:string'),
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthPlace>", "place:Dublin"),
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/occupation>", "'writer'@en")
         ]
         self.assertEqual(sorted(response), sorted(expected))
 
@@ -371,22 +349,22 @@ class CreateExplicitTriples(unittest.TestCase):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
             "@context": {"personpedia": "http://personpedia.com/"},
-            "rdfs:label": "Oscar Wilde",
-            "personpedia:gender": "personpedia:Male",
-            "personpedia:child": ["personpedia:VyvyanHolland", "personpedia:CyrilHolland"]
+            "http://www.w3.org/2000/01/rdf-schema#label": "Oscar Wilde",
+            "http://personpedia.com/gender": "http://personpedia.com/Male",
+            "http://personpedia.com/child": ["http://personpedia.com/VyvyanHolland", "http://personpedia.com/CyrilHolland"]
         }
         class_object = mock_schema(
-            {"rdfs:label": 'string',
-             "personpedia:gender": None,
-             "personpedia:child": None},
+            {"http://www.w3.org/2000/01/rdf-schema#label": 'string',
+             "http://personpedia.com/gender": None,
+             "http://personpedia.com/child": None},
             context=instance_data['@context']
         )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
-            ("<http://personpedia.com/Person/OscarWilde>", "rdfs:label", '"Oscar Wilde"^^xsd:string'),
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:gender", "personpedia:Male"),
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:child", "personpedia:VyvyanHolland"),
-            ("<http://personpedia.com/Person/OscarWilde>", "personpedia:child", "personpedia:CyrilHolland")
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://www.w3.org/2000/01/rdf-schema#label>", '"Oscar Wilde"^^xsd:string'),
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/gender>", "<http://personpedia.com/Male>"),
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/child>", "<http://personpedia.com/VyvyanHolland>"),
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/child>", "<http://personpedia.com/CyrilHolland>")
         ]
         self.assertEqual(sorted(response), sorted(expected))
 
@@ -570,8 +548,7 @@ class SuperPropertiesTestCase(unittest.TestCase):
             }
         ]
 
-        context = MemorizeContext(normalize_uri=SHORTEN)
-        computed = get_super_properties(context, sample_bindings)
+        computed = get_super_properties(sample_bindings)
         expected = {'father': 'son'}
         self.assertEqual(computed, expected)
 
@@ -589,8 +566,7 @@ class SuperPropertiesTestCase(unittest.TestCase):
                 'predicate': {'value': 'grandfather'}
             }
         ]
-        context = MemorizeContext(normalize_uri=SHORTEN)
-        computed = get_super_properties(context, sample_bindings)
+        computed = get_super_properties(sample_bindings)
         expected = {'father': 'son', 'grandfather': 'father'}
         self.assertEqual(computed, expected)
 
@@ -700,3 +676,50 @@ class ConvertBooleanTestCase(unittest.TestCase):
     def test_convert_other_value(self):
         result = convert_boolean("aaa")
         self.assertEqual(result, "aaa")
+
+
+class BindingsToDictTestCase(unittest.TestCase):
+
+    maxDiff = None
+
+    def test_convert_valid_input(self):
+        key_name = 'predicate'
+        bindings = {
+            u'head': {u'link': [],
+            u'vars': [u'predicate', u'predicate_graph', u'predicate_comment', u'type', u'range', u'title', u'range_graph', u'range_label', u'super_property', u'domain_class']},
+            u'results': {
+                u'distinct': False,
+                u'bindings': [{
+                    u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                    u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'}
+                }]
+            }
+        }
+
+        expected = {
+            u'http://www.w3.org/2000/01/rdf-schema#label': {
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'}
+            }
+        }
+        computed = bindings_to_dict(key_name, bindings)
+        self.assertEqual(computed, expected)
+
+    def test_convert_invalid_input(self):
+        key_name = 'inexistent'
+        bindings = {
+            u'head': {u'link': [],
+            u'vars': [u'predicate', u'predicate_graph', u'predicate_comment', u'type', u'range', u'title', u'range_graph', u'range_label', u'super_property', u'domain_class']},
+            u'results': {
+                u'distinct': False,
+                u'bindings': [
+                {
+                    u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                    u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'}
+                }]
+            }
+        }
+
+        expected = {}
+        computed = bindings_to_dict(key_name, bindings)
+        self.assertEqual(computed, expected)

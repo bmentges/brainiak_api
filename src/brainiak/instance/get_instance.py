@@ -23,7 +23,7 @@ def get_instance(query_params):
 
 
 def build_items_dict(context, bindings, class_uri, expand_object_properties, class_schema):
-    super_predicates = get_super_properties(context, bindings)
+    super_predicates = get_super_properties(bindings)
 
     items_dict = {}
     for item in bindings:

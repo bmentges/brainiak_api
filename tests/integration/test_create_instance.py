@@ -110,7 +110,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(mocked_notify_bus.called)
         expected = {
             'action': 'POST',
-            'instance_data': {u'http://example.onto/name': u'Globoland'},
+            'instance_data': {u'http://example.onto/name': u'Globoland', u'http://www.w3.org/2000/01/rdf-schema#label': u'Globoland'},
             'instance': 'http://example.onto/City/123',
             'klass': 'http://example.onto/City',
             'graph': 'http://example.onto/'

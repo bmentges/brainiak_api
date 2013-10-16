@@ -3,7 +3,7 @@ from copy import copy
 from tornado.web import HTTPError
 
 from brainiak import settings, triplestore
-from brainiak.prefixes import uri_to_slug, expand_uri
+from brainiak.prefixes import uri_to_slug, safe_slug_to_prefix
 from brainiak.schema.get_class import get_cached_schema
 from brainiak.search_engine import run_search
 from brainiak.utils import resources, sparql
@@ -296,17 +296,20 @@ def _get_title_value(elasticsearch_fields, title_fields):
     raise RuntimeError("No title fields in search engine")
 
 
-# TODO: unittest / move to search engine module?
-def convert_index_to_graph(index_name):
+def convert_index_name_to_graph_uri(index_name):
+    """
+    Convert @index_name to the related graph uri, provided:
+        @index_name: string representing ElasticSearch index name
+    """
     graph_name = index_name.split("semantica.")[-1]
-    graph_uri = expand_uri(graph_name)
+    graph_uri = safe_slug_to_prefix(graph_name)
     return graph_uri
 
 
-# TODO: unittest / move to search engine module?
+# this method was left tested indirectly in purpose
 def get_instance_class_schema(es_response_item, query_params):
     index_name = es_response_item["_index"]
-    graph_uri = convert_index_to_graph(index_name)
+    graph_uri = convert_index_name_to_graph_uri(index_name)
     class_uri = es_response_item["_type"]
 
     item_params = copy(query_params)

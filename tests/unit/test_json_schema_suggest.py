@@ -3,7 +3,7 @@
 from unittest import TestCase
 from jsonschema import validate, ValidationError
 
-from brainiak.suggest.suggest import SUGGEST_PARAM_SCHEMA
+from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest import json_schema as suggest_json_schema
 
 

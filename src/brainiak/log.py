@@ -6,7 +6,7 @@ from brainiak.settings import LOG_FILEPATH, LOG_LEVEL, LOG_NAME
 
 handlers = []
 logger = None
-format = "%(asctime)s - %(filename)s:%(lineno)d - %(name)s - %(levelname)s - %(message)s"
+format = u"%(asctime)s - %(filename)s:%(lineno)d - %(name)s - %(levelname)s - %(message)s"
 
 
 __doc__ = """

@@ -113,7 +113,6 @@ def do_suggest(query_params, suggest_params):
     indexes = ["semantica." + uri_to_slug(graph) for graph in graphs]
 
     compressed_result = compress_keys_and_values(range_result)
-    class_label_dict, class_graph_dict = _build_class_label_and_class_graph_dicts(compressed_result)
 
     title_fields = [RDFS_LABEL]
     title_fields += _get_subproperties(query_params, RDFS_LABEL)
@@ -124,7 +123,6 @@ def do_suggest(query_params, suggest_params):
         query_params,
         response_params,
         classes,
-        class_graph_dict,
         title_fields)
 
     request_body = _build_body_query(
@@ -139,8 +137,7 @@ def do_suggest(query_params, suggest_params):
 
     total_items = elasticsearch_result["hits"]["total"]
     if total_items:
-        items = _build_items(query_params, elasticsearch_result, class_label_dict,
-                                     title_fields, class_fields)
+        items = _build_items(query_params, elasticsearch_result, title_fields, class_fields)
         response = build_json(items, total_items, query_params)
     else:
         response = {}
@@ -279,7 +276,7 @@ def _get_class_fields_value(query_params, classes, meta_field):
     return class_field_values
 
 
-def _get_response_fields(query_params, response_params, classes, class_graph_dict, title_fields):
+def _get_response_fields(query_params, response_params, classes, title_fields):
     response_fields = set([])
 
     response_fields.update(title_fields)
@@ -379,15 +376,6 @@ def _build_type_filters(classes):
     return type_filters
 
 
-def _build_class_label_and_class_graph_dicts(compressed_result):
-    class_label_dict = {}
-    class_graph_dict = {}
-    for result in compressed_result:
-        class_label_dict[result["range"]] = result["range_label"]
-        class_graph_dict[result["range"]] = result["range_graph"]
-    return class_label_dict, class_graph_dict
-
-
 def _get_title_value(elasticsearch_fields, title_fields):
     for field in reversed(title_fields):
         title = elasticsearch_fields.get(field)
@@ -395,16 +383,15 @@ def _get_title_value(elasticsearch_fields, title_fields):
             return (field, title)
     raise RuntimeError("No title fields in search engine")
 
-# TODO: Kill
-QUERY_PREDICATE_VALUES = """
-SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
-  <%(instance_uri)s> ?predicate ?object_value OPTION(inference "http://semantica.globo.com/ruleset") .
-  OPTIONAL { ?object_value rdfs:label ?object_value_label OPTION(inference "http://semantica.globo.com/ruleset") }
-  ?predicate rdfs:label ?predicate_title .
-  %(filter_clause)s
-}
-"""
 
+# QUERY_PREDICATE_VALUES = """
+# SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
+#   <%(instance_uri)s> ?predicate ?object_value OPTION(inference "http://semantica.globo.com/ruleset") .
+#   OPTIONAL { ?object_value rdfs:label ?object_value_label OPTION(inference "http://semantica.globo.com/ruleset") }
+#   ?predicate rdfs:label ?predicate_title .
+#   %(filter_clause)s
+# }
+# """
 
 # def _build_predicate_values_query(instance_uri, predicates):
 #     conditions = ["?predicate = <{0}>".format(predicate) for predicate in predicates]
@@ -537,7 +524,7 @@ def remove_title_field(item, title_field):
         item["fields"].pop(title_field)
 
 
-def _build_items(query_params, result, class_label_dict, title_fields, class_fields):
+def _build_items(query_params, result, title_fields, class_fields):
     items = []
     es_items = result["hits"].get("hits", [])
     for item in es_items:
@@ -552,7 +539,7 @@ def _build_items(query_params, result, class_label_dict, title_fields, class_fie
             "@id": instance_uri,
             "title": title_value,
             "@type": klass,
-            "type_title": class_label_dict[klass]
+            "type_title": class_schema["title"]
         }
 
         instance_fields = get_instance_fields(item, class_schema)

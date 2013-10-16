@@ -29,7 +29,7 @@ def query_sparql(query, triplestore_config):
         else:
             raise e
 
-    result_dict = json.loads(query_response.body)
+    result_dict = json.loads(unicode(query_response.body))
     return result_dict
 
 # This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works

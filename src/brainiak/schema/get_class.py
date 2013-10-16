@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from brainiak import triplestore
-from brainiak.prefixes import MemorizeContext, normalize_all_uris_recursively, SHORTEN
-from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO_JSON_TYPE, _MAP_EXPAND_XSD_TO_JSON_TYPE
+from brainiak.prefixes import MemorizeContext
+from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND_XSD_TO_JSON_TYPE
 from brainiak.utils.cache import build_schema_key, memoize
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InvalidSchema, bindings_to_dict
@@ -15,8 +15,7 @@ class SchemaNotFound(Exception):
 def get_cached_schema(query_params):
 
     schema_key = build_schema_key(query_params)
-    schema = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
-    class_object = normalize_all_uris_recursively(schema)
+    class_object = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
     if not class_object:
         msg = "The class definition for {0} was not found in graph {1}"
         raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['graph_uri']))
@@ -38,9 +37,6 @@ def get_schema(query_params):
                                          predicates_and_cardinalities,
                                          context,
                                          comment=get_one_value(class_schema, "comment"))
-
-    if query_params['expand_uri'] == "0":
-        response_dict = normalize_all_uris_recursively(response_dict, mode=SHORTEN)
 
     return response_dict
 

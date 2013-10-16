@@ -327,25 +327,16 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
     predicate_object_tuples = unpack_tuples(instance_data)
     triples = []
 
-    if '@context' in instance_data:
-        instance_context = instance_data['@context']
-    else:
-        instance_context = None
-
     for (predicate_uri, object_value) in predicate_object_tuples:
         if not is_reserved_attribute(predicate_uri):
 
-            normalized_predicate_name = expand_uri(predicate_uri, context=instance_context)
             try:
-                predicate_datatype = get_predicate_datatype(class_object, normalized_predicate_name)
+                predicate_datatype = get_predicate_datatype(class_object, predicate_uri)
             except KeyError:
                 msg = 'Property {0} was not found in the schema of instance {1}'
-                raise InvalidSchema(msg.format(normalized_predicate_name, instance_uri))
+                raise InvalidSchema(msg.format(predicate_uri, instance_uri))
 
-            predicate = shorten_uri(predicate_uri)
-
-            if is_uri(predicate):
-                predicate = "<%s>" % predicate_uri
+            predicate_uri = "<%s>" % predicate_uri
 
             # object: can be uri (compressed or not) or literal
 
@@ -376,9 +367,9 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                 elif is_compressed_uri(object_value, instance_data.get("@context", {})):
                     object_ = object_value
                 else:
-                    raise InvalidSchema('Unexpected value {0} for object property {1}'.format(object_value, predicate))
+                    raise InvalidSchema('Unexpected value {0} for object property {1}'.format(object_value, predicate_uri))
 
-            triple = (instance, predicate, object_)
+            triple = (instance, predicate_uri, object_)
             triples.append(triple)
 
     return triples

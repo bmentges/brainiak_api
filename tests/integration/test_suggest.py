@@ -7,7 +7,7 @@ import requests
 from mock import patch
 
 from brainiak.suggest.suggest import QUERY_PREDICATE_RANGES, \
-    QUERY_SUBPROPERTIES, _build_class_fields_query, _build_predicate_values_query
+    QUERY_SUBPROPERTIES, _build_class_fields_query
 from brainiak.utils.sparql import filter_values, compress_keys_and_values
 from brainiak import settings
 
@@ -63,8 +63,9 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         json_received = json.loads(response.body)
         self.assertIn(expected_error_msg, json_received['errors'])
 
+    @patch("brainiak.suggest.suggest.expand_uri", return_value="http://example.onto/")
     @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
-    def test_successful_request(self, mocked_uri_to_slug):
+    def test_successful_request(self, mocked_uri_to_slug, mock_expand_uri):
         expected_items = [
             {
                 u'@id': u'http://example.onto/York', u'title': u'York',
@@ -78,8 +79,9 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         response_json = json.loads(response.body)
         self.assertEqual(expected_items, response_json["items"])
 
+    @patch("brainiak.suggest.suggest.expand_uri", return_value="http://example.onto/")
     @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
-    def test_successful_request_with_metafields(self, mocked_uri_to_slug):
+    def test_successful_request_with_metafields(self, mocked_uri_to_slug, mock_expand_uri):
         expected_items = [
             {
                 u'@id': u'http://example.onto/York', u'title': u'York',
@@ -114,8 +116,9 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         response_json = json.loads(response.body)
         self.assertEqual(expected_items, response_json["items"])
 
+    @patch("brainiak.suggest.suggest.expand_uri", return_value="http://example.onto/")
     @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
-    def test_zero_results(self, mocked_uri_to_slug):
+    def test_zero_results(self, mocked_uri_to_slug, mock_expand_uri):
         zero_results_parameters = {
             "search": {
                 "pattern": "non existent keywords",
@@ -166,7 +169,12 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     def test_query_subproperties(self):
         expected = ["http://example.onto/birthCity"]
-        query_response = self.query(QUERY_SUBPROPERTIES % "http://example.onto/birthPlace")
+        params = {
+            "ruleset": "http://example.onto/ruleset",
+            "property": "http://example.onto/birthPlace"
+        }
+        query_response = self.query(QUERY_SUBPROPERTIES % params)
+
         response = filter_values(query_response, "property")
         self.assertEqual(expected, response)
 
@@ -178,23 +186,3 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         query_response = self.query(query)
         meta_field_values = filter_values(query_response, "field_value")
         self.assertEqual(expected, meta_field_values)
-
-    def test_query_predicate_values(self):
-        expected = [
-            {
-                u'predicate': u'http://example.onto/nickname',
-                u'predicate_title': u'Nickname of a place',
-                u'object_value': u'City of York'
-            },
-            {
-                u'predicate': u'http://example.onto/description',
-                u'predicate_title': u'Description of a place',
-                u'object_value': u'York is a walled city, situated at the confluence of the Rivers Ouse and Foss in North Yorkshire, England.'
-            }
-        ]
-        instance_uri = "http://example.onto/York"
-        instance_fields = ["http://example.onto/nickname", "http://example.onto/description"]
-        query = _build_predicate_values_query(instance_uri, instance_fields)
-        query_response = self.query(query)
-        values = compress_keys_and_values(query_response)
-        self.assertEqual(expected, values)

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from brainiak import triplestore, settings
-from brainiak.prefixes import expand_uri, MemorizeContext
 from brainiak.schema import get_class
 from brainiak.utils.links import build_class_url
 from brainiak.utils.sparql import get_super_properties, is_result_empty
@@ -22,13 +21,13 @@ def get_instance(query_params):
                                       query_result_dict)
 
 
-def build_items_dict(context, bindings, class_uri, expand_object_properties, class_schema):
+def build_items_dict(bindings, class_uri, expand_object_properties, class_schema):
     super_predicates = get_super_properties(bindings)
 
     items_dict = {}
     for item in bindings:
-        predicate_uri = context.normalize_uri(item["predicate"]["value"])
-        object_uri = context.normalize_uri(item["object"]["value"])
+        predicate_uri = item["predicate"]["value"]
+        object_uri = item["object"]["value"]
         object_label = item.get("object_label", {}).get("value")
         if object_label and expand_object_properties:
             value = {"@id": object_uri, "title": object_label}
@@ -46,8 +45,8 @@ def build_items_dict(context, bindings, class_uri, expand_object_properties, cla
             base_uri = None
             if predicate_uri in class_schema["properties"]:
                 base_uri = predicate_uri
-            elif expand_uri(predicate_uri) in class_schema["properties"]:
-                base_uri = expand_uri(predicate_uri)
+            elif predicate_uri in class_schema["properties"]:
+                base_uri = predicate_uri
 
             if base_uri:
                 if class_schema["properties"][base_uri][u'type'] == u'array':
@@ -55,19 +54,19 @@ def build_items_dict(context, bindings, class_uri, expand_object_properties, cla
                 else:
                     items_dict[predicate_uri] = value
 
-    remove_super_properties(context, items_dict, super_predicates)
+    remove_super_properties(items_dict, super_predicates)
 
     if not class_uri is None:
-        items_dict[context.normalize_uri("rdf:type")] = context.normalize_uri(class_uri)
+        items_dict["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"] = class_uri
 
     return items_dict
 
 
-def remove_super_properties(context, items_dict, super_predicates):
+def remove_super_properties(items_dict, super_predicates):
     for (analyzed_predicate, value) in items_dict.items():
         if analyzed_predicate in super_predicates.keys():
             sub_predicate = super_predicates[analyzed_predicate]
-            sub_value = items_dict[context.normalize_uri(sub_predicate)]
+            sub_value = items_dict[sub_predicate]
             if value == sub_value or (sub_value in value):
                 items_dict.pop(analyzed_predicate)
 
@@ -87,27 +86,23 @@ def check_and_clean_rdftype(instance_type, items):
         del items[rdftype]
 
 
-def assemble_instance_json(query_params, query_result_dict, context=None):
-    if context is None:
-        context = MemorizeContext(normalize_uri=query_params['expand_uri'])
+def assemble_instance_json(query_params, query_result_dict):
 
     expand_object_properties = query_params.get("expand_object_properties") == "1"
     include_meta_properties = query_params.get("meta_properties") is None or query_params.get("meta_properties") == "1"
-    items = build_items_dict(context,
-                             query_result_dict['results']['bindings'],
+    items = build_items_dict(query_result_dict['results']['bindings'],
                              query_params["class_uri"],
                              expand_object_properties,
                              query_params["class_schema"])
 
     if include_meta_properties:
         class_url = build_class_url(query_params)
-        query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
+        query_params.resource_url = u"{0}/{1}".format(class_url, query_params['instance_id'])
         instance = {
             "_base_url": query_params.base_url,
             "_resource_id": query_params['instance_id'],
             "@id": query_params['instance_uri'],
-            "@type": context.normalize_uri(query_params["class_uri"]),
-            "@context": context.context,
+            "@type": query_params["class_uri"]
         }
 
         check_and_clean_rdftype(instance['@type'], items)

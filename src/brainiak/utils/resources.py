@@ -31,7 +31,7 @@ def calculate_offset(query_params):
     "Calculate offset for paginated queries given page and per_page parameters"
     page = int(query_params.get("page", settings.DEFAULT_PAGE))
     per_page = int(query_params.get("per_page", settings.DEFAULT_PER_PAGE))
-    return str(page * per_page)
+    return unicode(page * per_page)
 
 
 def decorate_dict_with_pagination(target_dict, params, get_total_items_func):

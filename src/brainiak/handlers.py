@@ -62,7 +62,7 @@ def safe_params(valid_params=None, body_params=None):
         raise HTTPError(400, log_message=msg)
     except RequiredParamMissing as ex:
         msg = u"Required parameter ({0:s}) was not given.".format(ex)
-        raise HTTPError(400, log_message=str(msg))
+        raise HTTPError(400, log_message=unicode(msg))
 
 
 def get_routes():
@@ -124,13 +124,13 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         error_message = u"[{0}] on {1}".format(status_code, self._request_summary())
 
         if isinstance(e, NotificationFailure):
-            message = str(e)
+            message = unicode(e)
             logger.error(message)
             self.send_error(status_code, message=message)
 
         elif isinstance(e, HTTPClientError):
             message = u"Access to backend service failed.  {0:s}.".format(e)
-            extra_messages = check_messages_when_port_is_mentioned(str(e))
+            extra_messages = check_messages_when_port_is_mentioned(unicode(e))
             if extra_messages:
                 for msg in extra_messages:
                     message += msg
@@ -329,7 +329,7 @@ class CollectionHandler(BrainiakRequestHandler):
         try:
             (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
         except InvalidSchema as ex:
-            raise HTTPError(500, log_message=str(ex))
+            raise HTTPError(500, log_message=unicode(ex))
 
         instance_url = self.build_resource_url(instance_id)
 
@@ -428,9 +428,9 @@ class InstanceHandler(BrainiakRequestHandler):
                 edit_instance(self.query_params, instance_data)
                 status = 200
         except InvalidSchema as ex:
-            raise HTTPError(400, log_message=str(ex))
+            raise HTTPError(400, log_message=unicode(ex))
         except SchemaNotFound as ex:
-            raise HTTPError(404, log_message=str(ex))
+            raise HTTPError(404, log_message=unicode(ex))
 
         self.query_params["expand_object_properties"] = "1"
         instance_data = get_instance(self.query_params)

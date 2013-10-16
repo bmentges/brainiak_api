@@ -250,7 +250,7 @@ class ParamDict(dict):
         # In order to keep up with Repos, pages numbering start at 1.
         # As for Virtuoso pages start at 0, we convert page, if provided
         if "page" in self.arguments:
-            self["page"] = str(int(self["page"]) - 1)
+            self["page"] = unicode(int(self["page"]) - 1)
 
         if "sort_order" in self.arguments:
             self["sort_order"] = self["sort_order"].upper()

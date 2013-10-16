@@ -61,7 +61,7 @@ def run_query(query, triplestore_config):
 
     request_params["time_diff"] = time_f - time_i
     request_params["query"] = unicode(query)
-    request_params["user_ip"] = str(None)
+    request_params["user_ip"] = unicode(None)
     log_msg = format_post % request_params
     log.logger.info(log_msg)
 

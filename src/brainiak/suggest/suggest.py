@@ -102,13 +102,8 @@ def _get_predicate_ranges(query_params, search_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-<<<<<<< HEAD
-QUERY_SUBPROPERTIES = """
-DEFINE input:inference <%(ruleset)s>
-=======
 QUERY_SUBPROPERTIES = u"""
-DEFINE input:inference <http://semantica.globo.com/ruleset>
->>>>>>> 54af18abe2e146ab206a8009c6170366d55bc02d
+DEFINE input:inference <%(ruleset)s>
 SELECT DISTINCT ?property WHERE {
   ?property rdfs:subPropertyOf <%(property)s>
 }
@@ -166,12 +161,8 @@ def _validate_graph_restriction(search_params, range_result):
     return list(graphs)
 
 
-<<<<<<< HEAD
 # TODO: kill after adding annotation properties to schema
-QUERY_CLASS_FIELDS = """
-=======
 QUERY_CLASS_FIELDS = u"""
->>>>>>> 54af18abe2e146ab206a8009c6170366d55bc02d
 SELECT DISTINCT ?field_value {
   ?s <%(field)s> ?field_value
   %(filter_clause)s
@@ -305,7 +296,6 @@ def _get_title_value(elasticsearch_fields, title_fields):
     raise RuntimeError("No title fields in search engine")
 
 
-<<<<<<< HEAD
 def convert_index_name_to_graph_uri(index_name):
     """
     Convert @index_name to the related graph uri, provided:
@@ -354,57 +344,6 @@ def get_instance_fields(item, class_schema):
                 'predicate_id': property_uri,
                 'predicate_title': property_title,
                 'required': required
-=======
-QUERY_PREDICATE_VALUES = u"""
-SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
-  <%(instance_uri)s> ?predicate ?object_value OPTION(inference "http://semantica.globo.com/ruleset") .
-  OPTIONAL { ?object_value rdfs:label ?object_value_label OPTION(inference "http://semantica.globo.com/ruleset") }
-  ?predicate rdfs:label ?predicate_title .
-  %(filter_clause)s
-}
-"""
-
-
-def _build_predicate_values_query(instance_uri, predicates):
-    conditions = [u"?predicate = <{0}>".format(predicate) for predicate in predicates]
-    conditions = u" OR ".join(conditions)
-    filter_clause = u"FILTER(" + conditions + u")"
-    query = QUERY_PREDICATE_VALUES % {
-        "instance_uri": unicode(instance_uri),
-        "filter_clause": filter_clause
-    }
-    return query
-
-
-def _get_predicate_values(query_params, instance_uri, predicates):
-    query = _build_predicate_values_query(instance_uri, predicates)
-    query_response = triplestore.query_sparql(query, query_params.triplestore_config)
-    return compress_keys_and_values(query_response)
-
-
-def _get_instance_fields(query_params, instance_uri, klass, title_field, fields_by_class_dict, required_fields):
-
-    instance_fields = {}
-
-    predicates = fields_by_class_dict.get(klass, [])
-
-    if predicates and title_field in predicates:  # title_field is already in response
-        predicates.remove(title_field)
-
-    if not predicates:
-        return instance_fields
-
-    predicate_values = _get_predicate_values(query_params, instance_uri, predicates)
-
-    if not predicate_values:
-        return instance_fields
-    else:
-        instance_fields_list = []
-        for value in predicate_values:
-            instance_field_dict = {
-                "predicate_id": value["predicate"],
-                "predicate_title": value["predicate_title"],
->>>>>>> 54af18abe2e146ab206a8009c6170366d55bc02d
             }
             if isinstance(object_, dict):
                 field['object_id'] = object_.get("@id")

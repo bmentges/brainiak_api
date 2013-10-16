@@ -5,7 +5,7 @@ from urllib import urlencode, unquote
 
 def content_type_profile(schema_url):
     """Set header Content-Type + profile pointing to URL of the json-schema"""
-    content_type = "application/json; profile={0}".format(schema_url)
+    content_type = u"application/json; profile={0}".format(schema_url)
     return content_type
 
 
@@ -90,7 +90,7 @@ def last_link(query_params, total_items):
     links = [
         {
             'rel': "last",
-            'href': "%s?%s" % (base_url, query_params.format_url_params(page=last_page, per_page=per_page)),
+            'href': u"%s?%s" % (base_url, query_params.format_url_params(page=last_page, per_page=per_page)),
             'method': "GET"
         }
     ]
@@ -161,7 +161,7 @@ def pagination_schema(root_url, extra_url_params='', method="GET"):
 
 
 def build_class_url(query_params, include_query_string=False):
-    class_url = "{0}://{1}/{2}/{3}".format(
+    class_url = u"{0}://{1}/{2}/{3}".format(
         query_params['request'].protocol,
         query_params['request'].host,
         query_params.get('context_name', ''),
@@ -174,14 +174,14 @@ def build_class_url(query_params, include_query_string=False):
 
 def build_schema_url(query_params):
     base_url = remove_last_slash(query_params.base_url)
-    schema_url = assemble_url('{0}/_schema_list'.format(base_url))
+    schema_url = assemble_url(u'{0}/_schema_list'.format(base_url))
     return schema_url
 
 
 def build_schema_url_for_instance(query_params):
     class_url = build_class_url(query_params)
     query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
-    schema_url = assemble_url('{0}/_schema'.format(class_url), query_string)
+    schema_url = assemble_url(u'{0}/_schema'.format(class_url), query_string)
     return schema_url
 
 
@@ -193,9 +193,9 @@ def crud_links(query_params, schema_url=None):
     class_url = build_class_url(query_params)
     querystring = query_params["request"].query
     if querystring:
-        instance_url = "{0}/{{_resource_id}}?instance_prefix={{_instance_prefix}}&{1}".format(class_url, querystring)
+        instance_url = u"{0}/{{_resource_id}}?instance_prefix={{_instance_prefix}}&{1}".format(class_url, querystring)
     else:
-        instance_url = "{0}/{{_resource_id}}".format(class_url)
+        instance_url = u"{0}/{{_resource_id}}".format(class_url)
 
     links = [
         {'rel': "delete", 'href': instance_url, 'method': "DELETE"},
@@ -210,7 +210,7 @@ def self_url(query_params):
     host = query_params['request'].host
     url = query_params['request'].uri
     if not host in url:
-        url = "{0}://{1}{2}".format(protocol, host, url)
+        url = u"{0}://{1}{2}".format(protocol, host, url)
     return url
 
 

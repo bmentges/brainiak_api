@@ -115,7 +115,8 @@ class TriplestoreTestCase(unittest.TestCase):
         self.assertEqual(response, {})
 
     @patch('brainiak.triplestore.greenlet_fetch', return_value=MockResponse())
-    def test_query_sparql_with_valid_credential(self, greenlet_fetch):
+    @patch('brainiak.triplestore.log')
+    def test_query_sparql_with_valid_credential(self, mocked_log, greenlet_fetch):
         response = triplestore.query_sparql("", triplestore_config)
         self.assertEqual(greenlet_fetch.call_count, 1)
         self.assertEqual(response, {})

@@ -36,7 +36,7 @@ def normalize_term(term, language=""):
       (4) ?variable -> ?variable
 
     """
-    language_tag = "@%s" % language if language else ""
+    language_tag = u"@%s" % language if language else u""
     if (not term.startswith("?")):
         if (":" in term):
             expanded_term = expand_uri(term)
@@ -63,7 +63,7 @@ def create_instance_uri(class_uri):
     """
     Create an unique uri for an instance of the class provided.
     """
-    return "%s/%s" % (class_uri, uuid.uuid4())
+    return u"%s/%s" % (class_uri, uuid.uuid4())
 
 
 def extract_instance_id(instance_uri):
@@ -243,16 +243,16 @@ def some_triples_deleted(result_dict, graph_uri):
     try:
         query_result_message = result_dict['results']['bindings'][0]['callret-0']['value']
     except:
-        raise UnexpectedResultException("Unknown result format: " + str(result_dict))
-    delete_successful_message = "Delete from <%s>, ([0-9]*) \(or less\) triples -- done" % graph_uri
-    not_found_message = "0 triples -- nothing to do"
+        raise UnexpectedResultException(u"Unknown result format: " + unicode(result_dict))
+    delete_successful_message = u"Delete from <%s>, ([0-9]*) \(or less\) triples -- done" % graph_uri
+    not_found_message = u"0 triples -- nothing to do"
 
     if re.search(delete_successful_message, query_result_message):
         return True
     elif re.search(not_found_message, query_result_message):
         return False
     else:
-        raise UnexpectedResultException("Unknown result format: " + str(result_dict))
+        raise UnexpectedResultException("Unknown result format: " + unicode(result_dict))
 
 
 def is_result_true(result_dict):
@@ -323,7 +323,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
     # else:
     #     lang_tag = "@%s" % lang
 
-    instance = "<%s>" % instance_uri
+    instance = u"<%s>" % instance_uri
     predicate_object_tuples = unpack_tuples(instance_data)
     triples = []
 
@@ -333,8 +333,8 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
             try:
                 predicate_datatype = get_predicate_datatype(class_object, predicate_uri)
             except KeyError:
-                msg = 'Property {0} was not found in the schema of instance {1}'
-                raise InvalidSchema(msg.format(predicate_uri, instance_uri))
+                msg = u'Property {0} was not found in the schema of instance {1}'
+                raise InvalidSchema(msg.format(normalized_predicate_name, instance_uri))
 
             predicate_uri = "<%s>" % predicate_uri
 
@@ -367,7 +367,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                 elif is_compressed_uri(object_value, instance_data.get("@context", {})):
                     object_ = object_value
                 else:
-                    raise InvalidSchema('Unexpected value {0} for object property {1}'.format(object_value, predicate_uri))
+                    raise InvalidSchema(u'Unexpected value {0} for object property {1}'.format(object_value, predicate_uri))
 
             triple = (instance, predicate_uri, object_)
             triples.append(triple)
@@ -399,19 +399,19 @@ def convert_boolean(object_value):
 
 
 def create_implicit_triples(instance_uri, class_uri):
-    class_triple = ("<%s>" % instance_uri, "a", "<%s>" % class_uri)
+    class_triple = (u"<%s>" % instance_uri, "a", u"<%s>" % class_uri)
     return [class_triple]
 
 
-TRIPLE = """   %s %s %s ."""
+TRIPLE = u"""   %s %s %s ."""
 
 
 def join_triples(triples):
     triples_strings = [TRIPLE % triple for triple in triples]
-    return "\n".join(triples_strings)
+    return u"\n".join(triples_strings)
 
 
-PREFIX = """PREFIX %s: <%s>"""
+PREFIX = u"""PREFIX %s: <%s>"""
 
 
 def join_prefixes(prefixes_dict):
@@ -420,10 +420,10 @@ def join_prefixes(prefixes_dict):
         if not slug.startswith("@"):
             prefix = PREFIX % (slug, graph_uri)
             prefix_list.append(prefix)
-    return "\n".join(prefix_list)
+    return u"\n".join(prefix_list)
 
 
-QUERY_FILTER_LABEL_BY_LANGUAGE = """
+QUERY_FILTER_LABEL_BY_LANGUAGE = u"""
     FILTER(langMatches(lang(?%(variable)s), "%(lang)s") OR langMatches(lang(?%(variable)s), "")) .
 """
 
@@ -458,21 +458,21 @@ def extract_po_tuples(query_string_dict):
     po_list = []
 
     for index in both_p_and_o_are_defined:
-        p_key = "p{0}".format(index)
+        p_key = u"p{0}".format(index)
         p_value = query_string_dict[p_key]
-        o_key = "o{0}".format(index)
+        o_key = u"o{0}".format(index)
         o_value = query_string_dict[o_key]
         po_list.append((p_value, o_value, index))
 
     for index in only_p_is_defined:
-        p_key = "p{0}".format(index)
+        p_key = u"p{0}".format(index)
         p_value = query_string_dict[p_key]
-        o_value = "?o{0}".format(index)
+        o_value = u"?o{0}".format(index)
         po_list.append((p_value, o_value, index))
 
     for index in only_o_is_defined:
-        p_value = "?p{0}".format(index)
-        o_key = "o{0}".format(index)
+        p_value = u"?p{0}".format(index)
+        o_key = u"o{0}".format(index)
         o_value = query_string_dict[o_key]
         po_list.append((p_value, o_value, index))
 

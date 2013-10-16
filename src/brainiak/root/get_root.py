@@ -8,7 +8,7 @@ from brainiak.utils.resources import decorate_dict_with_pagination
 # because we are filtering query results based on prefixes
 # (accessible from the application and not through SPARQL)
 
-QUERY_LIST_CONTEXT = """
+QUERY_LIST_CONTEXT = u"""
 SELECT DISTINCT ?graph
 WHERE {GRAPH ?graph { ?s a ?o }}
 """
@@ -34,7 +34,7 @@ def list_all_contexts(query_params):
     except IndexError:
         json = {
             "items": [],
-            "warning": "No contexts were found in page {0:d}.".format(int(query_params["page"]) + 1)
+            "warning": u"No contexts were found in page {0:d}.".format(int(query_params["page"]) + 1)
         }
         return json
 

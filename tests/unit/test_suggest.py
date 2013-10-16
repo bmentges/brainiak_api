@@ -154,34 +154,7 @@ class SuggestTestCase(TestCase):
         response = suggest._build_type_filters(classes)
         self.assertEqual(expected, response)
 
-    def test_build_class_label_and_graph_dict(self):
-        class_label_dict = {
-            "class1": "label1",
-            "class2": "label2"
-        }
-        class_graph_dict = {
-            "class1": "graph1",
-            "class2": "graph2"
-        }
-
-        expected = class_label_dict, class_graph_dict
-
-        compressed_result = [
-            {
-                "range": "class1",
-                "range_graph": "graph1",
-                "range_label": "label1"
-            },
-            {
-                "range": "class2",
-                "range_graph": "graph2",
-                "range_label": "label2"
-            }
-        ]
-        response = suggest._build_class_label_and_class_graph_dicts(compressed_result)
-        self.assertEqual(expected, response)
-
-    @patch("brainiak.suggest.suggest.get_instance_class_schema", return_value={})
+    @patch("brainiak.suggest.suggest.get_instance_class_schema", return_value={"title": "Cidade"})
     @patch("brainiak.suggest.suggest._get_class_fields_to_response", return_value={})
     @patch("brainiak.suggest.suggest.get_instance_fields", return_value={})
     @patch("brainiak.suggest.suggest._get_title_value", return_value=("rdfs:label", "Globoland"))
@@ -203,19 +176,12 @@ class SuggestTestCase(TestCase):
                 ]
             }
         }
-
-        class_label_dict = {
-            "http://semantica.globo.com/place/City": "Cidade"
-        }
         title_fields = []  # mocked _get_title_value
         query_params = []  # needed to get_instance_fields, mocked
         required_fields = []  # needed to get_instance_fields, mocked
-        response_fields_by_class = {}  # needed to get_instance_fields, mocked
         class_fields = []  # needed to _get_class_fields_to_response, mocked
 
-        computed = suggest._build_items(query_params, elasticsearch_result,
-                                                  class_label_dict, title_fields,
-                                                  class_fields)
+        computed = suggest._build_items(query_params, elasticsearch_result, title_fields, class_fields)
         expected = {
             "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
             "title": "Globoland",

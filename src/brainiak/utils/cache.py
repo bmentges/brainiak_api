@@ -9,9 +9,11 @@ from brainiak import settings
 from brainiak import log
 
 
-def build_schema_key(query_params):
-    key = "{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
-    return key
+# graph_uri@@class_uri##class
+build_schema_key = lambda query_params: "{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
+
+#graph@@predicate##property_range
+#graph@@predicate##subproperty
 
 
 class CacheError(redis.exceptions.RedisError):

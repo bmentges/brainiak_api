@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from brainiak import triplestore
-from brainiak.prefixes import MemorizeContext, normalize_all_uris_recursively
-from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_XSD_TO_JSON_TYPE
+from brainiak.prefixes import MemorizeContext
+from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND_XSD_TO_JSON_TYPE
 from brainiak.utils.cache import build_schema_key, memoize
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
-from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InvalidSchema
+from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InvalidSchema, bindings_to_dict
 
 
 class SchemaNotFound(Exception):
@@ -15,8 +15,7 @@ class SchemaNotFound(Exception):
 def get_cached_schema(query_params):
 
     schema_key = build_schema_key(query_params)
-    schema = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
-    class_object = normalize_all_uris_recursively(schema)
+    class_object = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
     if not class_object:
         msg = "The class definition for {0} was not found in graph {1}"
         raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['graph_uri']))
@@ -31,20 +30,18 @@ def get_schema(query_params):
     if not class_schema["results"]["bindings"]:
         return
 
-    normalized_uri = context.normalize_uri(query_params["class_uri"])
-
     query_params["superclasses"] = query_superclasses(query_params)
     predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
     response_dict = assemble_schema_dict(query_params,
-                                         normalized_uri,
                                          get_one_value(class_schema, "title"),
                                          predicates_and_cardinalities,
                                          context,
                                          comment=get_one_value(class_schema, "comment"))
+
     return response_dict
 
 
-def assemble_schema_dict(query_params, normalized_uri, title, predicates, context, **kw):
+def assemble_schema_dict(query_params, title, predicates, context, **kw):
     effective_context = {"@language": query_params.get("lang")}
     effective_context.update(context.context)
 
@@ -72,7 +69,7 @@ def assemble_schema_dict(query_params, normalized_uri, title, predicates, contex
 
     schema = {
         "type": "object",
-        "id": normalized_uri,
+        "id": query_params["class_uri"],
         "@context": effective_context,
         "$schema": "http://json-schema.org/draft-04/schema#",
         "title": title,
@@ -85,7 +82,7 @@ def assemble_schema_dict(query_params, normalized_uri, title, predicates, contex
     return schema
 
 
-QUERY_CLASS_SCHEMA = """
+QUERY_CLASS_SCHEMA = u"""
 SELECT DISTINCT ?title ?comment
 FROM <%(graph_uri)s>
 WHERE {
@@ -118,24 +115,24 @@ def query_class_schema(query_params):
 def get_predicates_and_cardinalities(context, query_params):
     query_result = query_cardinalities(query_params)
 
-    cardinalities = _extract_cardinalities(query_result['results']['bindings'])
+    bindings = query_predicates(query_params)
+    predicate_dict = bindings_to_dict('predicate', bindings)
 
-    predicates = query_predicates(query_params)
-
+    cardinalities = _extract_cardinalities(query_result['results']['bindings'], predicate_dict)
     return convert_bindings_dict(context,
-                                 predicates['results']['bindings'],
+                                 bindings['results']['bindings'],
                                  cardinalities,
                                  query_params['superclasses'])
 
 
-def _extract_cardinalities(bindings):
+def _extract_cardinalities(bindings, predicate_dict):
     cardinalities = {}
     for binding in bindings:
         property_ = binding["predicate"]["value"]
         try:
             range_ = binding["range"]["value"]
-        except KeyError as ex:
-            raise InvalidSchema(u"The property {0} does not have a range definition".format(property_))
+        except KeyError:
+            range_ = predicate_dict[property_]["range"]["value"]
 
         if not property_ in cardinalities:
             cardinalities[property_] = {}
@@ -157,7 +154,7 @@ def _extract_cardinalities(bindings):
                 if min_value:
                     current_property[range_].update({"required": True})
 
-        elif "max" in binding:
+        if "max" in binding:
             max_value = binding["max"]["value"]
             try:
                 max_value = int(max_value)
@@ -170,7 +167,7 @@ def _extract_cardinalities(bindings):
     return cardinalities
 
 
-QUERY_CARDINALITIES = """
+QUERY_CARDINALITIES = u"""
 SELECT DISTINCT ?predicate ?min ?max ?range ?enumerated_value ?enumerated_value_label
 WHERE {
     <%(class_uri)s> rdfs:subClassOf ?s OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
@@ -200,12 +197,12 @@ def query_predicates(query_params):
     response = _query_predicate_with_lang(query_params)
 
     if not response['results']['bindings']:
-        return _query_predicate_without_lang(query_params)
-    else:
-        return response
+        response = _query_predicate_without_lang(query_params)
+
+    return response
 
 
-QUERY_PREDICATE_WITH_LANG = """
+QUERY_PREDICATE_WITH_LANG = u"""
 SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
 WHERE {
     {
@@ -251,7 +248,7 @@ def _query_predicate_with_lang(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-QUERY_PREDICATE_WITHOUT_LANG = """
+QUERY_PREDICATE_WITHOUT_LANG = u"""
 SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
 WHERE {
     {
@@ -295,7 +292,7 @@ def query_superclasses(query_params):
     return superclasses
 
 
-QUERY_SUPERCLASS = """
+QUERY_SUPERCLASS = u"""
 SELECT DISTINCT ?class
 WHERE {
     <%(class_uri)s> rdfs:subClassOf ?class OPTION (TRANSITIVE, t_distinct, t_step('step_no') as ?n, t_min (0)) .
@@ -309,13 +306,12 @@ def _query_superclasses(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-def items_from_range(context, range_uri):
-    short_range = context.normalize_uri(range_uri)
-    if short_range == 'xsd:date' or short_range == 'xsd:dateTime':
+def items_from_range(range_uri):
+    if range_uri == 'http://www.w3.org/2001/XMLSchema#date' or range_uri == 'http://www.w3.org/2001/XMLSchema#dateTime':
         predicate = {"type": "string", "format": "date"}
     else:
-        predicate = {"type": _MAP_XSD_TO_JSON_TYPE.get(short_range, 'object')}
-    predicate["datatype"] = short_range
+        predicate = {"type": _MAP_EXPAND_XSD_TO_JSON_TYPE.get(range_uri, 'object')}
+    predicate["datatype"] = range_uri
     return predicate
 
 
@@ -326,26 +322,22 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
     range_uri = binding_row['range']['value']
     range_graph = binding_row.get('range_graph', {}).get('value', "")
     range_label = binding_row.get('range_label', {}).get('value', "")
-
-    # compression-related
-    normalized_range_uri = context.normalize_uri(range_uri)
-    normalized_range_graph = context.normalize_prefix_value(range_graph)
-    normalized_graph = context.normalize_prefix_value(predicate_graph)
-    normalized_class_uri = context.normalize_uri(binding_row["domain_class"]['value'])
+    class_uri = binding_row["domain_class"]['value']
 
     # build up predicate dictionary
-    predicate = {}
-    predicate["class"] = normalized_class_uri
-    predicate["graph"] = normalized_graph
-    predicate["title"] = binding_row["title"]['value']
+    predicate = {
+        "class": class_uri,
+        "graph": predicate_graph,
+        "title": binding_row["title"]['value']
+    }
 
     if "predicate_comment" in binding_row:
         predicate["description"] = binding_row["predicate_comment"]['value']
 
     if predicate_type == OBJECT_PROPERTY:
-        context.add_object_property(predicate_uri, normalized_range_uri)
-        predicate["range"] = {'@id': normalized_range_uri,
-                              'graph': normalized_range_graph,
+        context.add_object_property(predicate_uri, range_uri)
+        predicate["range"] = {'@id': range_uri,
+                              'graph': range_graph,
                               'title': range_label,
                               'type': 'string',
                               'format': 'uri'}
@@ -362,7 +354,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
     elif predicate_type == DATATYPE_PROPERTY:
         # add predicate['type'] and (optional) predicate['format']
-        predicate.update(items_from_range(context, range_uri))
+        predicate.update(items_from_range(range_uri))
 
     else:  # TODO: owl:AnnotationProperty
         msg = u"Predicates of type {0} are not supported yet".format(predicate_type)
@@ -445,12 +437,11 @@ def most_specialized_predicate(class_hierarchy, predicate_a, predicate_b):
 
 def convert_bindings_dict(context, bindings, cardinalities, superclasses):
 
-    super_predicates = get_super_properties(context, bindings)
+    super_predicates = get_super_properties(bindings)
     assembled_predicates = {}
 
     for binding_row in bindings:
         predicate_uri = binding_row['predicate']['value']
-        predicate_key = context.normalize_uri(predicate_uri)
 
         # super_predicate is when we use rdfs:subPropertyOf
         # this case does not consider inherited predicates
@@ -458,20 +449,20 @@ def convert_bindings_dict(context, bindings, cardinalities, superclasses):
             continue
 
         predicate = assemble_predicate(predicate_uri, binding_row, cardinalities, context)
-        existing_predicate = assembled_predicates.get(predicate_key, False)
+        existing_predicate = assembled_predicates.get(predicate_uri, False)
         if existing_predicate:
             if 'datatype' in existing_predicate and 'datatype' in predicate:
-                assembled_predicates[predicate_key] = most_specialized_predicate(superclasses,
+                assembled_predicates[predicate_uri] = most_specialized_predicate(superclasses,
                                                                                  existing_predicate,
                                                                                  predicate)
             elif existing_predicate != predicate:
-                assembled_predicates[predicate_key] = join_predicates(existing_predicate, predicate)
+                assembled_predicates[predicate_uri] = join_predicates(existing_predicate, predicate)
 
             else:
                 msg = u"The property {0} seems to be duplicated in class {1}"
-                raise InvalidSchema(msg.format(predicate_key, predicate["class"]))
+                raise InvalidSchema(msg.format(predicate_uri, predicate["class"]))
 
         else:
-            assembled_predicates[predicate_key] = predicate
+            assembled_predicates[predicate_uri] = predicate
 
     return assembled_predicates

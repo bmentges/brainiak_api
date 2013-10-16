@@ -1,7 +1,21 @@
 {
     "search": 
     {
-        "pattern":"flamengo",
+        "pattern":"Kuban Krasnodar",
         "target":"http://semantica.globo.com/esportes/tem_como_conteudo"
+    },
+    "response":
+    {
+        "classes": [
+            {
+                "@type": "http://semantica.globo.com/esportes/Equipe",
+                "instance_fields": [
+                    "http://semantica.globo.com/esportes/esta_na_edicao_do_campeonato",
+                    "http://semantica.globo.com/base/localizacao",
+                    "http://semantica.globo.com/esportes/sigla"
+                ]
+            }
+            
+        ]
     }
 }

@@ -37,7 +37,7 @@ namespace :puppet do
         # Deploy puppetmaster
         run_local <<-EOF
             cd puppet/deploy &&
-            fab #{puppetmaster_env} deploy_puppet #{puppet_params}
+            fab16 #{puppetmaster_env} deploy_puppet #{puppet_params}
         EOF
 
         # Voltando para o loglevel anterior

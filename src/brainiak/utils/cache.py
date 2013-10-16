@@ -10,7 +10,7 @@ from brainiak import log
 
 
 # graph_uri@@class_uri##class
-build_schema_key = lambda query_params: "{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
+build_schema_key = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
 
 #graph@@predicate##property_range
 #graph@@predicate##subproperty
@@ -75,13 +75,13 @@ def safe_redis(function):
         try:
             response = function(*params)
         except exceptions as e:
-            log.logger.error("CacheError: First try returned {0}".format(traceback.format_exc()))
+            log.logger.error(u"CacheError: First try returned {0}".format(traceback.format_exc()))
             try:
                 global redis_client
                 redis_client = connect()
                 response = function(*params)
             except exceptions as e:
-                log.logger.error("CacheError: Second try returned {0}".format(traceback.format_exc()))
+                log.logger.error(u"CacheError: Second try returned {0}".format(traceback.format_exc()))
                 response = None
         return response
 
@@ -90,18 +90,18 @@ def safe_redis(function):
 
 def purge(pattern):
     keys_with_pattern = keys(pattern) or []
-    log.logger.debug("Cache: key(s) to be deleted: {0}".format(keys_with_pattern))
-    log_details = "{0} key(s), matching the pattern: {1}".format(len(keys_with_pattern), pattern)
+    log.logger.debug(u"Cache: key(s) to be deleted: {0}".format(keys_with_pattern))
+    log_details = u"{0} key(s), matching the pattern: {1}".format(len(keys_with_pattern), pattern)
     response = 1
     for key in keys_with_pattern:
         response *= delete(key)
 
     if response and keys_with_pattern:
-        log.logger.info("Cache: purged with success {0}".format(log_details))
+        log.logger.info(u"Cache: purged with success {0}".format(log_details))
     elif not keys_with_pattern:
-        log.logger.info("Cache: {0}".format(log_details))
+        log.logger.info(u"Cache: {0}".format(log_details))
     else:
-        log.logger.info("Cache: failed purging {0}".format(log_details))
+        log.logger.info(u"Cache: failed purging {0}".format(log_details))
 
 
 @safe_redis
@@ -124,7 +124,7 @@ def delete(keys):
 
 @safe_redis
 def keys(pattern):
-    pattern = "{0}*".format(pattern)
+    pattern = u"{0}*".format(pattern)
     return redis_client.keys(pattern)
 
 
@@ -134,7 +134,7 @@ def ping():
 
 def status():
     params = {
-        "password": md5.new(str(settings.REDIS_PASSWORD)).digest(),
+        "password": md5.new(str(settings.REDIS_PASSWORD)).digest(),  # do not cast to unicode
         "endpoint": "{0}:{1}".format(settings.REDIS_ENDPOINT, settings.REDIS_PORT),
     }
     failure_msg = "Redis connection authenticated [:%(password)s] | FAILED | %(endpoint)s | %(error)s"

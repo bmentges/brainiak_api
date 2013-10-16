@@ -24,12 +24,12 @@ def schema(context_name):
                     },
                     "links": [
                         {
-                            "href": "/{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(context_name),
+                            "href": u"/{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(context_name),
                             "method": "GET",
                             "rel": "list"
                         },
                         {
-                            "href": "/{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(context_name),
+                            "href": u"/{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(context_name),
                             "method": "GET",
                             "rel": "collection"
                         }
@@ -46,5 +46,5 @@ def schema(context_name):
         ]
     }
 
-    merge_schemas(base, pagination_schema('/{0}/'.format(context_name)))
+    merge_schemas(base, pagination_schema(u'/{0}/'.format(context_name)))
     return base

@@ -29,11 +29,11 @@ def query_sparql(query, triplestore_config):
         else:
             raise e
 
-    result_dict = json.loads(query_response.body)
+    result_dict = json.loads(unicode(query_response.body))
     return result_dict
 
 # This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works
-format_post = "POST - %(url)s - %(user_ip)s - %(auth_username)s [tempo: %(time_diff)s] - QUERY - %(query)s"
+format_post = u"POST - %(url)s - %(user_ip)s - %(auth_username)s [tempo: %(time_diff)s] - QUERY - %(query)s"
 
 
 def run_query(query, triplestore_config):
@@ -60,8 +60,8 @@ def run_query(query, triplestore_config):
     time_f = time.time()
 
     request_params["time_diff"] = time_f - time_i
-    request_params["query"] = query
-    request_params["user_ip"] = str(None)
+    request_params["query"] = unicode(query)
+    request_params["user_ip"] = unicode(None)
     log_msg = format_post % request_params
     log.logger.info(log_msg)
 
@@ -84,6 +84,7 @@ def status(**kw):
     endpoint.addDefaultGraph("http://semantica.globo.com/person")
     endpoint.setQuery(query)
 
+    # Do not cast to unicode these lines
     failure_msg = "Virtuoso connection %(type)s | FAILED | %(endpoint)s | %(error)s"
     success_msg = 'Virtuoso connection %(type)s | SUCCEED | %(endpoint)s'
 
@@ -93,7 +94,7 @@ def status(**kw):
     }
 
     try:
-        response = endpoint.query()
+        endpoint.query()
         msg = success_msg % info
     except Exception as error:
         if hasattr(error, 'msg'):
@@ -106,7 +107,7 @@ def status(**kw):
         info["error"] = message
         msg = failure_msg % info
 
-    password_md5 = md5.new(password).digest()
+    password_md5 = md5.new(password).digest()  # do not cast to unicode here
     info = {
         "type": "authenticated [%s:%s]" % (user, password_md5),
         "endpoint": url
@@ -115,7 +116,7 @@ def status(**kw):
     endpoint.setCredentials(user, password, mode=mode, realm="SPARQL")
 
     try:
-        response = endpoint.query()
+        endpoint.query()
         msg = msg + "<br>" + success_msg % info
     except Exception as error:
         if hasattr(error, 'msg'):

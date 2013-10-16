@@ -160,7 +160,7 @@ class ParamDict(dict):
         try:
             self.triplestore_config = parse_section(section=auth_client_id)
         except ConfigParserNoSectionError:
-            raise HTTPError(404, "Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id))
+            raise HTTPError(404, u"Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id))
 
     def __setitem__(self, key, value):
         """Process collateral effects in params that are related.
@@ -187,16 +187,16 @@ class ParamDict(dict):
 
         elif key == "instance_id":
             dict.__setitem__(self, key, value)
-            dict.__setitem__(self, "instance_uri", "{0}{1}/{2}".format(self["class_prefix"], self["class_name"], self["instance_id"]))
+            dict.__setitem__(self, "instance_uri", u"{0}{1}/{2}".format(self["class_prefix"], self["class_name"], self["instance_id"]))
             dict.__setitem__(self, "instance_prefix", extract_prefix(self["instance_uri"]))
 
         elif key == "class_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
-            dict.__setitem__(self, "class_uri", "{0}{1}".format(self["class_prefix"], self["class_name"]))
+            dict.__setitem__(self, "class_uri", u"{0}{1}".format(self["class_prefix"], self["class_name"]))
 
         elif key == "instance_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
-            dict.__setitem__(self, "instance_uri", "{0}{1}".format(self["instance_prefix"], self["instance_id"]))
+            dict.__setitem__(self, "instance_uri", u"{0}{1}".format(self["instance_prefix"], self["instance_id"]))
 
         elif key == "instance_uri":
             dict.__setitem__(self, key, value)
@@ -253,7 +253,7 @@ class ParamDict(dict):
         # In order to keep up with Repos, pages numbering start at 1.
         # As for Virtuoso pages start at 0, we convert page, if provided
         if "page" in self.arguments:
-            self["page"] = str(int(self["page"]) - 1)
+            self["page"] = unicode(int(self["page"]) - 1)
 
         if "sort_order" in self.arguments:
             self["sort_order"] = self["sort_order"].upper()

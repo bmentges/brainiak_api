@@ -29,7 +29,7 @@ def notify_bus(**kw):
     event = SemanticEvent(**kw)
     try:
         middleware.notify(event)
-        logger.info("BUS NOTIFICATION\n%s" % event)
+        logger.info(u"BUS NOTIFICATION\n%s" % event)
     except MiddlewareError as e:
         logger.error(e)
         if settings.NOTIFY_BUS:

@@ -18,7 +18,7 @@ def is_available():
 
 
 def checkout(state):
-    run("git checkout %s" % state)
+    run(u"git checkout %s" % state)
 
 
 def stash():
@@ -50,7 +50,7 @@ def get_version_hash():
 def get_code_version():
     label = get_version_label()
     commit = get_version_hash()
-    version = "%s | %s" % (label, commit)
+    version = u"%s | %s" % (unicode(label), unicode(commit))
     return version
 
 

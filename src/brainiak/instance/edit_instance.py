@@ -11,7 +11,7 @@ def edit_instance(query_params, instance_data):
         graph_uri = query_params['graph_uri']
         class_uri = query_params['class_uri']
     except KeyError as ex:
-        raise HTTPError(404, log_message="Parameter <{0:s}> is missing in order to update instance.".format(ex))
+        raise HTTPError(404, log_message=u"Parameter <{0:s}> is missing in order to update instance.".format(ex))
 
     class_object = get_cached_schema(query_params)
     triples = create_explicit_triples(instance_uri, instance_data, class_object)
@@ -50,7 +50,7 @@ def modify_instance(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-QUERY_INSTANCE_EXISTS_TEMPLATE = """
+QUERY_INSTANCE_EXISTS_TEMPLATE = u"""
 ASK
 FROM <%(graph_uri)s>
 WHERE {

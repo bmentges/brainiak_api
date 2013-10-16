@@ -10,7 +10,7 @@ def delete_instance(query_params):
     if not is_result_empty(dependants_result_dict):
         values = [item['dependant']['value'] for item in dependants_result_dict['results']['bindings']]
         str_values = ", ".join(values)
-        raise HTTPError(409, log_message="Cannot exclude instance because of the dependencies: {0}".format(str_values))
+        raise HTTPError(409, log_message=u"Cannot exclude instance because of the dependencies: {0}".format(str_values))
 
     query_result_dict = query_delete(query_params)
 
@@ -18,7 +18,7 @@ def delete_instance(query_params):
         return True
 
 
-QUERY_DEPENDANTS_TEMPLATE = """
+QUERY_DEPENDANTS_TEMPLATE = u"""
 SELECT ?dependant {
   ?dependant ?predicate <%(instance_uri)s>
 }
@@ -31,7 +31,7 @@ def query_dependants(query_params):
     return result_dict
 
 
-QUERY_DELETE_INSTANCE = """
+QUERY_DELETE_INSTANCE = u"""
 DELETE FROM <%(graph_uri)s>
 { <%(instance_uri)s> ?p ?o }
 WHERE

@@ -479,3 +479,9 @@ SELECT DISTINCT ?field_value {
         }
         response = suggest._get_required_fields_from_schema_response(schema)
         self.assertEqual(expected, response)
+
+    def test_convert_index_name_to_graph_uri(self):
+        graph_name = "semantica.dbpedia"
+        computed = suggest.convert_index_name_to_graph_uri(graph_name)
+        expected = "http://dbpedia.org/ontology/"
+        self.assertEqual(computed, expected)

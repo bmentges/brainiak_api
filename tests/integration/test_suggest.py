@@ -7,12 +7,15 @@ import requests
 from mock import patch
 
 from brainiak.suggest.suggest import QUERY_PREDICATE_RANGES, \
-    QUERY_SUBPROPERTIES, _build_class_fields_query
+    QUERY_SUBPROPERTIES, _build_class_fields_query, \
+    get_instance_class_schema
+from brainiak.utils.params import LIST_PARAMS, ParamDict
 from brainiak.utils.sparql import filter_values, compress_keys_and_values
 from brainiak import settings
 
-from tests.tornado_cases import TornadoAsyncHTTPTestCase
+from tests.mocks import MockHandler
 from tests.sparql import QueryTestCase
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
 class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
@@ -63,9 +66,9 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         json_received = json.loads(response.body)
         self.assertIn(expected_error_msg, json_received['errors'])
 
-    @patch("brainiak.suggest.suggest.expand_uri", return_value="http://example.onto/")
+    @patch("brainiak.suggest.suggest.safe_slug_to_prefix", return_value="http://example.onto/")
     @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
-    def test_successful_request(self, mocked_uri_to_slug, mock_expand_uri):
+    def test_successful_request(self, mocked_uri_to_slug, mock_safe_slug_to_prefix):
         expected_items = [
             {
                 u'@id': u'http://example.onto/York', u'title': u'York',
@@ -79,9 +82,9 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         response_json = json.loads(response.body)
         self.assertEqual(expected_items, response_json["items"])
 
-    @patch("brainiak.suggest.suggest.expand_uri", return_value="http://example.onto/")
+    @patch("brainiak.suggest.suggest.safe_slug_to_prefix", return_value="http://example.onto/")
     @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
-    def test_successful_request_with_metafields(self, mocked_uri_to_slug, mock_expand_uri):
+    def test_successful_request_with_metafields(self, mocked_uri_to_slug, mock_safe_slug_to_prefix):
         expected_items = [
             {
                 u'@id': u'http://example.onto/York', u'title': u'York',
@@ -116,9 +119,9 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         response_json = json.loads(response.body)
         self.assertEqual(expected_items, response_json["items"])
 
-    @patch("brainiak.suggest.suggest.expand_uri", return_value="http://example.onto/")
+    @patch("brainiak.suggest.suggest.safe_slug_to_prefix", return_value="http://example.onto/")
     @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
-    def test_zero_results(self, mocked_uri_to_slug, mock_expand_uri):
+    def test_zero_results(self, mocked_uri_to_slug, mock_safe_slug_to_prefix):
         zero_results_parameters = {
             "search": {
                 "pattern": "non existent keywords",

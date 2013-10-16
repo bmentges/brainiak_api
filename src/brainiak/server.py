@@ -26,7 +26,7 @@ class Application(TornadoApplication):
             event_bus.initialize()
             super(Application, self).__init__(get_routes(), debug=debug)
         except Exception as e:
-            sys.stdout.write("Failed to initialize application. {0}".format(str(e)))
+            sys.stdout.write(u"Failed to initialize application. {0}".format(str(e)))
             traceback.print_exc(file=sys.stdout)
             sys.exit(1)
 

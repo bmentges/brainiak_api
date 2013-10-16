@@ -33,7 +33,7 @@ class Query(object):
         sort_order
     """
 
-    skeleton = """
+    skeleton = u"""
         SELECT DISTINCT %(variables)s
         WHERE {
             %(triples)s
@@ -44,7 +44,7 @@ class Query(object):
         OFFSET %(offset)s
     """
 
-    skeleton_count = """
+    skeleton_count = u"""
         SELECT count(DISTINCT ?subject) as ?total
         WHERE {
             %(triples)s
@@ -72,7 +72,7 @@ class Query(object):
         return extract_po_tuples(self.params)
 
     def next_variable(self, index):
-        return "?literal{0}".format(index)
+        return u"?literal{0}".format(index)
 
     @property
     def triples(self):
@@ -80,7 +80,6 @@ class Query(object):
             ("rdfs:label", "?label")
         ]
         variable_index = 0
-        union_tuples = []
         for predicate, object_, index in self.po_tuples:
             if self.should_add_predicate_and_object(predicate, object_):
                 predicate = normalize_term(predicate, self.params["lang"])
@@ -95,27 +94,27 @@ class Query(object):
                         tuples.append((predicate, object_))
 
         sort_object = self.get_sort_variable()
-        sort_sufix = ""
+        sort_sufix = u""
         if sort_object == "?sort_object":
             sort_predicate = normalize_term(self.params["sort_by"])
             if self.params["sort_include_empty"] == "1":
-                sort_sufix = "OPTIONAL {?subject %s ?sort_object}" % sort_predicate
+                sort_sufix = u"OPTIONAL {?subject %s ?sort_object}" % sort_predicate
             else:
                 tuples.append((sort_predicate, sort_object))
 
         if self.direct_instances:
-            first_statement = "?subject a <%(class_uri)s> ;\n"
+            first_statement = u"?subject a <%(class_uri)s> ;\n"
         else:
             tuples.insert(0, ("a", "<%(class_uri)s>"))
             first_statement = "?subject "
 
-        inference = 'OPTION(inference "%s")' % self.inference_graph
-        tuples_strings = ["%s %s %s" % (p, o, inference) for p, o in tuples]
+        inference = u'OPTION(inference "%s")' % self.inference_graph
+        tuples_strings = [u"%s %s %s" % (p, o, inference) for p, o in tuples]
 
-        statement = first_statement + " ;\n".join(tuples_strings) + " .\n" + sort_sufix
+        statement = first_statement + u" ;\n".join(tuples_strings) + u" .\n" + sort_sufix
         statements = statement % self.params
 
-        return 'GRAPH <%(graph_uri)s> { %(statements)s }' % {"statements": statements, 'graph_uri': self.params['graph_uri']}
+        return u'GRAPH <%(graph_uri)s> { %(statements)s }' % {"statements": statements, 'graph_uri': self.params['graph_uri']}
 
     @property
     def direct_instances(self):
@@ -135,11 +134,11 @@ class Query(object):
             if is_literal(object_) or is_url(object_):
                 variable_index += 1
                 variable_name = self.next_variable(variable_index)
-                literal_filter = 'FILTER(str({0}) = "{1}") .'.format(variable_name, object_)
+                literal_filter = u'FILTER(str({0}) = "{1}") .'.format(variable_name, object_)
                 if literal_filter not in filter_list:
                     filter_list.append(literal_filter)
 
-        FILTER_CLAUSE = 'FILTER(langMatches(lang(%(variable)s), "%(lang)s") OR langMatches(lang(%(variable)s), "")) .'
+        FILTER_CLAUSE = u'FILTER(langMatches(lang(%(variable)s), "%(lang)s") OR langMatches(lang(%(variable)s), "")) .'
         if self.params["lang"]:
             for variable in translatables:
                 statement = FILTER_CLAUSE % {
@@ -175,7 +174,7 @@ class Query(object):
 
     @property
     def sortby(self):
-        SORT_CLAUSE = "ORDER BY %(sort_order)s(%(variable)s)"
+        SORT_CLAUSE = u"ORDER BY %(sort_order)s(%(variable)s)"
         sort_variable = self.get_sort_variable()
         statement = ""
         if sort_variable:
@@ -256,7 +255,7 @@ def merge_by_id(items_list):
 # TODO: unit test, move to urls
 def extract_prefix(url):
     prefix = url.rsplit('/', 1)[0]
-    return "{0}/".format(prefix)
+    return u"{0}/".format(prefix)
 
 
 # TODO: unit test
@@ -269,7 +268,7 @@ def add_prefix(items_list, class_prefix):
 
 def filter_instances(query_params):
     if not class_exists(query_params):
-        error_message = "Class {0} in context {1} does not exist".format(
+        error_message = u"Class {0} in context {1} does not exist".format(
             query_params["class_name"], query_params["context_name"])
         raise HTTPError(404, log_message=error_message)
 

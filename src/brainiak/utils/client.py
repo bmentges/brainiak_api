@@ -63,11 +63,11 @@ def fetch_all_pages(url, update_key):
     response = []
     page_index = 1
     while True:
-        status_code, partial_response = fetch_page(url + "/?page={0}".format(page_index))
+        status_code, partial_response = fetch_page(url + u"/?page={0}".format(page_index))
         if status_code == 200:
             response.extend(partial_response[update_key])
         else:
-            raise Exception('Failed to fetch page with status code {0}'.format(status_code))
+            raise Exception(u'Failed to fetch page with status code {0}'.format(status_code))
         if 'next' not in extract_keys(partial_response['links'], 'rel'):
             break  # this is the last page
         page_index += 1

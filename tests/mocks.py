@@ -54,16 +54,16 @@ class MockRequest(object):
         self.query = query_string
         self.uri = uri
         if instance:
-            self.uri = "%s%s" % (self.uri, instance)
+            self.uri = u"%s%s" % (self.uri, instance)
         parsed_url = urlparse(self.uri)
         self.path = parsed_url.path
         self.protocol = parsed_url.scheme
         self.host = parsed_url.netloc
-        self.base_url = "{0}://{1}{2}".format(self.protocol, self.host, normalize_last_slash(self.path))
+        self.base_url = u"{0}://{1}{2}".format(self.protocol, self.host, normalize_last_slash(self.path))
         self.resource_url = self.base_url + "{resource_id}"
         self.headers = {'Host': self.host}
         if query_string:
-            self.uri = "%s?%s" % (self.uri, query_string)
+            self.uri = u"%s?%s" % (self.uri, query_string)
 
     def full_url(self):
         return self.uri

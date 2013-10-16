@@ -114,7 +114,7 @@ class ParamDict(dict):
         # preserve the specified optional parameters
         self.optionals = copy(kw)
 
-        self.base_url = "{0}://{1}{2}".format(request.protocol, request.host, normalize_last_slash(request.path))
+        self.base_url = u"{0}://{1}{2}".format(request.protocol, request.host, normalize_last_slash(request.path))
         self.resource_url = self.base_url + "{resource_id}"
 
         # Set params with value None first, just to mark them as valid parameters
@@ -160,7 +160,7 @@ class ParamDict(dict):
         try:
             self.triplestore_config = parse_section(section=auth_client_id)
         except ConfigParserNoSectionError:
-            raise HTTPError(404, "Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id))
+            raise HTTPError(404, u"Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id))
 
     def __setitem__(self, key, value):
         """Process collateral effects in params that are related.
@@ -180,20 +180,20 @@ class ParamDict(dict):
 
         elif key == "class_name":
             dict.__setitem__(self, key, value)
-            dict.__setitem__(self, "class_uri", "{0}{1}".format(self["class_prefix"], self["class_name"]))
+            dict.__setitem__(self, "class_uri", u"{0}{1}".format(self["class_prefix"], self["class_name"]))
 
         elif key == "instance_id":
             dict.__setitem__(self, key, value)
-            dict.__setitem__(self, "instance_uri", "{0}{1}/{2}".format(self["class_prefix"], self["class_name"], self["instance_id"]))
+            dict.__setitem__(self, "instance_uri", u"{0}{1}/{2}".format(self["class_prefix"], self["class_name"], self["instance_id"]))
             dict.__setitem__(self, "instance_prefix", extract_prefix(self["instance_uri"]))
 
         elif key == "class_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
-            dict.__setitem__(self, "class_uri", "{0}{1}".format(self["class_prefix"], self["class_name"]))
+            dict.__setitem__(self, "class_uri", u"{0}{1}".format(self["class_prefix"], self["class_name"]))
 
         elif key == "instance_prefix":
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
-            dict.__setitem__(self, "instance_uri", "{0}{1}".format(self["instance_prefix"], self["instance_id"]))
+            dict.__setitem__(self, "instance_uri", u"{0}{1}".format(self["instance_prefix"], self["instance_id"]))
 
         elif key == "instance_uri":
             dict.__setitem__(self, key, value)

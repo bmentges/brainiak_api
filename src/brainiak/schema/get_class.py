@@ -18,7 +18,7 @@ def get_cached_schema(query_params):
     schema = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
     class_object = normalize_all_uris_recursively(schema)
     if not class_object:
-        msg = "The class definition for {0} was not found in graph {1}"
+        msg = u"The class definition for {0} was not found in graph {1}"
         raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['graph_uri']))
     return class_object
 
@@ -284,7 +284,7 @@ WHERE {
 
 
 def _query_predicate_without_lang(query_params):
-    query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
+    query_params["filter_classes_clause"] = u"FILTER (?domain_class IN (<" + u">, <".join(query_params["superclasses"]) + u">))"
     query = QUERY_PREDICATE_WITHOUT_LANG % query_params
     return triplestore.query_sparql(query, query_params.triplestore_config)
 

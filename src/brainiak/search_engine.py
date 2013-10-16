@@ -9,17 +9,17 @@ from brainiak.greenlet_tornado import greenlet_fetch
 from brainiak.settings import ELASTICSEARCH_ENDPOINT
 
 
-format_post = "ELASTICSEARCH - %(url)s - %(method)s [tempo: %(time_diff)s] - QUERY - %(body)s"
+format_post = u"ELASTICSEARCH - %(url)s - %(method)s [tempo: %(time_diff)s] - QUERY - %(body)s"
 
 
 def run_search(body, indexes=None):
     request_url = _build_elasticsearch_request_url(indexes)
 
     request_params = {
-        "url": request_url,
-        "method": "POST",
-        "headers": {"Content-Type": "application/x-www-form-urlencoded"},
-        "body": json.dumps(body)
+        "url": unicode(request_url),
+        "method": u"POST",
+        "headers": {u"Content-Type": u"application/x-www-form-urlencoded"},
+        "body": unicode(json.dumps(body))
     }
 
     request = HTTPRequest(**request_params)

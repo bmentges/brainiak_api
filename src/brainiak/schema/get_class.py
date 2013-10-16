@@ -17,7 +17,7 @@ def get_cached_schema(query_params):
     schema_key = build_schema_key(query_params)
     class_object = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
     if not class_object:
-        msg = "The class definition for {0} was not found in graph {1}"
+        msg = u"The class definition for {0} was not found in graph {1}"
         raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['graph_uri']))
     return class_object
 
@@ -201,7 +201,6 @@ def query_predicates(query_params):
 
     return response
 
-
 QUERY_PREDICATE_WITH_LANG = u"""
 SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
 WHERE {
@@ -281,7 +280,7 @@ WHERE {
 
 
 def _query_predicate_without_lang(query_params):
-    query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
+    query_params["filter_classes_clause"] = u"FILTER (?domain_class IN (<" + u">, <".join(query_params["superclasses"]) + u">))"
     query = QUERY_PREDICATE_WITHOUT_LANG % query_params
     return triplestore.query_sparql(query, query_params.triplestore_config)
 

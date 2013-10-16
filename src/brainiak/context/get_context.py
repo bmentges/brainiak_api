@@ -11,13 +11,13 @@ from brainiak.prefixes import MemorizeContext
 def list_classes(query_params):
     (query_params, language_tag) = add_language_support(query_params, "label")
     if not graph_exists(query_params):
-        raise HTTPError(404, log_message="Context {0} does not exist".format(query_params["context_name"]))
+        raise HTTPError(404, log_message=u"Context {0} does not exist".format(query_params["context_name"]))
 
     query_result_dict = query_classes_list(query_params)
     if not query_result_dict or not query_result_dict['results']['bindings']:
         json = {
             "items": [],
-            "warning": "No classes found for context {0} in page {1:d}".format(
+            "warning": u"No classes found for context {0} in page {1:d}".format(
                 query_params["context_name"], int(query_params["page"]) + 1)
         }
         return json
@@ -54,7 +54,7 @@ def assemble_list_json(query_params, query_result_dict):
 
     return json_dict
 
-QUERY_COUNT_ALL_CLASSES_OF_A_GRAPH = """
+QUERY_COUNT_ALL_CLASSES_OF_A_GRAPH = u"""
 SELECT COUNT(?class) AS ?total_items
 FROM <%(graph_uri)s>
 {
@@ -70,7 +70,7 @@ def query_count_classes(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-QUERY_ALL_CLASSES_OF_A_GRAPH = """
+QUERY_ALL_CLASSES_OF_A_GRAPH = u"""
 SELECT ?class ?label
 FROM <%(graph_uri)s>
 {

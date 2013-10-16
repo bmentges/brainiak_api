@@ -570,8 +570,7 @@ class SuperPropertiesTestCase(unittest.TestCase):
             }
         ]
 
-        context = MemorizeContext(normalize_uri=SHORTEN)
-        computed = get_super_properties(context, sample_bindings)
+        computed = get_super_properties(sample_bindings)
         expected = {'father': 'son'}
         self.assertEqual(computed, expected)
 
@@ -589,8 +588,7 @@ class SuperPropertiesTestCase(unittest.TestCase):
                 'predicate': {'value': 'grandfather'}
             }
         ]
-        context = MemorizeContext(normalize_uri=SHORTEN)
-        computed = get_super_properties(context, sample_bindings)
+        computed = get_super_properties(sample_bindings)
         expected = {'father': 'son', 'grandfather': 'father'}
         self.assertEqual(computed, expected)
 
@@ -700,3 +698,50 @@ class ConvertBooleanTestCase(unittest.TestCase):
     def test_convert_other_value(self):
         result = convert_boolean("aaa")
         self.assertEqual(result, "aaa")
+
+
+class BindingsToDictTestCase(unittest.TestCase):
+
+    maxDiff = None
+
+    def test_convert_valid_input(self):
+        key_name = 'predicate'
+        bindings = {
+            u'head': {u'link': [],
+            u'vars': [u'predicate', u'predicate_graph', u'predicate_comment', u'type', u'range', u'title', u'range_graph', u'range_label', u'super_property', u'domain_class']},
+            u'results': {
+                u'distinct': False,
+                u'bindings': [{
+                    u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                    u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'}
+                }]
+            }
+        }
+
+        expected = {
+            u'http://www.w3.org/2000/01/rdf-schema#label': {
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'}
+            }
+        }
+        computed = bindings_to_dict(key_name, bindings)
+        self.assertEqual(computed, expected)
+
+    def test_convert_invalid_input(self):
+        key_name = 'inexistent'
+        bindings = {
+            u'head': {u'link': [],
+            u'vars': [u'predicate', u'predicate_graph', u'predicate_comment', u'type', u'range', u'title', u'range_graph', u'range_label', u'super_property', u'domain_class']},
+            u'results': {
+                u'distinct': False,
+                u'bindings': [
+                {
+                    u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                    u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'}
+                }]
+            }
+        }
+
+        expected = {}
+        computed = bindings_to_dict(key_name, bindings)
+        self.assertEqual(computed, expected)

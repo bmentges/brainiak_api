@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from brainiak.suggest.suggest import SUGGEST_PARAM_SCHEMA
+from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.root.json_schema import schema as root_schema
 
 

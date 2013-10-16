@@ -174,6 +174,11 @@ class NormalizationTestCase(unittest.TestCase):
         context = MemorizeContext(normalize_uri='INVALID_MODE')
         self.assertRaises(InvalidModeForNormalizeUriError, context.normalize_prefix_value, "rdf:type")
 
+    def test_bug_normalize_recursively_eating_up_context(self):
+        expected = {'@context': {'@language': 'pt'}}
+        computed = normalize_all_uris_recursively(expected, mode=SHORTEN)
+        self.assertEqual(computed, expected)
+
 
 VALID_COMPRESSED_INSTANCE_DATA = {
     'rdf:type': 'place:City',
@@ -199,19 +204,19 @@ VALID_COMPRESSED_INSTANCE_DATA = {
 }
 
 EXPECTED_UNCOMPRESSED_INSTANCE_DATA = {
-    'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://semantica.globo.com/place/City',
-    'http://semantica.globo.com/upper/name': u'Globoland',
+    u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': u'http://semantica.globo.com/place/City',
+    u'http://semantica.globo.com/upper/name': u'Globoland',
     '_base_url': 'http://localhost:5100/place/City/',
     '_resource_id': '173ed3bf-2863-4e4a-8d37-024f8df72aa3',
-    'http://www.w3.org/2000/01/rdf-schema#comment': u"City of Globo's companies. Ação is to test the preservation of special characters.",
-    'http://semantica.globo.com/place/longitude': u'-43.407133',
-    'http://semantica.globo.com/place/latitude': -43.407133,
-    'http://purl.org/vocab/frbr/core#summarizationOf': {
-        'http://purl.org/dc/terms/isPartOf': ['http://semantica.globo.com/base/UF_RJ',
-                                             'http://semantica.globo.com/base/UF_RJ']
+    u'http://www.w3.org/2000/01/rdf-schema#comment': u"City of Globo's companies. Ação is to test the preservation of special characters.",
+    u'http://semantica.globo.com/place/longitude': u'-43.407133',
+    u'http://semantica.globo.com/place/latitude': -43.407133,
+    u'http://purl.org/vocab/frbr/core#summarizationOf': {
+        u'http://purl.org/dc/terms/isPartOf': [u'http://semantica.globo.com/base/UF_RJ',
+                                              u'http://semantica.globo.com/base/UF_RJ']
     },
     '@id': 'http://semantica.globo.com/place/City/173ed3bf-2863-4e4a-8d37-024f8df72aa3',
-    '@type': 'http://semantica.globo.com/place/City'
+    '@type': u'http://semantica.globo.com/place/City'
 }
 
 

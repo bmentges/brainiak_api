@@ -1,10 +1,8 @@
 import json
 from mock import patch
-
 from brainiak.instance import create_instance
 from brainiak.instance.get_instance import QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE
 from brainiak.schema import get_class as schema_resource
-from tests.mocks import mock_schema
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -84,7 +82,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             body=json.dumps(payload))
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
-        self.assertEqual(body["errors"], [u"HTTP error: 404\nClass X doesn't exist in context xubiru."])
+        self.assertEqual(body["errors"], [u"HTTP error: 404\nClass xubiru/X doesn't exist in context xubiru."])
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")
@@ -94,9 +92,9 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.instance.get_instance.triplestore")
     @patch("brainiak.handlers.settings", NOTIFY_BUS=True)
     @patch("brainiak.instance.get_instance.get_class.get_cached_schema",
-           return_value={"properties": {"rdfs:label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "xsd:string"}}})
+           return_value={"properties": {"http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}}})
     @patch("brainiak.instance.create_instance.get_cached_schema",
-           return_value={"properties": {"rdfs:label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "xsd:string"}}})
+           return_value={"properties": {"http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}}})
     def test_create_instance_201(self, mock_get_schema, mock_get_instance_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
                                  mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
         mockeed_triplestore.query_sparql = self.query

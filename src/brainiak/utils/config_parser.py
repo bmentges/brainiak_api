@@ -12,5 +12,5 @@ def parse_section(filename=settings.TRIPLESTORE_CONFIG_FILEPATH, section="defaul
     try:
         config_dict = dict(parser.items(section))
     except NoSectionError:
-        raise ConfigParserNoSectionError("There is no {0} section in the file {1}".format(section, filename))
+        raise ConfigParserNoSectionError(u"There is no {0} section in the file {1}".format(section, filename))
     return config_dict

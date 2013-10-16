@@ -81,7 +81,7 @@ def check_and_clean_rdftype(instance_type, items):
     else:
         rdftype = None
     if rdftype is not None:
-        msg = "The type specified={0} is not the same informed from the triplestore={1}"
+        msg = u"The type specified={0} is not the same informed from the triplestore={1}"
         if instance_type != items[rdftype]:
             raise Exception(msg.format(instance_type, items[rdftype]))
         del items[rdftype]
@@ -101,7 +101,7 @@ def assemble_instance_json(query_params, query_result_dict, context=None):
 
     if include_meta_properties:
         class_url = build_class_url(query_params)
-        query_params.resource_url = "{0}/{1}".format(class_url, query_params['instance_id'])
+        query_params.resource_url = u"{0}/{1}".format(class_url, query_params['instance_id'])
         instance = {
             "_base_url": query_params.base_url,
             "_resource_id": query_params['instance_id'],

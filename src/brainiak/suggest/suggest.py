@@ -100,7 +100,7 @@ def do_suggest(query_params, suggest_params):
 
     range_result = _get_predicate_ranges(query_params, search_params)
     if is_result_empty(range_result):
-        message = "Either the predicate {0} does not exists or it does not have" + \
+        message = u"Either the predicate {0} does not exists or it does not have" + \
             " any rdfs:range defined in the triplestore"
         message = message.format(search_params["target"])
         raise HTTPError(400, message)
@@ -211,7 +211,7 @@ def _validate_class_restriction(search_params, range_result):
         classes_not_in_range = list(set(search_params["classes"]).difference(classes))
         if classes_not_in_range:
             raise HTTPError(400,
-                            "Classes {0} are not in the range of predicate '{1}'".format(classes_not_in_range, search_params["target"]))
+                            u"Classes {0} are not in the range of predicate '{1}'".format(classes_not_in_range, search_params["target"]))
         classes = search_params["classes"]
 
     return list(classes)
@@ -224,14 +224,14 @@ def _validate_graph_restriction(search_params, range_result):
         graphs_not_in_range = list(graphs_set.difference(graphs))
         if graphs_not_in_range:
             raise HTTPError(400,
-                            "Classes in the range of predicate '{0}' are not in graphs {1}".format(search_params["target"], graphs_not_in_range))
+                            u"Classes in the range of predicate '{0}' are not in graphs {1}".format(search_params["target"], graphs_not_in_range))
         graphs = graphs_set
 
     graphs = graphs.difference(set(settings.GRAPHS_WITHOUT_INSTANCES))
 
     if not graphs:
         raise HTTPError(400,
-                        "Classes in the range of predicate '{0}' are in graphs without instances, such as: {1}".format(
+                        u"Classes in the range of predicate '{0}' are in graphs without instances, such as: {1}".format(
                             search_params["target"], settings.GRAPHS_WITHOUT_INSTANCES))
     return list(graphs)
 
@@ -245,7 +245,7 @@ SELECT DISTINCT ?field_value {
 
 
 def _build_class_fields_query(classes, field):
-    conditions = ["?s = <{0}>".format(klass) for klass in classes]
+    conditions = [u"?s = <{0}>".format(klass) for klass in classes]
     conditions = " OR ".join(conditions)
     filter_clause = "FILTER(" + conditions + ")"
     query = QUERY_CLASS_FIELDS % {
@@ -359,7 +359,7 @@ def _build_body_query(query_params, search_params, classes, search_fields, respo
                     "should": {
                         "query_string": {
                             "fields": search_fields,
-                            "query": '\"{0}\"'.format(query_string),
+                            "query": u'\"{0}\"'.format(query_string),
                             "analyze_wildcard": True
                         }
                     }
@@ -411,11 +411,11 @@ SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
 
 
 def _build_predicate_values_query(instance_uri, predicates):
-    conditions = ["?predicate = <{0}>".format(predicate) for predicate in predicates]
-    conditions = " OR ".join(conditions)
-    filter_clause = "FILTER(" + conditions + ")"
+    conditions = [u"?predicate = <{0}>".format(predicate) for predicate in predicates]
+    conditions = u" OR ".join(conditions)
+    filter_clause = u"FILTER(" + conditions + u")"
     query = QUERY_PREDICATE_VALUES % {
-        "instance_uri": instance_uri,
+        "instance_uri": unicode(instance_uri),
         "filter_clause": filter_clause
     }
     return query

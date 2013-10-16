@@ -1,1 +1,1 @@
-curl -i -XPOST http://brainiak.semantica.dev.globoi.com/_suggest -T "suggest_time.json"
+curl -i -XPOST http://0.0.0.0:5100/_suggest -T "suggest_time.json"

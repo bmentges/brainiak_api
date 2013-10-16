@@ -12,12 +12,12 @@ XSD_BOOLEAN = u'http://www.w3.org/2001/XMLSchema#boolean'
 XSD_BOOLEAN_SHORT = u'xsd:boolean'
 
 
-def get_super_properties(context, bindings):
+def get_super_properties(bindings):
     super_properties = {}
     for item in bindings:
         if 'super_property' in item:
-            key = context.normalize_uri(item['super_property']['value'])
-            value = context.normalize_uri(item['predicate']['value'])
+            key = item['super_property']['value']
+            value = item['predicate']['value']
             super_properties[key] = value
     return super_properties
 
@@ -104,6 +104,43 @@ def filter_values(result_dict, key):
     []
     """
     return [item[key]['value'] for item in result_dict['results']['bindings'] if item.get(key)]
+
+
+def bindings_to_dict(key_name, bindings):
+    """
+    Transform the response of a SPARQL query into a dictionary.
+    We use the parameter key_name to extract from each binding the value that will become a response key.
+    The value of the response is the dictionary returned from the binding.
+
+    For example:
+    key_name = 'predicate'
+    bindings = {u'head': {u'link': [],
+               u'vars': [u'predicate', u'predicate_graph', u'predicate_comment', u'type', u'range', u'title', u'range_graph', u'range_label', u'super_property', u'domain_class']},
+               u'results': {u'distinct': False,
+                            u'bindings': [
+                                {u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                                 u'title': {u'type': u'literal', u'value': u'Nome popular'},
+                                 u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
+                                 u'domain_class': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#Thing'},
+                                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'},
+                                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}}]}}
+
+    The expected response is:
+       {u'http://www.w3.org/2000/01/rdf-schema#label':
+                                {u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                                 u'title': {u'type': u'literal', u'value': u'Nome popular'},
+                                 u'predicate_graph': {u'type': u'uri', u'value': u'http://semantica.globo.com/'},
+                                 u'domain_class': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#Thing'},
+                                 u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'},
+                                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'}}
+    """
+    bindings_by_predicate = {}
+    for record in bindings['results']['bindings']:
+        key_item = record.get(key_name, None)
+        if key_item is None:
+            continue
+        bindings_by_predicate[key_item['value']] = record
+    return bindings_by_predicate
 
 
 def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=None, expand_uri=False):
@@ -290,25 +327,16 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
     predicate_object_tuples = unpack_tuples(instance_data)
     triples = []
 
-    if '@context' in instance_data:
-        instance_context = instance_data['@context']
-    else:
-        instance_context = None
-
     for (predicate_uri, object_value) in predicate_object_tuples:
         if not is_reserved_attribute(predicate_uri):
 
-            normalized_predicate_name = expand_uri(predicate_uri, context=instance_context)
             try:
-                predicate_datatype = get_predicate_datatype(class_object, normalized_predicate_name)
+                predicate_datatype = get_predicate_datatype(class_object, predicate_uri)
             except KeyError:
                 msg = 'Property {0} was not found in the schema of instance {1}'
-                raise InvalidSchema(msg.format(normalized_predicate_name, instance_uri))
+                raise InvalidSchema(msg.format(predicate_uri, instance_uri))
 
-            predicate = shorten_uri(predicate_uri)
-
-            if is_uri(predicate):
-                predicate = "<%s>" % predicate_uri
+            predicate_uri = "<%s>" % predicate_uri
 
             # object: can be uri (compressed or not) or literal
 
@@ -339,9 +367,9 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                 elif is_compressed_uri(object_value, instance_data.get("@context", {})):
                     object_ = object_value
                 else:
-                    raise InvalidSchema('Unexpected value {0} for object property {1}'.format(object_value, predicate))
+                    raise InvalidSchema('Unexpected value {0} for object property {1}'.format(object_value, predicate_uri))
 
-            triple = (instance, predicate, object_)
+            triple = (instance, predicate_uri, object_)
             triples.append(triple)
 
     return triples

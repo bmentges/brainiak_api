@@ -118,7 +118,7 @@ def shorten_uri(uri):
             # compression was not perfect because the uri is longer than just slug:item
             return uri
         else:
-            return "{0}:{1}".format(prefix_to_slug(uri_prefix), item)
+            return u"{0}:{1}".format(prefix_to_slug(uri_prefix), item)
     else:
         return uri
 
@@ -186,11 +186,20 @@ def normalize_all_uris_recursively(instance, mode=EXPAND, context=_MAP_SLUG_TO_P
             new_ctx = {}
             new_ctx.update(instance['@context'])
             new_ctx.update(context)
-            del instance['@context']
         else:
             new_ctx = context
-        return {normalize_all_uris_recursively(k, mode, new_ctx): normalize_all_uris_recursively(v, mode, new_ctx)
-                for (k, v) in instance.items()}
+        response = {normalize_all_uris_recursively(k, mode, new_ctx): normalize_all_uris_recursively(v, mode, new_ctx)
+                    for (k, v) in instance.items()}
+
+        # Clean-up context only preserving @language -- FIXME: FRAGILE
+        if mode == EXPAND and '@context' in response:
+            lang = response['@context'].get('@language', None)
+            if lang:
+                response['@context'] = {'@language': lang}
+            else:
+                del response['@context']
+        return response
+
     return instance
 
 

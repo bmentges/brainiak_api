@@ -120,13 +120,12 @@ def do_suggest(query_params, suggest_params):
     search_fields = list(set(_get_search_fields(query_params, suggest_params) + title_fields))
 
     response_params = suggest_params.get("response", {})
-    response_data = _get_response_fields(
+    response_fields = _get_response_fields(
         query_params,
         response_params,
         classes,
         class_graph_dict,
         title_fields)
-    response_fields, response_fields_by_class, required_fields = response_data
 
     request_body = _build_body_query(
         query_params,
@@ -141,8 +140,7 @@ def do_suggest(query_params, suggest_params):
     total_items = elasticsearch_result["hits"]["total"]
     if total_items:
         items = _build_items(query_params, elasticsearch_result, class_label_dict,
-                                     title_fields, response_fields_by_class,
-                                     class_fields, required_fields)
+                                     title_fields, class_fields)
         response = build_json(items, total_items, query_params)
     else:
         response = {}
@@ -185,7 +183,7 @@ SELECT DISTINCT ?range ?range_label ?range_graph {
 
 
 def _build_predicate_ranges_query(query_params, search_params):
-    (params, language_tag) = add_language_support(query_params, "range_label")
+    params = add_language_support(query_params, "range_label")[0]
     params.update(search_params)
     return QUERY_PREDICATE_RANGES % params
 
@@ -283,15 +281,8 @@ def _get_class_fields_value(query_params, classes, meta_field):
 
 def _get_response_fields(query_params, response_params, classes, class_graph_dict, title_fields):
     response_fields = set([])
-    response_fields_by_class = {}
 
     response_fields.update(title_fields)
-
-    if "required_fields" not in response_params or response_params["required_fields"]:
-        required_fields = _get_required_fields(query_params, response_params, classes, class_graph_dict)
-        response_fields.update(required_fields)
-    else:
-        required_fields = []
 
     meta_fields = _get_response_fields_from_meta_fields(query_params, response_params, classes)
     response_fields.update(meta_fields)
@@ -300,27 +291,13 @@ def _get_response_fields(query_params, response_params, classes, class_graph_dic
     response_fields.update(instance_fields)
 
     classes_dict = response_params.get("classes", [])
-    response_fields_by_class, fields_by_class_set = _get_response_fields_from_classes_dict(
+    fields_by_class_set = _get_response_fields_from_classes_dict(
         classes_dict, response_fields, classes)
     response_fields.update(fields_by_class_set)
 
     response_fields = list(response_fields)
 
-    return response_fields, response_fields_by_class, required_fields
-
-
-def _get_required_fields(query_params, response_params, classes, class_graph_dict):
-
-    required_fields = set([])
-
-    for klass in classes:
-        query_params["class_uri"] = klass
-        query_params["graph_uri"] = class_graph_dict[klass]
-        schema = get_cached_schema(query_params)
-        required_from_class = _get_required_fields_from_schema_response(schema)
-        required_fields.update(required_from_class)
-
-    return required_fields
+    return response_fields
 
 
 def _get_required_fields_from_schema_response(schema):
@@ -356,7 +333,7 @@ def _get_response_fields_from_classes_dict(fields_by_class_list, response_fields
         response_fields_by_class[klass] = list(actual_fields)
         fields_by_class_set.update(set(specific_class_fields))
 
-    return response_fields_by_class, fields_by_class_set
+    return fields_by_class_set
 
 
 def _build_body_query(query_params, search_params, classes, search_fields, response_fields):
@@ -560,9 +537,7 @@ def remove_title_field(item, title_field):
         item["fields"].pop(title_field)
 
 
-def _build_items(query_params, result, class_label_dict,
-                 title_fields, fields_by_class_dict,
-                 class_fields, required_fields):
+def _build_items(query_params, result, class_label_dict, title_fields, class_fields):
     items = []
     es_items = result["hits"].get("hits", [])
     for item in es_items:

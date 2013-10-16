@@ -34,7 +34,7 @@ def list_all_contexts(query_params):
     except IndexError:
         json = {
             "items": [],
-            "warning": "No contexts were found in page {0:d}.".format(int(query_params["page"]) + 1)
+            "warning": u"No contexts were found in page {0:d}.".format(int(query_params["page"]) + 1)
         }
         return json
 

@@ -23,7 +23,7 @@ def check_messages_when_port_is_mentioned(source_message):
     for i in port_pattern.findall(source_message):
         port = int(i)
         if port in backends:
-            result.append(" Check {0}".format(backends[port]))
+            result.append(u" Check {0}".format(backends[port]))
     return result
 
 
@@ -61,7 +61,7 @@ def decorate_with_resource_id(list_of_dicts):
                 resource_id = id_key.rsplit("/")[-1]
             dict_item['resource_id'] = unicode(resource_id)
         except KeyError as ex:
-            raise TypeError("dict missing key {0:s} while processing decorate_with_resource_id()".format(ex))
+            raise TypeError(u"dict missing key {0:s} while processing decorate_with_resource_id()".format(ex))
 
 
 def decorate_with_class_prefix(list_of_dicts):

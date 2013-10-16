@@ -215,8 +215,7 @@ class SuggestTestCase(TestCase):
 
         computed = suggest._build_items(query_params, elasticsearch_result,
                                                   class_label_dict, title_fields,
-                                                  response_fields_by_class,
-                                                  class_fields, required_fields)
+                                                  class_fields)
         expected = {
             "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
             "title": "Globoland",
@@ -444,10 +443,6 @@ SELECT DISTINCT ?field_value {
     #     self.assertDictEqual(expected, instance_fields)
 
     def test_get_response_fields_from_classes_dict(self):
-        expected_dict_type1 = ["field1", "field2", "field4"]
-        expected_dict_type2 = ["field2", "field3", "field4"]
-        expected_dict_type3 = ["field4"]
-
         expected_set = set(["field1", "field2", "field3"])
         response_fields = set(["field4"])
         classes = ["type1", "type2", "type3"]
@@ -463,25 +458,18 @@ SELECT DISTINCT ?field_value {
             }
         ]
 
-        response_dict, response_set = suggest._get_response_fields_from_classes_dict(fields_by_class_list, response_fields, classes)
-        self.assertEqual(sorted(response_dict["type1"]), sorted(expected_dict_type1))
-        self.assertEqual(sorted(response_dict["type2"]), sorted(expected_dict_type2))
-        self.assertEqual(sorted(response_dict["type3"]), sorted(expected_dict_type3))
+        response_set = suggest._get_response_fields_from_classes_dict(fields_by_class_list, response_fields, classes)
         self.assertEqual(expected_set, response_set)
 
     def test_get_response_fields_from_classes_dict_empty(self):
-        expected_dict = {
-            "type": ["field1"]
-        }
         expected_set = set([])
         response_fields = set(["field1"])
         classes = ["type"]
 
         fields_by_class_list = []
 
-        response_dict, response_set = suggest._get_response_fields_from_classes_dict(fields_by_class_list,
+        response_set = suggest._get_response_fields_from_classes_dict(fields_by_class_list,
                                                                              response_fields, classes)
-        self.assertEqual(expected_dict, response_dict)
         self.assertEqual(expected_set, response_set)
 
     @patch("brainiak.suggest.suggest._get_class_fields_value", return_value=["value1"])

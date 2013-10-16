@@ -22,7 +22,7 @@ from brainiak.instance.delete_instance import delete_instance
 from brainiak.instance.edit_instance import edit_instance, instance_exists
 from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
-from brainiak.prefixes import normalize_all_uris_recursively, list_prefixes
+from brainiak.prefixes import normalize_all_uris_recursively, list_prefixes, SHORTEN
 from brainiak.schema.get_class import SchemaNotFound
 from brainiak.suggest.suggest import do_suggest, SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.json_schema import schema as suggest_schema
@@ -165,8 +165,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     def _notify_bus(self, **kwargs):
         if kwargs.get("instance_data"):
             instance_data = kwargs["instance_data"]
-            expanded_instance_data = normalize_all_uris_recursively(instance_data)
-            clean_instance_data = clean_up_reserved_attributes(expanded_instance_data)
+            clean_instance_data = clean_up_reserved_attributes(instance_data)
             kwargs["instance_data"] = clean_instance_data
 
         notify_bus(instance=self.query_params["instance_uri"],
@@ -268,6 +267,7 @@ class ClassHandler(BrainiakRequestHandler):
     def get(self, context_name, class_name):
         # We are encoding all query parameters because JsonBrowser cannot handle unencoded query strings in
         # the profile attribute
+        # FIXME: this is no longer necessary for JsonBrowser, we need to check if the CMA still needs this
         self.request.query = unquote(self.request.query)
 
         valid_params = {}
@@ -279,8 +279,12 @@ class ClassHandler(BrainiakRequestHandler):
 
         response = schema_resource.get_schema(self.query_params)
         if response is None:
-            error_message = "Schema for class {0} in context {1} was not found.".format(class_name, context_name)
+            msg = u"Schema for class {0} in context {1} was not found."
+            error_message = msg.format(self.query_params['class_uri'], self.query_params['graph_uri'])
             raise HTTPError(404, log_message=error_message)
+
+        if self.query_params['expand_uri'] == "0":
+            response = normalize_all_uris_recursively(response, mode=SHORTEN)
 
         self.finalize(response)
 
@@ -327,6 +331,8 @@ class CollectionHandler(BrainiakRequestHandler):
             instance_data = json.loads(self.request.body)
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
+
+        instance_data = normalize_all_uris_recursively(instance_data)
 
         try:
             (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
@@ -401,6 +407,9 @@ class InstanceHandler(BrainiakRequestHandler):
                 self.query_params['graph_uri'])
             raise HTTPError(404, log_message=error_message)
 
+        if self.query_params["expand_uri"] == "0":
+            response = normalize_all_uris_recursively(response, mode=SHORTEN)
+
         self.finalize(response)
 
     @greenlet_asynchronous
@@ -416,6 +425,8 @@ class InstanceHandler(BrainiakRequestHandler):
             instance_data = json.loads(self.request.body)
         except ValueError:
             raise HTTPError(400, log_message="No JSON object could be decoded")
+
+        instance_data = normalize_all_uris_recursively(instance_data)
 
         try:
             if not instance_exists(self.query_params):

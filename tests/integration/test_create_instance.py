@@ -92,9 +92,9 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.instance.get_instance.triplestore")
     @patch("brainiak.handlers.settings", NOTIFY_BUS=True)
     @patch("brainiak.instance.get_instance.get_class.get_cached_schema",
-           return_value={"properties": {"rdfs:label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "xsd:string"}}})
+           return_value={"properties": {"http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}}})
     @patch("brainiak.instance.create_instance.get_cached_schema",
-           return_value={"properties": {"rdfs:label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "xsd:string"}}})
+           return_value={"properties": {"http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}}})
     def test_create_instance_201(self, mock_get_schema, mock_get_instance_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
                                  mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
         mockeed_triplestore.query_sparql = self.query
@@ -110,7 +110,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(mocked_notify_bus.called)
         expected = {
             'action': 'POST',
-            'instance_data': {u'http://example.onto/name': u'Globoland', u'http://www.w3.org/2000/01/rdf-schema#label': u'Globoland'},
+            'instance_data': {u'http://example.onto/name': u'Globoland'},
             'instance': 'http://example.onto/City/123',
             'klass': 'http://example.onto/City',
             'graph': 'http://example.onto/'

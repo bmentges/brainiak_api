@@ -118,7 +118,12 @@ def get_predicates_and_cardinalities(context, query_params):
     bindings = query_predicates(query_params)
     predicate_dict = bindings_to_dict('predicate', bindings)
 
-    cardinalities = _extract_cardinalities(query_result['results']['bindings'], predicate_dict)
+    try:
+        cardinalities = _extract_cardinalities(query_result['results']['bindings'], predicate_dict)
+    except InvalidSchema as ex:
+        msg = u"{0} for class {1}".format(ex.message, query_params.get('class_uri', ''))
+        raise InvalidSchema(msg)
+
     return convert_bindings_dict(context,
                                  bindings['results']['bindings'],
                                  cardinalities,
@@ -132,7 +137,11 @@ def _extract_cardinalities(bindings, predicate_dict):
         try:
             range_ = binding["range"]["value"]
         except KeyError:
-            range_ = predicate_dict[property_]["range"]["value"]
+            try:
+                range_ = predicate_dict[property_]["range"]["value"]
+            except KeyError:
+                msg = u"The property {0} is not defined properly".format(property_)
+                raise InvalidSchema(msg)
 
         if not property_ in cardinalities:
             cardinalities[property_] = {}

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from brainiak.suggest.suggest import SUGGEST_PARAM_SCHEMA
+from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.utils.links import merge_schemas, pagination_schema
 
 

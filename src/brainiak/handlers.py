@@ -142,6 +142,10 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             logger.error(message)
             self.send_error(status_code, message=message)
 
+        elif isinstance(e, InvalidSchema):
+            logger.error(u"Ontology inconsistency: {0}\n".format(error_message))
+            self.send_error(status_code, message=e.message)
+
         elif isinstance(e, HTTPError):
             if e.log_message:
                 error_message += u"\n  {0}".format(e.log_message)

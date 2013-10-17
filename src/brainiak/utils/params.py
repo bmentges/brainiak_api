@@ -103,6 +103,7 @@ class ParamDict(dict):
 
     def __init__(self, handler, **kw):
         dict.__init__(self)
+        self. handler = handler
         # preserve the order below, defaults are overriden first
         request = self["request"] = handler.request
 

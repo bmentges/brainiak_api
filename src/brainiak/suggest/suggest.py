@@ -1,105 +1,22 @@
+from copy import copy
+
 from tornado.web import HTTPError
 
 from brainiak import settings, triplestore
-from brainiak.prefixes import uri_to_slug
+from brainiak.prefixes import uri_to_slug, safe_slug_to_prefix
+from brainiak.schema.get_class import get_cached_schema
 from brainiak.search_engine import run_search
-from brainiak.utils.sparql import add_language_support, compress_keys_and_values, filter_values, is_result_empty
-from brainiak.utils.resources import calculate_offset, decorate_dict_with_pagination
+from brainiak.utils import resources, sparql
+
 
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
-
-SUGGEST_PARAM_SCHEMA = {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "Describe the parameters given to the suggest primitive",
-    "type": "object",
-    "required": ["search"],
-    "additionalProperties": False,
-    "properties": {
-        "search": {
-            "type": "object",
-            "required": ["pattern", "target"],
-            "additionalProperties": False,
-            "properties": {
-                "pattern": {"type": "string"},
-                "target": {"type": "string", "format": "uri"},
-                "graphs": {
-                    "type": "array",
-                    "items": {"type": "string", "format": "uri"},
-                    "minItems": 1,
-                    "uniqueItems": True
-                },
-                "classes": {
-                    "type": "array",
-                    "items": {"type": "string", "format": "uri"},
-                    "minItems": 1,
-                    "uniqueItems": True
-                },
-                "fields": {
-                    "type": "array",
-                    "items": {"type": "string", "format": "uri"},
-                    "minItems": 1,
-                    "uniqueItems": True
-                },
-
-            }
-        },
-        "response": {
-            "type": "object",
-            "additionalProperties": False,
-            "properties": {
-                "required_fields": {
-                    "type": "boolean"
-                },
-                "class_fields": {
-                    "type": "array",
-                    "items": {"type": "string", "format": "uri"},
-                    "minItems": 1,
-                    "uniqueItems": True
-                },
-                "classes": {
-                    "type": "array",
-                    "uniqueItems": True,
-                    "minItems": 1,
-                    "items": {
-                        "type": "object",
-                        "required": ["@type", "instance_fields"],
-                        "additionalProperties": False,
-                        "properties": {
-                            "@type": {"type": "string", "format": "uri"},
-                            "instance_fields": {
-                                "type": "array",
-                                "items": {"type": "string", "format": "uri"},
-                                "minItems": 1,
-                                "uniqueItems": True
-                            }
-                        }
-                    },
-                },
-                "instance_fields": {
-                    "type": "array",
-                    "items": {"type": "string", "format": "uri"},
-                    "minItems": 1,
-                    "uniqueItems": True
-                },
-                "meta_fields": {
-                    "type": "array",
-                    "items": {"type": "string", "format": "uri"},
-                    "minItems": 1,
-                    "uniqueItems": True
-                },
-            }
-        }
-
-    }
-}
 
 
 def do_suggest(query_params, suggest_params):
     search_params = suggest_params["search"]
-    response_params = suggest_params.get("response", {})
 
     range_result = _get_predicate_ranges(query_params, search_params)
-    if is_result_empty(range_result):
+    if sparql.is_result_empty(range_result):
         message = u"Either the predicate {0} does not exists or it does not have" + \
             " any rdfs:range defined in the triplestore"
         message = message.format(search_params["target"])
@@ -109,30 +26,34 @@ def do_suggest(query_params, suggest_params):
     graphs = _validate_graph_restriction(query_params, range_result)
     indexes = ["semantica." + uri_to_slug(graph) for graph in graphs]
 
-    compressed_result = compress_keys_and_values(range_result)
-    class_label_dict, class_graph_dict = _build_class_label_and_class_graph_dicts(compressed_result)
-
     title_fields = [RDFS_LABEL]
     title_fields += _get_subproperties(query_params, RDFS_LABEL)
     search_fields = list(set(_get_search_fields(query_params, suggest_params) + title_fields))
 
-    response_fields, response_fields_by_class, required_fields = _get_response_fields(
-        query_params, response_params, classes, class_graph_dict, title_fields)
+    response_params = suggest_params.get("response", {})
+    response_fields = _get_response_fields(
+        query_params,
+        response_params,
+        classes,
+        title_fields)
 
-    request_body = _build_body_query(query_params, search_params, classes,
-                                     search_fields, response_fields)
-
+    request_body = _build_body_query(
+        query_params,
+        search_params,
+        classes,
+        search_fields,
+        response_fields)
     elasticsearch_result = run_search(request_body, indexes=indexes)
 
     class_fields = response_params.get("class_fields", [])
 
-    items, item_count = _build_items(query_params, elasticsearch_result, class_label_dict,
-                                     title_fields, response_fields_by_class,
-                                     class_fields, required_fields)
-    if not items:
-        return {}
+    total_items = elasticsearch_result["hits"]["total"]
+    if total_items:
+        items = _build_items(query_params, elasticsearch_result, title_fields, class_fields)
+        response = build_json(items, total_items, query_params)
     else:
-        return build_json(items, item_count, query_params)
+        response = {}
+    return response
 
 
 def build_json(items_list, item_count, query_params):
@@ -144,7 +65,7 @@ def build_json(items_list, item_count, query_params):
     }
 
     calculate_total_items = lambda: item_count
-    decorate_dict_with_pagination(json, query_params, calculate_total_items)
+    resources.decorate_dict_with_pagination(json, query_params, calculate_total_items)
 
     return json
 
@@ -171,7 +92,7 @@ SELECT DISTINCT ?range ?range_label ?range_graph {
 
 
 def _build_predicate_ranges_query(query_params, search_params):
-    (params, language_tag) = add_language_support(query_params, "range_label")
+    params = sparql.add_language_support(query_params, "range_label")[0]
     params.update(search_params)
     return QUERY_PREDICATE_RANGES % params
 
@@ -182,17 +103,21 @@ def _get_predicate_ranges(query_params, search_params):
 
 
 QUERY_SUBPROPERTIES = u"""
-DEFINE input:inference <http://semantica.globo.com/ruleset>
+DEFINE input:inference <%(ruleset)s>
 SELECT DISTINCT ?property WHERE {
-  ?property rdfs:subPropertyOf <%s>
+  ?property rdfs:subPropertyOf <%(property)s>
 }
 """
 
 
-def _get_subproperties(params, super_property):
-    query = QUERY_SUBPROPERTIES % super_property
-    result = triplestore.query_sparql(query, params.triplestore_config)
-    return filter_values(result, "property")
+def _get_subproperties(query_params, super_property):
+    params = {
+        "ruleset": "http://semantica.globo.com/ruleset",
+        "property": super_property
+    }
+    query = QUERY_SUBPROPERTIES % params
+    result = triplestore.query_sparql(query, query_params.triplestore_config)
+    return sparql.filter_values(result, "property")
 
 
 def _get_search_fields(query_params, search_params):
@@ -206,7 +131,7 @@ def _get_search_fields(query_params, search_params):
 
 
 def _validate_class_restriction(search_params, range_result):
-    classes = set(filter_values(range_result, "range"))
+    classes = set(sparql.filter_values(range_result, "range"))
     if "classes" in search_params:
         classes_not_in_range = list(set(search_params["classes"]).difference(classes))
         if classes_not_in_range:
@@ -218,7 +143,7 @@ def _validate_class_restriction(search_params, range_result):
 
 
 def _validate_graph_restriction(search_params, range_result):
-    graphs = set(filter_values(range_result, "range_graph"))
+    graphs = set(sparql.filter_values(range_result, "range_graph"))
     if "graphs" in search_params:
         graphs_set = set(search_params["graphs"])
         graphs_not_in_range = list(graphs_set.difference(graphs))
@@ -236,6 +161,7 @@ def _validate_graph_restriction(search_params, range_result):
     return list(graphs)
 
 
+# TODO: kill after adding annotation properties to schema
 QUERY_CLASS_FIELDS = u"""
 SELECT DISTINCT ?field_value {
   ?s <%(field)s> ?field_value
@@ -258,21 +184,14 @@ def _build_class_fields_query(classes, field):
 def _get_class_fields_value(query_params, classes, meta_field):
     query = _build_class_fields_query(classes, meta_field)
     class_field_query_response = triplestore.query_sparql(query, query_params.triplestore_config)
-    class_field_values = filter_values(class_field_query_response, "field_value")
+    class_field_values = sparql.filter_values(class_field_query_response, "field_value")
     return class_field_values
 
 
-def _get_response_fields(query_params, response_params, classes, class_graph_dict, title_fields):
+def _get_response_fields(query_params, response_params, classes, title_fields):
     response_fields = set([])
-    response_fields_by_class = {}
 
     response_fields.update(title_fields)
-
-    if "required_fields" not in response_params or response_params["required_fields"]:
-        required_fields = _get_required_fields(query_params, response_params, classes, class_graph_dict)
-        response_fields.update(required_fields)
-    else:
-        required_fields = []
 
     meta_fields = _get_response_fields_from_meta_fields(query_params, response_params, classes)
     response_fields.update(meta_fields)
@@ -281,27 +200,13 @@ def _get_response_fields(query_params, response_params, classes, class_graph_dic
     response_fields.update(instance_fields)
 
     classes_dict = response_params.get("classes", [])
-    response_fields_by_class, fields_by_class_set = _get_response_fields_from_classes_dict(
+    fields_by_class_set = _get_response_fields_from_classes_dict(
         classes_dict, response_fields, classes)
     response_fields.update(fields_by_class_set)
 
     response_fields = list(response_fields)
 
-    return response_fields, response_fields_by_class, required_fields
-
-
-def _get_required_fields(query_params, response_params, classes, class_graph_dict):
-    from brainiak.schema.get_class import get_cached_schema
-    required_fields = set([])
-
-    for klass in classes:
-        query_params["class_uri"] = klass
-        query_params["graph_uri"] = class_graph_dict[klass]
-        schema = get_cached_schema(query_params)
-        required_from_class = _get_required_fields_from_schema_response(schema)
-        required_fields.update(required_from_class)
-
-    return required_fields
+    return response_fields
 
 
 def _get_required_fields_from_schema_response(schema):
@@ -337,14 +242,14 @@ def _get_response_fields_from_classes_dict(fields_by_class_list, response_fields
         response_fields_by_class[klass] = list(actual_fields)
         fields_by_class_set.update(set(specific_class_fields))
 
-    return response_fields_by_class, fields_by_class_set
+    return fields_by_class_set
 
 
 def _build_body_query(query_params, search_params, classes, search_fields, response_fields):
     patterns = search_params["pattern"].lower().split()
     query_string = " AND ".join(patterns) + "*"
     body = {
-        "from": int(calculate_offset(query_params)),
+        "from": int(resources.calculate_offset(query_params)),
         "size": int(query_params.get("per_page", settings.DEFAULT_PER_PAGE)),
         "fields": response_fields,
         "query": {
@@ -383,15 +288,6 @@ def _build_type_filters(classes):
     return type_filters
 
 
-def _build_class_label_and_class_graph_dicts(compressed_result):
-    class_label_dict = {}
-    class_graph_dict = {}
-    for result in compressed_result:
-        class_label_dict[result["range"]] = result["range_label"]
-        class_graph_dict[result["range"]] = result["range_graph"]
-    return class_label_dict, class_graph_dict
-
-
 def _get_title_value(elasticsearch_fields, title_fields):
     for field in reversed(title_fields):
         title = elasticsearch_fields.get(field)
@@ -400,69 +296,59 @@ def _get_title_value(elasticsearch_fields, title_fields):
     raise RuntimeError("No title fields in search engine")
 
 
-QUERY_PREDICATE_VALUES = u"""
-SELECT ?object_value ?object_value_label ?predicate ?predicate_title {
-  <%(instance_uri)s> ?predicate ?object_value OPTION(inference "http://semantica.globo.com/ruleset") .
-  OPTIONAL { ?object_value rdfs:label ?object_value_label OPTION(inference "http://semantica.globo.com/ruleset") }
-  ?predicate rdfs:label ?predicate_title .
-  %(filter_clause)s
-}
-"""
+def convert_index_name_to_graph_uri(index_name):
+    """
+    Convert @index_name to the related graph uri, provided:
+        @index_name: string representing ElasticSearch index name
+    """
+    graph_name = index_name.split("semantica.")[-1]
+    graph_uri = safe_slug_to_prefix(graph_name)
+    return graph_uri
 
 
-def _build_predicate_values_query(instance_uri, predicates):
-    conditions = [u"?predicate = <{0}>".format(predicate) for predicate in predicates]
-    conditions = u" OR ".join(conditions)
-    filter_clause = u"FILTER(" + conditions + u")"
-    query = QUERY_PREDICATE_VALUES % {
-        "instance_uri": unicode(instance_uri),
-        "filter_clause": filter_clause
-    }
-    return query
+# this method was left tested indirectly in purpose
+def get_instance_class_schema(es_response_item, query_params):
+    index_name = es_response_item["_index"]
+    graph_uri = convert_index_name_to_graph_uri(index_name)
+    class_uri = es_response_item["_type"]
+
+    item_params = copy(query_params)
+    item_params["graph_uri"] = graph_uri
+    item_params["class_uri"] = class_uri
+    schema = get_cached_schema(item_params)
+    return schema
 
 
-def _get_predicate_values(query_params, instance_uri, predicates):
-    query = _build_predicate_values_query(instance_uri, predicates)
-    query_response = triplestore.query_sparql(query, query_params.triplestore_config)
-    return compress_keys_and_values(query_response)
+def get_instance_fields(item, class_schema):
+    """
+    Assemble an instance's properties data (instance_fields) provided:
+        item: ElasticSearch response item (available inside "hits")
+        class_schema: Brainiak schema definition for the item's class
+    """
+    instance_fields = []
+    class_properties = class_schema["properties"]
 
+    for property_uri, property_object in item["fields"].items():
+        property_title = class_properties[property_uri]["title"]
+        required = class_properties[property_uri].get("required", False)
 
-def _get_instance_fields(query_params, instance_uri, klass, title_field, fields_by_class_dict, required_fields):
+        if isinstance(property_object, list):
+            object_list = property_object
+        else:
+            object_list = [property_object]
 
-    instance_fields = {}
-
-    predicates = fields_by_class_dict.get(klass, [])
-
-    if predicates and title_field in predicates:  # title_field is already in response
-        predicates.remove(title_field)
-
-    if not predicates:
-        return instance_fields
-
-    predicate_values = _get_predicate_values(query_params, instance_uri, predicates)
-
-    if not predicate_values:
-        return instance_fields
-    else:
-        instance_fields_list = []
-        for value in predicate_values:
-            instance_field_dict = {
-                "predicate_id": value["predicate"],
-                "predicate_title": value["predicate_title"],
+        for object_ in object_list:
+            object_title = object_.get("title") if isinstance(object_, dict) else object_
+            field = {
+                'object_title': object_title,
+                'predicate_id': property_uri,
+                'predicate_title': property_title,
+                'required': required
             }
-            if value["predicate"] in required_fields:
-                instance_field_dict["required"] = True
-            else:
-                instance_field_dict["required"] = False
+            if isinstance(object_, dict):
+                field['object_id'] = object_.get("@id")
 
-            if "object_value_label" in value:
-                instance_field_dict["object_id"] = value["object_value"]
-                instance_field_dict["object_title"] = value["object_value_label"]
-            else:
-                instance_field_dict["object_title"] = value["object_value"]
-
-            instance_fields_list.append(instance_field_dict)
-        instance_fields["instance_fields"] = instance_fields_list
+            instance_fields.append(field)
 
     return instance_fields
 
@@ -480,29 +366,43 @@ def _get_class_fields_to_response(query_params, classes, class_fields):
         return class_fields_to_return
 
 
-def _build_items(query_params, result, class_label_dict,
-                 title_fields, fields_by_class_dict,
-                 class_fields, required_fields):
+def remove_title_field(item, title_field):
+    """
+    Remove field from @item provided:
+        @item: ElasticSearch "hits" response item. Must have "fields" key.
+        @title_field: name of field (key) to be excluded
+    """
+    if title_field in item["fields"]:
+        item["fields"].pop(title_field)
+
+
+def _build_items(query_params, result, title_fields, class_fields):
     items = []
-    item_count = result["hits"]["total"]
-    if item_count:
-        for item in result["hits"]["hits"]:
-            instance_uri = item["_id"]
-            title_field, title_value = _get_title_value(item["fields"], title_fields)
-            klass = item["_type"]
-            item_dict = {
-                "@id": instance_uri,
-                "title": title_value,
-                "@type": klass,
-                "type_title": class_label_dict[klass]
-            }
-            instance_fields = _get_instance_fields(query_params, instance_uri, klass,
-                                                   title_field, fields_by_class_dict,
-                                                   required_fields)
-            item_dict.update(instance_fields)
+    es_items = result["hits"].get("hits", [])
+    for item in es_items:
+        instance_uri = item["_id"]
+        title_field, title_value = _get_title_value(item["fields"], title_fields)
+        klass = item["_type"]
 
-            class_fields_to_response = _get_class_fields_to_response(query_params, [klass], class_fields)
-            item_dict.update(class_fields_to_response)
-            items.append(item_dict)
+        class_schema = get_instance_class_schema(item, query_params)
+        remove_title_field(item, title_field)
 
-    return items, item_count
+        item_dict = {
+            "@id": instance_uri,
+            "title": title_value,
+            "@type": klass,
+            "type_title": class_schema["title"]
+        }
+
+        instance_fields = get_instance_fields(item, class_schema)
+        if instance_fields:
+            item_dict["instance_fields"] = instance_fields
+
+        class_fields_to_response = _get_class_fields_to_response(
+            query_params,
+            [klass],
+            class_fields)
+        item_dict.update(class_fields_to_response)
+        items.append(item_dict)
+
+    return items

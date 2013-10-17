@@ -1,0 +1,29 @@
+{
+    "rdfs:label": "Xubiru alterado",
+    "esportes:tem_como_fonte": [
+        "http://semantica.globo.com/esportes/Editoria/5c2c7489-7c5b-4850-b238-1615d3e539b7"
+    ],
+    "base:data_de_criacao_do_conteudo": "2013-10-02T17:16:29",
+    "esportes:tem_como_conteudo": [
+        "http://semantica.globo.com/esportes/equipe/262",
+        "http://semantica.globo.com/esportes/equipe/284",
+        "http://semantica.globo.com/esportes/jogo/170235"
+    ],
+    "base:status_de_publicacao": "N",
+    "base:permalink": "intitulado-alterado",
+    "@context": {
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "esportes": "http://semantica.globo.com/esportes/",
+        "base": "http://semantica.globo.com/base/",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+    },
+    "@id": "http://semantica.globo.com/esportes/VoceDaNota/15",
+    "@type": "esportes:VoceDaNota",
+    "base:pertence_ao_produto": "base:produto_GE",
+    "esportes:trata_da_opcao_voce_da_nota": [
+        "http://semantica.globo.com/esportes/OpcoesVoceDaNota/80",
+        "http://semantica.globo.com/esportes/OpcoesVoceDaNota/81",
+        "http://semantica.globo.com/esportes/OpcoesVoceDaNota/82",
+        "http://semantica.globo.com/esportes/OpcoesVoceDaNota/83"
+    ]
+}

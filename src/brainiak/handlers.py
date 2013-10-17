@@ -24,7 +24,8 @@ from brainiak.instance.get_instance import get_instance
 from brainiak.log import get_logger
 from brainiak.prefixes import normalize_all_uris_recursively, list_prefixes, SHORTEN
 from brainiak.schema.get_class import SchemaNotFound
-from brainiak.suggest.suggest import do_suggest, SUGGEST_PARAM_SCHEMA
+from brainiak.suggest.suggest import do_suggest
+from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema

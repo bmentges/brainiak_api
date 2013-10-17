@@ -92,6 +92,21 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'maxItems': 1}}}
         self.assertEqual(extracted, expected)
 
+    def test_extract_min_1_and_max_1_required_true(self):
+        binding = [{
+            u'predicate': {u'type': u'uri',
+                           u'value': u'http://test/person/gender'},
+            u'range': {u'type': u'uri',
+                       u'value': u'http://test/person/Gender'},
+            u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                     u'type': u'typed-literal', u'value': u'1'},
+            u'max': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                     u'type': u'typed-literal', u'value': u'1'}
+        }]
+        extracted = _extract_cardinalities(binding, {})
+        expected = {u'http://test/person/gender': {u'http://test/person/Gender': {'required': True, 'minItems': 1, 'maxItems': 1}}}
+        self.assertEqual(extracted, expected)
+
     def test_assemble_predicate_with_object_property(self):
         expected_predicate_dict = {'description': u'G\xeanero.',
                                    'range': {'graph': u'http://test/person/',

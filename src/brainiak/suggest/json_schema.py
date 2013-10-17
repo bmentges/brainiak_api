@@ -1,6 +1,90 @@
 # -*- coding: utf-8 -*-
-from brainiak.suggest.suggest import SUGGEST_PARAM_SCHEMA
 from brainiak.utils.links import merge_schemas, pagination_schema
+
+SUGGEST_PARAM_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Describe the parameters given to the suggest primitive",
+    "type": "object",
+    "required": ["search"],
+    "additionalProperties": False,
+    "properties": {
+        "search": {
+            "type": "object",
+            "required": ["pattern", "target"],
+            "additionalProperties": False,
+            "properties": {
+                "pattern": {"type": "string"},
+                "target": {"type": "string", "format": "uri"},
+                "graphs": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "uri"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                },
+                "classes": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "uri"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "uri"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                },
+
+            }
+        },
+        "response": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "required_fields": {
+                    "type": "boolean"
+                },
+                "class_fields": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "uri"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                },
+                "classes": {
+                    "type": "array",
+                    "uniqueItems": True,
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "required": ["@type", "instance_fields"],
+                        "additionalProperties": False,
+                        "properties": {
+                            "@type": {"type": "string", "format": "uri"},
+                            "instance_fields": {
+                                "type": "array",
+                                "items": {"type": "string", "format": "uri"},
+                                "minItems": 1,
+                                "uniqueItems": True
+                            }
+                        }
+                    },
+                },
+                "instance_fields": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "uri"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                },
+                "meta_fields": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "uri"},
+                    "minItems": 1,
+                    "uniqueItems": True
+                },
+            }
+        }
+
+    }
+}
 
 
 def schema():

@@ -66,9 +66,10 @@ def remove_super_properties(items_dict, super_predicates):
     for (analyzed_predicate, value) in items_dict.items():
         if analyzed_predicate in super_predicates.keys():
             sub_predicate = super_predicates[analyzed_predicate]
-            sub_value = items_dict[sub_predicate]
-            if value == sub_value or (sub_value in value):
-                items_dict.pop(analyzed_predicate)
+            if sub_predicate in items_dict:
+                sub_value = items_dict[sub_predicate]
+                if value == sub_value or (sub_value in value):
+                    items_dict.pop(analyzed_predicate)
 
 
 def check_and_clean_rdftype(instance_type, items):

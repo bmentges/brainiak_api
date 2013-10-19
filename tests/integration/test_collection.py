@@ -210,6 +210,21 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 200)
         self.assertItemsEqual(received_response['items'], expected_items)
 
+    def test_filter_with_predicate_as_compressed_uri_and_object_as_label_with_expand_uri_0(self):
+        url = urllib.quote("rdfs:label")
+        response = self.fetch('/person/Gender/?o=Feminino&lang=pt&p=%s&expand_uri=0' % url, method='GET')
+        expected_items = [
+            {
+                u'title': u'Feminino',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Female',
+                u'class_prefix': u'http://semantica.globo.com/person/',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Female'}
+        ]
+        received_response = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+        self.assertItemsEqual(received_response['items'], expected_items)
+
     @patch("brainiak.handlers.logger")
     def test_filter_with_no_results(self, log):
         response = self.fetch('/person/Gender/?o=Xubiru&lang=pt', method='GET')

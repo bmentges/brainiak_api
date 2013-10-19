@@ -56,7 +56,9 @@ def is_url(term):
 
 
 def has_lang(literal):
-    return literal[-3:].startswith("@")
+    if isinstance(literal, basestring):
+        return literal[-3:].startswith("@")
+    return False
 
 
 def create_instance_uri(class_uri):
@@ -334,30 +336,28 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                 predicate_datatype = get_predicate_datatype(class_object, predicate_uri)
             except KeyError:
                 msg = u'Property {0} was not found in the schema of instance {1}'
-                raise InvalidSchema(msg.format(normalized_predicate_name, instance_uri))
+                raise InvalidSchema(msg.format(predicate_uri, instance_uri))
 
             predicate_uri = "<%s>" % predicate_uri
 
-            # object: can be uri (compressed or not) or literal
-
             if predicate_datatype is not None:
-
                 # Datatype property
-                # TODO-2: if literal is string and not i18n, add lang
+
+                # TODO: if literal is string and not i18n, add lang
                 if has_lang(object_value):
                     object_ = object_value
                 else:
-                    object_value = escape_quotes(object_value)
-
                     if predicate_datatype == XSD_BOOLEAN or predicate_datatype == XSD_BOOLEAN_SHORT:
-                        object_value = convert_boolean(object_value)
+                        object_value = encode_boolean(object_value)
+                    else:
+                        object_value = escape_quotes(object_value)
 
                     if is_uri(predicate_datatype):
                         typecast_template = u'"{0}"^^<{1}>'
                     elif predicate_datatype:
                         typecast_template = u'"{0}"^^{1}'
                     else:
-                        typecast_template = u'"{0}"{1}'  # {1} empty not typecasted
+                        typecast_template = u'"{0}"{1}'  # {1} empty not typecasted, e.g. XML_LITERAL
 
                     object_ = typecast_template.format(object_value, predicate_datatype)
             else:
@@ -382,20 +382,30 @@ ESCAPED_QUOTES = {
 
 
 def escape_quotes(object_value):
-    escaped_value = object_value
-    for char in ESCAPED_QUOTES:
-        escaped_value = escaped_value.replace(char, ESCAPED_QUOTES[char])
+    if isinstance(object_value, basestring):
+        escaped_value = object_value
+        for char in ESCAPED_QUOTES:
+            escaped_value = escaped_value.replace(char, ESCAPED_QUOTES[char])
 
-    return escaped_value
-
-
-def convert_boolean(object_value):
-    if object_value == '0':
-        return "false"
-    elif object_value == '1':
-        return "true"
+        return escaped_value
     else:
-        return object_value
+        object_value
+
+
+def encode_boolean(object_value):
+    if object_value == False:
+        return "false"
+    elif object_value == True:
+        return "true"
+    raise TypeError(u"Could not encode boolean using {0}".format(object_value))
+
+def decode_boolean(object_value):
+    if object_value == "0":
+        return False
+    elif object_value == "1":
+        return True
+    else:
+        raise TypeError(u"Could not decode boolean using {0}".format(object_value))
 
 
 def create_implicit_triples(instance_uri, class_uri):

@@ -28,7 +28,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 400)
 
     def test_filter_without_predicate_and_object(self):
-        response = self.fetch('/person/Gender/', method='GET')
+        response = self.fetch('/person/Gender/?expand_uri=1', method='GET')
         expected_items = [
             {
                 u'title': u'Feminino',
@@ -91,7 +91,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertQueryStringArgsEqual(received_response["_next_args"], "page=3&per_page=1&do_item_count=1")
 
     def test_list_by_page_sort_first_page(self):
-        response = self.fetch('/person/Gender/?page=1&per_page=2&sort_by=rdfs:label', method='GET')
+        response = self.fetch('/person/Gender/?page=1&per_page=2&sort_by=rdfs:label&expand_uri=1', method='GET')
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         expected_items = [
@@ -113,7 +113,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(received_response['items'], expected_items)
 
     def test_list_by_page_sort_second_page(self):
-        response = self.fetch('/person/Gender/?page=2&per_page=2&sort_by=rdfs:label', method='GET')
+        response = self.fetch('/person/Gender/?page=2&per_page=2&sort_by=rdfs:label&expand_uri=1', method='GET')
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         expected_items = [
@@ -128,7 +128,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(received_response['items'], expected_items)
 
     def test_list_by_page_sort_first_page_desc(self):
-        response = self.fetch('/person/Gender/?page=1&per_page=2&sort_by=rdfs:label&sort_order=desc', method='GET')
+        response = self.fetch('/person/Gender/?page=1&per_page=2&sort_by=rdfs:label&sort_order=desc&expand_uri=1', method='GET')
         received_response = json.loads(response.body)
         self.assertEqual(response.code, 200)
         expected_items = [
@@ -156,9 +156,9 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
                 u'title': u'Masculino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
-                u'class_prefix': u'http://semantica.globo.com/person/',
+                u'class_prefix': u'person:',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
-                u'p': [u'http://semantica.globo.com/upper/name', u'http://www.w3.org/2000/01/rdf-schema#label']
+                u'p': [u'upper:name', u'rdfs:label']
             }
         ]
         received_response = json.loads(response.body)
@@ -167,7 +167,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
 
     def test_filter_with_predicate_as_uri(self):
         url = urllib.quote("http://www.w3.org/2000/01/rdf-schema#label")
-        response = self.fetch('/person/Gender/?lang=pt&p=%s' % url, method='GET')
+        response = self.fetch('/person/Gender/?lang=pt&p=%s&&expand_uri=1' % url, method='GET')
         expected_items = [
             {
                 u'title': u'Feminino',
@@ -195,9 +195,9 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 200)
         self.assertEqual(sorted(received_response['items']), sorted(expected_items))
 
-    def test_filter_with_predicate_as_compressed_uri_and_object_as_label(self):
+    def test_filter_with_predicate_as_compressed_uri_and_object_as_label_with_expand_uri_1(self):
         url = urllib.quote("rdfs:label")
-        response = self.fetch('/person/Gender/?o=Feminino&lang=pt&p=%s' % url, method='GET')
+        response = self.fetch('/person/Gender/?o=Feminino&lang=pt&p=%s&expand_uri=1' % url, method='GET')
         expected_items = [
             {
                 u'title': u'Feminino',
@@ -256,7 +256,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         expected_items = [{
             u'resource_id': u'news_cricket',
             u'instance_prefix': u'http://brmedia.com/',
-            u'class_prefix': u'http://dbpedia.org/ontology/',
+            u'class_prefix': u'dbpedia:',
             u'@id': u'http://brmedia.com/news_cricket',
             u'title': u'Cricket becomes the most popular sport of Brazil'
         }]
@@ -283,7 +283,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         expected_items = [{
             u'resource_id': u'news_president_answer',
             u'instance_prefix': u'http://brmedia.com/',
-            u'class_prefix': u'http://dbpedia.org/ontology/',
+            u'class_prefix': u'dbpedia:',
             u'@id': u'http://brmedia.com/news_president_answer',
             u'title': u"President explains the reason for the war - it is 42"
         }]

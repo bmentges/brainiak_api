@@ -315,6 +315,10 @@ class CollectionHandler(BrainiakRequestHandler):
                                           class_name=class_name,
                                           **valid_params)
         response = filter_instances(self.query_params)
+
+        if self.query_params['expand_uri'] == "0":
+            response = normalize_all_uris_recursively(response, mode=SHORTEN)
+
         self.finalize(response)
 
     @greenlet_asynchronous

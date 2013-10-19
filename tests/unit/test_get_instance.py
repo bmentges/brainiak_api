@@ -293,3 +293,44 @@ class BuildItemsDictTestCase(unittest.TestCase):
         }
         response = get_instance.build_items_dict(bindings, "http://class.uri", False, class_schema)
         self.assertEqual(response, expected)
+
+    def test_remove_super_properties_does_not_change_items_dict(self):
+        items_dict = {
+            u'rdfs:label': u'Seba Fern\xe1ndez - Sebasti\xe1n Bruno Fern\xe1ndez Miglierina',
+            u'base:nome_completo': u'Sebasti\xe1n Bruno Fern\xe1ndez Miglierina',
+            u'base:data_de_nascimento': u'1985-05-23'
+        }
+        super_predicates = {
+            u'rdfs:label': u'upper:name',
+            u'virtrdf:label': u'foaf:name',
+            u'upper:fullName': u'person:fullName'
+        }
+        computed = get_instance.remove_super_properties(items_dict, super_predicates)
+        self.assertEqual(computed, None)
+
+        expected_items_dict = {
+            u'base:data_de_nascimento': u'1985-05-23',
+            u'rdfs:label': u'Seba Fern\xe1ndez - Sebasti\xe1n Bruno Fern\xe1ndez Miglierina',
+            u'base:nome_completo': u'Sebasti\xe1n Bruno Fern\xe1ndez Miglierina'
+        }
+        self.assertEqual(items_dict, expected_items_dict)
+
+    def test_remove_super_properties_changes_items_dict(self):
+        items_dict = {
+            u'rdfs:label': u'Seba Fern\xe1ndez - Sebasti\xe1n Bruno Fern\xe1ndez Miglierina',
+            u'upper:name': u'Seba Fern\xe1ndez - Sebasti\xe1n Bruno Fern\xe1ndez Miglierina',
+            u'base:data_de_nascimento': u'1985-05-23'
+        }
+        super_predicates = {
+            u'rdfs:label': u'upper:name',
+            u'virtrdf:label': u'foaf:name',
+            u'upper:fullName': u'person:fullName'
+        }
+        computed = get_instance.remove_super_properties(items_dict, super_predicates)
+        self.assertEqual(computed, None)
+
+        expected_items_dict = {
+            u'base:data_de_nascimento': u'1985-05-23',
+            u'upper:name': u'Seba Fern\xe1ndez - Sebasti\xe1n Bruno Fern\xe1ndez Miglierina'
+        }
+        self.assertEqual(items_dict, expected_items_dict)

@@ -217,7 +217,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
             {
                 u'title': u'Feminino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Female',
-                u'class_prefix': u'http://semantica.globo.com/person/',
+                u'class_prefix': u'person:',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'resource_id': u'Female'}
         ]
@@ -249,7 +249,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         body = json.loads(response.body)
         expected_body = {
             u'items': [],
-            u'warning': u'Instances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1), language=(pt) and in page=(1) were not found.'
+            u'warning': u'Instances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(http://www.w3.org/2000/01/rdf-schema#label) with o=(object) with o1=(object1), language=(pt) and in page=(1) were not found.'
         }
         self.assertEqual(body, expected_body)
 

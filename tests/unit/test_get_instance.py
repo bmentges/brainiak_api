@@ -119,6 +119,41 @@ class TestCaseInstanceResource(unittest.TestCase):
             """
         self.assertEqual(strip(computed), strip(expected))
 
+    def test_should_get_instance_by_uri_return_true(self):
+        query_params = {
+            "instance_id": u"_",
+            "class_name": u"_",
+            "graph_uri": u"_"
+        }
+        response = get_instance.should_get_instance_by_uri(query_params)
+        self.assertTrue(response)
+
+    def test_should_get_instance_by_uri_return_false_due_to_graph(self):
+        query_params = {
+            "instance_id": u"_",
+            "class_name": u"_",
+            "graph_uri": u"some_graph"
+        }
+        response = get_instance.should_get_instance_by_uri(query_params)
+        self.assertFalse(response)
+
+    def test_should_get_instance_by_uri_return_false_due_to_class(self):
+        query_params = {
+            "instance_id": u"_",
+            "class_name": u"some_class",
+            "graph_uri": u"_"
+        }
+        response = get_instance.should_get_instance_by_uri(query_params)
+        self.assertFalse(response)
+
+    def test_should_get_instance_by_uri_return_false_due_to_instance(self):
+        query_params = {
+            "instance_id": u"some_instance",
+            "class_name": u"_",
+            "graph_uri": u"_"
+        }
+        response = get_instance.should_get_instance_by_uri(query_params)
+        self.assertFalse(response)
 
 class AssembleTestCase(unittest.TestCase):
 

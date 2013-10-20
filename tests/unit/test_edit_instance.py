@@ -29,6 +29,37 @@ class TestCaseInstanceResource(unittest.TestCase):
         query_params = {'instance_uri': 'anything', 'graph_uri': 'anything'}
         self.assertRaises(HTTPError, edit_instance.edit_instance, query_params, None)
 
+    def test_should_edit_instance_by_instance_uri_is_true(self):
+        query_params = {
+            "class_name": u"_",
+            "graph_uri": u"_"
+        }
+        response = edit_instance.should_edit_instance_by_instance_uri(query_params)
+        self.assertTrue(response)
+
+    def test_should_edit_instance_by_instance_uri_is_false_due_to_graph_uri(self):
+        query_params = {
+            "class_name": u"_",
+            "graph_uri": u"some_uri"
+        }
+        response = edit_instance.should_edit_instance_by_instance_uri(query_params)
+        self.assertFalse(response)
+
+    def test_should_edit_instance_by_instance_uri_is_false_due_to_class_name(self):
+        query_params = {
+            "class_name": u"some_class",
+            "graph_uri": u"_"
+        }
+        response = edit_instance.should_edit_instance_by_instance_uri(query_params)
+        self.assertFalse(response)
+
+    def test_should_edit_instance_by_instance_uri_raises_exception(self):
+        query_params = {}
+        with self.assertRaises(HTTPError) as exception:
+            edit_instance.should_edit_instance_by_instance_uri(query_params)
+        msg = "HTTP 404: Not Found (Parameter <'class_name'> is missing in order to update instance.)"
+        self.assertEqual(str(exception.exception), msg)
+
 
 class TestCaseRaise500(unittest.TestCase):
 
@@ -49,13 +80,3 @@ class TestCaseRaise500(unittest.TestCase):
         edit_instance.is_modify_response_successful = self.original_is_modify_response_successful
         edit_instance.create_explicit_triples = self.original_create_explicit_triples
         edit_instance.create_implicit_triples = self.original_create_implicit_triples
-
-    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string"}))
-    def test_edit_instance_raise500(self, mock_get_cached_schema):
-        handler = MockHandler()
-        query_params = ParamDict(handler, instance_uri='anything', graph_uri='anything', class_uri='anything')
-        self.assertRaises(HTTPError, edit_instance.edit_instance, query_params, {'@context': {}})
-        with self.assertRaises(HTTPError) as ex:
-            edit_instance.edit_instance(query_params, {'@context': {}})
-        the_exception = ex.exception
-        self.assertEqual(the_exception.status_code, 500)

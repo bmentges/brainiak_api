@@ -1,7 +1,7 @@
 # coding: utf-8
 import re
 import uuid
-from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, shorten_uri
+from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
 
 
 PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
@@ -393,11 +393,12 @@ def escape_quotes(object_value):
 
 
 def encode_boolean(object_value):
-    if object_value == False:
+    if object_value is False:
         return "false"
-    elif object_value == True:
+    elif object_value is True:
         return "true"
     raise TypeError(u"Could not encode boolean using {0}".format(object_value))
+
 
 def decode_boolean(object_value):
     if object_value == "0":

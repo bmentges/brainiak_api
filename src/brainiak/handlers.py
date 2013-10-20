@@ -523,7 +523,8 @@ class SuggestHandler(BrainiakRequestHandler):
             self.query_params.validate_required(self, valid_params)
 
         response = do_suggest(self.query_params, body_params)
-
+        if self.query_params['expand_uri'] == "0":
+            response = normalize_all_uris_recursively(response, mode=SHORTEN)
         self.finalize(response)
 
     def finalize(self, response):

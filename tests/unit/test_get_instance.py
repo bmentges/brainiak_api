@@ -155,6 +155,53 @@ class TestCaseInstanceResource(unittest.TestCase):
         response = get_instance.should_get_instance_by_uri(query_params)
         self.assertFalse(response)
 
+    def test_extract_class_uri(self):
+        bindings = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'object_label': {u'type': u'literal', u'value': u'News'},
+                u'class_uri': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'graph_uri': {u'type': u'uri', u'value': u'http://brmedia.com/'}
+            },
+            {
+
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                u'object': {u'type': u'literal', u'value': u'Cricket becomes the most popular sport of Brazil'},
+                u'class_uri': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'graph_uri': {u'type': u'uri', u'value': u'http://brmedia.com/'}
+            }
+        ]
+        response = get_instance.extract_class_uri(bindings)
+        expected = u'http://dbpedia.org/ontology/News'
+        self.assertEqual(response, expected)
+        self.assertFalse('class_uri' in bindings[0])
+        self.assertFalse('class_uri' in bindings[1])
+
+    def test_extract_graph_uri(self):
+        bindings = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'object_label': {u'type': u'literal', u'value': u'News'},
+                u'class_uri': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'graph_uri': {u'type': u'uri', u'value': u'http://brmedia.com/'}
+            },
+            {
+
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                u'object': {u'type': u'literal', u'value': u'Cricket becomes the most popular sport of Brazil'},
+                u'class_uri': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'graph_uri': {u'type': u'uri', u'value': u'http://brmedia.com/'}
+            }
+        ]
+        response = get_instance.extract_graph_uri(bindings)
+        expected = u'http://brmedia.com/'
+        self.assertEqual(response, expected)
+        self.assertFalse('graph_uri' in bindings[0])
+        self.assertFalse('graph_uri' in bindings[1])
+
+
 class AssembleTestCase(unittest.TestCase):
 
     maxDiff = None

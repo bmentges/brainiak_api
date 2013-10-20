@@ -11,6 +11,11 @@ from brainiak.utils.sparql import compress_keys_and_values, is_literal, is_url, 
         extract_po_tuples, is_result_true
 
 
+EXPANDED_RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
+SHORTEN_RDFS_LABEL = "rdfs:label"
+RDFS_LABEL = [EXPANDED_RDFS_LABEL, SHORTEN_RDFS_LABEL]
+
+
 class Query(object):
     """
     Creates a SPARQL query for listing instances, provided
@@ -59,7 +64,7 @@ class Query(object):
         predicate = shorten_uri(predicate) if not predicate.startswith("?") else predicate
 
         generic_po = predicate.startswith("?") and object_.startswith("?")
-        rdfs_repetition = (predicate == "rdfs:label") and object_.startswith("?")
+        rdfs_repetition = (predicate in RDFS_LABEL) and object_.startswith("?")
 
         return not generic_po and not rdfs_repetition
 
@@ -77,7 +82,7 @@ class Query(object):
     @property
     def triples(self):
         tuples = [
-            ("rdfs:label", "?label")
+            ("<{0}>".format(EXPANDED_RDFS_LABEL), "?label")
         ]
         variable_index = 0
         for predicate, object_, index in self.po_tuples:
@@ -161,7 +166,7 @@ class Query(object):
         sort_label = ""
         if sort_predicate:
             sort_predicate = shorten_uri(sort_predicate) if not sort_predicate.startswith("?") else sort_predicate
-            if (sort_predicate == "rdfs:label"):
+            if (sort_predicate in RDFS_LABEL):
                 sort_label = "?label"
             else:
                 for predicate, object_, index in self.po_tuples:

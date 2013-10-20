@@ -210,6 +210,21 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 200)
         self.assertItemsEqual(received_response['items'], expected_items)
 
+    def test_filter_with_predicate_as_compressed_uri_and_object_as_label_with_expand_uri_0(self):
+        url = urllib.quote("rdfs:label")
+        response = self.fetch('/person/Gender/?o=Feminino&lang=pt&p=%s&expand_uri=0' % url, method='GET')
+        expected_items = [
+            {
+                u'title': u'Feminino',
+                u'@id': settings.URI_PREFIX + u'person/Gender/Female',
+                u'class_prefix': u'person:',
+                u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
+                u'resource_id': u'Female'}
+        ]
+        received_response = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+        self.assertItemsEqual(received_response['items'], expected_items)
+
     @patch("brainiak.handlers.logger")
     def test_filter_with_no_results(self, log):
         response = self.fetch('/person/Gender/?o=Xubiru&lang=pt', method='GET')
@@ -234,7 +249,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         body = json.loads(response.body)
         expected_body = {
             u'items': [],
-            u'warning': u'Instances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(rdfs:label) with o=(object) with o1=(object1), language=(pt) and in page=(1) were not found.'
+            u'warning': u'Instances of class (http://semantica.globo.com/person/Gender) in graph (http://semantica.globo.com/person/) with p=(http://www.w3.org/2000/01/rdf-schema#label) with o=(object) with o1=(object1), language=(pt) and in page=(1) were not found.'
         }
         self.assertEqual(body, expected_body)
 

@@ -411,6 +411,7 @@ def normalize_predicate_range(predicate):
         if 'format' in predicate:
             predicate_range['format'] = predicate['format']
         predicate['range'] = predicate_range
+        predicate['items'] = predicate_range
     return predicate
 
 
@@ -431,9 +432,14 @@ def join_predicates(old, new):
     if (old_min_items > 1) or (old_max_items > 1) or (not old_min_items and not old_max_items) or \
             (new_min_items > 1) or (new_max_items > 1) or (not new_min_items and not new_max_items):
         merged_predicate["type"] = "array"
+        merged_items = {}
+        merged_items.update(old.get('items', {}))
+        merged_items.update(new.get('items', {}))
+        merged_predicate["items"] = merged_items
     else:
         merged_predicate['type'] = get_common_key(merged_ranges, 'type')
         merged_predicate['format'] = get_common_key(merged_ranges, 'format')
+        merged_predicate.pop("items", None)
     return merged_predicate
 
 

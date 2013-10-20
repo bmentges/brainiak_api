@@ -6,6 +6,11 @@ from brainiak.utils.links import build_class_url
 from brainiak.utils.sparql import get_super_properties, is_result_empty
 
 
+def should_get_instance_by_uri(query_params):
+    values = [query_params["class_name"], query_params["instance_id"], query_params["graph_uri"]]
+    return all([value == u"_" for value in values])
+
+
 def get_instance(query_params):
     """
     Given a URI, verify that the type corresponds to the class being passed as a parameter

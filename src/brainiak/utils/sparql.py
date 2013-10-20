@@ -389,7 +389,7 @@ def escape_quotes(object_value):
 
         return escaped_value
     else:
-        object_value
+        return object_value
 
 
 def encode_boolean(object_value):

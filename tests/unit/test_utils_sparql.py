@@ -636,6 +636,13 @@ class POTestCase(unittest.TestCase):
 
         self.assertEqual(expected_object_value, escape_quotes(object_value))
 
+    def escape_quotes_not_string(self):
+        object_value = 15
+
+        expected_object_value = 15
+
+        self.assertEqual(expected_object_value, escape_quotes(object_value))
+
 
 class GetPredicatedDatatypeTestCase(unittest.TestCase):
 

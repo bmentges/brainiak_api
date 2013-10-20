@@ -243,8 +243,7 @@ class ParamDict(dict):
 
             value = self.arguments.get(key, None)
             if value is not None:
-
-                self[key] = value
+                self[expand_uri(key)] = expand_uri(value)
 
     def _post_override(self):
         "This method is called after override_with() is called to do any post processing"

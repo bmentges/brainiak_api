@@ -3,9 +3,23 @@ from brainiak import triplestore
 from brainiak.schema.get_class import get_cached_schema
 from brainiak.utils.sparql import is_result_true, create_explicit_triples, create_implicit_triples,\
     join_triples, is_modify_response_successful, join_prefixes
+from brainiak.instance.get_instance import extract_class_uri, extract_graph_uri
+
+
+def should_edit_instance_by_instance_uri(query_params):
+    try:
+        values = [query_params["class_name"], query_params["graph_uri"]]
+    except KeyError as ex:
+        raise HTTPError(404, log_message=u"Parameter <{0:s}> is missing in order to update instance.".format(ex))
+    return all([value == u"_" for value in values])
 
 
 def edit_instance(query_params, instance_data):
+    if should_edit_instance_by_instance_uri(query_params):
+        triplestore_response = get_class_and_graph(query_params)
+        bindings = triplestore_response['results']['bindings']
+        query_params['graph_uri'] = extract_graph_uri(bindings)
+        query_params['class_uri'] = extract_class_uri(bindings)
     try:
         instance_uri = query_params['instance_uri']
         graph_uri = query_params['graph_uri']
@@ -33,6 +47,18 @@ def edit_instance(query_params, instance_data):
         raise HTTPError(500, log_message="Triplestore could not update triples.")
 
 
+QUERY_GET_CLASS_AND_GRAPH = u"""
+SELECT DISTINCT ?class_uri ?graph_uri {
+    GRAPH ?graph_uri { <%(instance_uri)s> a ?class_uri . }
+}
+"""
+
+
+def get_class_and_graph(query_params):
+    query = QUERY_GET_CLASS_AND_GRAPH % query_params
+    return triplestore.query_sparql(query, query_params.triplestore_config)
+
+
 MODIFY_QUERY = u"""
 %(prefix)s
 MODIFY GRAPH <%(graph_uri)s>
@@ -52,7 +78,6 @@ def modify_instance(query_params):
 
 QUERY_INSTANCE_EXISTS_TEMPLATE = u"""
 ASK
-FROM <%(graph_uri)s>
 WHERE {
    <%(instance_uri)s> ?p ?o
 }

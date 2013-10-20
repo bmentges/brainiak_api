@@ -99,6 +99,22 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(modified_new_york.code, 200)
         self.assertEqual(modified_new_york.body, "")
 
+    @patch("brainiak.handlers.logger")
+    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}))
+    def test_edit_instance_by_instance_uri_return_200_adding_predicate(self, mock_schema, mock_log):
+        actual_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york', method='GET')
+        self.assertEqual(actual_new_york.code, 200)
+        actual_new_york_dict = json.loads(actual_new_york.body)
+        self.assertIn("rdfs:label", actual_new_york_dict)
+        self.assertNotIn("rdfs:comment", actual_new_york_dict)
+        # Add an attribute
+        actual_new_york_dict["rdfs:comment"] = "Some random comment"
+        modified_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york',
+                                       method='PUT',
+                                       body=json.dumps(actual_new_york_dict))
+        self.assertEqual(modified_new_york.code, 200)
+        self.assertEqual(modified_new_york.body, "")
+
 
 class EditInstanceResourceTestCase(QueryTestCase):
 
@@ -129,20 +145,30 @@ class EditInstanceResourceTestCase(QueryTestCase):
 
         self.assertTrue(is_modify_response_successful(modify_response, n_deleted=2, n_inserted=1))
 
+    def test_query_get_class_and_graph(self):
+        params = {
+            "instance_uri": "http://tatipedia.org/Platypus"
+        }
+        query = edit_instance.QUERY_GET_CLASS_AND_GRAPH % params
+        computed = self.query(query, False)['results']['bindings'][0]
+        expected = {
+            u'graph_uri': {u'type': u'uri', u'value': u'http://any.graph/'},
+            u'class_uri': {u'type': u'uri', u'value': u'http://tatipedia.org/Species'}
+        }
+        self.assertEqual(computed, expected)
+
     def test_query_exists_in_graph(self):
         params = {
-            "instance_uri": "http://tatipedia.org/Platypus",
-            "graph_uri": 'http://any.graph/'
+            "instance_uri": "http://tatipedia.org/Platypus"
         }
         query = edit_instance.QUERY_INSTANCE_EXISTS_TEMPLATE % params
         computed = self.query(query, False)["boolean"]
         expected = True
         self.assertEqual(computed, expected)
 
-    def test_query_doesnt_exist_in_empty_graph(self):
+    def test_query_isntance_doesnt_exist(self):
         params = {
-            "instance_uri": "http://tatipedia.org/Platypus",
-            "graph_uri": 'http://empty.graph/'
+            "instance_uri": "http://tatipedia.org/Xubylus"
         }
         query = edit_instance.QUERY_INSTANCE_EXISTS_TEMPLATE % params
         computed = self.query(query, False)["boolean"]

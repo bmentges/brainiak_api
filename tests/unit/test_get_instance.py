@@ -178,19 +178,24 @@ class BuildItemsDictTestCase(unittest.TestCase):
 
     def test_build_items_dict(self):
         bindings = [
-            {"predicate": {"value": "key1"}, "object": {"value": "value1"}, "label": {"value": "label1"}},
-            {"predicate": {"value": "key1"}, "object": {"value": "value2"}, "label": {"value": "label1"}},
+            {"predicate": {"value": "key1"}, "object": {"value": 1}, "label": {"value": "label1"}},
+            {"predicate": {"value": "key1"}, "object": {"value": 2}, "label": {"value": "label1"}},
             {"predicate": {"value": "key2"}, "object": {"value": "value2"}, "label": {"value": "label1"}}
         ]
         class_schema = {
             "properties": {
-                "key1": {"type": "array"},
+                "key1": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "key2": {"type": "string"},
                 "rdf:type": {"type": "string"}
             }
         }
         expected = {
-            "key1": ["value1", "value2"],
+            "key1": [1, 2],
             "key2": "value2",
             u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': "some:Class"}
         response = get_instance.build_items_dict(bindings, "some:Class", True, class_schema)
@@ -334,3 +339,70 @@ class BuildItemsDictTestCase(unittest.TestCase):
             u'upper:name': u'Seba Fern\xe1ndez - Sebasti\xe1n Bruno Fern\xe1ndez Miglierina'
         }
         self.assertEqual(items_dict, expected_items_dict)
+
+    def test_convert_to_python_array_with_integer(self):
+        class_schema = {
+            "properties": {
+                "key1": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "key2": {"type": "string"},
+                "rdf:type": {"type": "string"}
+            }
+        }
+        predicate_uri = "key1"
+        object_value = "12"
+        result = get_instance._convert_to_python(object_value, class_schema, predicate_uri)
+        expected = 12
+        self.assertEqual(expected, result)
+
+    def test_convert_to_python_float(self):
+        class_schema = {
+            "properties": {
+                "key1": {"type": "number"},
+            }
+        }
+        predicate_uri = "key1"
+        object_value = "12.5"
+        result = get_instance._convert_to_python(object_value, class_schema, predicate_uri)
+        expected = 12.5
+        self.assertEqual(expected, result)
+
+    def test_convert_to_python_boolean(self):
+        class_schema = {
+            "properties": {
+                "key1": {"type": "boolean"},
+            }
+        }
+        predicate_uri = "key1"
+        object_value = "0"
+        result = get_instance._convert_to_python(object_value, class_schema, predicate_uri)
+        expected = False
+        self.assertEqual(expected, result)
+
+    def test_convert_to_python_string(self):
+        class_schema = {
+            "properties": {
+                "key1": {"type": "string"},
+            }
+        }
+        predicate_uri = "key1"
+        object_value = "value1"
+        result = get_instance._convert_to_python(object_value, class_schema, predicate_uri)
+        expected = u"value1"
+        self.assertEqual(expected, result)
+
+    def test_convert_to_python_predicate_uri_not_in_schema(self):
+        class_schema = {
+            "properties": {
+                "key1": {"type": "string"},
+            }
+        }
+        predicate_uri = "key_not_in_schema"
+        object_value = "value1"
+        result = get_instance._convert_to_python(object_value, class_schema, predicate_uri)
+        expected = "value1"
+        self.assertEqual(expected, result)

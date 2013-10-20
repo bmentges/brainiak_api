@@ -1,7 +1,7 @@
 import unittest
 import uuid
 
-from brainiak.prefixes import MemorizeContext, SHORTEN
+from brainiak.prefixes import MemorizeContext
 from brainiak.utils.sparql import *
 from tests.mocks import mock_schema
 
@@ -682,6 +682,7 @@ class EncodeBooleanTestCase(unittest.TestCase):
     def test_encode_other_value(self):
         self.assertRaises(TypeError, encode_boolean, "aaa")
 
+
 class DecodeBooleanTestCase(unittest.TestCase):
 
     def test_decode_1(self):
@@ -694,6 +695,7 @@ class DecodeBooleanTestCase(unittest.TestCase):
 
     def test_decode_other_value(self):
         self.assertRaises(TypeError, decode_boolean, "aaa")
+
 
 class BindingsToDictTestCase(unittest.TestCase):
 

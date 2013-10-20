@@ -11,12 +11,30 @@ def should_get_instance_by_uri(query_params):
     return all([value == u"_" for value in values])
 
 
+def extract_class_uri(bindings):
+    class_uri = bindings[0]['class_uri']['value']
+    [item.pop('class_uri') for item in bindings]
+    return class_uri
+
+
+def extract_graph_uri(bindings):
+    graph_uri = bindings[0]['graph_uri']['value']
+    [item.pop('graph_uri') for item in bindings]
+    return graph_uri
+
+
 def get_instance(query_params):
     """
     Given a URI, verify that the type corresponds to the class being passed as a parameter
     Retrieve all properties and objects of this URI (subject)
     """
-    query_result_dict = query_all_properties_and_objects(query_params)
+    if should_get_instance_by_uri(query_params) and query_params.get("instance_uri"):
+        query_result_dict = query_all_properties_and_objects_by_instance_uri(query_params)
+        bindings = query_result_dict['results']['bindings']
+        query_params["graph_uri"] = extract_graph_uri(bindings)
+        query_params["class_uri"] = extract_class_uri(bindings)
+    else:
+        query_result_dict = query_all_properties_and_objects(query_params)
 
     if is_result_empty(query_result_dict):
         return None
@@ -136,7 +154,6 @@ FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")
 
 def query_all_properties_and_objects(query_params):
     query_params["ruleset"] = settings.DEFAULT_RULESET_URI
-
     expand_object_properties = query_params.get("expand_object_properties") == "1"
     if expand_object_properties:
         query_params["object_label_variable"] = "?object_label"
@@ -145,4 +162,29 @@ def query_all_properties_and_objects(query_params):
         query_params["object_label_variable"] = ""
         query_params["object_label_optional_clause"] = ""
     query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % query_params
+    return triplestore.query_sparql(query, query_params.triplestore_config)
+
+
+QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE_BY_URI = u"""
+DEFINE input:inference <%(ruleset)s>
+SELECT DISTINCT ?predicate ?object %(object_label_variable)s ?super_property ?class_uri ?graph_uri {
+    GRAPH ?graph_uri { <%(instance_uri)s> a ?class_uri } .
+    <%(instance_uri)s> ?predicate ?object .
+OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+%(object_label_optional_clause)s
+FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
+}
+"""
+
+
+def query_all_properties_and_objects_by_instance_uri(query_params):
+    query_params["ruleset"] = settings.DEFAULT_RULESET_URI
+    expand_object_properties = query_params.get("expand_object_properties") == "1"
+    if expand_object_properties:
+        query_params["object_label_variable"] = "?object_label"
+        query_params["object_label_optional_clause"] = "OPTIONAL { ?object rdfs:label ?object_label } ."
+    else:
+        query_params["object_label_variable"] = ""
+        query_params["object_label_optional_clause"] = ""
+    query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE_BY_URI % query_params
     return triplestore.query_sparql(query, query_params.triplestore_config)

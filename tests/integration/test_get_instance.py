@@ -2,7 +2,7 @@ import json
 from mock import patch
 from brainiak import settings, server
 
-from brainiak.instance.get_instance import QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE
+from brainiak.instance import get_instance
 from brainiak.settings import URI_PREFIX
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
@@ -30,6 +30,13 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 204)
         self.assertEqual(response.headers['Access-Control-Allow-Origin'], '*')
         self.assertEqual(response.headers['Access-Control-Allow-Headers'], settings.CORS_HEADERS)
+
+    def test_instance_by_uri(self):
+        response = self.fetch('/_/_/_/?instance_uri=http://semantica.globo.com/person/Gender/Female')
+        self.assertEqual(response.code, 200)
+        json_received = json.loads(response.body)
+        self.assertEqual(json_received['@type'], 'person:Gender')
+        self.assertEqual(json_received['@id'], "http://semantica.globo.com/person/Gender/Female")
 
 
 class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
@@ -134,7 +141,7 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
             "object_label_variable": "?object_label",
             "object_label_optional_clause": "OPTIONAL { ?object rdfs:label ?object_label } ."
         }
-        query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % params
+        query = get_instance.QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % params
         computed = self.query(query, False)["results"]["bindings"]
         expected = [
             {
@@ -151,6 +158,43 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
                 u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
                 u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/Cricket'},
                 u'object_label': {u'type': u'literal', u'value': u'Cricket'}
+            }
+        ]
+        self.assertEqual(sorted(computed), sorted(expected))
+
+    def test_instance_query_by_instance_uri(self):
+        params = {
+            "lang": "en",
+            "class_uri": "_/_",
+            "graph_uri": "_",
+            "instance_uri": "http://brmedia.com/news_cricket",
+            "ruleset": "http://brmedia.com/ruleset",
+            "object_label_variable": "?object_label",
+            "object_label_optional_clause": "OPTIONAL { ?object rdfs:label ?object_label } ."
+        }
+        query = get_instance.QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE_BY_URI % params
+        computed = self.query(query, False)["results"]["bindings"]
+        expected = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'object_label': {u'type': u'literal', u'value': u'News'},
+                u'class_uri': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'graph_uri': {u'type': u'uri', u'value': u'http://brmedia.com/'}
+            },
+            {
+
+                u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                u'object': {u'type': u'literal', u'value': u'Cricket becomes the most popular sport of Brazil'},
+                u'class_uri': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'graph_uri': {u'type': u'uri', u'value': u'http://brmedia.com/'}
+            },
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/Cricket'},
+                u'object_label': {u'type': u'literal', u'value': u'Cricket'},
+                u'class_uri': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'graph_uri': {u'type': u'uri', u'value': u'http://brmedia.com/'}
             }
         ]
         self.assertEqual(sorted(computed), sorted(expected))

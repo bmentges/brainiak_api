@@ -168,11 +168,7 @@
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
     &quot;@context&quot;: {
-        &quot;@language&quot;: &quot;pt&quot;,
-        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;,
-        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;,
-        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;,
-        &quot;xsd&quot;: &quot;http://www.w3.org/2001/XMLSchema#&quot;
+        &quot;@language&quot;: &quot;pt&quot;
     },
     &quot;description&quot;: &quot;Lugar perene e urbanizado onde pessoas habitam.&quot;,
     &quot;id&quot;: &quot;place:City&quot;,
@@ -211,14 +207,14 @@
             &quot;class&quot;: &quot;place:Place&quot;,
             &quot;datatype&quot;: &quot;xsd:integer&quot;,
             &quot;description&quot;: &quot;ID para uso da API do Geonames.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;graph&quot;: &quot;place:&quot;,
             &quot;title&quot;: &quot;ID no Geoname&quot;,
             &quot;type&quot;: &quot;integer&quot;
         },
         &quot;place:hasSubRegion&quot;: {
             &quot;class&quot;: &quot;place:Place&quot;,
             &quot;description&quot;: &quot;Um lugar pode ser subdividido em regi\u00f5es.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;graph&quot;: &quot;place:&quot;,
             &quot;items&quot;: {
                 &quot;format&quot;: &quot;uri&quot;,
                 &quot;type&quot;: &quot;string&quot;
@@ -226,7 +222,7 @@
             &quot;range&quot;: {
                 &quot;@id&quot;: &quot;place:Region&quot;,
                 &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;place&quot;,
+                &quot;graph&quot;: &quot;place:&quot;,
                 &quot;title&quot;: &quot;Regi\u00e3o&quot;,
                 &quot;type&quot;: &quot;string&quot;
             },
@@ -237,7 +233,7 @@
             &quot;class&quot;: &quot;place:Place&quot;,
             &quot;datatype&quot;: &quot;xsd:float&quot;,
             &quot;description&quot;: &quot;Coordenada de latitude de acordo com WGS84.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;graph&quot;: &quot;place:&quot;,
             &quot;title&quot;: &quot;Latitude&quot;,
             &quot;type&quot;: &quot;number&quot;
         },
@@ -245,125 +241,46 @@
             &quot;class&quot;: &quot;place:Place&quot;,
             &quot;datatype&quot;: &quot;xsd:float&quot;,
             &quot;description&quot;: &quot;Coordenada de longitude de acordo com WGS84.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;graph&quot;: &quot;place:&quot;,
             &quot;title&quot;: &quot;Longitude&quot;,
             &quot;type&quot;: &quot;number&quot;
-        },
-        &quot;place:partOfCountry&quot;: {
-            &quot;class&quot;: &quot;place:City&quot;,
-            &quot;description&quot;: &quot;Estado est\u00e1 no pa\u00eds.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
-            &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;range&quot;: [
-                {
-                    &quot;@id&quot;: &quot;place:Country&quot;,
-                    &quot;format&quot;: &quot;uri&quot;,
-                    &quot;graph&quot;: &quot;place&quot;,
-                    &quot;title&quot;: &quot;Pa\u00eds&quot;,
-                    &quot;type&quot;: &quot;string&quot;
-                }
-            ],
-            &quot;title&quot;: &quot;Est\u00e1 no estado&quot;,
-            &quot;type&quot;: &quot;array&quot;
         },
         &quot;place:partOfState&quot;: {
             &quot;class&quot;: &quot;place:City&quot;,
             &quot;description&quot;: &quot;Cidade est\u00e1 no estado.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
-            &quot;items&quot;: {
+            &quot;format&quot;: &quot;uri&quot;,
+            &quot;graph&quot;: &quot;place:&quot;,
+            &quot;range&quot;: {
+                &quot;@id&quot;: &quot;place:State&quot;,
                 &quot;format&quot;: &quot;uri&quot;,
+                &quot;graph&quot;: &quot;place:&quot;,
+                &quot;title&quot;: &quot;Estado&quot;,
                 &quot;type&quot;: &quot;string&quot;
             },
-            &quot;minItems&quot;: 0,
-            &quot;range&quot;: [
-                {
-                    &quot;@id&quot;: &quot;place:State&quot;,
-                    &quot;format&quot;: &quot;uri&quot;,
-                    &quot;graph&quot;: &quot;place&quot;,
-                    &quot;title&quot;: &quot;Estado&quot;,
-                    &quot;type&quot;: &quot;string&quot;
-                }
-            ],
-            &quot;title&quot;: &quot;Est\u00e1 no estado&quot;,
-            &quot;type&quot;: &quot;array&quot;
-        },
-        &quot;upper:acronym&quot;: {
-            &quot;class&quot;: &quot;place:Place&quot;,
-            &quot;datatype&quot;: &quot;xsd:string&quot;,
-            &quot;description&quot;: &quot;Sigla. Ex: SP, RJ, NYC&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Sigla&quot;,
+            &quot;title&quot;: &quot;Faz parte do estado&quot;,
             &quot;type&quot;: &quot;string&quot;
         },
         &quot;upper:description&quot;: {
             &quot;class&quot;: &quot;upper:Entity&quot;,
             &quot;datatype&quot;: &quot;xsd:string&quot;,
             &quot;description&quot;: &quot;Descri\u00e7\u00e3o textual da entidade.&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;graph&quot;: &quot;upper:&quot;,
             &quot;title&quot;: &quot;Descri\u00e7\u00e3o&quot;,
-            &quot;type&quot;: &quot;string&quot;
-        },
-        &quot;upper:foundingDate&quot;: {
-            &quot;class&quot;: &quot;place:GeopoliticalDivision&quot;,
-            &quot;datatype&quot;: &quot;xsd:date&quot;,
-            &quot;description&quot;: &quot;Data de funda\u00e7\u00e3o de uma organiza\u00e7\u00e3o ou cidade.&quot;,
-            &quot;format&quot;: &quot;date&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Data de funda\u00e7\u00e3o&quot;,
             &quot;type&quot;: &quot;string&quot;
         },
         &quot;upper:fullName&quot;: {
             &quot;class&quot;: &quot;upper:Substance&quot;,
             &quot;datatype&quot;: &quot;xsd:string&quot;,
             &quot;description&quot;: &quot;Nome completo de Agente ou Objeto.&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;graph&quot;: &quot;upper:&quot;,
             &quot;title&quot;: &quot;Nome Completo&quot;,
             &quot;type&quot;: &quot;string&quot;
-        },
-        &quot;upper:hasPart&quot;: {
-            &quot;class&quot;: &quot;upper:Entity&quot;,
-            &quot;description&quot;: &quot;Rela\u00e7\u00e3o inversa a &#39;isPartOf&#39;, onde quem &#39;domina&#39; a rela\u00e7\u00e3o \u00e9 o elemento &#39;maior&#39; (e.g. &lt;Country_Brazil&gt; dc:isPartOf &lt;UF_RJ&gt;).&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;range&quot;: {
-                &quot;@id&quot;: &quot;upper:Entity&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
-                &quot;title&quot;: &quot;Entidade&quot;,
-                &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;Tem parte&quot;,
-            &quot;type&quot;: &quot;array&quot;
-        },
-        &quot;upper:isPartOf&quot;: {
-            &quot;class&quot;: &quot;upper:Entity&quot;,
-            &quot;description&quot;: &quot;Um recurso (sujeito) que est\u00e1 f\u00edsica ou logicamente inclu\u00eddo em outro (objeto ou valor) (e.g. &lt;UF_RJ&gt; upper:isPartOf &lt;Country_Brazil&gt; ou &lt;Pessoa_Romario&gt; upper:isPartOf &lt;Partido_PSB&gt;).&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;range&quot;: {
-                &quot;@id&quot;: &quot;upper:Entity&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
-                &quot;title&quot;: &quot;Entidade&quot;,
-                &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;\u00c9 parte de&quot;,
-            &quot;type&quot;: &quot;array&quot;
         },
         &quot;upper:name&quot;: {
             &quot;class&quot;: &quot;upper:Entity&quot;,
             &quot;datatype&quot;: &quot;xsd:string&quot;,
             &quot;description&quot;: &quot;Nomes populares de uma inst\u00e2ncia. Exemplo: nomes pelo quais uma pessoa \u00e9 conhecida (e.g. Ronaldinho, Zico, Lula). N\u00e3o confundir com nome completo, uma outra propriedade com valor \u00fanico e formal.&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;graph&quot;: &quot;upper:&quot;,
             &quot;required&quot;: true,
             &quot;title&quot;: &quot;Nome&quot;,
             &quot;type&quot;: &quot;string&quot;
@@ -371,7 +288,7 @@
         &quot;upper:sociallyRelatedWith&quot;: {
             &quot;class&quot;: &quot;upper:Substance&quot;,
             &quot;description&quot;: &quot;Rela\u00e7\u00e3o social abstrata entre qualquer combina\u00e7\u00e3o de (Agente, Objeto) tomados dois-a-dois.&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;graph&quot;: &quot;upper:&quot;,
             &quot;items&quot;: {
                 &quot;format&quot;: &quot;uri&quot;,
                 &quot;type&quot;: &quot;string&quot;
@@ -379,7 +296,7 @@
             &quot;range&quot;: {
                 &quot;@id&quot;: &quot;upper:Substance&quot;,
                 &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
+                &quot;graph&quot;: &quot;upper:&quot;,
                 &quot;title&quot;: &quot;Subst\u00e2ncia&quot;,
                 &quot;type&quot;: &quot;string&quot;
             },
@@ -430,11 +347,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
     &quot;@context&quot;: {
-        &quot;@language&quot;: &quot;pt&quot;,
-        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;,
-        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;,
-        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;,
-        &quot;xsd&quot;: &quot;http://www.w3.org/2001/XMLSchema#&quot;
+        &quot;@language&quot;: &quot;pt&quot;
     },
     &quot;description&quot;: &quot;Sub-divis\u00e3o pol\u00edtica do Mundo.&quot;,
     &quot;id&quot;: &quot;place:Country&quot;,
@@ -473,14 +386,14 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;class&quot;: &quot;place:Place&quot;,
             &quot;datatype&quot;: &quot;xsd:integer&quot;,
             &quot;description&quot;: &quot;ID para uso da API do Geonames.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;graph&quot;: &quot;place:&quot;,
             &quot;title&quot;: &quot;ID no Geoname&quot;,
             &quot;type&quot;: &quot;integer&quot;
         },
         &quot;place:hasSubRegion&quot;: {
             &quot;class&quot;: &quot;place:Place&quot;,
             &quot;description&quot;: &quot;Um lugar pode ser subdividido em regi\u00f5es.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;graph&quot;: &quot;place:&quot;,
             &quot;items&quot;: {
                 &quot;format&quot;: &quot;uri&quot;,
                 &quot;type&quot;: &quot;string&quot;
@@ -488,7 +401,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;range&quot;: {
                 &quot;@id&quot;: &quot;place:Region&quot;,
                 &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;place&quot;,
+                &quot;graph&quot;: &quot;place:&quot;,
                 &quot;title&quot;: &quot;Regi\u00e3o&quot;,
                 &quot;type&quot;: &quot;string&quot;
             },
@@ -499,7 +412,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;class&quot;: &quot;place:Place&quot;,
             &quot;datatype&quot;: &quot;xsd:float&quot;,
             &quot;description&quot;: &quot;Coordenada de latitude de acordo com WGS84.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;graph&quot;: &quot;place:&quot;,
             &quot;title&quot;: &quot;Latitude&quot;,
             &quot;type&quot;: &quot;number&quot;
         },
@@ -507,104 +420,49 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;class&quot;: &quot;place:Place&quot;,
             &quot;datatype&quot;: &quot;xsd:float&quot;,
             &quot;description&quot;: &quot;Coordenada de longitude de acordo com WGS84.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;graph&quot;: &quot;place:&quot;,
             &quot;title&quot;: &quot;Longitude&quot;,
             &quot;type&quot;: &quot;number&quot;
         },
         &quot;place:partOfContinent&quot;: {
             &quot;class&quot;: &quot;place:Country&quot;,
             &quot;description&quot;: &quot;Pa\u00eds est\u00e1 no contiente.&quot;,
-            &quot;graph&quot;: &quot;place&quot;,
+            &quot;graph&quot;: &quot;place:&quot;,
             &quot;items&quot;: {
                 &quot;format&quot;: &quot;uri&quot;,
                 &quot;type&quot;: &quot;string&quot;
             },
-            &quot;range&quot;: [
-                {
-                    &quot;@id&quot;: &quot;place:Continent&quot;,
-                    &quot;format&quot;: &quot;uri&quot;,
-                    &quot;graph&quot;: &quot;place&quot;,
-                    &quot;title&quot;: &quot;Continente&quot;,
-                    &quot;type&quot;: &quot;string&quot;
-                }
-            ],
-            &quot;title&quot;: &quot;Est\u00e1 na continente&quot;,
+            &quot;range&quot;: {
+                &quot;@id&quot;: &quot;place:Continent&quot;,
+                &quot;format&quot;: &quot;uri&quot;,
+                &quot;graph&quot;: &quot;place:&quot;,
+                &quot;title&quot;: &quot;Continente&quot;,
+                &quot;type&quot;: &quot;string&quot;
+            },
+            &quot;title&quot;: &quot;Faz parte do continente&quot;,
             &quot;type&quot;: &quot;array&quot;
-        },
-        &quot;upper:acronym&quot;: {
-            &quot;class&quot;: &quot;place:Place&quot;,
-            &quot;datatype&quot;: &quot;xsd:string&quot;,
-            &quot;description&quot;: &quot;Sigla. Ex: SP, RJ, NYC&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Sigla&quot;,
-            &quot;type&quot;: &quot;string&quot;
         },
         &quot;upper:description&quot;: {
             &quot;class&quot;: &quot;upper:Entity&quot;,
             &quot;datatype&quot;: &quot;xsd:string&quot;,
             &quot;description&quot;: &quot;Descri\u00e7\u00e3o textual da entidade.&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;graph&quot;: &quot;upper:&quot;,
             &quot;title&quot;: &quot;Descri\u00e7\u00e3o&quot;,
-            &quot;type&quot;: &quot;string&quot;
-        },
-        &quot;upper:foundingDate&quot;: {
-            &quot;class&quot;: &quot;place:GeopoliticalDivision&quot;,
-            &quot;datatype&quot;: &quot;xsd:date&quot;,
-            &quot;description&quot;: &quot;Data de funda\u00e7\u00e3o de uma organiza\u00e7\u00e3o ou cidade.&quot;,
-            &quot;format&quot;: &quot;date&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;title&quot;: &quot;Data de funda\u00e7\u00e3o&quot;,
             &quot;type&quot;: &quot;string&quot;
         },
         &quot;upper:fullName&quot;: {
             &quot;class&quot;: &quot;upper:Substance&quot;,
             &quot;datatype&quot;: &quot;xsd:string&quot;,
             &quot;description&quot;: &quot;Nome completo de Agente ou Objeto.&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;graph&quot;: &quot;upper:&quot;,
             &quot;title&quot;: &quot;Nome Completo&quot;,
             &quot;type&quot;: &quot;string&quot;
-        },
-        &quot;upper:hasPart&quot;: {
-            &quot;class&quot;: &quot;upper:Entity&quot;,
-            &quot;description&quot;: &quot;Rela\u00e7\u00e3o inversa a &#39;isPartOf&#39;, onde quem &#39;domina&#39; a rela\u00e7\u00e3o \u00e9 o elemento &#39;maior&#39; (e.g. &lt;Country_Brazil&gt; dc:isPartOf &lt;UF_RJ&gt;).&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;range&quot;: {
-                &quot;@id&quot;: &quot;upper:Entity&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
-                &quot;title&quot;: &quot;Entidade&quot;,
-                &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;Tem parte&quot;,
-            &quot;type&quot;: &quot;array&quot;
-        },
-        &quot;upper:isPartOf&quot;: {
-            &quot;class&quot;: &quot;upper:Entity&quot;,
-            &quot;description&quot;: &quot;Um recurso (sujeito) que est\u00e1 f\u00edsica ou logicamente inclu\u00eddo em outro (objeto ou valor) (e.g. &lt;UF_RJ&gt; upper:isPartOf &lt;Country_Brazil&gt; ou &lt;Pessoa_Romario&gt; upper:isPartOf &lt;Partido_PSB&gt;).&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
-            &quot;items&quot;: {
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;range&quot;: {
-                &quot;@id&quot;: &quot;upper:Entity&quot;,
-                &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
-                &quot;title&quot;: &quot;Entidade&quot;,
-                &quot;type&quot;: &quot;string&quot;
-            },
-            &quot;title&quot;: &quot;\u00c9 parte de&quot;,
-            &quot;type&quot;: &quot;array&quot;
         },
         &quot;upper:name&quot;: {
             &quot;class&quot;: &quot;upper:Entity&quot;,
             &quot;datatype&quot;: &quot;xsd:string&quot;,
             &quot;description&quot;: &quot;Nomes populares de uma inst\u00e2ncia. Exemplo: nomes pelo quais uma pessoa \u00e9 conhecida (e.g. Ronaldinho, Zico, Lula). N\u00e3o confundir com nome completo, uma outra propriedade com valor \u00fanico e formal.&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;graph&quot;: &quot;upper:&quot;,
             &quot;required&quot;: true,
             &quot;title&quot;: &quot;Nome&quot;,
             &quot;type&quot;: &quot;string&quot;
@@ -612,7 +470,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
         &quot;upper:sociallyRelatedWith&quot;: {
             &quot;class&quot;: &quot;upper:Substance&quot;,
             &quot;description&quot;: &quot;Rela\u00e7\u00e3o social abstrata entre qualquer combina\u00e7\u00e3o de (Agente, Objeto) tomados dois-a-dois.&quot;,
-            &quot;graph&quot;: &quot;upper&quot;,
+            &quot;graph&quot;: &quot;upper:&quot;,
             &quot;items&quot;: {
                 &quot;format&quot;: &quot;uri&quot;,
                 &quot;type&quot;: &quot;string&quot;
@@ -620,7 +478,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;range&quot;: {
                 &quot;@id&quot;: &quot;upper:Substance&quot;,
                 &quot;format&quot;: &quot;uri&quot;,
-                &quot;graph&quot;: &quot;upper&quot;,
+                &quot;graph&quot;: &quot;upper:&quot;,
                 &quot;title&quot;: &quot;Subst\u00e2ncia&quot;,
                 &quot;type&quot;: &quot;string&quot;
             },

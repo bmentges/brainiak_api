@@ -206,27 +206,8 @@ this property and/or object values. For example:</p>
 <div class="highlight-http"><pre>GET 'http://brainiak.semantica.dev.globoi.com/place/City/?o=base:UF_RJ&amp;p1=place:longitude&amp;p2=place:latitude&amp;per_page=1''</pre>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;@context&quot;: {
-        &quot;@language&quot;: &quot;pt&quot;
-    },
-    &quot;@id&quot;: &quot;http://semantica.globo.com/place/City&quot;,
-    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City&quot;,
-    &quot;_class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;,
-    &quot;_first_args&quot;: &quot;p2=place:latitude&amp;per_page=1&amp;p1=place:longitude&amp;page=1&amp;o=base:UF_RJ&quot;,
-    &quot;_next_args&quot;: &quot;p2=place:latitude&amp;per_page=1&amp;p1=place:longitude&amp;page=2&amp;o=base:UF_RJ&quot;,
-    &quot;_schema_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;,
-    &quot;items&quot;: [
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/base/Cidade_Porto_Real_RJ&quot;,
-            &quot;class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;,
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/base/&quot;,
-            &quot;p&quot;: &quot;http://semantica.globo.com/place/partOfState&quot;,
-            &quot;place:latitude&quot;: &quot;-22.45074081420898&quot;,
-            &quot;place:longitude&quot;: &quot;-44.32910919189453&quot;,
-            &quot;resource_id&quot;: &quot;Cidade_Porto_Real_RJ&quot;,
-            &quot;title&quot;: &quot;Porto Real&quot;
-        }
-    ]
+    &quot;items&quot;: [],
+    &quot;warning&quot;: &quot;Instances of class (http://semantica.globo.com/place/City) in graph (http://semantica.globo.com/place/) with o=(http://semantica.globo.com/base/UF_RJ) with p1=(http://semantica.globo.com/place/longitude) with p2=(http://semantica.globo.com/place/latitude), language=(pt) and in page=(1) were not found.&quot;
 }
 </pre></div>
 </div>
@@ -250,54 +231,47 @@ By default, the first page containing 10 items is returned (<tt class="docutils 
     &quot;@context&quot;: {
         &quot;@language&quot;: &quot;pt&quot;
     },
-    &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent&quot;,
+    &quot;@id&quot;: &quot;place:Continent&quot;,
     &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Continent&quot;,
-    &quot;_class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;,
+    &quot;_class_prefix&quot;: &quot;place:&quot;,
     &quot;_first_args&quot;: &quot;per_page=10&amp;page=1&quot;,
     &quot;_next_args&quot;: &quot;per_page=10&amp;page=2&quot;,
     &quot;_schema_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Continent/_schema&quot;,
     &quot;items&quot;: [
         {
             &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Africa&quot;,
-            &quot;class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;,
+            &quot;class_prefix&quot;: &quot;place:&quot;,
             &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
             &quot;resource_id&quot;: &quot;Africa&quot;,
             &quot;title&quot;: &quot;\u00c1frica&quot;
         },
         {
             &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Europe&quot;,
-            &quot;class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;,
+            &quot;class_prefix&quot;: &quot;place:&quot;,
             &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
             &quot;resource_id&quot;: &quot;Europe&quot;,
             &quot;title&quot;: &quot;Europa&quot;
         },
         {
             &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/America&quot;,
-            &quot;class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;,
+            &quot;class_prefix&quot;: &quot;place:&quot;,
             &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
             &quot;resource_id&quot;: &quot;America&quot;,
             &quot;title&quot;: &quot;Am\u00e9rica&quot;
         },
         {
             &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Antarctica&quot;,
-            &quot;class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;,
+            &quot;class_prefix&quot;: &quot;place:&quot;,
             &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
             &quot;resource_id&quot;: &quot;Antarctica&quot;,
             &quot;title&quot;: &quot;Oceania&quot;
         },
         {
             &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Asia&quot;,
-            &quot;class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;,
+            &quot;class_prefix&quot;: &quot;place:&quot;,
             &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
             &quot;resource_id&quot;: &quot;Asia&quot;,
             &quot;title&quot;: &quot;\u00c1sia&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/17af147e-8685-4807-939d-6ece725d5153&quot;,
-            &quot;class_prefix&quot;: &quot;http://semantica.globo.com/place/&quot;,
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
-            &quot;resource_id&quot;: &quot;17af147e-8685-4807-939d-6ece725d5153&quot;,
-            &quot;title&quot;: &quot;Atl\u00e2ntida 20130625170911&quot;
         }
     ]
 }

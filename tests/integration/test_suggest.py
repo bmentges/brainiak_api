@@ -7,13 +7,10 @@ import requests
 from mock import patch
 
 from brainiak.suggest.suggest import QUERY_PREDICATE_RANGES, \
-    QUERY_SUBPROPERTIES, _build_class_fields_query, \
-    get_instance_class_schema
-from brainiak.utils.params import LIST_PARAMS, ParamDict
-from brainiak.utils.sparql import filter_values, compress_keys_and_values
+    QUERY_SUBPROPERTIES, _build_class_fields_query
+from brainiak.utils.sparql import filter_values
 from brainiak import settings
 
-from tests.mocks import MockHandler
 from tests.sparql import QueryTestCase
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
@@ -133,6 +130,16 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
                               body=json.dumps(zero_results_parameters))
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, '{}')
+
+    def test_suggest_with_invalid_json(self):
+        response = self.fetch('/_suggest',
+                              method='POST',
+                              body="Invalid JSON")
+        import pdb; pdb.set_trace()
+        self.assertEqual(response.code, 400)
+        json_received = json.loads(response.body)
+        expected_message = "JSON malformed. Received: Invalid JSON."
+        self.assertIn(expected_message, json_received['errors'][0])
 
     def test_suggest_without_required_param_target(self):
         response = self.fetch('/_suggest',

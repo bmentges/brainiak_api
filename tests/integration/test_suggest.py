@@ -135,7 +135,6 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         response = self.fetch('/_suggest',
                               method='POST',
                               body="Invalid JSON")
-        import pdb; pdb.set_trace()
         self.assertEqual(response.code, 400)
         json_received = json.loads(response.body)
         expected_message = "JSON malformed. Received: Invalid JSON."

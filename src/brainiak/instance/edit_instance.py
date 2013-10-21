@@ -1,21 +1,13 @@
 from tornado.web import HTTPError
 from brainiak import triplestore
+from brainiak.instance.common import extract_class_uri, extract_graph_uri, get_class_and_graph, must_retrieve_graph_and_class_uri
 from brainiak.schema.get_class import get_cached_schema
 from brainiak.utils.sparql import is_result_true, create_explicit_triples, create_implicit_triples,\
     join_triples, is_modify_response_successful, join_prefixes
-from brainiak.instance.get_instance import extract_class_uri, extract_graph_uri
-
-
-def should_edit_instance_by_instance_uri(query_params):
-    try:
-        values = [query_params["class_name"], query_params["graph_uri"]]
-    except KeyError as ex:
-        raise HTTPError(404, log_message=u"Parameter <{0:s}> is missing in order to update instance.".format(ex))
-    return all([value == u"_" for value in values])
 
 
 def edit_instance(query_params, instance_data):
-    if should_edit_instance_by_instance_uri(query_params):
+    if must_retrieve_graph_and_class_uri(query_params):
         triplestore_response = get_class_and_graph(query_params)
         bindings = triplestore_response['results']['bindings']
         query_params['graph_uri'] = extract_graph_uri(bindings)
@@ -45,18 +37,6 @@ def edit_instance(query_params, instance_data):
     response = modify_instance(query_params)
     if not is_modify_response_successful(response):
         raise HTTPError(500, log_message="Triplestore could not update triples.")
-
-
-QUERY_GET_CLASS_AND_GRAPH = u"""
-SELECT DISTINCT ?class_uri ?graph_uri {
-    GRAPH ?graph_uri { <%(instance_uri)s> a ?class_uri . }
-}
-"""
-
-
-def get_class_and_graph(query_params):
-    query = QUERY_GET_CLASS_AND_GRAPH % query_params
-    return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 MODIFY_QUERY = u"""

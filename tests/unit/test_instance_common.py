@@ -42,7 +42,6 @@ class TestCaseInstanceResource(unittest.TestCase):
         msg = "HTTP 404: Not Found (Parameter <'class_name'> is missing in order to update instance.)"
         self.assertEqual(str(exception.exception), msg)
 
-
     def test_extract_class_uri(self):
         bindings = [
             {
@@ -88,4 +87,3 @@ class TestCaseInstanceResource(unittest.TestCase):
         self.assertEqual(response, expected)
         self.assertFalse('graph_uri' in bindings[0])
         self.assertFalse('graph_uri' in bindings[1])
-

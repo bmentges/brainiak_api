@@ -18,7 +18,7 @@ def get_instance(query_params):
         bindings = query_result_dict['results']['bindings']
         query_params["graph_uri"] = extract_graph_uri(bindings)
         query_params["class_uri"] = extract_class_uri(bindings)
-    
+
     query_result_dict = query_all_properties_and_objects(query_params)
 
     if is_result_empty(query_result_dict):

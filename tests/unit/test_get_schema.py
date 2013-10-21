@@ -234,13 +234,22 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
 
     def test_normalize_predicate_range_in_predicate_without_range_without_format(self):
         sample_predicate = {'type': 'some type'}
-        expected = {'type': 'some type', 'range': {'type': 'some type'}}
+        expected = {
+            'type': 'some type',
+            'range': {'type': 'some type'},
+            'items': {'type': 'some type'}
+        }
         computed = normalize_predicate_range(sample_predicate)
         self.assertEqual(computed, expected)
 
     def test_normalize_predicate_range_in_predicate_without_range_with_format(self):
         sample_predicate = {'type': 'some type', 'format': 'some format'}
-        expected = {'type': 'some type', 'format': 'some format', 'range': {'type': 'some type', 'format': 'some format'}}
+        expected = {
+            'type': 'some type',
+            'format': 'some format',
+            'range': {'type': 'some type', 'format': 'some format'},
+            'items': {'type': 'some type', 'format': 'some format'}
+        }
         computed = normalize_predicate_range(sample_predicate)
         self.assertEqual(computed, expected)
 
@@ -317,6 +326,27 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         self.assertEqual(computed['type'], expected['type'])
         self.assertFalse('format' in expected)
         self.assertEqual(sorted(computed['range']), sorted(expected['range']))
+
+    def test_join_predicates_cardinality_one(self):
+        a_predicate = {
+            'type': 'string',
+            'format': 'uri',
+            'minItems': 1,
+            'maxItems': 1
+        }
+        same_predicate = {
+            'type': 'string',
+            'format': 'uri',
+            'minItems': 1,
+            'maxItems': 1
+        }
+        expected = {
+            'type': 'string',
+            'format': 'uri'
+        }
+        computed = join_predicates(a_predicate, same_predicate)
+        self.assertEqual(computed['type'], expected['type'])
+        self.assertEqual(computed['format'], expected['format'])
 
 
 class AuxiliaryFunctionsTestCase2(unittest.TestCase):

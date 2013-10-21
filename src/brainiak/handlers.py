@@ -130,7 +130,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             self.send_error(status_code, message=message)
 
         elif isinstance(e, HTTPClientError):
-            message = u"Access to backend service failed.  {0:s}.".format(e)
+            message = u"Access to backend service failed.  {0:s}.".format(unicode(e))
             extra_messages = check_messages_when_port_is_mentioned(unicode(e))
             if extra_messages:
                 for msg in extra_messages:
@@ -138,7 +138,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
 
             if hasattr(e, "response") and e.response is not None and \
                hasattr(e.response, "body") and e.response.body is not None:
-                    message += "\nResponse:\n" + e.response.body
+                    message += u"\nResponse:\n" + unicode(str(e.response.body).decode("utf-8"))
 
             logger.error(message)
             self.send_error(status_code, message=message)

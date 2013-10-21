@@ -1,27 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from brainiak import triplestore, settings
+from brainiak.instance.common import extract_class_uri, extract_graph_uri, get_class_and_graph, must_retrieve_graph_and_class_uri
 from brainiak.schema import get_class
 from brainiak.type_mapper import _MAP_JSON_TO_PYTHON
 from brainiak.utils.links import build_class_url
 from brainiak.utils.sparql import get_super_properties, is_result_empty, decode_boolean
-
-
-def should_get_instance_by_uri(query_params):
-    values = [query_params["class_name"], query_params["instance_id"], query_params["graph_uri"]]
-    return all([value == u"_" for value in values])
-
-
-def extract_class_uri(bindings):
-    class_uri = bindings[0]['class_uri']['value']
-    [item.pop('class_uri') for item in bindings]
-    return class_uri
-
-
-def extract_graph_uri(bindings):
-    graph_uri = bindings[0]['graph_uri']['value']
-    [item.pop('graph_uri') for item in bindings]
-    return graph_uri
 
 
 def get_instance(query_params):
@@ -29,13 +13,13 @@ def get_instance(query_params):
     Given a URI, verify that the type corresponds to the class being passed as a parameter
     Retrieve all properties and objects of this URI (subject)
     """
-    if should_get_instance_by_uri(query_params) and query_params.get("instance_uri"):
-        query_result_dict = query_all_properties_and_objects_by_instance_uri(query_params)
+    if must_retrieve_graph_and_class_uri(query_params):
+        query_result_dict = get_class_and_graph(query_params)
         bindings = query_result_dict['results']['bindings']
         query_params["graph_uri"] = extract_graph_uri(bindings)
         query_params["class_uri"] = extract_class_uri(bindings)
-    else:
-        query_result_dict = query_all_properties_and_objects(query_params)
+    
+    query_result_dict = query_all_properties_and_objects(query_params)
 
     if is_result_empty(query_result_dict):
         return None

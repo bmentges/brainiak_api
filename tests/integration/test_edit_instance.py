@@ -145,18 +145,6 @@ class EditInstanceResourceTestCase(QueryTestCase):
 
         self.assertTrue(is_modify_response_successful(modify_response, n_deleted=2, n_inserted=1))
 
-    def test_query_get_class_and_graph(self):
-        params = {
-            "instance_uri": "http://tatipedia.org/Platypus"
-        }
-        query = edit_instance.QUERY_GET_CLASS_AND_GRAPH % params
-        computed = self.query(query, False)['results']['bindings'][0]
-        expected = {
-            u'graph_uri': {u'type': u'uri', u'value': u'http://any.graph/'},
-            u'class_uri': {u'type': u'uri', u'value': u'http://tatipedia.org/Species'}
-        }
-        self.assertEqual(computed, expected)
-
     def test_query_exists_in_graph(self):
         params = {
             "instance_uri": "http://tatipedia.org/Platypus"

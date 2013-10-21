@@ -31,7 +31,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertIn(u'Argument best_aikido_move is not supported. The supported ', body["errors"][0])
 
     @patch("brainiak.handlers.logger")
-    @patch("brainiak.handlers.memoize", return_value= {"body": {'items': []}, "meta": {"cache": "", "last_modified": "" }})
+    @patch("brainiak.handlers.memoize", return_value={"body": {'items': []}, "meta": {"cache": "", "last_modified": ""}})
     def test_200_empty(self, mocked_memoize, log):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)

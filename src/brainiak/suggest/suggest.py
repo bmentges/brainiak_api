@@ -247,7 +247,8 @@ def _get_response_fields_from_classes_dict(fields_by_class_list, response_fields
 
 def _build_body_query(query_params, search_params, classes, search_fields, response_fields):
     patterns = search_params["pattern"].lower().split()
-    query_string = " AND ".join(patterns) + "*"
+    patterns = [item for item in patterns if item != '-']
+    query_string = "* AND ".join(patterns) + "*"
     body = {
         "from": int(resources.calculate_offset(query_params)),
         "size": int(query_params.get("per_page", settings.DEFAULT_PER_PAGE)),

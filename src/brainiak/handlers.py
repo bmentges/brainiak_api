@@ -515,7 +515,12 @@ class SuggestHandler(BrainiakRequestHandler):
 
         with safe_params(valid_params):
 
-            raw_body_params = json.loads(self.request.body)
+            try:
+                raw_body_params = json.loads(self.request.body)
+            except ValueError:
+                error_message = "JSON malformed. Received: {0}."
+                raise HTTPError(400, log_message=error_message.format(self.request.body))
+
             body_params = normalize_all_uris_recursively(raw_body_params)
             if '@context' in body_params:
                 del body_params['@context']

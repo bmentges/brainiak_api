@@ -3,6 +3,15 @@ from math import ceil
 from urllib import urlencode, unquote
 
 
+def split_prefix_and_id_from_uri(url):
+    splitted_url = urlsplit(url)
+    last_slash = splitted_url.path.rfind("/")
+    id_ = splitted_url.path[last_slash + 1:]
+    new_path = splitted_url.path[:last_slash + 1]
+    prefix = urlunsplit([splitted_url.scheme, splitted_url.netloc, new_path, '', ''])
+    return prefix, id_
+
+
 def content_type_profile(schema_url):
     """Set header Content-Type + profile pointing to URL of the json-schema"""
     content_type = u"application/json; profile={0}".format(schema_url)

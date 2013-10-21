@@ -360,3 +360,38 @@ class BuildClassUrlTestCase(unittest.TestCase):
         computed = build_schema_url_for_instance(query_params)
         expected = "https://dot.net/place/City/_schema?class_prefix=include_me"
         self.assertEqual(computed, expected)
+
+    def test_build_schema_url_with_class_uri(self):
+
+        class MockRequest(object):
+            protocol = "https"
+            host = "dot.net"
+            query = "?instance_uri=ignore_me"
+
+        query_params = {
+            "request": MockRequest(),
+            "context_name": "place",
+            "class_name": "_",
+            "class_uri": "place:City"
+        }
+        computed = build_schema_url_for_instance(query_params)
+        expected = "https://dot.net/place/_/_schema?class_uri=place:City"
+        self.assertEqual(computed, expected)
+
+    def test_build_schema_url_with_graph_uri_and_class_uri(self):
+
+        class MockRequest(object):
+            protocol = "https"
+            host = "dot.net"
+            query = "?instance_uri=ignore_me"
+
+        query_params = {
+            "request": MockRequest(),
+            "context_name": "_",
+            "graph_uri": "place",
+            "class_name": "_",
+            "class_uri": "place:City"
+        }
+        computed = build_schema_url_for_instance(query_params)
+        expected = "https://dot.net/_/_/_schema?graph_uri=place&class_uri=place:City"
+        self.assertEqual(computed, expected)

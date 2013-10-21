@@ -31,12 +31,19 @@ def assemble_url(url="", params={}):
 
 
 # TODO: refactor and add to a method similar to utils.params.args
-def filter_query_string_by_key_prefix(query_string, include_prefixes=[]):
+def filter_query_string_by_key_prefix(query_string, include_prefixes=[], query_params={}):
     query_string_dict = parse_qs(query_string)
     relevant_params = {}
     for key, value in query_string_dict.items():
         if any([key.startswith(prefix) for prefix in include_prefixes]):
             relevant_params[key] = value
+
+    if query_params.get("context_name") == "_" and not "graph_uri" in relevant_params:
+        relevant_params["graph_uri"] = query_params["graph_uri"]
+
+    if query_params.get("class_name") == "_" and not "class_uri" in relevant_params:
+        relevant_params["class_uri"] = query_params["class_uri"]
+
     return urlencode(relevant_params, doseq=True)
 
 
@@ -180,7 +187,7 @@ def build_schema_url(query_params):
 
 def build_schema_url_for_instance(query_params):
     class_url = build_class_url(query_params)
-    query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
+    query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"], query_params)
     schema_url = assemble_url(u'{0}/_schema'.format(class_url), query_string)
     return schema_url
 

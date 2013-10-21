@@ -24,6 +24,8 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         json_received = json.loads(response.body)
         self.assertEqual(json_received['@type'], 'person:Gender')
         self.assertEqual(json_received['@id'], "http://semantica.globo.com/person/Gender/Male")
+        self.assertEqual(json_received['_resource_id'], "Male")
+        self.assertEqual(json_received['_instance_prefix'], "http://semantica.globo.com/person/Gender/")
 
     def test_instance_has_options(self):
         response = self.fetch('/person/Gender/Female', method='OPTIONS')
@@ -37,6 +39,8 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
         json_received = json.loads(response.body)
         self.assertEqual(json_received['@type'], 'person:Gender')
         self.assertEqual(json_received['@id'], "http://semantica.globo.com/person/Gender/Female")
+        self.assertEqual(json_received['_resource_id'], "Female")
+        self.assertEqual(json_received['_instance_prefix'], "http://semantica.globo.com/person/Gender/")
 
 
 class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):

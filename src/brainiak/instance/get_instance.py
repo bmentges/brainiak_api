@@ -4,7 +4,7 @@ from brainiak import triplestore, settings
 from brainiak.instance.common import extract_class_uri, extract_graph_uri, get_class_and_graph, must_retrieve_graph_and_class_uri
 from brainiak.schema import get_class
 from brainiak.type_mapper import _MAP_JSON_TO_PYTHON
-from brainiak.utils.links import build_class_url
+from brainiak.utils.links import build_class_url, split_prefix_and_id_from_uri
 from brainiak.utils.sparql import get_super_properties, is_result_empty, decode_boolean
 
 
@@ -107,17 +107,18 @@ def assemble_instance_json(query_params, query_result_dict):
     if include_meta_properties:
         class_url = build_class_url(query_params)
         query_params.resource_url = u"{0}/{1}".format(class_url, query_params['instance_id'])
+        response = split_prefix_and_id_from_uri(query_params['instance_uri'])
+        instance_uri = query_params['instance_uri']
+        instance_prefix, instance_id = split_prefix_and_id_from_uri(instance_uri)
         instance = {
             "_base_url": query_params.base_url,
-            "_resource_id": query_params['instance_id'],
-            "@id": query_params['instance_uri'],
+            "_instance_prefix": instance_prefix,
+            "_resource_id": instance_id,
+            "@id": instance_uri,
             "@type": query_params["class_uri"]
         }
 
         check_and_clean_rdftype(instance['@type'], items)
-
-        if 'instance_prefix' in query_params:
-            instance["_instance_prefix"] = query_params['instance_prefix']
     else:
         instance = {}
 

@@ -1,6 +1,5 @@
 import json
 from mock import patch
-from brainiak.prefixes import ROOT_CONTEXT
 
 from brainiak.root.get_root import QUERY_LIST_CONTEXT
 from brainiak.utils import sparql
@@ -16,11 +15,9 @@ def raise_exception():
 class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
 
     def setUp(self):
-        self.original_filter_values = sparql.filter_values
         super(ListAllContextsTestCase, self).setUp()
 
     def tearDown(self):
-        sparql.filter_values = self.original_filter_values
         super(ListAllContextsTestCase, self).tearDown()
 
     def test_root_handler_allows_purge(self):
@@ -28,27 +25,26 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
 
     @patch("brainiak.handlers.logger")
     def test_400(self, log):
-        sparql.filter_values = lambda a, b: []
         response = self.fetch("/?best_aikido_move=ki_projection", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
         self.assertIn(u'Argument best_aikido_move is not supported. The supported ', body["errors"][0])
 
     @patch("brainiak.handlers.logger")
-    def test_404(self, log):
-        sparql.filter_values = lambda a, b: []
+    @patch("brainiak.handlers.memoize", return_value= {"body": {'items': []}, "meta": {"cache": "", "last_modified": "" }})
+    def test_200_empty(self, mocked_memoize, log):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         self.assertEquals(body["items"], [])
 
     @patch("brainiak.handlers.logger")
-    def test_500(self, log):
-        sparql.filter_values = lambda a, b: raise_exception()
+    @patch("brainiak.handlers.memoize", side_effect=RuntimeError)
+    def test_500(self, mocked_memoize, log):
         response = self.fetch("/", method='GET')
         self.assertEqual(response.code, 500)
         body = json.loads(response.body)
-        self.assertIn("raise Exception\n\nException\n", body["errors"][0])
+        self.assertIn("HTTP error: 500\nException:\n", body["errors"][0])
 
     def test_200(self):
         # disclaimer: this test assumes UPPER graph exists in Virtuoso and contains triples
@@ -114,20 +110,32 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     @patch("brainiak.utils.cache.delete")
     @patch("brainiak.utils.cache.purge")
     @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
-    def test_purge_returns_200_when_cache_is_enabled(self, enable_cache, delete_all, delete):
+    def test_purge_returns_200_when_cache_is_enabled(self, enable_cache, purge, delete):
         response = self.fetch("/", method='PURGE')
         self.assertEqual(response.code, 200)
         delete.assert_called_once_with("/")
+        self.assertFalse(purge.called)
         self.assertFalse(response.body)
 
     @patch("brainiak.utils.cache.delete")
     @patch("brainiak.utils.cache.purge")
     @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
-    def test_purge_returns_200_recursive(self, enable_cache, delete_all, delete):
+    def test_purge_returns_200_recursive(self, enable_cache, purge, delete):
         response = self.fetch("/", method='PURGE', headers={'X-Cache-Recursive': '1'})
         self.assertEqual(response.code, 200)
+        purge.assert_called_once_with("/")
+        self.assertFalse(delete.called)
         self.assertFalse(response.body)
-        delete_all.assert_called_once_with("/")
+
+    @patch("brainiak.utils.cache.delete")
+    @patch("brainiak.utils.cache.purge")
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
+    def test_purge_returns_200_all(self, enable_cache, purge, delete):
+        response = self.fetch("/", method='PURGE', headers={'X-Cache-All': '1'})
+        self.assertEqual(response.code, 200)
+        purge.assert_called_once_with("*")
+        self.assertFalse(delete.called)
+        self.assertFalse(response.body)
 
 
 class QueryTestCase(QueryTestCase):

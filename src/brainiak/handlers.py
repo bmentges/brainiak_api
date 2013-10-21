@@ -103,12 +103,18 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     @greenlet_asynchronous
     def purge(self):
         if settings.ENABLE_CACHE:
+            purge_all = int(self.request.headers.get('X-Cache-all', '0'))
+            if purge_all:
+                cache.purge("*")
+                return
+
             path = self.request.path
             recursive = int(self.request.headers.get('X-Cache-recursive', '0'))
             if recursive:
                 cache.purge(path)
             else:
                 cache.delete(path)
+
         else:
             raise HTTPError(405, log_message="Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)")
 

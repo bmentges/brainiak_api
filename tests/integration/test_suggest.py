@@ -3,12 +3,12 @@ import json
 from urllib import quote_plus
 
 import requests
-
+from estester import ElasticSearchQueryTestCase
 from mock import patch
 
 from brainiak.suggest.suggest import QUERY_PREDICATE_RANGES, \
     QUERY_SUBPROPERTIES, _build_class_fields_query, \
-    get_instance_class_schema
+    get_instance_class_schema, _build_body_query
 from brainiak.utils.params import LIST_PARAMS, ParamDict
 from brainiak.utils.sparql import filter_values, compress_keys_and_values
 from brainiak import settings
@@ -189,3 +189,116 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         query_response = self.query(query)
         meta_field_values = filter_values(query_response, "field_value")
         self.assertEqual(expected, meta_field_values)
+
+
+class QueryTestCase(ElasticSearchQueryTestCase):
+
+    fixtures = [
+        {
+            "type": "person",
+            "id": "1",
+            "body": {
+                "name": "James",
+                "birthDate": "Saturday - 11/05/1974"
+            }
+        },
+        {
+            "type": "person",
+            "id": "2",
+            "body": {
+                "name": "James Bond",
+                "birthDate": "Thursday - 11/11/1920"
+            }
+        },
+        {
+            "type": "person",
+            "id": "3",
+            "body": {
+                "name": "Sherlock Holmes",
+                "birthDate": "Friday - 06/01/1854"
+            }
+        }
+    ]
+    timeout = 5
+    index = "xubiru"
+
+    def query_by_pattern(self, pattern, fields):
+        query_params = {"page": "0"}
+        search_params = {"pattern": pattern}
+        classes = ["person", "pet"]
+        search_fields = fields
+        response_fields = ["name", "birthDate"]
+        query = _build_body_query(query_params, search_params, classes, search_fields, response_fields)
+        return query
+
+    def test_query_returns_two_results_with_exact_match_first(self):
+        #user_query_tokens = list(self.analyze("james", "globo_analyzer"))
+        #query = brainiak_query(user_query_tokens,   ["name"])
+        pattern = "james"
+        fields = ["name"]
+        query = self.query_by_pattern(pattern, fields)
+        response = self.search(query)
+        self.assertEqual(response["hits"]["total"], 2)
+        self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
+        self.assertEqual(response["hits"]["hits"][0]["fields"]["name"], u"James")
+        self.assertEqual(response["hits"]["hits"][1]["_id"], u"2")
+        self.assertEqual(response["hits"]["hits"][1]["fields"][u"name"], u"James Bond")
+
+    def test_query_returns_exact_match_without_substrings(self):
+        #user_query_tokens = list(self.analyze("james bond", "globo_analyzer"))
+        #query = brainiak_query(user_query_tokens, ["name"])
+        pattern = "james bond"
+        fields = ["name"]
+        query = self.query_by_pattern(pattern, fields)
+        response = self.search(query)
+        self.assertEqual(response["hits"]["total"], 1)
+        self.assertEqual(response["hits"]["hits"][0]["_id"], u"2")
+        self.assertEqual(response["hits"]["hits"][0]["fields"][u"name"], u"James Bond")
+
+    def test_query_returns_slash_number_values(self):
+        pattern = "friday"
+        fields = ["birthDate"]
+        query = self.query_by_pattern(pattern, fields)
+        response = self.search(query)
+        self.assertEqual(response["hits"]["total"], 1)
+        self.assertEqual(response["hits"]["hits"][0]["_id"], u"3")
+        self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Friday - 06/01/1854")
+
+    def test_query_returns_values_from_two_fields(self):
+        # user_query_tokens = list(self.analyze("James", "globo_analyzer"))
+        # query = brainiak_query(user_query_tokens, ["birthDate", "name"])
+        # response = self.query(query)
+
+        pattern = "james"
+        fields = ["birthDate", "name"]
+        query = self.query_by_pattern(pattern, fields)
+        response = self.search(query)
+
+        self.assertEqual(response["hits"]["total"], 2)
+        self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
+        self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Saturday - 11/05/1974")
+
+    def test_query_returns_search_result_for_date_queries(self):
+        # user_query_tokens = list(self.analyze("11/05/1974", "globo_analyzer"))
+        # query = brainiak_query(user_query_tokens, ["birthDate"])
+        # response = self.query(query)
+        pattern = "11/05/1974"
+        fields = ["birthDate"]
+        query = self.query_by_pattern(pattern, fields)
+        response = self.search(query)
+
+        self.assertEqual(response["hits"]["total"], 2)
+        self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
+        self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Saturday - 11/05/1974")
+
+    def test_query_returns_search_result_for_full_field(self):
+        # user_query_tokens = list(self.analyze("Saturday - 11/05/1974", "globo_analyzer"))
+        # query = brainiak_query(user_query_tokens, ["birthDate"])
+        # response = self.query(query)
+        pattern = "Saturday - 11/05/1974"
+        fields = ["birthDate"]
+        query = self.query_by_pattern(pattern, fields)
+        response = self.search(query)
+        self.assertEqual(response["hits"]["total"], 1)
+        self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
+        self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Saturday - 11/05/1974")

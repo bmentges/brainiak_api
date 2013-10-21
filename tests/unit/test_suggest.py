@@ -37,14 +37,14 @@ class SuggestTestCase(TestCase):
                         'query_string': {
                             'fields': ['rdfs:label', 'upper:name'],
                             'analyze_wildcard': True,
-                            'query': '"rio AND de AND jan*"'
+                            'query': '"rio* AND de* AND jan*"'
                         }
                     },
                     'must': {
                         'query_string': {
                             'fields': ['rdfs:label', 'upper:name'],
                             'analyze_wildcard': True,
-                            'query': 'rio AND de AND jan*'
+                            'query': 'rio* AND de* AND jan*'
                         }
                     }
                 }

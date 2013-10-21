@@ -99,3 +99,14 @@ Otherwise, to purge only (c) and (d), the command bellow should be run:
 
 
 
+Purge all
+---------
+
+It is possible to exclude all cache by calling ``PURGE`` with the header ``X-Cache-All`` set to ``1``.
+
+Be careful.
+
+.. code-block:: bash
+
+  $ curl -i -X --header "X-Cache-All: 1"  PURGE http://brainiak.semantica.dev.globoi.com
+

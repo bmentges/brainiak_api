@@ -127,6 +127,7 @@
 <li><a class="reference internal" href="#example">Example</a></li>
 <li><a class="reference internal" href="#purge">Purge</a></li>
 <li><a class="reference internal" href="#recursive-purge">Recursive purge</a></li>
+<li><a class="reference internal" href="#purge-all">Purge all</a></li>
 </ul>
 </li>
 </ul>
@@ -172,7 +173,7 @@ To check if cache is enabled for some resource, run:</p>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 204 No Content
 Server: nginx
-Date: Fri, 11 Oct 2013 20:55:54 GMT
+Date: Mon, 21 Oct 2013 19:17:47 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 0
 Connection: keep-alive
@@ -202,12 +203,12 @@ Access-Control-Allow-Headers: Content-Type, Authorization
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Fri, 11 Oct 2013 20:55:55 GMT
+Date: Mon, 21 Oct 2013 19:17:48 GMT
 Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
 Content-Length: 1002
 Connection: keep-alive
 X-Cache: MISS from brainiak.semantica.dev.globoi.com
-Last-Modified: Fri, 11 Oct 2013 17:55:55 -0300
+Last-Modified: Mon, 21 Oct 2013 17:17:48 -0200
 Etag: &quot;e4a29223562079386bb1ec2695cea9587a61bff9&quot;
 Access-Control-Allow-Origin: *
 </pre></div>
@@ -218,12 +219,12 @@ Access-Control-Allow-Origin: *
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Fri, 11 Oct 2013 20:55:56 GMT
+Date: Mon, 21 Oct 2013 19:17:49 GMT
 Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
 Content-Length: 1002
 Connection: keep-alive
 X-Cache: HIT from brainiak.semantica.dev.globoi.com
-Last-Modified: Fri, 11 Oct 2013 17:55:55 -0300
+Last-Modified: Mon, 21 Oct 2013 17:17:48 -0200
 Etag: &quot;555e4a29e333755c57c50c8f8a4ebd7c70232ea7&quot;
 Access-Control-Allow-Origin: *
 </pre></div>
@@ -238,7 +239,7 @@ Access-Control-Allow-Origin: *
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Fri, 11 Oct 2013 20:55:56 GMT
+Date: Mon, 21 Oct 2013 19:17:49 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 0
 Connection: keep-alive
@@ -268,6 +269,14 @@ Access-Control-Allow-Origin: *
 <p>All cache will be purged (a, b, c and d).</p>
 <p>Otherwise, to purge only (c) and (d), the command bellow should be run:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X --header <span class="s2">&quot;X-Cache-Recursive: 1&quot;</span>  PURGE http://brainiak.semantica.dev.globoi.com/person/Person
+</pre></div>
+</div>
+</div>
+<div class="section" id="purge-all">
+<h2>Purge all<a class="headerlink" href="#purge-all" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to exclude all cache by calling <tt class="docutils literal"><span class="pre">PURGE</span></tt> with the header <tt class="docutils literal"><span class="pre">X-Cache-All</span></tt> set to <tt class="docutils literal"><span class="pre">1</span></tt>.</p>
+<p>Be careful.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X --header <span class="s2">&quot;X-Cache-All: 1&quot;</span>  PURGE http://brainiak.semantica.dev.globoi.com
 </pre></div>
 </div>
 </div>

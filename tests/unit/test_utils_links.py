@@ -395,3 +395,18 @@ class BuildClassUrlTestCase(unittest.TestCase):
         computed = build_schema_url_for_instance(query_params)
         expected = "https://dot.net/_/_/_schema?graph_uri=place&class_uri=place:City"
         self.assertEqual(computed, expected)
+
+
+class SplitPrefixAndIdFromURITestCase(unittest.TestCase):
+
+    def test_example_1(self):
+        url = "http://dbpedia.org/sports/Match/Soccer1"
+        prefix, id_ = split_prefix_and_id_from_uri(url)
+        self.assertEqual(prefix, "http://dbpedia.org/sports/Match/")
+        self.assertEqual(id_, "Soccer1")
+
+    def test_example_2(self):
+        url = "http://dbpedia.org/SoccerMatch1"
+        prefix, id_ = split_prefix_and_id_from_uri(url)
+        self.assertEqual(prefix, "http://dbpedia.org/")
+        self.assertEqual(id_, "SoccerMatch1")

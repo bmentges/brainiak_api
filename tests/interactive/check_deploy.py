@@ -16,8 +16,8 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.2.4"
-mercury_version = "1.2.4"
+brainiak_version = "2.3.0-rc2"
+mercury_version = "1.2.5"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",
@@ -177,7 +177,7 @@ class BrainiakChecker(Checker):
         response = self.put("place/City/globoland", "new_city.json")
         nose.assert_equal(response.status_code, 201)
 
-        sys.stdout.write("\n-- try changing <check_instance_create> timeout if it fails")
+        sys.stdout.write("\n-- try changing <check_instance_create> timeout if it fails\n")
         time.sleep(3)
 
         # Check if instance was written in Virtuoso

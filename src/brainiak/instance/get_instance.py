@@ -2,8 +2,9 @@
 
 from brainiak import triplestore, settings
 from brainiak.schema import get_class
+from brainiak.type_mapper import _MAP_JSON_TO_PYTHON
 from brainiak.utils.links import build_class_url
-from brainiak.utils.sparql import get_super_properties, is_result_empty
+from brainiak.utils.sparql import get_super_properties, is_result_empty, decode_boolean
 
 
 def should_get_instance_by_uri(query_params):
@@ -50,12 +51,12 @@ def build_items_dict(bindings, class_uri, expand_object_properties, class_schema
     items_dict = {}
     for item in bindings:
         predicate_uri = item["predicate"]["value"]
-        object_uri = item["object"]["value"]
+        object_value = item["object"]["value"]
         object_label = item.get("object_label", {}).get("value")
         if object_label and expand_object_properties:
-            value = {"@id": object_uri, "title": object_label}
+            value = {"@id": object_value, "title": object_label}
         else:
-            value = object_uri
+            value = _convert_to_python(object_value, class_schema, predicate_uri)
 
         if predicate_uri in items_dict:
             if not isinstance(items_dict[predicate_uri], list):
@@ -68,9 +69,9 @@ def build_items_dict(bindings, class_uri, expand_object_properties, class_schema
             base_uri = None
             if predicate_uri in class_schema["properties"]:
                 base_uri = predicate_uri
-            elif predicate_uri in class_schema["properties"]:
-                base_uri = predicate_uri
 
+            # Here we IGNORE predicate/object values that exist in the triplestore
+            #  but the predicate is not in the class schema
             if base_uri:
                 if class_schema["properties"][base_uri][u'type'] == u'array':
                     items_dict[predicate_uri] = [value]
@@ -188,3 +189,20 @@ def query_all_properties_and_objects_by_instance_uri(query_params):
         query_params["object_label_optional_clause"] = ""
     query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE_BY_URI % query_params
     return triplestore.query_sparql(query, query_params.triplestore_config)
+
+
+def _convert_to_python(object_value, class_schema, predicate_uri):
+    if predicate_uri in class_schema["properties"]:
+        if class_schema["properties"][predicate_uri]['type'] == "array":
+            schema_type = class_schema["properties"][predicate_uri]['items']['type']
+        else:
+            schema_type = class_schema["properties"][predicate_uri]['type']
+
+        python_type = _MAP_JSON_TO_PYTHON[schema_type]
+        if python_type == bool:
+            converted_value = decode_boolean(object_value)
+        else:
+            converted_value = python_type(object_value)
+        return converted_value
+    else:  # values with predicate_uri not in schema will be ignored anyway
+        return object_value

@@ -41,3 +41,10 @@ _MAP_JSON_TO_XSD_TYPE = {
 _MAP_JSON_TO_EXPAND_XSD_TYPE = {k: expand_uri(v) for k, v in _MAP_XSD_TO_JSON_TYPE.items()}
 
 # TODO: support other JSON types:  "object", "array"
+
+_MAP_JSON_TO_PYTHON = {
+    "string": unicode,
+    "number": float,
+    "integer": int,
+    "boolean": bool
+}

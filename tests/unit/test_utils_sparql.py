@@ -1,7 +1,7 @@
 import unittest
 import uuid
 
-from brainiak.prefixes import MemorizeContext, SHORTEN
+from brainiak.prefixes import MemorizeContext
 from brainiak.utils.sparql import *
 from tests.mocks import mock_schema
 
@@ -241,10 +241,16 @@ class SomeTriplesDeletedTestCase(unittest.TestCase):
 class LiteralLangTestCase(unittest.TestCase):
 
     def test_has_lang_literal_true(self):
-        self.assertEqual(has_lang("'i18n'@en"), True)
+        self.assertTrue(has_lang("'i18n'@en"))
 
     def test_has_lang_literal_false(self):
-        self.assertEqual(has_lang("not i18n"), False)
+        self.assertFalse(has_lang("not i18n"))
+
+    def test_has_lang_integer(self):
+        self.assertFalse(has_lang(1))
+
+    def test_has_lang_boolean(self):
+        self.assertFalse(has_lang(False))
 
 
 class IsResultTrueTestCase(unittest.TestCase):
@@ -630,6 +636,13 @@ class POTestCase(unittest.TestCase):
 
         self.assertEqual(expected_object_value, escape_quotes(object_value))
 
+    def escape_quotes_not_string(self):
+        object_value = 15
+
+        expected_object_value = 15
+
+        self.assertEqual(expected_object_value, escape_quotes(object_value))
+
 
 class GetPredicatedDatatypeTestCase(unittest.TestCase):
 
@@ -663,19 +676,32 @@ class GetPredicatedDatatypeTestCase(unittest.TestCase):
         self.assertEqual(result, expected)
 
 
-class ConvertBooleanTestCase(unittest.TestCase):
+class EncodeBooleanTestCase(unittest.TestCase):
 
-    def test_convert_0(self):
-        result = convert_boolean("1")
+    def test_encode_true(self):
+        result = encode_boolean(True)
         self.assertEqual(result, "true")
 
-    def test_convert_1(self):
-        result = convert_boolean("0")
+    def test_encode_false(self):
+        result = encode_boolean(False)
         self.assertEqual(result, "false")
 
-    def test_convert_other_value(self):
-        result = convert_boolean("aaa")
-        self.assertEqual(result, "aaa")
+    def test_encode_other_value(self):
+        self.assertRaises(TypeError, encode_boolean, "aaa")
+
+
+class DecodeBooleanTestCase(unittest.TestCase):
+
+    def test_decode_1(self):
+        result = decode_boolean("1")
+        self.assertEqual(result, True)
+
+    def test_decode_0(self):
+        result = decode_boolean("0")
+        self.assertEqual(result, False)
+
+    def test_decode_other_value(self):
+        self.assertRaises(TypeError, decode_boolean, "aaa")
 
 
 class BindingsToDictTestCase(unittest.TestCase):

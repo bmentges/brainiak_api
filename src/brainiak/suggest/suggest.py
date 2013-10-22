@@ -245,7 +245,7 @@ def _get_response_fields_from_classes_dict(fields_by_class_list, response_fields
     return fields_by_class_set
 
 
-def _build_body_query(query_params, search_params, classes, search_fields, response_fields):
+def _build_body_query(query_params, search_params, classes, search_fields, response_fields, analyzer=settings.ES_ANALYZER):
     patterns = search_params["pattern"].lower().split()
     patterns = [item for item in patterns if item != '-']
     query_string = "* AND ".join(patterns) + "*"
@@ -259,14 +259,16 @@ def _build_body_query(query_params, search_params, classes, search_fields, respo
                         "query_string": {
                             "fields": search_fields,
                             "query": query_string,
-                            "analyze_wildcard": True
+                            "analyze_wildcard": True,
+                            "analyzer": analyzer
                         }
                     },
                     "should": {
                         "query_string": {
                             "fields": search_fields,
                             "query": u'\"{0}\"'.format(query_string),
-                            "analyze_wildcard": True
+                            "analyze_wildcard": True,
+                            "analyzer": "default"
                         }
                     }
                 }

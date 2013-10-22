@@ -164,14 +164,14 @@
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X POST -T <span class="s2">&quot;new_york_city.json&quot;</span> http://brainiak.semantica.dev.globoi.com/place/City
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 500 Internal Server Error
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 201 Created
 Server: nginx
-Date: Mon, 21 Oct 2013 19:17:52 GMT
-Content-Type: application/json; charset=UTF-8
-Content-Length: 1285
+Date: Mon, 21 Oct 2013 19:23:34 GMT
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/place/City/_schema_list
+Content-Length: 0
 Connection: keep-alive
-
-{&quot;errors&quot;: [&quot;HTTP error: 500\nProperty http://www.w3.org/2000/01/rdf-schema#comment was not found in the schema of instance http://semantica.globo.com/place/City/22cb13ec-9528-4ab1-affa-95035a25d938\nException:\nTraceback (most recent call last):\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/web.py\&quot;, line 1115, in _stack_context_handle_exception\n    raise_exc_info((type, value, traceback))\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/stack_context.py\&quot;, line 302, in wrapped\n    ret = fn(*args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131021191600/brainiak/greenlet_tornado.py\&quot;, line 77, in callback\n    gr.switch(response)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131021191600/brainiak/greenlet_tornado.py\&quot;, line 104, in greenlet_base_func\n    wrapped_method(self, *args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20131021191600/brainiak/handlers.py\&quot;, line 355, in post\n    raise HTTPError(500, log_message=unicode(ex))\n\nHTTPError: HTTP 500: Internal Server Error (Property http://www.w3.org/2000/01/rdf-schema#comment was not found in the schema of instance http://semantica.globo.com/place/City/22cb13ec-9528-4ab1-affa-95035a25d938)\n&quot;]}
+Location: http://brainiak.semantica.dev.globoi.com/place/City/c9c7d9f7-b373-48b1-a053-46a5937b415a
+Access-Control-Allow-Origin: *
 </pre></div>
 </div>
 <div class="admonition warning">

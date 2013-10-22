@@ -311,8 +311,8 @@ class DevQueryTestCase(QueryTestCase):
     analyzer = "globo_analyzer"
 
 
-class Qa1QueryTestCase(QueryTestCase):
-    # ElasticSearch 0.19.11
-    # customized with UATU
-    host = "http://esearch.qa01.globoi.com/"
-    analyzer = "globo_analyzer"
+# class Qa1QueryTestCase(QueryTestCase):
+#     # ElasticSearch 0.19.11
+#     # customized with UATU
+#     host = "http://esearch.qa01.globoi.com/"
+#     analyzer = "globo_analyzer"

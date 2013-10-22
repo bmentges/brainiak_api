@@ -245,6 +245,10 @@ def _get_response_fields_from_classes_dict(fields_by_class_list, response_fields
     return fields_by_class_set
 
 
+def _build_body_query_compatible_with_uatu_and_es_19(query_params, search_params, classes, search_fields, response_fields, analyzer=settings.ES_ANALYZER):
+    pass
+
+
 def _build_body_query(query_params, search_params, classes, search_fields, response_fields, analyzer=settings.ES_ANALYZER):
     patterns = search_params["pattern"].lower().split()
     patterns = [item for item in patterns if item != '-']

@@ -16,7 +16,7 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.3.0-rc2"
+brainiak_version = "master"
 mercury_version = "1.2.5"
 
 brainiak_endpoint = {
@@ -85,11 +85,21 @@ class Checker(object):
         url = "{0}{1}".format(self.endpoint, relative_url)
         return requests.get(url, proxies=self.proxies)
 
-    def put(self, relative_url="", filepath=""):
-        fp = open(filepath, "r")
-        payload = json.dumps(json.load(fp))
+    def put(self, relative_url="", filepath="", json_={}):
+        if filepath:
+            data = open(filepath, "r")
+            json_ = json.load(data)
+        payload = json.dumps(json_)
         url = "{0}{1}".format(self.endpoint, relative_url)
         return requests.put(url, proxies=self.proxies, data=payload)
+
+    def post(self, relative_url="", filepath="", json_={}):
+        if filepath:
+            data = open(filepath, "r")
+            json_ = json.load(data)
+        payload = json.dumps(json_)
+        url = "{0}{1}".format(self.endpoint, relative_url)
+        return requests.post(url, proxies=self.proxies, data=payload)
 
 
 class BrainiakChecker(Checker):
@@ -205,6 +215,72 @@ class BrainiakChecker(Checker):
         nose.assert_equal(response_after.status_code, 404)
         sys.stdout.write("\ncheck_instance_delete - pass")
 
+    def check_suggest_sports_user_case(self):
+        if environ == "local":
+            sys.stdout.write("\ncheck_suggest_sports_user_case - ignore")
+        else:
+            PARAMS = {
+                "search": {
+                    "pattern": "flamengo",
+                    "target": "esportes:tem_como_conteudo",
+                    "fields": ["base:dados_buscaveis"],
+                    "graphs": ["http://semantica.globo.com/esportes/"]
+                },
+                "response": {
+                    "meta_fields": ["base:detalhe_da_cortina"],
+                    "class_fields": ["base:thumbnail"]
+                }
+            }
+            response = self.post("_suggest", json_=PARAMS)
+            body = response.json()
+
+            nose.assert_equal(len(body["items"]), 10)
+
+            first_item = body["items"][0]
+            expected_keys = [u'title', u'type_title', u'instance_fields', u'class_fields', u'@id', u'@type']
+            nose.assert_equal(first_item.keys(), expected_keys)
+            nose.assert_equal(first_item["title"], u"Flamengo")
+            nose.assert_equal(first_item["type_title"], u"Equipe")
+
+            expected_instance_fields = [
+                {
+                    u'object_id': u'http://semantica.globo.com/esportes/esporte/1',
+                    u'object_title': u'Futebol',
+                    u'predicate_id': u'esportes:do_esporte',
+                    u'predicate_title': u'Do esporte',
+                    u'required': False
+                },
+                {
+                    u'object_id': u'http://semantica.globo.com/esportes/categoria/4',
+                    u'object_title': u'Futebol profissional',
+                    u'predicate_id': u'esportes:da_categoria',
+                    u'predicate_title': u'Da categoria',
+                    u'required': False
+                },
+                {
+                    u'object_id': u'http://semantica.globo.com/esportes/modalidade/1',
+                    u'object_title': u'Futebol de campo',
+                    u'predicate_id': u'esportes:da_modalidade',
+                    u'predicate_title': u'Da modalidade',
+                    u'required': False
+                },
+                {  # metafield
+                    u'object_title': u'Flamengo',
+                    u'predicate_id': u'esportes:nome_popular_sde',
+                    u'predicate_title': u'Nome Popular no SDE',
+                    u'required': False
+                },
+                {  # metafield
+                    u'object_title': u'Flamengo ( Futebol / Futebol de campo / Profissional ) ',
+                    u'predicate_id': u'esportes:composite',
+                    u'predicate_title': u'Label de busca',
+                    u'required': False
+                }
+            ]
+
+            nose.assert_equal(sorted(first_item["instance_fields"]), sorted(expected_instance_fields))
+            nose.assert_true("base:thumbnail" in first_item["class_fields"])
+
 
 class NewBrainiakChecker(BrainiakChecker):
 
@@ -247,7 +323,7 @@ if __name__ == "__main__":
         sys.stdout.write("Run:\n   python check_deploy.py <environ>\nWhere environ in [local, dev, qa01, qa02, stg, prod]")
         exit()
 
-    # sys.stdout.write("[Checking Brainiak]")
+    # sys.stdout.write("[Checking Old Brainiak]")
     # brainiak = BrainiakChecker(environ)
     # brainiak_functions = [function() for name, function in inspect.getmembers(brainiak) if name.startswith("check")]
     # sys.stdout.write("\n")

@@ -259,7 +259,6 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         fields = ["name"]
         query = self.query_by_pattern(pattern, fields)
         response = self.search(query)
-        #import pdb; pdb.set_trace()
         self.assertEqual(response["hits"]["total"], 1)
         self.assertEqual(response["hits"]["hits"][0]["_id"], u"2")
         self.assertEqual(response["hits"]["hits"][0]["fields"][u"name"], u"James Bond")

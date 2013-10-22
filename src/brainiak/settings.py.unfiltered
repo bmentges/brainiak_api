@@ -10,10 +10,12 @@ if ENVIRONMENT == 'local':
     ENABLE_CACHE = False
     REDIS_PASSWORD = None
     LOG_LEVEL = logging.DEBUG
+    ES_ANALYZER = "default"
 else:
     ENABLE_CACHE = True
     REDIS_PASSWORD = '<%= redis_password %>'
     LOG_LEVEL = logging.ERROR
+    ES_ANALYZER = "globo_analyzer"
 
 REDIS_ENDPOINT = '<%= redis_host %>'
 REDIS_PORT = <%= redis_port %>

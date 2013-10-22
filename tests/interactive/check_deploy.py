@@ -17,7 +17,7 @@ import nose.tools as nose
 import requests
 
 brainiak_version = "2.3.0"
-mercury_version = "1.2.5"
+mercury_version = "1.2.4"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",

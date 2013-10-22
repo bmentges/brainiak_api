@@ -228,7 +228,7 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         }
     ]
     timeout = 5
-    index = "xubiru"
+    analyzer = "default"
 
     def query_by_pattern(self, pattern, fields):
         query_params = {"page": "0"}
@@ -236,7 +236,7 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         classes = ["person", "pet"]
         search_fields = fields
         response_fields = ["name", "birthDate"]
-        query = _build_body_query(query_params, search_params, classes, search_fields, response_fields)
+        query = _build_body_query(query_params, search_params, classes, search_fields, response_fields, self.analyzer)
         return query
 
     def test_query_returns_two_results_with_exact_match_first(self):
@@ -259,6 +259,7 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         fields = ["name"]
         query = self.query_by_pattern(pattern, fields)
         response = self.search(query)
+        #import pdb; pdb.set_trace()
         self.assertEqual(response["hits"]["total"], 1)
         self.assertEqual(response["hits"]["hits"][0]["_id"], u"2")
         self.assertEqual(response["hits"]["hits"][0]["fields"][u"name"], u"James Bond")
@@ -310,3 +311,16 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         self.assertEqual(response["hits"]["total"], 1)
         self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
         self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Saturday - 11/05/1974")
+
+
+class DevQueryTestCase(QueryTestCase):
+    # ElasticSearch 0.90.5
+    host = "http://esearch.dev.globoi.com/"
+    analyzer = "globo_analyzer"
+
+
+# class Qa1QueryTestCase(QueryTestCase):
+#     # ElasticSearch 0.19.11
+#     # customized with UATU
+#     host = "http://esearch.qa01.globoi.com/"
+#     analyzer = "globo_analyzer"

@@ -36,6 +36,7 @@ class SuggestTestCase(TestCase):
                     'should': {
                         'query_string': {
                             'fields': ['rdfs:label', 'upper:name'],
+                            'analyzer': 'default',
                             'analyze_wildcard': True,
                             'query': '"rio* AND de* AND jan*"'
                         }
@@ -43,8 +44,9 @@ class SuggestTestCase(TestCase):
                     'must': {
                         'query_string': {
                             'fields': ['rdfs:label', 'upper:name'],
+                            'analyzer': 'default',
                             'analyze_wildcard': True,
-                            'query': 'rio* AND de* AND jan*'
+                            'query': u'rio* AND de* AND jan*'
                         }
                     }
                 }

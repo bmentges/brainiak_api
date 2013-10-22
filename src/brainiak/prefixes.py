@@ -124,13 +124,14 @@ def shorten_uri(uri):
 
 
 def is_uri(something):
-    if (something is not None) and (something.startswith("http://") or something.startswith("https://")):
-        return True
+    if (something is not None) and (isinstance(something, basestring)) and \
+       (something.startswith("http://") or something.startswith("https://")):
+            return True
     return False
 
 
 def is_compressed_uri(candidate, extra_prefixes=None):
-    if is_uri(candidate):
+    if not isinstance(candidate, basestring) or is_uri(candidate):
         return False
     try:
         slug, item_ = candidate.split(":")

@@ -5,7 +5,7 @@ from mock import patch
 from brainiak import prefixes
 from brainiak.prefixes import (expand_uri, extract_prefix, is_compressed_uri, MemorizeContext, prefix_from_uri,
                                prefix_to_slug, PrefixError, safe_slug_to_prefix, shorten_uri, slug_to_prefix,
-                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, normalize_all_uris_recursively, get_prefixes_dict, list_prefixes, _MAP_SLUG_TO_PREFIX)
+                               uri_to_slug, SHORTEN, EXPAND, InvalidModeForNormalizeUriError, normalize_all_uris_recursively, get_prefixes_dict, list_prefixes, _MAP_SLUG_TO_PREFIX, is_uri, is_compressed_uri)
 
 
 class PrefixesTestCase(unittest.TestCase):
@@ -69,6 +69,9 @@ class PrefixesTestCase(unittest.TestCase):
 
     def test_is_compressed_uri_given_a_literal(self):
         self.assertEqual(is_compressed_uri("oi"), False)
+
+    def test_is_compressed_uri_given_a_not_string(self):
+        self.assertEqual(is_compressed_uri(12), False)
 
     def test_is_compressed_uri_given_a_compressed_uri(self):
         self.assertEqual(is_compressed_uri("person:Person"), True)
@@ -248,3 +251,22 @@ class ListPrefixesTestCase(unittest.TestCase):
         list_of_prefixes = list_prefixes()
         for key in list_of_prefixes['@context']:
             self.assertIn(key, _MAP_SLUG_TO_PREFIX)
+
+
+class IsUriTestCase(unittest.TestCase):
+
+    def test_is_uri(self):
+        uri = "http://example.onto/predicate"
+        self.assertTrue(is_uri(uri))
+
+    def test_is_uri_none(self):
+        uri = None
+        self.assertFalse(is_uri(uri))
+
+    def test_is_uri_not_string(self):
+        uri = {"http://example.onto/predicate": []}
+        self.assertFalse(is_uri(uri))
+
+    def test_is_not_uri(self):
+        uri = "ftp://example.onto/predicate"
+        self.assertFalse(is_uri(uri))

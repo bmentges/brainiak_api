@@ -342,6 +342,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
 
             if predicate_datatype is not None:
                 # Datatype property
+                # TODO refactor to a function to return object_
 
                 # TODO: if literal is string and not i18n, add lang
                 if has_lang(object_value):
@@ -362,10 +363,13 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                     object_ = typecast_template.format(object_value, predicate_datatype)
             else:
                 # Object property
+                # TODO refactor to a function to return object_
                 if is_uri(object_value):
                     object_ = u"<%s>" % object_value
                 elif is_compressed_uri(object_value, instance_data.get("@context", {})):
                     object_ = object_value
+                elif isinstance(object_value, dict):
+                    object_ = u"<%s>" % object_value["@id"]
                 else:
                     raise InvalidSchema(u'Unexpected value {0} for object property {1}'.format(object_value, predicate_uri))
 

@@ -5,7 +5,7 @@ from tornado.web import HTTPError
 from brainiak import settings, triplestore
 from brainiak.prefixes import uri_to_slug, safe_slug_to_prefix
 from brainiak.schema.get_class import get_cached_schema
-from brainiak.search_engine import run_search
+from brainiak.search_engine import run_search, run_analyze
 from brainiak.utils import resources, sparql
 
 
@@ -37,9 +37,19 @@ def do_suggest(query_params, suggest_params):
         classes,
         title_fields)
 
-    request_body = _build_body_query(
+    # request_body = _build_body_query(
+    #     query_params,
+    #     search_params,
+    #     classes,
+    #     search_fields,
+    #     response_fields)
+
+    analyze_response = run_analyze(search_params["pattern"], settings.ES_ANALYZER, indexes)
+    tokens = analyze_response["tokens"]
+
+    request_body = _build_body_query_compatible_with_uatu_and_es_19_in_envs(
         query_params,
-        search_params,
+        tokens,
         classes,
         search_fields,
         response_fields)
@@ -245,8 +255,28 @@ def _get_response_fields_from_classes_dict(fields_by_class_list, response_fields
     return fields_by_class_set
 
 
-def _build_body_query_compatible_with_uatu_and_es_19(query_params, search_params, classes, search_fields, response_fields, analyzer=settings.ES_ANALYZER):
-    pass
+def _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields):
+    should_list = []
+    for field in search_fields:
+        for token in tokens:
+            should_item = {
+                "wildcard": {str(field): "{0}*".format(token["token"])},
+            }
+            should_list.append(should_item)
+
+    body = {
+        "from": int(resources.calculate_offset(query_params)),
+        "size": int(query_params.get("per_page", settings.DEFAULT_PER_PAGE)),
+        "fields": response_fields,
+        "query": {
+            "bool": {
+                "should": should_list,
+                "minimum_should_match": len(tokens)
+            },
+        },
+        "filter": _build_type_filters(classes)
+    }
+    return body
 
 
 def _build_body_query(query_params, search_params, classes, search_fields, response_fields, analyzer=settings.ES_ANALYZER):
@@ -279,7 +309,6 @@ def _build_body_query(query_params, search_params, classes, search_fields, respo
         },
         "filter": _build_type_filters(classes)
     }
-
     return body
 
 

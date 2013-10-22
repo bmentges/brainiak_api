@@ -222,13 +222,6 @@ class QueryTestCase(ElasticSearchQueryTestCase):
     timeout = 5
     analyzer = "default"
 
-    # DEV settings
-    #host = "http://esearch.dev.globoi.com/"
-    #analyzer = "globo_analyzer"
-
-    # QA1 settings
-    #host = "http://esearch.qa01.globoi.com/"
-
     def query_by_pattern(self, pattern, fields):
         query_params = {"page": "0"}
         search_params = {"pattern": pattern}
@@ -310,3 +303,16 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         self.assertEqual(response["hits"]["total"], 1)
         self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
         self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Saturday - 11/05/1974")
+
+
+class DevQueryTestCase(QueryTestCase):
+    # ElasticSearch 0.90.5
+    host = "http://esearch.dev.globoi.com/"
+    analyzer = "globo_analyzer"
+
+
+class Qa1QueryTestCase(QueryTestCase):
+    # ElasticSearch 0.19.11
+    # customized with UATU
+    host = "http://esearch.qa01.globoi.com/"
+    analyzer = "globo_analyzer"

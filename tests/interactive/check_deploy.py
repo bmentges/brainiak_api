@@ -243,6 +243,9 @@ class MercuryChecker(Checker):
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         environ = sys.argv[-1]
+        if not environ in ["local", "dev", "qa01", "qa02", "stg", "prod"]:
+            sys.stdout.write("Run:\n   python check_deploy.py <environ>\nWhere environ in [local, dev, qa01, qa02, stg, prod]")
+            exit()
     else:
         sys.stdout.write("Run:\n   python check_deploy.py <environ>\nWhere environ in [local, dev, qa01, qa02, stg, prod]")
         exit()

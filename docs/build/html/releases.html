@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Releases &mdash; brainiak 2.2.4 documentation</title>
+    <title>Releases &mdash; brainiak 3.3.1 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '2.2.4',
+        VERSION:     '3.3.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.2.4 documentation" href="index.html" />
+    <link rel="top" title="brainiak 3.3.1 documentation" href="index.html" />
     <link rel="next" title="Concepts" href="concepts.html" />
     <link rel="prev" title="Brainiak API documentation!" href="index.html" />
 <meta charset='utf-8'>
@@ -52,7 +52,7 @@
       </button>
 
       <a class="brand" href="index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.2.4</b></span>
+      <span class="navbar-text pull-left"><b>3.3.1</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -65,9 +65,11 @@
   <ul class="dropdown-menu globaltoc"
     ><ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#version-2-2-5-2013">Version 2.2.5 - 2013//</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-2-2-3-2-2-4-2013-09-25">Version 2.2.3 - 2.2.4 - 2013/09/25</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-2-2-0-2-2-2-2013-08-29">Version 2.2.0 - 2.2.2 - 2013/08/29</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-3-1-2013-10-23">Version 2.3.1 - 2013/10/23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-3-0-2013-10-22">Version 2.3.0 - 2013/10/22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-2-5-2013-10-15">Version 2.2.5 - 2013/10/15</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-2-3-2-2-4-2013-09-25">Version 2.2.3 + 2.2.4 - 2013/09/25</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-2-0-2-2-2-2013-08-29">Version 2.2.0 + 2.2.2 - 2013/08/29</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
@@ -121,34 +123,46 @@
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
 <li><a class="reference internal" href="#">Releases</a><ul>
-<li><a class="reference internal" href="#version-2-2-5-2013">Version 2.2.5 - 2013//</a><ul>
-<li><a class="reference internal" href="#new-features">New features</a></li>
-<li><a class="reference internal" href="#refactor">Refactor</a></li>
+<li><a class="reference internal" href="#version-2-3-1-2013-10-23">Version 2.3.1 - 2013/10/23</a><ul>
+<li><a class="reference internal" href="#enhacements">Enhacements</a></li>
 <li><a class="reference internal" href="#fixes">Fixes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#version-2-2-3-2-2-4-2013-09-25">Version 2.2.3 - 2.2.4 - 2013/09/25</a><ul>
-<li><a class="reference internal" href="#id1">New features</a></li>
-<li><a class="reference internal" href="#id2">Refactor</a></li>
-<li><a class="reference internal" href="#id3">Fixes</a></li>
+<li><a class="reference internal" href="#version-2-3-0-2013-10-22">Version 2.3.0 - 2013/10/22</a><ul>
+<li><a class="reference internal" href="#new-features">New features</a></li>
+<li><a class="reference internal" href="#refactorings">Refactorings</a></li>
+<li><a class="reference internal" href="#id1">Enhacements</a></li>
+<li><a class="reference internal" href="#id2">Fixes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#version-2-2-0-2-2-2-2013-08-29">Version 2.2.0 - 2.2.2 - 2013/08/29</a><ul>
-<li><a class="reference internal" href="#id4">New features</a></li>
-<li><a class="reference internal" href="#id5">Refactor</a></li>
-<li><a class="reference internal" href="#id6">Fixes</a></li>
+<li><a class="reference internal" href="#version-2-2-5-2013-10-15">Version 2.2.5 - 2013/10/15</a><ul>
+<li><a class="reference internal" href="#id3">New features</a></li>
+<li><a class="reference internal" href="#refactor">Refactor</a></li>
+<li><a class="reference internal" href="#id4">Fixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-2-2-3-2-2-4-2013-09-25">Version 2.2.3 + 2.2.4 - 2013/09/25</a><ul>
+<li><a class="reference internal" href="#id5">New features</a></li>
+<li><a class="reference internal" href="#id6">Refactor</a></li>
+<li><a class="reference internal" href="#id7">Fixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-2-2-0-2-2-2-2013-08-29">Version 2.2.0 + 2.2.2 - 2013/08/29</a><ul>
+<li><a class="reference internal" href="#id8">New features</a></li>
+<li><a class="reference internal" href="#id9">Refactor</a></li>
+<li><a class="reference internal" href="#id10">Fixes</a></li>
 <li><a class="reference internal" href="#developers-notes">Developers&#8217; notes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a><ul>
-<li><a class="reference internal" href="#id7">New features</a></li>
+<li><a class="reference internal" href="#id11">New features</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a><ul>
-<li><a class="reference internal" href="#id8">New features</a></li>
-<li><a class="reference internal" href="#id9">Refactor</a></li>
+<li><a class="reference internal" href="#id12">New features</a></li>
+<li><a class="reference internal" href="#id13">Refactor</a></li>
 <li><a class="reference internal" href="#documentation">Documentation</a></li>
-<li><a class="reference internal" href="#id10">Developers&#8217; notes</a></li>
+<li><a class="reference internal" href="#id14">Developers&#8217; notes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
@@ -188,10 +202,58 @@
   
   <div class="section" id="releases">
 <h1>Releases<a class="headerlink" href="#releases" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-2-2-5-2013">
-<h2>Version 2.2.5 - 2013//<a class="headerlink" href="#version-2-2-5-2013" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-2-3-1-2013-10-23">
+<h2>Version 2.3.1 - 2013/10/23<a class="headerlink" href="#version-2-3-1-2013-10-23" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="enhacements">
+<h3>Enhacements<a class="headerlink" href="#enhacements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Suggest works both with ElasticSearch 0.19.x and 0.90.x</li>
+</ul>
+</div>
+<div class="section" id="fixes">
+<h3>Fixes<a class="headerlink" href="#fixes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Suggest supports queries ending and not ending in <tt class="docutils literal"><span class="pre">s</span></tt> (e.g. James)</li>
+<li>During GET instances, if datatype is not defined in schema, return value as string and not as object (as before)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-2-3-0-2013-10-22">
+<h2>Version 2.3.0 - 2013/10/22<a class="headerlink" href="#version-2-3-0-2013-10-22" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="new-features">
 <h3>New features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Retrieve (GET) and update (PUT) only by instance URI</li>
+</ul>
+</div>
+<div class="section" id="refactorings">
+<h3>Refactorings<a class="headerlink" href="#refactorings" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Default to all resources is to use compressed URIs (<tt class="docutils literal"><span class="pre">expand_uri=0</span></tt>) in the response</li>
+<li>Return 200 and empty items in listing resources (before it was 400)</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h3>Enhacements<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Enable caching to schema</li>
+<li>Improved performace of suggest in 30x (subproperties are now cached at Redis)</li>
+<li>Validate instance data during POST/PUT using its schema</li>
+<li>Validate instance data during GET using its schema, to return values of properties as their types and cardinalities</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h3>Fixes<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Suggest query returns first exact match</li>
+<li>Suggest query supports searches in values which include <tt class="docutils literal"><span class="pre">/</span></tt></li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-2-2-5-2013-10-15">
+<h2>Version 2.2.5 - 2013/10/15<a class="headerlink" href="#version-2-2-5-2013-10-15" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>New features<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Any class definition (returned by <tt class="docutils literal"><span class="pre">_schema</span></tt>) now includes a new attribute for each predicate dictionary.
@@ -212,8 +274,8 @@ We still support expand_uri to control expansion in the response, but it always 
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="fixes">
-<h3>Fixes<a class="headerlink" href="#fixes" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3>Fixes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Adding unicode conversion to queries, that would break with special unicode chars.</li>
@@ -225,9 +287,9 @@ homonimous predicates defined in the same inheritance hierarchy.</li>
 </div>
 </div>
 <div class="section" id="version-2-2-3-2-2-4-2013-09-25">
-<h2>Version 2.2.3 - 2.2.4 - 2013/09/25<a class="headerlink" href="#version-2-2-3-2-2-4-2013-09-25" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
-<h3>New features<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h2>Version 2.2.3 + 2.2.4 - 2013/09/25<a class="headerlink" href="#version-2-2-3-2-2-4-2013-09-25" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>New features<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Evolution of the  _suggest service, now supporting retrieval of instances referred by a given target predicate where a textual pattern occurs.</li>
@@ -236,8 +298,8 @@ homonimous predicates defined in the same inheritance hierarchy.</li>
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id2">
-<h3>Refactor<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>Refactor<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>New endpoint was created for the isolated Braniak deploy.  api.semantica -&gt; brainiak.semantica</li>
@@ -246,8 +308,8 @@ homonimous predicates defined in the same inheritance hierarchy.</li>
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id3">
-<h3>Fixes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>Fixes<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>During insertion of instance, property values now receive type cast.
@@ -261,9 +323,9 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 </div>
 </div>
 <div class="section" id="version-2-2-0-2-2-2-2013-08-29">
-<h2>Version 2.2.0 - 2.2.2 - 2013/08/29<a class="headerlink" href="#version-2-2-0-2-2-2-2013-08-29" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id4">
-<h3>New features<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h2>Version 2.2.0 + 2.2.2 - 2013/08/29<a class="headerlink" href="#version-2-2-0-2-2-2-2013-08-29" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h3>New features<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Suggest resource (_suggest) with pagination (uses ElasticSearch)</li>
@@ -271,8 +333,8 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id5">
-<h3>Refactor<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id9">
+<h3>Refactor<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Add &#64;id to context and collection</li>
@@ -286,8 +348,8 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id6">
-<h3>Fixes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id10">
+<h3>Fixes<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Fix at GET &lt;instance&gt;: instance_prefix == null</li>
@@ -310,8 +372,8 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 </div>
 <div class="section" id="version-2-1-0-2013-08-01">
 <h2>Version 2.1.0 - 2013/08/01<a class="headerlink" href="#version-2-1-0-2013-08-01" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id7">
-<h3>New features<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id11">
+<h3>New features<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>New parameters for optional URI expansion in responses: exapnd_uri, expand_uri_keys and expand_uri_values.</li>
@@ -324,8 +386,8 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 </div>
 <div class="section" id="version-2-0-0-2013-07-18">
 <h2>Version 2.0.0 - 2013/07/18<a class="headerlink" href="#version-2-0-0-2013-07-18" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id8">
-<h3>New features<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id12">
+<h3>New features<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Instances list (filtering) resource supports multiple predicates and objects</li>
@@ -337,8 +399,8 @@ available on cached resources</li>
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id9">
-<h3>Refactor<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id13">
+<h3>Refactor<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Instances list (filtering) resource now applies lang to objects (?o) when
@@ -382,8 +444,8 @@ literals are provided</li>
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id10">
-<h3>Developers&#8217; notes<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id14">
+<h3>Developers&#8217; notes<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>SPARQL queries logging is now compatible to Globo.com DBA team&#8217;s expectations</li>

@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from brainiak import triplestore
+from brainiak.log import get_logger
 from brainiak.prefixes import MemorizeContext
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND_XSD_TO_JSON_TYPE
 from brainiak.utils.cache import build_schema_key, memoize
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
+from brainiak.utils.resources import LazyObject
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InvalidSchema, bindings_to_dict
+
+logger = LazyObject(get_logger)
 
 
 class SchemaNotFound(Exception):
@@ -322,6 +326,7 @@ def items_from_range(range_uri):
         if mapped_type:
             predicate = {"type": mapped_type}
         else:
+            logger.error("Range URI {0} not mapped to JSON type.".format(range_uri))
             predicate = {"type": "string"}
 
     predicate["datatype"] = range_uri
@@ -357,6 +362,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
         max_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('maxItems', 2)
         min_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('minItems', 2)
+
 
         if (min_items > 1) or (max_items > 1) or (not min_items and not max_items):
             predicate["type"] = "array"

@@ -29,7 +29,7 @@ Refactorings
 ____________
 
 - Default to all resources is to use compressed URIs (``expand_uri=0``) in the response
-- Return 200 and empty items in listing resources (before it was 400)
+- Return 200 and empty items in listing resources (before it was 404)
 
 
 Enhacements

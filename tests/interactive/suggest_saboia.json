@@ -1,0 +1,45 @@
+{
+    "filter": {
+        "or": [
+            {
+                "type": {
+                    "value": "http://example.onto/Place"
+                }
+            },
+            {
+                "type": {
+                    "value": "http://example.onto/City"
+                }
+            }
+        ]
+    },
+    "fields": [
+        "http://www.w3.org/2000/01/rdf-schema#label",
+        "http://semantica.globo.com/upper/name",
+        "http://example.onto/name"
+    ],
+    "query": {
+        "minimum_should_match": 1,
+        "bool": {
+            "should": [
+                {
+                    "wildcard": {
+                        "http://www.w3.org/2000/01/rdf-schema#label": "york"
+                    }
+                },
+                {
+                    "wildcard": {
+                        "http://semantica.globo.com/upper/name": "york"
+                    }
+                },
+                {
+                    "wildcard": {
+                        "http://example.onto/name": "york"
+                    }
+                }
+            ]
+        }
+    },
+    "from": 0,
+    "size": 10
+}

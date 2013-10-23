@@ -10,6 +10,7 @@ _MAP_XSD_TO_JSON_TYPE = {
     "rdf:XMLLiteral": "string",
     "rdfs:Literal": "string",
     "xsd:string": "string",
+    "xsd:anyURI": "string",
     "xsd:float": "number",
     "xsd:double": "number",
     "xsd:integer": "integer",

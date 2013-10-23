@@ -230,13 +230,6 @@ class QueryTestCase(ElasticSearchQueryTestCase):
     timeout = 3
     analyzer = "default"
 
-    def tokenize(self, pattern):
-        url = "{0}{1}/_analyze".format(self.host, self.index)
-        if self.analyzer != "default":
-            url += "?analyzer={2}".format(self.analyzer)
-        response = requests.post(url, data=json.dumps(pattern), proxies=self.proxies)
-        return json.loads(response.text)["tokens"]
-
     def query_by_pattern(self, pattern, fields):
         query_params = {"page": "0"}
         search_params = {"pattern": pattern}
@@ -248,7 +241,7 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         #query = _build_body_query(query_params, search_params, classes, search_fields, response_fields, self.analyzer)
 
         # TODO: when the step above is done, delete the two lines of code below:
-        tokens = self.tokenize(pattern)
+        tokens = self.tokenize(pattern, self.analyzer)["tokens"]
         query = _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields)
         return query
 

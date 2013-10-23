@@ -187,7 +187,12 @@ def _convert_to_python(object_value, class_schema, predicate_uri):
         if python_type == bool:
             converted_value = decode_boolean(object_value)
         else:
-            converted_value = python_type(object_value)
+            msg = u"The property {0} is mapped to a inconsistent value {1}".format(predicate_uri, object_value)
+            try:
+                converted_value = python_type(object_value)
+            except ValueError:
+                raise Exception(msg)
+
         return converted_value
     else:  # values with predicate_uri not in schema will be ignored anyway
         return object_value

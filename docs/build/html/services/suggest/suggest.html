@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Suggest &mdash; brainiak 2.2.4 documentation</title>
+    <title>Suggest &mdash; brainiak 3.3.1 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2.2.4',
+        VERSION:     '3.3.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.2.4 documentation" href="../../index.html" />
+    <link rel="top" title="brainiak 3.3.1 documentation" href="../../index.html" />
     <link rel="up" title="Services" href="../../services.html" />
     <link rel="next" title="Overriding URIs" href="../parameters.html" />
     <link rel="prev" title="Edit a Instance" href="../instance/edit_instance.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.2.4</b></span>
+      <span class="navbar-text pull-left"><b>3.3.1</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -66,9 +66,11 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../releases.html">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-5-2013">Version 2.2.5 - 2013//</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-3-2-2-4-2013-09-25">Version 2.2.3 - 2.2.4 - 2013/09/25</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-0-2-2-2-2013-08-29">Version 2.2.0 - 2.2.2 - 2013/08/29</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-1-2013-10-23">Version 2.3.1 - 2013/10/23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-0-2013-10-22">Version 2.3.0 - 2013/10/22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-5-2013-10-15">Version 2.2.5 - 2013/10/15</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-3-2-2-4-2013-09-25">Version 2.2.3 + 2.2.4 - 2013/09/25</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-2-0-2-2-2-2013-08-29">Version 2.2.0 + 2.2.2 - 2013/08/29</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
@@ -200,213 +202,8 @@ The  optional parameter <tt class="docutils literal"><span class="pre">fields</s
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;@context&quot;: {
-        &quot;@language&quot;: &quot;pt&quot;
-    },
-    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/_suggest/&quot;,
-    &quot;_first_args&quot;: &quot;page=1&quot;,
-    &quot;_next_args&quot;: &quot;page=2&quot;,
-    &quot;items&quot;: [
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/42672&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
-            &quot;instance_fields&quot;: [
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
-                    &quot;required&quot;: false
-                },
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo - Ataque  / Brasil ( Ronaldo Lu\u00eds Naz\u00e1rio de Lima )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
-                    &quot;required&quot;: false
-                }
-            ],
-            &quot;title&quot;: &quot;Ronaldo&quot;,
-            &quot;type_title&quot;: &quot;Atleta&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/71640&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
-            &quot;instance_fields&quot;: [
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
-                    &quot;required&quot;: false
-                },
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo - Ataque  / Joinville ( Ronaldo Henrique Silva )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
-                    &quot;required&quot;: false
-                }
-            ],
-            &quot;title&quot;: &quot;Ronaldo&quot;,
-            &quot;type_title&quot;: &quot;Atleta&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/73565&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
-            &quot;instance_fields&quot;: [
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
-                    &quot;required&quot;: false
-                },
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo - Lateral  / Horizonte-CE ( Ronaldo )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
-                    &quot;required&quot;: false
-                }
-            ],
-            &quot;title&quot;: &quot;Ronaldo&quot;,
-            &quot;type_title&quot;: &quot;Atleta&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/38291&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
-            &quot;instance_fields&quot;: [
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
-                    &quot;required&quot;: false
-                },
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo - Gol  / Paysandu ( Willis Gomes Dias )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
-                    &quot;required&quot;: false
-                }
-            ],
-            &quot;title&quot;: &quot;Ronaldo&quot;,
-            &quot;type_title&quot;: &quot;Atleta&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/83992&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
-            &quot;instance_fields&quot;: [
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo &quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
-                    &quot;required&quot;: false
-                },
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo  - Zaga  / Aracruz ( Ronaldo In\u00e1cio J\u00fanior )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
-                    &quot;required&quot;: false
-                }
-            ],
-            &quot;title&quot;: &quot;Ronaldo &quot;,
-            &quot;type_title&quot;: &quot;Atleta&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/84399&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
-            &quot;instance_fields&quot;: [
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo &quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
-                    &quot;required&quot;: false
-                },
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo  - Zaga  / Conilon ( Ronaldo Felipe de Azevedo J\u00fanior )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
-                    &quot;required&quot;: false
-                }
-            ],
-            &quot;title&quot;: &quot;Ronaldo &quot;,
-            &quot;type_title&quot;: &quot;Atleta&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/84260&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
-            &quot;instance_fields&quot;: [
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
-                    &quot;required&quot;: false
-                },
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo - Zaga  / Sobradinho ( Ronaldo Alessandro Batista Caetano )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
-                    &quot;required&quot;: false
-                }
-            ],
-            &quot;title&quot;: &quot;Ronaldo&quot;,
-            &quot;type_title&quot;: &quot;Atleta&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/67972&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
-            &quot;instance_fields&quot;: [
-                {
-                    &quot;object_title&quot;: &quot;Cristiano Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
-                    &quot;required&quot;: false
-                },
-                {
-                    &quot;object_title&quot;: &quot;Cristiano Ronaldo - Ataque  / Real Madrid ( Cristiano Ronaldo dos Santos Aveiro )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
-                    &quot;required&quot;: false
-                }
-            ],
-            &quot;title&quot;: &quot;Cristiano Ronaldo&quot;,
-            &quot;type_title&quot;: &quot;Atleta&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/38343&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
-            &quot;instance_fields&quot;: [
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo Alves&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
-                    &quot;required&quot;: false
-                },
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo Alves - Zaga  / Ypiranga-RS ( Ronaldo Pereira Alves )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
-                    &quot;required&quot;: false
-                }
-            ],
-            &quot;title&quot;: &quot;Ronaldo Alves&quot;,
-            &quot;type_title&quot;: &quot;Atleta&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/68950&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
-            &quot;instance_fields&quot;: [
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo Alves&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
-                    &quot;required&quot;: false
-                },
-                {
-                    &quot;object_title&quot;: &quot;Ronaldo Alves - Zaga  / Internacional ( Ronaldo Luiz Alves )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
-                    &quot;required&quot;: false
-                }
-            ],
-            &quot;title&quot;: &quot;Ronaldo Alves&quot;,
-            &quot;type_title&quot;: &quot;Atleta&quot;
-        }
+    &quot;errors&quot;: [
+        &quot;HTTP error: 500\nAccess to backend service failed.  HTTP 400: Bad Request.\nResponse:\n{\&quot;error\&quot;:\&quot;ElasticSearchIllegalArgumentException[failed to find analyzer [globo_analyzer]]\&quot;,\&quot;status\&quot;:400}&quot;
     ]
 }
 </pre></div>

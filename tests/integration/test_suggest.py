@@ -8,7 +8,7 @@ from mock import patch
 
 from brainiak.suggest.suggest import QUERY_PREDICATE_RANGES, \
     QUERY_SUBPROPERTIES, _build_class_fields_query, \
-    get_instance_class_schema, _build_body_query
+    get_instance_class_schema, _build_body_query, _build_body_query_compatible_with_uatu_and_es_19_in_envs
 from brainiak.utils.params import LIST_PARAMS, ParamDict
 from brainiak.utils.sparql import filter_values, compress_keys_and_values
 from brainiak import settings
@@ -227,8 +227,15 @@ class QueryTestCase(ElasticSearchQueryTestCase):
             }
         }
     ]
-    timeout = 5
+    timeout = 3
     analyzer = "default"
+
+    def tokenize(self, pattern):
+        url = "{0}{1}/_analyze".format(self.host, self.index)
+        if self.analyzer != "default":
+            url += "?analyzer={2}".format(self.analyzer)
+        response = requests.post(url, data=json.dumps(pattern), proxies=self.proxies)
+        return json.loads(response.text)["tokens"]
 
     def query_by_pattern(self, pattern, fields):
         query_params = {"page": "0"}
@@ -236,12 +243,16 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         classes = ["person", "pet"]
         search_fields = fields
         response_fields = ["name", "birthDate"]
-        query = _build_body_query(query_params, search_params, classes, search_fields, response_fields, self.analyzer)
+
+        # TODO: rollback to the query below when ES 0.90.x is in all environments
+        #query = _build_body_query(query_params, search_params, classes, search_fields, response_fields, self.analyzer)
+
+        # TODO: when the step above is done, delete the two lines of code below:
+        tokens = self.tokenize(pattern)
+        query = _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields)
         return query
 
     def test_query_returns_two_results_with_exact_match_first(self):
-        #user_query_tokens = list(self.analyze("james", "globo_analyzer"))
-        #query = brainiak_query(user_query_tokens,   ["name"])
         pattern = "james"
         fields = ["name"]
         query = self.query_by_pattern(pattern, fields)
@@ -253,8 +264,6 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         self.assertEqual(response["hits"]["hits"][1]["fields"][u"name"], u"James Bond")
 
     def test_query_returns_exact_match_without_substrings(self):
-        #user_query_tokens = list(self.analyze("james bond", "globo_analyzer"))
-        #query = brainiak_query(user_query_tokens, ["name"])
         pattern = "james bond"
         fields = ["name"]
         query = self.query_by_pattern(pattern, fields)
@@ -273,10 +282,6 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Friday - 06/01/1854")
 
     def test_query_returns_values_from_two_fields(self):
-        # user_query_tokens = list(self.analyze("James", "globo_analyzer"))
-        # query = brainiak_query(user_query_tokens, ["birthDate", "name"])
-        # response = self.query(query)
-
         pattern = "james"
         fields = ["birthDate", "name"]
         query = self.query_by_pattern(pattern, fields)
@@ -287,22 +292,16 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Saturday - 11/05/1974")
 
     def test_query_returns_search_result_for_date_queries(self):
-        # user_query_tokens = list(self.analyze("11/05/1974", "globo_analyzer"))
-        # query = brainiak_query(user_query_tokens, ["birthDate"])
-        # response = self.query(query)
         pattern = "11/05/1974"
         fields = ["birthDate"]
         query = self.query_by_pattern(pattern, fields)
         response = self.search(query)
 
-        self.assertEqual(response["hits"]["total"], 2)
+        self.assertEqual(response["hits"]["total"], 1)
         self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
         self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Saturday - 11/05/1974")
 
     def test_query_returns_search_result_for_full_field(self):
-        # user_query_tokens = list(self.analyze("Saturday - 11/05/1974", "globo_analyzer"))
-        # query = brainiak_query(user_query_tokens, ["birthDate"])
-        # response = self.query(query)
         pattern = "Saturday - 11/05/1974"
         fields = ["birthDate"]
         query = self.query_by_pattern(pattern, fields)
@@ -318,8 +317,8 @@ class DevQueryTestCase(QueryTestCase):
     analyzer = "globo_analyzer"
 
 
-# class Qa1QueryTestCase(QueryTestCase):
-#     # ElasticSearch 0.19.11
-#     # customized with UATU
-#     host = "http://esearch.qa01.globoi.com/"
-#     analyzer = "globo_analyzer"
+class StagingQueryTestCase(QueryTestCase):
+    # ElasticSearch 0.19.11, customized with UATU
+    host = "http://esearch.globoi.com/"
+    proxies = {"http": "http://proxy.staging.globoi.com:3128"}
+    analyzer = "globo_analyzer"

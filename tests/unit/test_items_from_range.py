@@ -22,6 +22,10 @@ class ItemsFromRangeTestCase(unittest.TestCase):
         self.assertEqual(items_from_range("http://www.w3.org/2001/XMLSchema#string"),
                           {'datatype': "http://www.w3.org/2001/XMLSchema#string", 'type': 'string'})
 
+    def test_items_from_range_string_any_uri(self):
+        self.assertEqual(items_from_range("http://www.w3.org/2001/XMLSchema#anyURI"),
+                          {'datatype': "http://www.w3.org/2001/XMLSchema#anyURI", 'type': 'string'})
+
     def test_items_from_range_unmapped(self):
         self.assertEqual(items_from_range("http://some/strange/type/uri"),
-                          {'datatype': 'http://some/strange/type/uri', 'type': 'object'})
+                          {'datatype': 'http://some/strange/type/uri', 'type': 'string'})

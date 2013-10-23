@@ -363,7 +363,6 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
         max_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('maxItems', 2)
         min_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('minItems', 2)
 
-
         if (min_items > 1) or (max_items > 1) or (not min_items and not max_items):
             predicate["type"] = "array"
             predicate["items"] = {"type": "string", "format": "uri"}

@@ -222,7 +222,7 @@ class BrainiakChecker(Checker):
             PARAMS = {
                 "search": {
                     "pattern": "flamengo",
-                    "target": "esportes:tem_como_conteudo",
+                    "target": "esportes:trata_da_entidade",
                     "fields": ["base:dados_buscaveis"],
                     "graphs": ["http://semantica.globo.com/esportes/"]
                 },
@@ -246,7 +246,7 @@ class BrainiakChecker(Checker):
                 {
                     u'object_id': u'http://semantica.globo.com/esportes/esporte/1',
                     u'object_title': u'Futebol',
-                    u'predicate_id': u'esportes:do_esporte',
+                    u'predicate_id': u'esportes:sde_esportes_id',
                     u'predicate_title': u'Do esporte',
                     u'required': False
                 },

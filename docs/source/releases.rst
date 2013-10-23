@@ -1,7 +1,54 @@
 Releases
 ========
 
-Version 2.2.5 - 2013//
+
+Version 2.3.1 - 2013/10/23
+--------------------------
+
+Enhacements
+___________
+
+- Suggest works both with ElasticSearch 0.19.x and 0.90.x
+
+Fixes
+_____
+
+- Suggest supports queries ending and not ending in ``s`` (e.g. James)
+- During GET instances, if datatype is not defined in schema, return value as string and not as object (as before)
+
+
+Version 2.3.0 - 2013/10/22
+--------------------------
+
+New features
+____________
+
+- Retrieve (GET) and update (PUT) only by instance URI
+
+Refactorings
+____________
+
+- Default to all resources is to use compressed URIs (``expand_uri=0``) in the response
+- Return 200 and empty items in listing resources (before it was 400)
+
+
+Enhacements
+___________
+
+- Enable caching to schema
+- Improved performace of suggest in 30x (subproperties are now cached at Redis)
+- Validate instance data during POST/PUT using its schema
+- Validate instance data during GET using its schema, to return values of properties as their types and cardinalities
+
+
+Fixes
+_____
+
+- Suggest query returns first exact match
+- Suggest query supports searches in values which include ``/``
+
+
+Version 2.2.5 - 2013/10/15
 -----------------------------------
 
 .. TODO meta_properties on releases.
@@ -33,7 +80,7 @@ _____
    homonimous predicates defined in the same inheritance hierarchy.
 
 
-Version 2.2.3 - 2.2.4 - 2013/09/25
+Version 2.2.3 + 2.2.4 - 2013/09/25
 -----------------------------------
 
 New features
@@ -62,7 +109,7 @@ _____
  - Removal of restricted attributes (@ and _ prefixes) from the notification sent to the backstage bus
 
 
-Version 2.2.0 - 2.2.2 - 2013/08/29
+Version 2.2.0 + 2.2.2 - 2013/08/29
 -----------------------------------
 
 New features

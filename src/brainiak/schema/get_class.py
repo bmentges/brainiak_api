@@ -318,7 +318,12 @@ def items_from_range(range_uri):
     if range_uri == 'http://www.w3.org/2001/XMLSchema#date' or range_uri == 'http://www.w3.org/2001/XMLSchema#dateTime':
         predicate = {"type": "string", "format": "date"}
     else:
-        predicate = {"type": _MAP_EXPAND_XSD_TO_JSON_TYPE.get(range_uri, 'object')}
+        mapped_type = _MAP_EXPAND_XSD_TO_JSON_TYPE.get(range_uri, None)
+        if mapped_type:
+            predicate = {"type": mapped_type}
+        else:
+            predicate = {"type": "string"}
+
     predicate["datatype"] = range_uri
     return predicate
 

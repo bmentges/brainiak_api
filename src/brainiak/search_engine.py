@@ -9,7 +9,7 @@ from brainiak.greenlet_tornado import greenlet_fetch
 from brainiak.settings import ELASTICSEARCH_ENDPOINT
 
 
-format_post = u"ELASTICSEARCH - %(url)s - %(method)s [tempo: %(time_diff)s] - QUERY - %(body)s"
+format_post = u"ELASTICSEARCH - %(url)s - %(method)s [time: %(time_diff)s] - QUERY - %(body)s"
 
 
 def run_search(body, indexes=None):
@@ -47,7 +47,7 @@ def _build_elasticsearch_request_url(indexes):
     return request_url
 
 
-def run_analyze(target, analyzer, indexes=None):
+def run_analyze(target, analyzer, indexes):
     request_url = _build_elasticsearch_analyze_url(indexes, analyzer, target)
     request_params = {
         "url": unicode(request_url),

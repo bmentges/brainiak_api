@@ -69,6 +69,12 @@ class MockRequest(object):
         return self.uri
 
 
+class MockResponse(object):
+
+    def __init__(self, body):
+        self.body = body
+
+
 class MockHandler():
 
     def __init__(self, uri=None, querystring="", headers=None, **kw):

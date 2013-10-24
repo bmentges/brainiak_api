@@ -1,10 +1,11 @@
 from unittest import TestCase
 
 from mock import patch
-
 from tornado.web import HTTPError
 
+from brainiak.utils.params import ParamDict
 from brainiak.suggest import suggest
+from tests.mocks import MockHandler
 
 
 class SuggestTestCase(TestCase):
@@ -487,3 +488,163 @@ SELECT DISTINCT ?field_value {
         computed = suggest.convert_index_name_to_graph_uri(graph_name)
         expected = "http://dbpedia.org/ontology/"
         self.assertEqual(computed, expected)
+
+
+SAMPLE_RESPOSE_TO_GET_PREDICATE_RANGES = {
+    u'results': {
+        u'bindings': [
+            {
+                u'range': {
+                    u'type': u'uri',
+                    u'value': u'http://semantica.globo.com/place/State'
+                },
+                u'range_graph': {
+                    u'type': u'uri',
+                    u'value': u'http://semantica.globo.com/place/'
+                },
+                u'range_label': {
+                    u'type': u'literal',
+                    u'value': u'Estado',
+                    u'xml:lang': u'pt'
+                }
+            },
+            {
+                u'range': {
+                    u'type': u'uri',
+                    u'value': u'http://semantica.globo.com/place/Country'
+                },
+                u'range_graph': {
+                    u'type': u'uri',
+                    u'value': u'http://semantica.globo.com/place/'
+                },
+                u'range_label': {
+                    u'type': u'literal',
+                    u'value': u'Pa\xeds',
+                    u'xml:lang': u'pt'
+                }
+            },
+            {
+                u'range': {
+                    u'type': u'uri',
+                    u'value': u'http://semantica.globo.com/place/City'
+                },
+                u'range_graph': {
+                    u'type': u'uri',
+                    u'value': u'http://semantica.globo.com/place/'
+                },
+                u'range_label': {
+                    u'type': u'literal',
+                    u'value': u'Cidade',
+                    u'xml:lang': u'pt'
+                }
+            },
+        ]
+    }
+}
+
+SAMPLE_ES_RESPONSE = {
+    u'hits': {
+        u'hits': [
+            {
+                u'_score': 0.09596372,
+                u'_type': u'http://semantica.globo.com/place/City',
+                u'_id': u'http://semantica.globo.com/place/City/bc9e708f-35c4-4067-836d-48aaa51d746d',
+                u'fields': {
+                    u'http://semantica.globo.com/upper/name': u'Globoland: is the best'
+                },
+                u'_index': u'semantica.place'
+            },
+        ],
+        'total': 1
+    }
+}
+
+SAMPLE_BUILD_ITEMS = [
+    {
+        'type_title': u'Cidade',
+        '@id': u'http://semantica.globo.com/place/City/bc9e708f-35c4-4067-836d-48aaa51d746d',
+        '@type': u'http://semantica.globo.com/place/City',
+        'title': u'Globoland: is the best'
+    }
+]
+
+
+class ExtraSuggestTestCase(TestCase):
+
+    @patch("brainiak.suggest.suggest.resources.decorate_dict_with_pagination")
+    @patch("brainiak.suggest.suggest._build_items", return_value=SAMPLE_BUILD_ITEMS)
+    @patch("brainiak.suggest.suggest.run_search", return_value=SAMPLE_ES_RESPONSE)
+    @patch("brainiak.suggest.suggest.run_analyze", return_value={u'tokens': [{u'token': u'globoland'}]})
+    @patch("brainiak.suggest.suggest._get_subproperties", return_value=[u'http://semantica.globo.com/upper/name'])
+    @patch("brainiak.suggest.suggest._get_predicate_ranges", return_value=SAMPLE_RESPOSE_TO_GET_PREDICATE_RANGES)
+    def test_do_suggest_with_data(self, mock_get_predicate_ranges, mock_get_subproperties, mock_run_analyze, mock_run_search, mock_build_items, mock_decorate):
+        handler = MockHandler()
+        params = {
+            'lang': 'pt',
+            'expand_uri': '0',
+            'do_item_count': '0',
+            'per_page': '10',
+            'page': '0'
+        }
+        query_params = ParamDict(handler, **params)
+        suggest_params = {
+            u'search': {
+                u'target': u'http://semantica.globo.com/upper/isPartOf',
+                u'pattern': u'Globoland',
+                u'graphs': [u'http://semantica.globo.com/place/'],
+                u'classes': [u'http://semantica.globo.com/place/City'],
+                u'fields': [u'http://semantica.globo.com/upper/name', u'http://semantica.globo.com/upper/fullName']
+            }
+        }
+
+        computed = suggest.do_suggest(query_params, suggest_params)
+        expected = {
+            '@context': {'@language': 'pt'},
+            '_base_url': 'http://mock.test.com/',
+            'items': [
+                {
+                    '@id': u'http://semantica.globo.com/place/City/bc9e708f-35c4-4067-836d-48aaa51d746d',
+                    '@type': u'http://semantica.globo.com/place/City',
+                    'title': u'Globoland: is the best',
+                    'type_title': u'Cidade'
+                }
+            ]
+        }
+        self.assertEqual(computed, expected)
+
+    @patch("brainiak.suggest.suggest.run_search", return_value={"hits": {"total": 0}})
+    @patch("brainiak.suggest.suggest.run_analyze", return_value={u'tokens': []})
+    @patch("brainiak.suggest.suggest._get_subproperties", return_value=[])
+    @patch("brainiak.suggest.suggest._get_predicate_ranges", return_value=SAMPLE_RESPOSE_TO_GET_PREDICATE_RANGES)
+    def test_do_suggest_without_data(self, mock_get_predicate_ranges, mock_get_subproperties, mock_run_analyze, mock_run_search):
+        handler = MockHandler()
+        params = {
+            'lang': 'pt',
+            'expand_uri': '0',
+            'do_item_count': '0',
+            'per_page': '10',
+            'page': '0'
+        }
+        query_params = ParamDict(handler, **params)
+        suggest_params = {
+            u'search': {
+                u'target': u'http://semantica.globo.com/upper/isPartOf',
+                u'pattern': u'Globoland',
+                u'graphs': [u'http://semantica.globo.com/place/'],
+                u'classes': [u'http://semantica.globo.com/place/City'],
+                u'fields': [u'http://semantica.globo.com/upper/name', u'http://semantica.globo.com/upper/fullName']
+            }
+        }
+
+        computed = suggest.do_suggest(query_params, suggest_params)
+        self.assertEqual(computed, {})
+
+    @patch("brainiak.suggest.suggest._get_predicate_ranges", return_value={u'results': {u'bindings': []}})
+    def test_do_suggest_without_predicate_definition(self, mock_get_predicate_ranges):
+        query_params = {}
+        suggest_params = {u'search': {"target": "something"}}
+        with self.assertRaises(HTTPError) as exception:
+            suggest.do_suggest(query_params, suggest_params)
+            expected_error_msg = \
+                u"Either the predicate something does not exists or it does not have any rdfs:range defined in the triplestore"
+            self.assertEqual(exception.exception, expected_error_msg)

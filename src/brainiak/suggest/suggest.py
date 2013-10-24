@@ -43,7 +43,6 @@ def do_suggest(query_params, suggest_params):
     #     classes,
     #     search_fields,
     #     response_fields)
-
     analyze_response = run_analyze(search_params["pattern"], settings.ES_ANALYZER, indexes)
     tokens = analyze_response["tokens"]
 
@@ -52,7 +51,9 @@ def do_suggest(query_params, suggest_params):
         tokens,
         classes,
         search_fields,
-        response_fields)
+        response_fields,
+        search_params["pattern"]
+    )
     elasticsearch_result = run_search(request_body, indexes=indexes)
 
     class_fields = response_params.get("class_fields", [])
@@ -255,14 +256,25 @@ def _get_response_fields_from_classes_dict(fields_by_class_list, response_fields
     return fields_by_class_set
 
 
-def _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields):
+def _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields, pattern):
     should_list = []
     for field in search_fields:
         for token in tokens:
+            token_item = token["token"]
             should_item = {
-                "wildcard": {str(field): "{0}*".format(token["token"])},
+                "query_string": {
+                    "query": '\"{0}\"'.format(token_item),
+                    "fields": [field]
+                }
             }
             should_list.append(should_item)
+            # should_item = {
+            #     "wildcard": {str(field): "{0}*".format(token_item)}
+            # }
+            # should_list.append(should_item)
+
+    should_item = {"wildcard": {str(field): "{0}*".format(pattern)}}
+    should_list.append(should_item)
 
     body = {
         "from": int(resources.calculate_offset(query_params)),

@@ -14,7 +14,6 @@ RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 def do_suggest(query_params, suggest_params):
     search_params = suggest_params["search"]
-
     range_result = _get_predicate_ranges(query_params, search_params)
     if sparql.is_result_empty(range_result):
         message = u"Either the predicate {0} does not exists or it does not have" + \
@@ -43,6 +42,7 @@ def do_suggest(query_params, suggest_params):
     #     classes,
     #     search_fields,
     #     response_fields)
+
     analyze_response = run_analyze(search_params["pattern"], settings.ES_ANALYZER, indexes)
     tokens = analyze_response["tokens"]
 
@@ -55,7 +55,6 @@ def do_suggest(query_params, suggest_params):
         search_params["pattern"]
     )
     elasticsearch_result = run_search(request_body, indexes=indexes)
-
     class_fields = response_params.get("class_fields", [])
 
     total_items = elasticsearch_result["hits"]["total"]

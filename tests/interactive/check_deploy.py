@@ -16,23 +16,14 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.3.1"
+brainiak_version = "master"
 mercury_version = "1.2.4"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",
-    "dev": "http://api.semantica.dev.globoi.com/",
-    "qa01": "http://api.semantica.qa01.globoi.com/",
-    "qa02": "http://api.semantica.qa01.globoi.com/",
-    "stg": "http://api.semantica.globoi.com/",
-    "prod": "http://api.semantica.globoi.com/"
-}
-
-brainiak_new_endpoint = {
-    "local": "http://0.0.0.0:5100/",
     "dev": "http://brainiak.semantica.dev.globoi.com/",
     "qa01": "http://brainiak.semantica.qa01.globoi.com/",
-    "qa02": "http://brainiak.semantica.qa01.globoi.com/",
+    "qa02": "http://brainiak.semantica.qa02.globoi.com/",
     "stg": "http://brainiak.semantica.globoi.com/",
     "prod": "http://brainiak.semantica.globoi.com/"
 }
@@ -146,17 +137,16 @@ class BrainiakChecker(Checker):
         nose.assert_in(brainiak_version, response.text)
         sys.stdout.write("\ncheck_version - pass")
 
-    def check_docs(self):
-        if environ == "local":
-            sys.stdout.write("\ncheck_docs - ignore")
-        else:
-            response = self.get("docs/")
-            nose.assert_equal(response.status_code, 200)
-            nose.assert_in("Brainiak API documentation!", response.text)
-            sys.stdout.write("\ncheck_docs - pass")
+    # def check_docs(self):
+    #     if environ == "local":
+    #         sys.stdout.write("\ncheck_docs - ignore")
+    #     else:
+    #         response = self.get("docs/")
+    #         nose.assert_equal(response.status_code, 200)
+    #         nose.assert_in("Brainiak API documentation!", response.text)
+    #         sys.stdout.write("\ncheck_docs - pass")
 
     def check_instance_create(self):
-
         # Remove if instance exist
         self.put("place/City/globoland", "new_city.json")
         self.delete("place/City/globoland")
@@ -222,7 +212,7 @@ class BrainiakChecker(Checker):
             PARAMS = {
                 "search": {
                     "pattern": "flamengo",
-                    "target": "esportes:trata_da_entidade",
+                    "target": "esportes:tem_como_conteudo",
                     "fields": ["base:dados_buscaveis"],
                     "graphs": ["http://semantica.globo.com/esportes/"]
                 },
@@ -233,7 +223,6 @@ class BrainiakChecker(Checker):
             }
             response = self.post("_suggest", json_=PARAMS)
             body = response.json()
-
             nose.assert_equal(len(body["items"]), 10)
 
             first_item = body["items"][0]
@@ -246,7 +235,7 @@ class BrainiakChecker(Checker):
                 {
                     u'object_id': u'http://semantica.globo.com/esportes/esporte/1',
                     u'object_title': u'Futebol',
-                    u'predicate_id': u'esportes:sde_esportes_id',
+                    u'predicate_id': u'esportes:do_esporte',
                     u'predicate_title': u'Do esporte',
                     u'required': False
                 },
@@ -268,7 +257,7 @@ class BrainiakChecker(Checker):
                     u'object_title': u'Flamengo',
                     u'predicate_id': u'esportes:nome_popular_sde',
                     u'predicate_title': u'Nome Popular no SDE',
-                    u'required': False
+                    u'required': True if self.environ != "dev" else False
                 },
                 {  # metafield
                     u'object_title': u'Flamengo ( Futebol / Futebol de campo / Profissional ) ',
@@ -277,16 +266,10 @@ class BrainiakChecker(Checker):
                     u'required': False
                 }
             ]
-
             nose.assert_equal(sorted(first_item["instance_fields"]), sorted(expected_instance_fields))
             nose.assert_true("base:thumbnail" in first_item["class_fields"])
 
-
-class NewBrainiakChecker(BrainiakChecker):
-
-    def __init__(self, environ):
-        Checker.__init__(self, environ)
-        self.endpoint = brainiak_new_endpoint.get(environ)
+        sys.stdout.write("\ncheck_suggest_sports_user_case - pass")
 
 
 class MercuryChecker(Checker):
@@ -326,13 +309,8 @@ if __name__ == "__main__":
         sys.stdout.write("Run:\n   python check_deploy.py <environ>\nWhere environ in [local, dev, qa01, qa02, stg, prod]")
         exit()
 
-    # sys.stdout.write("[Checking Old Brainiak]")
-    # brainiak = BrainiakChecker(environ)
-    # brainiak_functions = [function() for name, function in inspect.getmembers(brainiak) if name.startswith("check")]
-    # sys.stdout.write("\n")
-
-    sys.stdout.write("[Checking New Brainiak]")
-    brainiak = NewBrainiakChecker(environ)
+    sys.stdout.write("[Checking Brainiak]")
+    brainiak = BrainiakChecker(environ)
     brainiak_functions = [function() for name, function in inspect.getmembers(brainiak) if name.startswith("check")]
     sys.stdout.write("\n")
 

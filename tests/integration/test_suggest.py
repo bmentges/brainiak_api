@@ -242,7 +242,7 @@ class QueryTestCase(ElasticSearchQueryTestCase):
 
         # TODO: when the step above is done, delete the two lines of code below:
         tokens = self.tokenize(pattern, self.analyzer)["tokens"]
-        query = _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields)
+        query = _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields, pattern)
         return query
 
     def test_query_returns_two_results_with_exact_match_first(self):
@@ -302,6 +302,116 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         self.assertEqual(response["hits"]["total"], 1)
         self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
         self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Saturday - 11/05/1974")
+
+
+class ComplexQueryTestCase(ElasticSearchQueryTestCase):
+    # ElasticSearch 0.90.5
+    host = "http://esearch.dev.globoi.com/"
+    analyzer = "globo_analyzer"
+    index = "sports.sample"
+    fixtures = [
+        {
+            "body": {
+                "title": "Fluminense x Flamengo"
+            },
+            "type": "sports:Match",
+            "id": "http://sports.onto/Match/175096"
+        },
+        {
+            "body": {
+                "title": "Comercial-PI 1 x 0 Flamengo-PI - 17/06/2012 16:00"
+            },
+            "type": "sports:Match",
+            "id": "http://sports.onto/Match/160154"
+        },
+        {
+            "body": {
+                "title": "Vasco 2 x 1 Flamengo - 16/10/2002"
+            },
+            "type": "sports:Match",
+            "id": "http://sports.onto/Match/24762"
+        },
+        {
+            "body": {
+                "title": "Bahia 0 x 2 Flamengo - 19/08/2001 16:00"
+            },
+            "type": "sports:Match",
+            "id": "http://sports.onto/Match/24241"
+        },
+        {
+            "body": {
+                "title": "Flamengo 1 x 1 Cruzeiro - 01/09/2002"
+            },
+            "type": "sports:Match",
+            "id": "http://sports.onto/Match/24624"
+        },
+        {
+            "body": {
+                "title": "Atl\\u00e9tico-MG 0 x 3 Flamengo - 22/09/2002"
+            },
+            "type": "sports:Match",
+            "id": "http://sports.onto/Match/24696"
+        },
+        {
+            "body": {
+                "title": "Flamengo 0 x 0 Fortaleza - 14/05/2006 18:10"
+            },
+            "type": "sports:Match",
+            "id": "http://sports.onto/Match/26488"
+        },
+        {
+            "body": {
+                "title": "Flamengo 0 x 2 Santos - 19/04/2003 18:00"
+            },
+            "type": "sports:Match",
+            "id": "http://sports.onto/Match/24930"
+        },
+        {
+            "body": {
+                "title": "Flamengo 0 x 1 Corinthians - 30/10/2002"
+            },
+            "type": "sports:Match",
+            "id": "http://sports.onto/Match/24798"
+        },
+        {
+            "body": {
+                "title": "Flamengo 2 x 0 Botafogo - 02/11/2002"
+            },
+            "type": "sports:Match",
+            "id": "http://sports.onto/Match/24809"
+        },
+        {
+            "body": {
+                "title": "Flamengo"
+            },
+            "type": "sports:Team",
+            "id": "http://sports.onto/Team/123"
+        }
+    ]
+
+    def query_by_pattern(self, pattern, fields):
+        query_params = {"page": "0"}
+        search_params = {"pattern": pattern}
+        classes = ["sports:Match", "sports:Team"]
+        search_fields = fields
+        response_fields = ["title"]
+
+        # TODO: rollback to the query below when ES 0.90.x is in all environments
+        #query = _build_body_query(query_params, search_params, classes, search_fields, response_fields, self.analyzer)
+
+        # TODO: when the step above is done, delete the two lines of code below:
+        tokens = self.tokenize(pattern, self.analyzer)["tokens"]
+        query = _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields, pattern)
+        return query
+
+    def test_query_returns_team_flamengo_before_matches(self):
+        pattern = "flamengo"
+        fields = ["title"]
+        query = self.query_by_pattern(pattern, fields)
+        response = self.search(query)
+        self.assertEqual(response["hits"]["total"], 11)
+        self.assertEqual(response["hits"]["hits"][0]["_id"], u"http://sports.onto/Team/123")
+        self.assertEqual(response["hits"]["hits"][0]["fields"]["title"], u"Flamengo")
 
 
 class DevQueryTestCase(QueryTestCase):

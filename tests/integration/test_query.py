@@ -68,6 +68,50 @@ class SubpropertyEntailmentQueryTestCase(QueryTestCase):
         ]
         self.assertEqual(sorted(response_bindings), sorted(expected_bindings))
 
+# The test below is to be sure that a Virtuoso error does not occur, detailed in OpenLink Support Case # 20764
+# The error is that when using a hierarchy of properties e.g. prop2 -> prop1 when declaring
+#  (a) <subject> <prop2> "value1"
+#  (b) <subject> <prop2> "value2"
+# Virtuoso returns for the query below something like:
+#  <subject> <prop2> "value1"
+#  <subject> <prop1> "value1"
+#  <subject> <prop1> "value2"
+# thus excluding the triple <subject> <prop2> "value2" (b) from the results
+
+#QUERY_PROPERTY_SUPER_PROPERTY = """
+#DEFINE input:inference <http://tatipedia.org/ruleset>
+#SELECT DISTINCT ?predicate ?object ?super_property {
+#   <%(subject)s> a <http://tatipedia.org/Place> ;
+#               ?predicate ?object .
+#   OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+#}
+#"""
+
+#    def test_subproperty(self):
+#        query = QUERY_PROPERTY_SUPER_PROPERTY % {"subject": "http://tatipedia.org/paris"}
+#        response_bindings = self.query(query)["results"]["bindings"]
+#        expected_bindings = [
+#            {u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
+#             u'object': {u'type': u'uri', u'value': u'http://tatipedia.org/Place'}},
+#            {u'super_property': {u'type': u'uri', u'value': u'http://tatipedia.org/name'},
+#             u'predicate': {u'type': u'uri', u'value': u'http://tatipedia.org/nickname'},
+#             u'object': {u'type': u'literal', u'value': u'paris'}},
+#            {u'super_property': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+#             u'predicate': {u'type': u'uri', u'value': u'http://tatipedia.org/name'},
+#             u'object': {u'type': u'literal', u'value': u'paris'}},
+#            {u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+#             u'object': {u'type': u'literal', u'value': u'paris'}},
+#            {u'super_property': {u'type': u'uri', u'value': u'http://tatipedia.org/name'},
+#             u'predicate': {u'type': u'uri', u'value': u'http://tatipedia.org/nickname'},
+#             u'object': {u'type': u'literal', u'value': u'city of light'}},
+#            {u'super_property': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+#             u'predicate': {u'type': u'uri', u'value': u'http://tatipedia.org/name'},
+#             u'object': {u'type': u'literal', u'value': u'city of light'}},
+#            {u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+#             u'object': {u'type': u'literal', u'value': u'city of light'}},
+#        ]
+#
+#        self.assertEqual(sorted(response_bindings), sorted(expected_bindings))
 
 QUERY_LIST_GRAPHS = """
 SELECT DISTINCT ?graph

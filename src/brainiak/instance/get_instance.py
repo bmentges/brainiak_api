@@ -21,7 +21,7 @@ def get_instance(query_params):
 
     query_result_dict = query_all_properties_and_objects(query_params)
 
-    if is_result_empty(query_result_dict):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+    if is_result_empty(query_result_dict):
         return None
     else:
         query_params["class_schema"] = get_class.get_cached_schema(query_params)
@@ -42,7 +42,7 @@ def build_items_dict(bindings, class_uri, expand_object_properties, class_schema
             if object_label:
                 value = {"@id": object_value, "title": object_label}
             else:
-                msg = u"The predicate {0} has an object {1} which doesn't have a label.".format(predicate_uri, object_value) + \
+                msg = u"The predicate {0} refers to an object {1} which doesn't have a label.".format(predicate_uri, object_value) + \
                     " Set expand_object_properties=0 if you don't care about this ontological inconsistency."
                 raise Exception(msg)
         else:

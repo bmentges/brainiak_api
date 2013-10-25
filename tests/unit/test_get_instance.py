@@ -202,7 +202,6 @@ class BuildItemsDictTestCase(unittest.TestCase):
         self.assertEqual(response, expected)
 
     def test_assemble_instance_json_with_object_labels(self):
-
         bindings = [
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
@@ -210,7 +209,8 @@ class BuildItemsDictTestCase(unittest.TestCase):
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
-                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'}
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
+                u'object_label': {u'type': u'literal', u'value': u'News'}
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
@@ -232,6 +232,27 @@ class BuildItemsDictTestCase(unittest.TestCase):
             u'http://brmedia.com/related_to': {"@id": "http://dbpedia.org/ontology/Cricket", "title": u"Cricket"}
         }
         self.assertEqual(computed, expected)
+
+    def test_assemble_instance_json_with_an_object_which_does_not_have_label(self):
+
+        bindings = [
+            {
+                u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
+                u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/Cricket'},
+            }
+        ]
+        class_schema = {
+            "properties": {
+                u'http://www.w3.org/2000/01/rdf-schema#label': {"type": "string"},
+                u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': {"type": "string"},
+                u'http://brmedia.com/related_to': {"type": "object"}
+            }
+        }
+        with self.assertRaises(Exception) as exception:
+            get_instance.build_items_dict(bindings, "http://dbpedia.org/ontology/News", 1, class_schema)
+        expected_msg = "The predicate http://brmedia.com/related_to has an object http://dbpedia.org/ontology/Cricket which doesn't have a label. Set expand_object_properties=0 if you don't care about this ontological inconsistency."
+        self.assertEqual(str(exception.exception), expected_msg)
+
 
     def prepare_input_and_expected_output(self, object_value):
         bindings = [

@@ -2,6 +2,15 @@ Releases
 ========
 
 
+Version 2.3.2 - 2013/10/28
+--------------------------
+
+Enhacements
+___________
+
+- General improvements on Suggest query
+
+
 Version 2.3.1 - 2013/10/23
 --------------------------
 
@@ -30,7 +39,6 @@ ____________
 
 - Default to all resources is to use compressed URIs (``expand_uri=0``) in the response
 - Return 200 and empty items in listing resources (before it was 404)
-
 
 Enhacements
 ___________

@@ -233,8 +233,9 @@ class BuildItemsDictTestCase(unittest.TestCase):
         }
         self.assertEqual(computed, expected)
 
-    def test_assemble_instance_json_with_an_object_which_does_not_have_label(self):
-
+    @patch("brainiak.instance.get_instance.logger.debug")
+    @patch("brainiak.instance.get_instance.logger")
+    def test_assemble_instance_json_with_an_object_which_does_not_have_label(self, mlogger, mdebug):
         bindings = [
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
@@ -248,10 +249,14 @@ class BuildItemsDictTestCase(unittest.TestCase):
                 u'http://brmedia.com/related_to': {"type": "object"}
             }
         }
-        with self.assertRaises(Exception) as exception:
-            get_instance.build_items_dict(bindings, "http://dbpedia.org/ontology/News", 1, class_schema)
+        response = get_instance.build_items_dict(bindings, "http://dbpedia.org/ontology/News", 1, class_schema)
+        expected = {
+            u'http://brmedia.com/related_to': {'@id': u'http://dbpedia.org/ontology/Cricket'},
+            u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': u'http://dbpedia.org/ontology/News'
+        }
         expected_msg = "The predicate http://brmedia.com/related_to refers to an object http://dbpedia.org/ontology/Cricket which doesn't have a label. Set expand_object_properties=0 if you don't care about this ontological inconsistency."
-        self.assertEqual(str(exception.exception), expected_msg)
+        self.assertTrue(mdebug.called)
+        self.assertEqual(mdebug.call_args[0][0], expected_msg)
 
     def prepare_input_and_expected_output(self, object_value):
         bindings = [

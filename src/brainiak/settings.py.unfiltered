@@ -39,6 +39,7 @@ REDIS_PASSWORD = None
 LOG_LEVEL = logging.DEBUG
 ES_ANALYZER = "default"
 
+
 def load_environment_variables(env):
     if env != "local":
         global ENABLE_CACHE, REDIS_PASSWORD, LOG_LEVEL, ES_ANALYZER
@@ -46,6 +47,7 @@ def load_environment_variables(env):
         REDIS_PASSWORD = '<%= redis_password %>'
         LOG_LEVEL = logging.ERROR
         ES_ANALYZER = "globo_analyzer"
+
 
 ENVIRONMENT = '<%= puppetmaster_env %>'
 load_environment_variables(ENVIRONMENT)

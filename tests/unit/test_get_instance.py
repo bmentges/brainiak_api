@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+import logging
 from mock import patch
 
 from brainiak import settings, triplestore
@@ -357,6 +358,21 @@ class BuildItemsDictTestCase(unittest.TestCase):
         object_value = "12"
         result = get_instance._convert_to_python(object_value, class_schema, predicate_uri)
         expected = 12
+        self.assertEqual(expected, result)
+
+    @patch("brainiak.instance.get_instance.log.logger", logger=logging.getLogger("test"))
+    def test_convert_to_python_undefined_type(self, logger_mock):
+        class_schema = {
+            "properties": {
+                "key1": {
+                    "type": "xubiru",
+                }
+            }
+        }
+        predicate_uri = "key1"
+        object_value = "12"
+        result = get_instance._convert_to_python(object_value, class_schema, predicate_uri)
+        expected = "12"
         self.assertEqual(expected, result)
 
     def test_convert_to_python_float(self):

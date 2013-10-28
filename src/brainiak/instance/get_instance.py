@@ -2,7 +2,7 @@
 
 from brainiak import triplestore, settings
 from brainiak.instance.common import extract_class_uri, extract_graph_uri, get_class_and_graph, must_retrieve_graph_and_class_uri
-from brainiak.log import logger
+from brainiak import log
 from brainiak.schema import get_class
 from brainiak.type_mapper import _MAP_JSON_TO_PYTHON
 from brainiak.utils.links import build_class_url, split_prefix_and_id_from_uri
@@ -187,7 +187,7 @@ def _convert_to_python(object_value, class_schema, predicate_uri):
         python_type = _MAP_JSON_TO_PYTHON.get(schema_type)
         if python_type is None:
             msg = u"The property {0} is unknown according to the schema definitions {1}".format(predicate_uri, class_schema)
-            logger.debug(msg)
+            log.logger.debug(msg)
             converted_value = object_value
         elif python_type == bool:
             converted_value = decode_boolean(object_value)

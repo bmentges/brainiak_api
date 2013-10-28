@@ -308,9 +308,9 @@ class CreateExplicitTriples(unittest.TestCase):
         )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
-            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthDate>", '"16/10/1854"^^xsd:string'),
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthDate>", '"16/10/1854"'),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthPlace>", "place:Dublin"),
-            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/occupation>", '"writer"^^xsd:string')
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/occupation>", '"writer"')
         ]
         self.assertEqual(sorted(response), sorted(expected))
 
@@ -325,7 +325,7 @@ class CreateExplicitTriples(unittest.TestCase):
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>",
              "<http://personpedia.com/occupation>",
-             '"http://someurl/profession/writer"^^xsd:string')
+             '"http://someurl/profession/writer"')
         ]
         self.assertEqual(sorted(response), sorted(expected))
 
@@ -345,7 +345,7 @@ class CreateExplicitTriples(unittest.TestCase):
         )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
-            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthDate>", '"16/10/1854"^^xsd:string'),
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthDate>", '"16/10/1854"'),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthPlace>", "place:Dublin"),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/occupation>", "'writer'@en")
         ]
@@ -367,7 +367,7 @@ class CreateExplicitTriples(unittest.TestCase):
         )
         response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected = [
-            ("<http://personpedia.com/Person/OscarWilde>", "<http://www.w3.org/2000/01/rdf-schema#label>", '"Oscar Wilde"^^xsd:string'),
+            ("<http://personpedia.com/Person/OscarWilde>", "<http://www.w3.org/2000/01/rdf-schema#label>", '"Oscar Wilde"'),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/gender>", "<http://personpedia.com/Male>"),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/child>", "<http://personpedia.com/VyvyanHolland>"),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/child>", "<http://personpedia.com/CyrilHolland>")
@@ -670,7 +670,7 @@ class GetPredicatedDatatypeTestCase(unittest.TestCase):
         self.assertEqual(result, "")
 
     def test_get_predicate_datatype_xsd_string(self):
-        expected = u"http://www.w3.org/2001/XMLSchema#string"
+        expected = u""
         result = get_predicate_datatype(self.class_object, "http://example.onto/description")
         self.assertIsNotNone(result)
         self.assertEqual(result, expected)

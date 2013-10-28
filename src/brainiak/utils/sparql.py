@@ -10,6 +10,9 @@ PATTERN_O = re.compile(r'o(?P<index>\d*)$')  # o, o1, o2, o3 ...
 XML_LITERAL = u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'
 XSD_BOOLEAN = u'http://www.w3.org/2001/XMLSchema#boolean'
 XSD_BOOLEAN_SHORT = u'xsd:boolean'
+XSD_STRING = u'http://www.w3.org/2001/XMLSchema#string'
+
+IGNORED_DATATYPES = [XML_LITERAL, XSD_STRING]
 
 
 def get_super_properties(bindings):
@@ -307,10 +310,11 @@ def get_predicate_datatype(class_object, expanded_predicate_name):
     # Without range it is a datatype property
 
     # Typecasted XMLLiteral is causing bugs on triplestore
-    if predicate['datatype'] != XML_LITERAL:
-        return predicate['datatype']
-    else:
+    datatype = predicate['datatype']
+    if datatype in IGNORED_DATATYPES or expand_uri(datatype) in IGNORED_DATATYPES:
         return ""
+    else:
+        return datatype
 
 
 class InvalidSchema(Exception):

@@ -1,5 +1,4 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    # -*- coding: utf-8 -*-
-
+# -*- coding: utf-8 -*-
 from brainiak import triplestore, settings
 from brainiak.instance.common import extract_class_uri, extract_graph_uri, get_class_and_graph, must_retrieve_graph_and_class_uri
 from brainiak.log import logger
@@ -45,7 +44,9 @@ def build_items_dict(bindings, class_uri, expand_object_properties, class_schema
             else:
                 msg = u"The predicate {0} refers to an object {1} which doesn't have a label.".format(predicate_uri, object_value) + \
                     " Set expand_object_properties=0 if you don't care about this ontological inconsistency."
-                raise Exception(msg)
+                value = {"@id": object_value}
+                logger.debug(msg)
+                # raise Exception(msg)
         else:
             value = _convert_to_python(object_value, class_schema, predicate_uri)
 

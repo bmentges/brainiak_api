@@ -174,7 +174,6 @@ class BrainiakChecker(Checker):
         nose.assert_in(es_response.status_code, [404])
 
         # Add instance
-        import pdb; pdb.set_trace()
         response = self.put("place/City/globoland", "new_city.json")
         nose.assert_equal(response.status_code, 201)
 

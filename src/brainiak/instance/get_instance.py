@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 from brainiak import triplestore, settings
 from brainiak.instance.common import extract_class_uri, extract_graph_uri, get_class_and_graph, must_retrieve_graph_and_class_uri
-from brainiak.log import logger
+from brainiak.log import get_logger
 from brainiak.schema import get_class
 from brainiak.type_mapper import _MAP_JSON_TO_PYTHON
 from brainiak.utils.links import build_class_url, split_prefix_and_id_from_uri
+from brainiak.utils.resources import LazyObject
 from brainiak.utils.sparql import get_super_properties, is_result_empty, decode_boolean
+
+
+logger = LazyObject(get_logger)
 
 
 def get_instance(query_params):

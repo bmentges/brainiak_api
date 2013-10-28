@@ -250,7 +250,7 @@ class BuildItemsDictTestCase(unittest.TestCase):
         }
         with self.assertRaises(Exception) as exception:
             get_instance.build_items_dict(bindings, "http://dbpedia.org/ontology/News", 1, class_schema)
-        expected_msg = "The predicate http://brmedia.com/related_to has an object http://dbpedia.org/ontology/Cricket which doesn't have a label. Set expand_object_properties=0 if you don't care about this ontological inconsistency."
+        expected_msg = "The predicate http://brmedia.com/related_to refers to an object http://dbpedia.org/ontology/Cricket which doesn't have a label. Set expand_object_properties=0 if you don't care about this ontological inconsistency."
         self.assertEqual(str(exception.exception), expected_msg)
 
     def prepare_input_and_expected_output(self, object_value):

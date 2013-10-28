@@ -16,7 +16,7 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.3.4"
+brainiak_version = "2.3.6"
 mercury_version = "1.2.4"
 
 brainiak_endpoint = {
@@ -57,7 +57,7 @@ solr_endpoint = {
 }
 
 proxies = {
-    "stg": {"http": "proxy.staging.globoi.com:3128"}
+    "stg": {"http": "http://proxy.staging.globoi.com:3128"}
 }
 #curl -i -X GET --proxy1.0 proxy.staging.globoi.com:3128 http://api.semantica.globoi.com/_status/check_activemq
 
@@ -174,6 +174,7 @@ class BrainiakChecker(Checker):
         nose.assert_in(es_response.status_code, [404])
 
         # Add instance
+        import pdb; pdb.set_trace()
         response = self.put("place/City/globoland", "new_city.json")
         nose.assert_equal(response.status_code, 201)
 

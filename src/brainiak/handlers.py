@@ -10,6 +10,9 @@ from tornado.web import HTTPError, RequestHandler, URLSpec
 from tornado_cors import CorsMixin, custom_decorator
 from jsonschema import validate, ValidationError
 
+# must be imported before other modules
+from brainiak.log import get_logger
+
 from brainiak import __version__, event_bus, triplestore, settings
 from brainiak.collection.get_collection import filter_instances
 from brainiak.collection.json_schema import schema as collection_schema
@@ -21,15 +24,14 @@ from brainiak.instance.create_instance import create_instance
 from brainiak.instance.delete_instance import delete_instance
 from brainiak.instance.edit_instance import edit_instance, instance_exists
 from brainiak.instance.get_instance import get_instance
-from brainiak.log import get_logger
 from brainiak.prefixes import normalize_all_uris_recursively, list_prefixes, SHORTEN
-from brainiak.schema.get_class import SchemaNotFound
-from brainiak.suggest.suggest import do_suggest
-from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
-from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
+from brainiak.schema.get_class import SchemaNotFound
+from brainiak.suggest.json_schema import schema as suggest_schema
+from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
+from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url

@@ -1,3 +1,5 @@
+# coding:utf8
+
 import logging
 import time
 from unittest import TestCase
@@ -30,6 +32,24 @@ class SearchEngineTestCase(TestCase):
             indexes=["index1"],
             analyzer="default",
             target="something")
+        self.assertEquals(expected_url, response)
+
+    @patch("brainiak.search_engine.ELASTICSEARCH_ENDPOINT", "esearch.host")
+    def test_build_elasticsearch_analyze_url_special_characters(self):
+        expected_url = "http://esearch.host/index1/_analyze?text=%C5%9A%E1%B9%95%C3%A9c%C3%AC%C3%A3l+ch%C3%A2rs"
+        response = search_engine._build_elasticsearch_analyze_url(
+            indexes=["index1"],
+            analyzer="default",
+            target="Śṕécìãl chârs")
+        self.assertEquals(expected_url, response)
+
+    @patch("brainiak.search_engine.ELASTICSEARCH_ENDPOINT", "esearch.host")
+    def test_build_elasticsearch_analyze_url_special_characters_encoded(self):
+        expected_url = "http://esearch.host/index1/_analyze?text=galv%C3%A3o"
+        response = search_engine._build_elasticsearch_analyze_url(
+            indexes=["index1"],
+            analyzer="default",
+            target=u"galv\xe3o")
         self.assertEquals(expected_url, response)
 
     @patch("brainiak.search_engine.ELASTICSEARCH_ENDPOINT", "esearch.host")

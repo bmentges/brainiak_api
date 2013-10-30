@@ -272,7 +272,7 @@ def _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, token
             # }
             # should_list.append(should_item)
 
-    should_item = {"wildcard": {str(field): "{0}*".format(pattern)}}
+    should_item = {"wildcard": {str(field): "{0}*".format(pattern.lower())}}
     should_list.append(should_item)
 
     body = {

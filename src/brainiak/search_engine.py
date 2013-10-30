@@ -62,7 +62,12 @@ def run_analyze(target, analyzer, indexes):
 
 def _build_elasticsearch_analyze_url(indexes, analyzer, target):
     index_path = ",".join(indexes) if isinstance(indexes, list) else indexes
-    target = urllib.quote_plus(target)
+
+    if isinstance(target, unicode):
+        target = urllib.quote_plus(target.encode('utf-8'))
+    else:
+        target = urllib.quote_plus(target)
+
     if analyzer != "default":
         request_url = "http://{0}/{1}/_analyze?analyzer={2}&text={3}".format(
             ELASTICSEARCH_ENDPOINT, index_path, analyzer, target)

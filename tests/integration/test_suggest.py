@@ -245,6 +245,17 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         query = _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields, pattern)
         return query
 
+    def test_query_returns_two_results_with_substring_capitalize(self):
+        pattern = "Jam"
+        fields = ["name"]
+        query = self.query_by_pattern(pattern, fields)
+        response = self.search(query)
+        self.assertEqual(response["hits"]["total"], 2)
+        self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
+        self.assertEqual(response["hits"]["hits"][0]["fields"]["name"], u"James")
+        self.assertEqual(response["hits"]["hits"][1]["_id"], u"2")
+        self.assertEqual(response["hits"]["hits"][1]["fields"][u"name"], u"James Bond")
+
     def test_query_returns_two_results_with_exact_match_first(self):
         pattern = "james"
         fields = ["name"]
@@ -420,8 +431,24 @@ class DevQueryTestCase(QueryTestCase):
     analyzer = "globo_analyzer"
 
 
-class StagingQueryTestCase(QueryTestCase):
-    # ElasticSearch 0.19.11, customized with UATU
-    host = "http://esearch.globoi.com/"
-    proxies = {"http": "http://proxy.staging.globoi.com:3128"}
-    analyzer = "globo_analyzer"
+    # def test_flame_returns_flamengo(self):
+    #     query_params = {"page": "0"}
+    #     classes = ["http://semantica.globo.com/esportes/Equipe"]
+    #     search_fields = ["http://www.w3.org/2000/01/rdf-schema#label"]
+    #     response_fields = [
+    #         "http://semantica.globo.com/esportes/esta_na_edicao_do_campeonato",
+    #         "http://semantica.globo.com/base/localizacao",
+    #         "http://semantica.globo.com/esportes/sigla"
+    #     ]
+    #     pattern = "Flam"
+    #     tokens = self.tokenize(pattern, self.analyzer)["tokens"]
+    #     query = _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields, pattern)
+    #     response = self.search(query)
+
+
+
+# class StagingQueryTestCase(QueryTestCase):
+#     # ElasticSearch 0.19.11, customized with UATU
+#     host = "http://esearch.globoi.com/"
+#     proxies = {"http": "http://proxy.staging.globoi.com:3128"}
+#     analyzer = "globo_analyzer"

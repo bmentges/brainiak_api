@@ -24,17 +24,19 @@ http {
     default_type application/octet-stream;
 
     log_subrequest on;
-    log_format main '$remote_addr - $remote_user [$time_local] $host "$request" '
-                    '$status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" '
-                    'request_time[$request_time] Proxy_subrequest[$proxy_host$uri$is_args$args] '
-                    'Proxy: $upstream_status $upstream_response_time'
-                    'Expires: $upstream_http_expires $request_length';
+    log_format main '$remote_addr - $remote_user [$time_local] $host "$request" $status '
+                    'Origin["$http_referer" "$http_user_agent" "$http_x_forwarded_for"] '
+                    'ProxyRequest[$proxy_host$uri$is_args$args] '
+                    'ClientId[$http_x_brainiak_client_id] '
+                    'Upstream[$upstream_status $upstream_response_time $upstream_http_expires] '
+                    'Request[$request_length $request_time $body_bytes_sent] ';
 
-    log_format syslog '$remote_addr - $remote_user $host "$request" '
-                      '$status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" '
-                      'request_time[$request_time] Proxy_subrequest[$proxy_host$uri$is_args$args] '
-                      'Proxy: $upstream_status $upstream_response_time'
-                      'Expires: $upstream_http_expires $request_length';
+    log_format syslog '$remote_addr - $remote_user [$time_local] $host "$request" $status '
+                      'Origin["$http_referer" "$http_user_agent" "$http_x_forwarded_for"] '
+                      'ProxyRequest[$proxy_host$uri$is_args$args] '
+                      'ClientId[$http_x_brainiak_client_id] '
+                      'Upstream[$upstream_status $upstream_response_time $upstream_http_expires] '
+                      'Request[$request_length $request_time $body_bytes_sent] ';
 
     access_log <%=access_log_file%>  main;
     access_log syslog:notice syslog;

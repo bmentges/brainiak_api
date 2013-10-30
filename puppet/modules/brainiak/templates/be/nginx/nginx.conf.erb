@@ -27,14 +27,14 @@ http {
     log_format main '$remote_addr - $remote_user [$time_local] $host "$request" $status '
                     'Origin["$http_referer" "$http_user_agent" "$http_x_forwarded_for"] '
                     'ProxyRequest[$proxy_host$uri$is_args$args] '
-                    'ClientId["$http_x_brainiak_client_id"] '
+                    'ClientId[$http_x_brainiak_client_id] '
                     'Upstream[$upstream_status $upstream_response_time $upstream_http_expires] '
                     'Request[$request_length $request_time $body_bytes_sent] ';
 
     log_format syslog '$remote_addr - $remote_user [$time_local] $host "$request" $status '
                       'Origin["$http_referer" "$http_user_agent" "$http_x_forwarded_for"] '
                       'ProxyRequest[$proxy_host$uri$is_args$args] '
-                      'ClientId["$http_x_brainiak_client_id"] '
+                      'ClientId[$http_x_brainiak_client_id] '
                       'Upstream[$upstream_status $upstream_response_time $upstream_http_expires] '
                       'Request[$request_length $request_time $body_bytes_sent] ';
 

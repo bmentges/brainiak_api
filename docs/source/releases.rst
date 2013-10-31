@@ -1,6 +1,31 @@
 Releases
 ========
 
+Version 2.3.7 - 2013/10/31
+--------------------------
+
+Enhacements
+___________
+
+- General improvements on Suggest query (support unicode and partial queries)
+
+
+Version 2.3.6 - 2013/10/28
+--------------------------
+
+Enhacements
+___________
+
+- Remove xsd:string from instances when adding new instance
+
+Version 2.3.3-2.3.5 - 2013/10/28
+--------------------------
+
+Enhacements
+___________
+
+- General log improvements
+
 
 Version 2.3.2 - 2013/10/28
 --------------------------

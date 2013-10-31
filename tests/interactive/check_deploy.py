@@ -223,7 +223,7 @@ class BrainiakChecker(Checker):
             }
             response = self.post("_suggest", json_=PARAMS)
             body = response.json()
-            nose.assert_equal(len(body["items"]), 10)
+            nose.assert_true(len(body["items"]))
 
             first_item = body["items"][0]
             expected_keys = [u'title', u'type_title', u'instance_fields', u'class_fields', u'@id', u'@type']

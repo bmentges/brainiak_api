@@ -257,23 +257,21 @@ def _get_response_fields_from_classes_dict(fields_by_class_list, response_fields
 
 def _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields, pattern):
     should_list = []
-    for field in search_fields:
-        for token in tokens:
-            token_item = token["token"]
-            should_item = {
-                "query_string": {
-                    "query": '\"{0}\"'.format(token_item),
-                    "fields": [field]
-                }
+    
+    for token in tokens:
+        token_item = token["token"]
+        should_item = {
+            "query_string": {
+                "query": '"{0}"'.format(token_item),
+                "fields": search_fields
             }
-            should_list.append(should_item)
-            # should_item = {
-            #     "wildcard": {str(field): "{0}*".format(token_item)}
-            # }
-            # should_list.append(should_item)
+        }
+        should_list.append(should_item)
 
-    should_item = {"wildcard": {str(field): "{0}*".format(pattern.lower())}}
-    should_list.append(should_item)
+    pattern = " *".join(pattern.split()).lower()
+    for field in search_fields:
+        should_item = {"wildcard": {str(field): "{0}*".format(pattern)}}
+        should_list.append(should_item)
 
     body = {
         "from": int(resources.calculate_offset(query_params)),

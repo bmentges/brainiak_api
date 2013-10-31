@@ -357,7 +357,6 @@ SELECT DISTINCT ?field_value {
         ]
         self.assertEqual(computed, expected)
 
-    ##################################
 
     def test_remove_title_field_removes_existing_title_property(self):
         elastic_search_item = {

@@ -16,8 +16,8 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.3.6"
-mercury_version = "1.2.4"
+brainiak_version = "2.3.7"
+mercury_version = "1.2.6"
 
 brainiak_endpoint = {
     "local": "http://0.0.0.0:5100/",

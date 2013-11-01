@@ -222,14 +222,17 @@ class BrainiakChecker(Checker):
                 }
             }
             response = self.post("_suggest", json_=PARAMS)
-            body = response.json()
+            body = response.json
             nose.assert_true(len(body["items"]))
-
+            first_item = body["items"][0]
             second_item = body["items"][1]
             expected_keys = [u'title', u'type_title', u'instance_fields', u'class_fields', u'@id', u'@type']
             nose.assert_equal(second_item.keys(), expected_keys)
-            nose.assert_equal(second_item["title"], u"Flamengo")
-            nose.assert_equal(second_item["type_title"], u"Equipe")
+            titles = [first_item["title"], second_item["title"]]
+            index = titles.index("Flamengo")
+            flamengo_team = body["items"][index]
+            nose.assert_equal(flamengo_team["title"], u"Flamengo")
+            nose.assert_equal(flamengo_team["type_title"], u"Equipe")
 
             expected_instance_fields = [
                 {
@@ -266,8 +269,8 @@ class BrainiakChecker(Checker):
                     u'required': False
                 }
             ]
-            nose.assert_equal(sorted(second_item["instance_fields"]), sorted(expected_instance_fields))
-            nose.assert_true("base:thumbnail" in second_item["class_fields"])
+            nose.assert_equal(sorted(flamengo_team["instance_fields"]), sorted(expected_instance_fields))
+            nose.assert_true("base:thumbnail" in flamengo_team["class_fields"])
 
         sys.stdout.write("\ncheck_suggest_sports_user_case - pass")
 

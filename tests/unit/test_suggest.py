@@ -199,7 +199,9 @@ class SuggestTestCase(TestCase):
     def test_get_search_fields(self, mocked_get_subproperties):
         expected = {"property1", "property2", "rdfs:label"}
         search_params = {
-            "fields": ["rdfs:label"]
+            "search": {
+                "fields": ["rdfs:label"]
+            }
         }
         search_fields = suggest._get_search_fields({}, search_params)
 
@@ -356,7 +358,6 @@ SELECT DISTINCT ?field_value {
             }
         ]
         self.assertEqual(computed, expected)
-
 
     def test_remove_title_field_removes_existing_title_property(self):
         elastic_search_item = {

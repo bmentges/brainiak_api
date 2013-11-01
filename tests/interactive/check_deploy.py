@@ -222,7 +222,7 @@ class BrainiakChecker(Checker):
                 }
             }
             response = self.post("_suggest", json_=PARAMS)
-            body = response.json
+            body = response.json()
             nose.assert_true(len(body["items"]))
             first_item = body["items"][0]
             second_item = body["items"][1]

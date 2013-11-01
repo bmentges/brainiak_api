@@ -83,6 +83,29 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     @patch("brainiak.suggest.suggest.safe_slug_to_prefix", return_value="http://example.onto/")
     @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
+    def test_successful_request_with_non_default_field(self, mocked_uri_to_slug, mock_safe_slug_to_prefix):
+        params = {
+            'search': {
+            'pattern': 'foss',
+            'target': 'http://example.onto/birthPlace',
+            'fields': ["http://example.onto/description"]
+            }
+        }
+        expected_items = [
+            {
+                u'@id': u'http://example.onto/York', u'title': u'York',
+                u'@type': u'http://example.onto/City', u'type_title': u'City'
+            }
+        ]
+        response = self.fetch('/_suggest',
+                              method='POST',
+                              body=json.dumps(params))
+        self.assertEqual(response.code, 200)
+        response_json = json.loads(response.body)
+        self.assertEqual(expected_items, response_json["items"])
+
+    @patch("brainiak.suggest.suggest.safe_slug_to_prefix", return_value="http://example.onto/")
+    @patch("brainiak.suggest.suggest.uri_to_slug", return_value="example.onto")
     def test_successful_request_with_metafields(self, mocked_uri_to_slug, mock_safe_slug_to_prefix):
         expected_items = [
             {
@@ -445,6 +468,8 @@ class DevQueryTestCase(ElasticSearchQueryTestCase):
         query = _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields, pattern)
         response = self.search(query)
         self.assertTrue(response["hits"]["total"])
+
+
 
 
 # class StagingQueryTestCase(QueryTestCase):

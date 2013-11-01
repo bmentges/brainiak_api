@@ -131,7 +131,7 @@ def _get_subproperties(query_params, super_property):
 
 
 def _get_search_fields(query_params, search_params):
-    search_fields_in_search_params = search_params.get("fields", [])
+    search_fields_in_search_params = search_params.get("search", []).get("fields", [])
     search_fields = set(search_fields_in_search_params)
     for field in search_fields_in_search_params:
         sub_properties = _get_subproperties(query_params, field)
@@ -257,7 +257,6 @@ def _get_response_fields_from_classes_dict(fields_by_class_list, response_fields
 
 def _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields, pattern):
     should_list = []
-    
     for token in tokens:
         token_item = token["token"]
         should_item = {
@@ -268,7 +267,7 @@ def _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, token
         }
         should_list.append(should_item)
 
-    pattern = " *".join(pattern.split()).lower()
+    pattern = "*".join(pattern.split()).lower()
     for field in search_fields:
         should_item = {"wildcard": {str(field): "{0}*".format(pattern)}}
         should_list.append(should_item)

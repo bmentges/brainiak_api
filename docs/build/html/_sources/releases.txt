@@ -1,6 +1,15 @@
 Releases
 ========
 
+Version 2.3.8 - 2013/10/31
+--------------------------
+
+Fix
+___________
+
+- Suggest query using custom fields (before it wasn't working properly)
+
+
 Version 2.3.7 - 2013/10/31
 --------------------------
 

@@ -156,7 +156,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
                 u'title': u'Masculino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Male',
                 u'resource_id': u'Male',
-                u'class_prefix': u'person:',
+                u'class_prefix': u'person',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'p': [u'upper:name', u'rdfs:label']
             }
@@ -217,7 +217,7 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
             {
                 u'title': u'Feminino',
                 u'@id': settings.URI_PREFIX + u'person/Gender/Female',
-                u'class_prefix': u'person:',
+                u'class_prefix': u'person',
                 u'instance_prefix': u'http://semantica.globo.com/person/Gender/',
                 u'resource_id': u'Female'}
         ]
@@ -271,7 +271,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         expected_items = [{
             u'resource_id': u'news_cricket',
             u'instance_prefix': u'http://brmedia.com/',
-            u'class_prefix': u'dbpedia:',
+            u'class_prefix': u'dbpedia',
             u'@id': u'http://brmedia.com/news_cricket',
             u'title': u'Cricket becomes the most popular sport of Brazil'
         }]
@@ -298,7 +298,7 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         expected_items = [{
             u'resource_id': u'news_president_answer',
             u'instance_prefix': u'http://brmedia.com/',
-            u'class_prefix': u'dbpedia:',
+            u'class_prefix': u'dbpedia',
             u'@id': u'http://brmedia.com/news_president_answer',
             u'title': u"President explains the reason for the war - it is 42"
         }]

@@ -1,6 +1,16 @@
 Releases
 ========
 
+Version 2.3.9 - 2013//
+--------------------------
+
+Fix
+___________
+
+- class_prefix was being rendered with an incorrect trailing ':'. This char ':' is not part of the URL.
+
+
+
 Version 2.3.8 - 2013/10/04
 --------------------------
 

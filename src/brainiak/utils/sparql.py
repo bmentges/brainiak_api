@@ -303,8 +303,8 @@ def clean_up_reserved_attributes(instance_data):
     return clean_instance
 
 
-def get_predicate_datatype(class_object, expanded_predicate_name):
-    predicate = class_object['properties'][expanded_predicate_name]
+def get_predicate_datatype(class_object, predicate_uri):
+    predicate = class_object['properties'][predicate_uri]
     if 'range' in predicate:
         return None
     # Without range it is a datatype property
@@ -321,7 +321,7 @@ class InvalidSchema(Exception):
     pass
 
 
-def create_explicit_triples(instance_uri, instance_data, class_object):
+def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri):
     # TODO-2:
     # lang = query_params["lang"]
     # if lang is "undefined":
@@ -341,6 +341,8 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
             except KeyError:
                 msg = u'Property {0} was not found in the schema of instance {1}'
                 raise InvalidSchema(msg.format(predicate_uri, instance_uri))
+
+            validate_value_uniqueness(object_value, predicate_uri, class_object, graph_uri)
 
             predicate_uri = "<%s>" % predicate_uri
 
@@ -416,6 +418,10 @@ def decode_boolean(object_value):
     else:
         raise TypeError(u"Could not decode boolean using {0}".format(object_value))
 
+
+def validate_value_uniqueness(value, predicate_uri, class_object):
+    if class_object['properties'][predicate_uri].get("unique_value", False):
+        pass
 
 def create_implicit_triples(instance_uri, class_uri):
     class_triple = (u"<%s>" % instance_uri, "a", u"<%s>" % class_uri)

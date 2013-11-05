@@ -118,7 +118,10 @@ def shorten_uri(uri):
             # compression was not perfect because the uri is longer than just slug:item
             return uri
         else:
-            return u"{0}:{1}".format(prefix_to_slug(uri_prefix), item)
+            if not item:
+                return u"{0}".format(prefix_to_slug(uri_prefix))
+            else:
+                return u"{0}:{1}".format(prefix_to_slug(uri_prefix), item)
     else:
         return uri
 

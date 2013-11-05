@@ -44,6 +44,9 @@ class PrefixesTestCase(unittest.TestCase):
     def test_shorten_uri_fails(self):
         self.assertEqual(shorten_uri("http://some/invalid/uri"), "http://some/invalid/uri")
 
+    def test_shorten_uri_with_prefix(self):
+        self.assertEqual(shorten_uri("http://www.w3.org/1999/02/22-rdf-syntax-ns#"), "rdf")
+
     @patch("brainiak.prefixes.extract_prefix", return_value="http://some/")
     def test_shorten_with_slash_in_item(self, mocked_extract_prefix):
         self.assertEqual(shorten_uri("http://some/invalid/uri"), "http://some/invalid/uri")

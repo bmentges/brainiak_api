@@ -215,12 +215,12 @@ def query_predicates(query_params):
     return response
 
 QUERY_PREDICATE_WITH_LANG = u"""
-SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
+SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class ?unique_value
 WHERE {
     {
       GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
     } UNION {
-      graph ?predicate_graph {?predicate rdfs:domain ?blank} .
+      GRAPH ?predicate_graph {?predicate rdfs:domain ?blank} .
       ?blank a owl:Class .
       ?blank owl:unionOf ?enumeration .
       OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
@@ -234,12 +234,13 @@ WHERE {
       ?blank owl:unionOf ?enumeration .
       OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
       OPTIONAL { ?list_node rdf:first ?range } .
-      FILTER (bound(?range))
+      FILTER (BOUND(?range))
     }
     FILTER (!isBlank(?range))
     ?predicate rdfs:label ?title .
     ?predicate rdf:type ?type .
     OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+    OPTIONAL { ?predicate base:tem_valor_unico ?unique_value } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
     FILTER(langMatches(lang(?title), "%(lang)s") OR langMatches(lang(?title), "")) .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
@@ -261,12 +262,12 @@ def _query_predicate_with_lang(query_params):
 
 
 QUERY_PREDICATE_WITHOUT_LANG = u"""
-SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
+SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class ?unique_value
 WHERE {
     {
       GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
     } UNION {
-      graph ?predicate_graph {?predicate rdfs:domain ?blank} .
+      GRAPH ?predicate_graph {?predicate rdfs:domain ?blank} .
       ?blank a owl:Class .
       ?blank owl:unionOf ?enumeration .
       OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
@@ -280,12 +281,13 @@ WHERE {
       ?blank owl:unionOf ?enumeration .
       OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
       OPTIONAL { ?list_node rdf:first ?range } .
-      FILTER (bound(?range))
+      FILTER (BOUND(?range))
     }
     FILTER (!isBlank(?range))
     ?predicate rdfs:label ?title .
     ?predicate rdf:type ?type .
     OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+    OPTIONAL { ?predicate base:tem_valor_unico ?unique_value } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
     OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . } } .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
@@ -488,5 +490,8 @@ def convert_bindings_dict(context, bindings, cardinalities, superclasses):
 
         else:
             assembled_predicates[predicate_uri] = predicate
+
+        if "unique_value" in binding_row and binding_row["unique_value"]["value"] == "1":
+            assembled_predicates[predicate_uri]["unique_value"] = True
 
     return assembled_predicates

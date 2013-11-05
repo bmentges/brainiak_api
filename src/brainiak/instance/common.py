@@ -23,12 +23,18 @@ def must_retrieve_graph_and_class_uri(query_params):
 
 
 def extract_class_uri(bindings):
-    class_uri = bindings[0]['class_uri']['value']
+    try:
+        class_uri = bindings[0]['class_uri']['value']
+    except IndexError:
+        return None
     [item.pop('class_uri') for item in bindings]
     return class_uri
 
 
 def extract_graph_uri(bindings):
-    graph_uri = bindings[0]['graph_uri']['value']
+    try:
+        graph_uri = bindings[0]['graph_uri']['value']
+    except IndexError:
+        return None
     [item.pop('graph_uri') for item in bindings]
     return graph_uri

@@ -54,6 +54,17 @@ def do_suggest(query_params, suggest_params):
         response_fields,
         search_params["pattern"]
     )
+
+    
+    # Sorting in ES is done using memory. From the docs [1]:
+    # "When sorting, the relevant sorted field values are loaded into memory.
+    # This means that per shard, there should be enough memory to contain them"
+    # Currently Globo.com ES servers don't have enough memory to load all data
+    # During the 30th October 2013, a query using sort caused Split-brain and all ES shards were down.
+    # Therefore, we need to think twice and use sort cleverly to avoid problems
+    # [1] http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-request-sort.html
+    assert not "sort" in request_body  # Read comments above
+
     elasticsearch_result = run_search(request_body, indexes=indexes)
     class_fields = response_params.get("class_fields", [])
 

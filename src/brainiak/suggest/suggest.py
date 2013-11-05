@@ -55,7 +55,6 @@ def do_suggest(query_params, suggest_params):
         search_params["pattern"]
     )
 
-    
     # Sorting in ES is done using memory. From the docs [1]:
     # "When sorting, the relevant sorted field values are loaded into memory.
     # This means that per shard, there should be enough memory to contain them"

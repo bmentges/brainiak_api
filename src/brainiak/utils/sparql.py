@@ -1,7 +1,9 @@
 # coding: utf-8
 import re
 import uuid
+
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
+from brainiak import triplestore
 
 
 PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
@@ -321,7 +323,7 @@ class InvalidSchema(Exception):
     pass
 
 
-def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri):
+def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params):
     # TODO-2:
     # lang = query_params["lang"]
     # if lang is "undefined":
@@ -342,9 +344,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
                 msg = u'Property {0} was not found in the schema of instance {1}'
                 raise InvalidSchema(msg.format(predicate_uri, instance_uri))
 
-            validate_value_uniqueness(object_value, predicate_uri, class_object, graph_uri)
-
-            predicate_uri = "<%s>" % predicate_uri
+            predicate_uri_with_brackets = "<%s>" % predicate_uri
 
             if predicate_datatype is not None:
                 # Datatype property
@@ -379,7 +379,9 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
                 else:
                     raise InvalidSchema(u'Unexpected value {0} for object property {1}'.format(object_value, predicate_uri))
 
-            triple = (instance, predicate_uri, object_)
+            validate_value_uniqueness(instance_uri, object_, predicate_uri, class_object, graph_uri, query_params)
+
+            triple = (instance, predicate_uri_with_brackets, object_)
             triples.append(triple)
 
     return triples
@@ -419,9 +421,28 @@ def decode_boolean(object_value):
         raise TypeError(u"Could not decode boolean using {0}".format(object_value))
 
 
-def validate_value_uniqueness(value, predicate_uri, class_object):
+QUERY_VALUE_EXISTS = u"""
+ASK FROM <%(graph_uri)s> {
+  ?s a <%(class_uri)s> .
+  ?s <%(predicate_uri)s> %(object_value)s
+  FILTER (?s != <%(instance_uri)s>)
+}
+"""
+
+
+def validate_value_uniqueness(instance_uri, object_value, predicate_uri, class_object, graph_uri, query_params):
     if class_object['properties'][predicate_uri].get("unique_value", False):
-        pass
+        query = QUERY_VALUE_EXISTS % {
+            "graph_uri": graph_uri,
+            "class_uri": class_object['id'],
+            "instance_uri": instance_uri,
+            "predicate_uri": predicate_uri,
+            "object_value": object_value
+        }
+        query_result = triplestore.query_sparql(query, query_params.triplestore_config)
+        if is_result_true(query_result):
+            raise RuntimeError()
+
 
 def create_implicit_triples(instance_uri, class_uri):
     class_triple = (u"<%s>" % instance_uri, "a", u"<%s>" % class_uri)

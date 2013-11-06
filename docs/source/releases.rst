@@ -19,6 +19,8 @@ ___________
 
 - Suggest query using custom fields (before it wasn't working properly)
 
+- The CORS header 'Access-Control-Allow-Origin: *' was absent in error responses
+
 
 Version 2.3.7 - 2013/10/31
 --------------------------

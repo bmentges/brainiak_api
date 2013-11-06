@@ -5,7 +5,7 @@ Version 2.3.9 - 2013//
 --------------------------
 
 Fix
-___________
+_____________
 
 - class_prefix was being rendered with an incorrect trailing ':'. This char ':' is not part of the URL.
 
@@ -38,7 +38,7 @@ ___________
 - Remove xsd:string from instances when adding new instance
 
 Version 2.3.3-2.3.5 - 2013/10/28
---------------------------
+---------------------------------
 
 Enhacements
 ___________

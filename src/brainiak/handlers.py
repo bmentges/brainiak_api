@@ -187,6 +187,9 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
                    **kwargs)
 
     def write_error(self, status_code, **kwargs):
+        # Tornado clear the headers in case of errors, and the CORS headers are lost, we call prepare to reset CORS
+        self.prepare()
+
         error_message = u"HTTP error: %d" % status_code
         if "message" in kwargs and kwargs.get("message") is not None:
             error_message += u"\n{0}".format(kwargs.get("message"))

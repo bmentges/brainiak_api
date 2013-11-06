@@ -66,6 +66,7 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../releases.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-9-2013">Version 2.3.9 - 2013//</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-8-2013-10-04">Version 2.3.8 - 2013/10/04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-7-2013-10-31">Version 2.3.7 - 2013/10/31</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-6-2013-10-28">Version 2.3.6 - 2013/10/28</a></li>
@@ -171,14 +172,14 @@
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X POST -T <span class="s2">&quot;new_york_city.json&quot;</span> http://brainiak.semantica.dev.globoi.com/place/City
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 201 Created
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 500 Internal Server Error
 Server: nginx
-Date: Fri, 01 Nov 2013 19:25:07 GMT
-Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/place/City/_schema_list
-Content-Length: 0
+Date: Wed, 06 Nov 2013 11:58:49 GMT
+Content-Type: application/json; charset=UTF-8
+Content-Length: 1350
 Connection: keep-alive
-Location: http://brainiak.semantica.dev.globoi.com/place/City/3069b57c-5563-4e3a-9d35-05b9da80b513
-Access-Control-Allow-Origin: *
+
+{&quot;errors&quot;: [&quot;HTTP error: 500\nAccess to backend service failed.  HTTP 500: Internal Server Error.\nResponse:\nVirtuoso RDF02 Error SR619: SPARUL INSERT access denied: database user 119 (api-semantica) has no write permission on graph http://semantica.globo.com/place/\n\nSPARQL query:\n\n#output-format:application/sparql-results+json\n\n\nINSERT DATA INTO &lt;http://semantica.globo.com/place/&gt;\n{\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; &lt;http://semantica.globo.com/place/latitude&gt; \&quot;-22.958314\&quot;^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; &lt;http://semantica.globo.com/place/partOfState&gt; &lt;http://semantica.globo.com/base/UF_RJ&gt; .\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; &lt;http://semantica.globo.com/place/longitude&gt; \&quot;-43.407133\&quot;^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; &lt;http://semantica.globo.com/upper/name&gt; \&quot;Globoland\&quot; .\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; &lt;http://semantica.globo.com/upper/fullName&gt; \&quot;Globoland (RJ)\&quot; .\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; a &lt;http://semantica.globo.com/place/City&gt; .\n}\n&quot;]}
 </pre></div>
 </div>
 <div class="admonition warning">

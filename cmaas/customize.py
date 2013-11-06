@@ -8,13 +8,13 @@ CREDENTIALS = {
     "dev": {
         "client_id": "U6fvLX9xb9gjJm15/h33eA==",
         "client_secret": "FcmspQN5uiWfMK2FpPzZgg==",
-        "repos": "http://repos.backstage.dev.globoi.com/admin/customization_mappings/brainiak.semantica.dev.globoi.com",
+        "repos": "http://repos.backstage.dev.globoi.com/admin/customization_mappings/brainiak.api.backstage.dev.globoi.com",
         "accounts": "http://accounts.backstage.dev.globoi.com/token"
     },
     "qa1": {
         "client_id": "BRrZvsLcvoYrMu+5GYl6ag==",
         "client_secret": "okFR7CifaCSkwFDQDLxm8Q==",
-        "repos": "http://repos.backstage.qa01.globoi.com/admin/customization_mappings/brainiak.semantica.qa01.globoi.com",
+        "repos": "http://repos.backstage.qa01.globoi.com/admin/customization_mappings/brainiak.api.backstage.qa01.globoi.com",
         "accounts": "http://accounts.backstage.qa01.globoi.com/token"
     }
 }

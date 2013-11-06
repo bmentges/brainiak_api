@@ -2,6 +2,8 @@
 import re
 import uuid
 
+from tornado.web import HTTPError
+
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
 from brainiak import triplestore
 
@@ -432,16 +434,20 @@ ASK FROM <%(graph_uri)s> {
 
 def validate_value_uniqueness(instance_uri, object_value, predicate_uri, class_object, graph_uri, query_params):
     if class_object['properties'][predicate_uri].get("unique_value", False):
+        class_uri = class_object['id']
         query = QUERY_VALUE_EXISTS % {
             "graph_uri": graph_uri,
-            "class_uri": class_object['id'],
+            "class_uri": class_uri,
             "instance_uri": instance_uri,
             "predicate_uri": predicate_uri,
             "object_value": object_value
         }
         query_result = triplestore.query_sparql(query, query_params.triplestore_config)
         if is_result_true(query_result):
-            raise RuntimeError()
+            error_message = u"The value '{0}' for instances of class {1} in predicate {2} already exists." + \
+                " This property does not allow duplicated values."
+            error_message = error_message.format(object_value, class_uri, predicate_uri)
+            raise HTTPError(400, log_message=error_message)
 
 
 def create_implicit_triples(instance_uri, class_uri):

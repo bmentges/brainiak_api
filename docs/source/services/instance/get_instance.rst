@@ -10,6 +10,16 @@ This service retrieves all information about a instance, given its context, clas
   $ curl -s 'http://brainiak.semantica.dev.globoi.com/person/Gender/Female'
 
 
+**Fetching by instance URL**
+
+.. code-block:: bash
+
+  $ curl -s 'http://brainiak.semantica.dev.globoi.com/_/_/_/?instance_uri=http%3A%2F%2Fsemantica.globo.com%2Fperson%2FGender%2FFemale'
+
+This form has the same outcome as the one represented in basic usage.
+The difference is that you just specify the instance_uri, and all graphs are searched for this occurence.
+
+
 Optional parameters
 -------------------
 

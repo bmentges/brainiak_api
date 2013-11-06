@@ -1,6 +1,5 @@
-import requests
+from alf.client import Client
 import argparse
-import base64
 import sys
 
 
@@ -19,30 +18,6 @@ CREDENTIALS = {
     }
 }
 
-
-def renew_token(env, credentials):
-    config = credentials[env]
-    token = base64.encodestring("{0}:{1}".format(config['client_id'], config['client_secret'])).strip()
-    headers = {"Authorization": "Basic {0}".format(token)}
-    response = requests.post(config['accounts'], headers=headers, data={'grant_type': 'client_credentials'})
-    return response
-
-
-def customize(env, credentials, token):
-    config = credentials[env]
-    headers = {"Authorization": "Bearer {0}".format(token), "Content-Type": "application/json"}
-    payload = open("customize.json").read()
-    response = requests.put(config['repos'], headers=headers,data=payload)
-    return response
-
-
-def get_customization(env, credentials, token):
-    config = credentials[env]
-    headers = {"Authorization": "Bearer {0}".format(token)}
-    response = requests.get(config['repos'], headers=headers)
-    return response
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Customize all forms in accounts/repos')
     parser.add_argument("env", help="Use one of the following: dev, qa1")
@@ -51,20 +26,21 @@ if __name__ == "__main__":
         print("Invalid paramenter {0}. Use --help to see valid options.".format(args.env))
         sys.exit(0)
 
-    response_token = renew_token(args.env, CREDENTIALS)
-    if response_token.status_code != 200:
-        print("Token renewal failed: {0}".format(response_token.text))
-        sys.exit(0)
+    config = CREDENTIALS[args.env]
+    client = Client(token_endpoint=config['accounts'],
+                    client_id=config['client_id'],
+                    client_secret=config['client_secret'])
 
-    access_token = response_token.json()['access_token']
-    response_customize = customize(args.env, CREDENTIALS, access_token)
-    if response_token.status_code != 200:
-        print("Customize failed: {0}".format(response_customize.text))
-    else:
-        print("Success. {0}".format(response_customize.text))
+    payload = open("customize.json").read()
+    response = client.put(config['repos'], headers={"Content-Type": "application/json"}, data=payload)
 
-    response_customization = get_customization(args.env, CREDENTIALS, access_token)
-    if response_token.status_code != 200:
-        print("Retrieval of customization failed: {0}".format(response_customization.text))
+    if response.status_code not in (200, 204):
+        print("Customize failed, error {0}: {1}".format(response.status_code, response.text))
     else:
-        print(response_customization.text)
+        print("Success. {0}".format(response.text))
+
+    response = client.get(config['repos'])
+    if response.status_code != 200:
+        print("Customize failed, error {0}: {1}".format(response.status_code, response.text))
+    else:
+        print(response.text)

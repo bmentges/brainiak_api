@@ -2,8 +2,11 @@ import unittest
 import uuid
 from mock import patch
 
+from tornado.web import HTTPError
+
 from brainiak.prefixes import MemorizeContext
 from brainiak.utils.sparql import *
+
 from tests.mocks import mock_schema, triplestore_config
 
 
@@ -775,7 +778,7 @@ class ValidateValueUniquenessTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.sparql.triplestore.query_sparql")
     @patch("brainiak.utils.sparql.is_result_true", return_value=False)
-    def test_property_with_unique_value(self, mock_is_result_truem, mock_query_sparql):
+    def test_property_with_unique_value(self, mock_is_result_true, mock_query_sparql):
         class QueryParams:
 
             triplestore_config = triplestore_config
@@ -795,6 +798,25 @@ class ValidateValueUniquenessTestCase(unittest.TestCase):
         validate_value_uniqueness(instance_uri, object_value, predicate_uri,
                                   class_object, graph_uri, QueryParams())
 
-    # TODO return 400
-    def test_property_with_duplicated_value_raises_exception(self):
-        pass
+    @patch("brainiak.utils.sparql.triplestore.query_sparql")
+    @patch("brainiak.utils.sparql.is_result_true", return_value=True)
+    def test_property_with_duplicated_value_raises_exception(self, mock_is_result_true, mock_query_sparql):
+        class QueryParams:
+
+            triplestore_config = triplestore_config
+
+        object_value = "any"
+        predicate_uri = "http://example.onto/description"
+        instance_uri = "http://example.onto/York"
+        graph_uri = "http://example.onto/"
+        class_object = {
+            "properties": {
+                "http://example.onto/description": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                    "unique_value": True
+                }
+            },
+            "id": "http://example.onto/City"
+        }
+        self.assertRaises(HTTPError, validate_value_uniqueness, instance_uri, object_value, predicate_uri,
+                          class_object, graph_uri, QueryParams())

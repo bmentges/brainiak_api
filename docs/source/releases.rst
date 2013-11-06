@@ -21,6 +21,9 @@ ___________
 
 - The CORS header 'Access-Control-Allow-Origin: *' was absent in error responses
 
+- Fix in error messages when context_name, class_name, instance_id received '_',
+  now error messages render the contents of class_uri. graph_uri and instance_uri.
+
 
 Version 2.3.7 - 2013/10/31
 --------------------------

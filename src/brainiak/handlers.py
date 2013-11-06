@@ -262,10 +262,11 @@ class ContextHandler(BrainiakRequestHandler):
         valid_params = LIST_PARAMS + GRAPH_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self, context_name=context_name, **valid_params)
+        del context_name
 
         response = list_classes(self.query_params)
         if response is None:
-            raise HTTPError(404, log_message=u"Context {0} not found".format(context_name))
+            raise HTTPError(404, log_message=u"Context {0} not found".format(self.query_params['graph_uri']))
 
         self.finalize(response)
 
@@ -281,9 +282,6 @@ class ClassHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
-        # We are encoding all query parameters because JsonBrowser cannot handle unencoded query strings in
-        # the profile attribute
-        # FIXME: this is no longer necessary for JsonBrowser, we need to check if the CMA still needs this
         self.request.query = unquote(self.request.query)
 
         valid_params = {}
@@ -292,6 +290,8 @@ class ClassHandler(BrainiakRequestHandler):
                                           context_name=context_name,
                                           class_name=class_name,
                                           **valid_params)
+        del context_name
+        del class_name
 
         response = schema_resource.get_schema(self.query_params)
         if response is None:
@@ -325,6 +325,9 @@ class CollectionHandler(BrainiakRequestHandler):
                                           context_name=context_name,
                                           class_name=class_name,
                                           **valid_params)
+        del context_name
+        del class_name
+
         response = filter_instances(self.query_params)
 
         if self.query_params['expand_uri'] == "0":
@@ -340,6 +343,8 @@ class CollectionHandler(BrainiakRequestHandler):
                                           context_name=context_name,
                                           class_name=class_name,
                                           **valid_params)
+        del context_name
+        del class_name
 
         schema = schema_resource.get_schema(self.query_params)
         if schema is None:
@@ -418,6 +423,9 @@ class InstanceHandler(BrainiakRequestHandler):
                                           class_name=class_name,
                                           instance_id=instance_id,
                                           **optional_params)
+        del context_name
+        del class_name
+        del instance_id
 
         response = get_instance(self.query_params)
         if response is None:
@@ -441,6 +449,10 @@ class InstanceHandler(BrainiakRequestHandler):
                                           class_name=class_name,
                                           instance_id=instance_id,
                                           **valid_params)
+        del context_name
+        del class_name
+        del instance_id
+
         try:
             instance_data = json.loads(self.request.body)
         except ValueError:
@@ -452,7 +464,9 @@ class InstanceHandler(BrainiakRequestHandler):
             if not instance_exists(self.query_params):
                 schema = schema_resource.get_schema(self.query_params)
                 if schema is None:
-                    raise HTTPError(404, log_message=u"Class {0} doesn't exist in context {1}.".format(class_name, context_name))
+                    msg = u"Class {0} doesn't exist in graph {1}."
+                    raise HTTPError(404, log_message=msg.format(self.query_params["class_uri"],
+                                                                self.query_params["graph_uri"]))
                 instance_uri, instance_id = create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
                 resource_url = self.request.full_url()
                 status = 201
@@ -483,6 +497,9 @@ class InstanceHandler(BrainiakRequestHandler):
                                           class_name=class_name,
                                           instance_id=instance_id,
                                           **valid_params)
+        del context_name
+        del class_name
+        del instance_id
 
         deleted = delete_instance(self.query_params)
         if deleted:
@@ -490,8 +507,10 @@ class InstanceHandler(BrainiakRequestHandler):
             if settings.NOTIFY_BUS:
                 self._notify_bus(action="DELETE")
         else:
-            error_message = u"Instance ({0}) of class ({1}) in graph ({2}) was not found.".format(
-                instance_id, class_name, context_name)
+            msg = u"Instance ({0}) of class ({1}) in graph ({2}) was not found."
+            error_message = msg.format(self.query_params["instance_uri"],
+                                       self.query_params["class_uri"],
+                                       self.query_params["graph_uri"])
             raise HTTPError(404, log_message=error_message)
         self.finalize(response)
 

@@ -273,8 +273,8 @@ def add_prefix(items_list, class_prefix):
 
 def filter_instances(query_params):
     if not class_exists(query_params):
-        error_message = u"Class {0} in context {1} does not exist".format(
-            query_params["class_name"], query_params["context_name"])
+        error_message = u"Class {0} in graph {1} does not exist".format(
+            query_params["class_uri"], query_params["graph_uri"])
         raise HTTPError(404, log_message=error_message)
 
     keymap = {

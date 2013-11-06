@@ -1,9 +1,10 @@
 import unittest
 import uuid
+from mock import patch
 
 from brainiak.prefixes import MemorizeContext
 from brainiak.utils.sparql import *
-from tests.mocks import mock_schema
+from tests.mocks import mock_schema, triplestore_config
 
 
 class MockSchemaTestCase(unittest.TestCase):
@@ -268,7 +269,7 @@ class IsResultTrueTestCase(unittest.TestCase):
         self.assertFalse(is_result_true(result_dict))
 
 
-class CreateExplicitTriples(unittest.TestCase):
+class CreateExplicitTriplesTestCase(unittest.TestCase):
 
     def test_create_explicit_triples_predicates_and_objects_are_full_uris(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
@@ -285,7 +286,7 @@ class CreateExplicitTriples(unittest.TestCase):
              "personpedia:wife": None},
             context=instance_data['@context']
         )
-        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri)
+        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, {})
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthPlace>", "<http://placepedia.com/Dublin>"),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/gender>", "<http://personpedia.com/Male>"),
@@ -308,7 +309,7 @@ class CreateExplicitTriples(unittest.TestCase):
              "http://personpedia.com/occupation": 'string'},
             context=instance_data['@context']
         )
-        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri)
+        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, {})
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthDate>", '"16/10/1854"'),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthPlace>", "place:Dublin"),
@@ -324,7 +325,7 @@ class CreateExplicitTriples(unittest.TestCase):
             "http://personpedia.com/occupation": "http://someurl/profession/writer",
         }
         class_object = mock_schema({"personpedia:occupation": 'string'}, context=instance_data['@context'])
-        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri)
+        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, {})
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>",
              "<http://personpedia.com/occupation>",
@@ -347,7 +348,7 @@ class CreateExplicitTriples(unittest.TestCase):
              "http://personpedia.com/occupation": 'string'},
             context=instance_data['@context']
         )
-        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri)
+        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, {})
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthDate>", '"16/10/1854"'),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/birthPlace>", "place:Dublin"),
@@ -370,7 +371,7 @@ class CreateExplicitTriples(unittest.TestCase):
              "http://personpedia.com/child": None},
             context=instance_data['@context']
         )
-        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri)
+        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, {})
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>", "<http://www.w3.org/2000/01/rdf-schema#label>", '"Oscar Wilde"'),
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/gender>", "<http://personpedia.com/Male>"),
@@ -754,3 +755,46 @@ class BindingsToDictTestCase(unittest.TestCase):
         expected = {}
         computed = bindings_to_dict(key_name, bindings)
         self.assertEqual(computed, expected)
+
+
+class ValidateValueUniquenessTestCase(unittest.TestCase):
+
+    def test_property_does_not_have_unique_value_annottation(self):
+        object_value = "any"
+        predicate_uri = "http://example.onto/description"
+        instance_uri = "http://example.onto/York"
+        graph_uri = "http://example.onto/"
+        class_object = {
+            "properties": {
+                "http://example.onto/description": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                },
+            }
+        }
+        validate_value_uniqueness(instance_uri, object_value, predicate_uri, class_object, graph_uri, {})
+
+    @patch("brainiak.utils.sparql.triplestore.query_sparql")
+    @patch("brainiak.utils.sparql.is_result_true", return_value=False)
+    def test_property_with_unique_value(self, mock_is_result_truem, mock_query_sparql):
+        class QueryParams:
+
+            triplestore_config = triplestore_config
+        object_value = "any"
+        predicate_uri = "http://example.onto/description"
+        instance_uri = "http://example.onto/York"
+        graph_uri = "http://example.onto/"
+        class_object = {
+            "properties": {
+                "http://example.onto/description": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                    "unique_value": True
+                }
+            },
+            "id": "http://example.onto/City"
+        }
+        validate_value_uniqueness(instance_uri, object_value, predicate_uri,
+                                  class_object, graph_uri, QueryParams())
+
+    # TODO return 400
+    def test_property_with_duplicated_value_raises_exception(self):
+        pass

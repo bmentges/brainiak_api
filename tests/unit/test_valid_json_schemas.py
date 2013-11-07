@@ -6,7 +6,8 @@ from brainiak.root import json_schema as root_json_schema
 from brainiak.context import json_schema as ctx_json_schema
 from brainiak.collection import json_schema as collection_json_schema
 from brainiak.suggest import json_schema as suggest_json_schema
-
+from brainiak.utils.params import ParamDict
+from tests.mocks import MockHandler
 
 class ResultHandlerTestCase(unittest.TestCase):
 
@@ -26,7 +27,9 @@ class ResultHandlerTestCase(unittest.TestCase):
         self.validate_draft4(schema)
 
     def test_valid_json_schema_for_collection(self):
-        schema = collection_json_schema.schema('glb', 'Materia', 'http://semantica.globo.com/base/')
+        handler = MockHandler()
+        query_params = ParamDict(handler, context_name='glb', class_name='Materia', class_prefix='http://semantica.globo.com/base/')
+        schema = collection_json_schema.schema(query_params)
         self.validate_draft4(schema)
 
     def test_valid_suggest_json_schema(self):

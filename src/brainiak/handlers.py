@@ -31,6 +31,7 @@ from brainiak.schema import get_class as schema_resource
 from brainiak.schema.get_class import SchemaNotFound
 from brainiak.search.search import do_search
 from brainiak.suggest.json_schema import schema as suggest_schema
+from brainiak.search.json_schema import schema as search_schema
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
@@ -312,7 +313,7 @@ class CollectionJsonSchemaHandler(BrainiakRequestHandler):
 
     def get(self, context_name, class_name):
         query_params = ParamDict(self, context_name=context_name, class_name=class_name)
-        self.finalize(collection_schema(context_name, class_name, query_params.get('class_prefix', None)))
+        self.finalize(collection_schema(query_params))
 
 
 class CollectionHandler(BrainiakRequestHandler):
@@ -574,6 +575,12 @@ class SuggestHandler(BrainiakRequestHandler):
         elif isinstance(response, int):  # status code
             self.set_status(response)
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25
+
+
+class SearchJsonSchemaHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.finalize(search_schema())
 
 
 class SearchHandler(BrainiakRequestHandler):

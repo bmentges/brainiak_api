@@ -256,6 +256,9 @@ class RootHandler(BrainiakRequestHandler):
 class ContextJsonSchemaHandler(BrainiakRequestHandler):
 
     def get(self, context_name):
+        valid_params = LIST_PARAMS + GRAPH_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, context_name=context_name, **valid_params)
         self.finalize(context_schema(context_name))
 
 

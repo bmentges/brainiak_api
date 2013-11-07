@@ -29,6 +29,7 @@ from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
 from brainiak.schema.get_class import SchemaNotFound
+from brainiak.search.search import do_search
 from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest
@@ -579,10 +580,12 @@ class SearchHandler(BrainiakRequestHandler):
 
     def get(self):
         valid_params = SEARCH_PARAMS
-
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
             self.query_params.validate_required(self, valid_params)
+
+        response = do_search(self.query_params)
+        self.finalize(response)
 
 
 class PrefixHandler(BrainiakRequestHandler):
@@ -594,7 +597,6 @@ class PrefixHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, **valid_params)
 
         response = list_prefixes()
-
         self.finalize(response)
 
 

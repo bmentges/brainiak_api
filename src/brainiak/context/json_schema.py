@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from brainiak.utils.links import merge_schemas, pagination_schema
+from brainiak.search.json_schema import SEARCH_PARAM_SCHEMA
 
 
-def schema(context_name):
+def schema(query_params):
+    context_name = query_params['context_name']
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
         "title": "Context Schema that lists collections",
@@ -32,6 +34,13 @@ def schema(context_name):
                             "href": u"/{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(context_name),
                             "method": "GET",
                             "rel": "collection"
+                        },
+                        {
+                            "href": "/_search?graph_uri={0}&class_uri={1}".format(query_params['graph_uri'],
+                                                                                  query_params['class_uri']),
+                            "method": "GET",
+                            "rel": "search",
+                            "schema": SEARCH_PARAM_SCHEMA
                         }
                     ]
                 }

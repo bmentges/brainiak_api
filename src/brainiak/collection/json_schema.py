@@ -1,16 +1,6 @@
 # -*- coding: utf-8 -*-
 from brainiak.utils.links import merge_schemas, pagination_schema
-
-SEARCH_PARAM_SCHEMA = {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "Describe the parameters given to the search primitive",
-    "type": "object",
-    "required": ["pattern"],
-    "additionalProperties": False,
-    "properties": {
-        "pattern": {"type": "string"},
-    }
-}
+from brainiak.search.json_schema import SEARCH_PARAM_SCHEMA
 
 
 def schema(query_params):
@@ -59,14 +49,7 @@ def schema(query_params):
                             "href": link,
                             "method": "GET",
                             "rel": "instance"
-                        },
-                        {
-                            "href": "/_search?graph_uri={0}&class_uri={1}".format(query_params['graph_uri'],
-                                                                                  query_params['class_uri']),
-                            "method": "GET",
-                            "rel": "search",
-                            "schema": SEARCH_PARAM_SCHEMA
-                        },
+                        }
                     ]
                 }
             },
@@ -92,6 +75,13 @@ def schema(query_params):
                 "method": "POST",
                 "rel": "add",
                 "schema": {"$ref": schema_ref}
+            },
+            {
+                "href": "/_search?graph_uri={0}&class_uri={1}".format(query_params['graph_uri'],
+                                                                      query_params['class_uri']),
+                "method": "GET",
+                "rel": "search",
+                "schema": SEARCH_PARAM_SCHEMA
             }
         ]
     }

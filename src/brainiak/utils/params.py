@@ -71,6 +71,8 @@ CLASS_PARAMS = optionals('graph_uri', 'class_prefix', 'class_uri')
 
 GRAPH_PARAMS = optionals('graph_uri')
 
+SEARCH_PARAMS = RequiredParamsDict(pattern="", graph_uri="", class_uri="")
+
 
 def normalize_last_slash(url):
     return url if url.endswith("/") else url + "/"
@@ -89,7 +91,8 @@ VALID_PARAMS = [
     'do_item_count',
     'direct_instances_only',
     'expand_object_properties',
-    'meta_properties'
+    'meta_properties',
+    'pattern'
 ]
 
 VALID_PATTERNS = (

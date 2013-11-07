@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from brainiak.utils.links import merge_schemas, pagination_schema
-from brainiak.search.json_schema import SEARCH_PARAM_SCHEMA
 
 
 def schema(query_params):
@@ -34,13 +33,6 @@ def schema(query_params):
                             "href": u"/{0}/{{resource_id}}?class_prefix={{class_prefix}}".format(context_name),
                             "method": "GET",
                             "rel": "collection"
-                        },
-                        {
-                            "href": "/_search?graph_uri={0}&class_uri={1}".format(query_params['graph_uri'],
-                                                                                  query_params['class_uri']),
-                            "method": "GET",
-                            "rel": "search",
-                            "schema": SEARCH_PARAM_SCHEMA
                         }
                     ]
                 }

@@ -59,7 +59,7 @@ def safe_params(valid_params=None, body_params=None):
     except InvalidParam as ex:
         msg = u"Argument {0:s} is not supported.".format(ex)
         if valid_params is not None:
-            params_msg = ", ".join(set(sorted(valid_params.keys() + DEFAULT_PARAMS.keys())))
+            params_msg = ", ".join(sorted(set(valid_params.keys() + DEFAULT_PARAMS.keys())))
             msg += u" The supported querystring arguments are: {0}.".format(params_msg)
         if body_params is not None:
             body_msg = ", ".join(body_params)
@@ -256,10 +256,9 @@ class RootHandler(BrainiakRequestHandler):
 class ContextJsonSchemaHandler(BrainiakRequestHandler):
 
     def get(self, context_name):
-        valid_params = LIST_PARAMS + GRAPH_PARAMS
-        with safe_params(valid_params):
-            self.query_params = ParamDict(self, context_name=context_name, **valid_params)
-        self.finalize(context_schema(context_name))
+        with safe_params():
+            self.query_params = ParamDict(self, context_name=context_name)
+        self.finalize(context_schema(self.query_params))
 
 
 class ContextHandler(BrainiakRequestHandler):

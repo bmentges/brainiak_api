@@ -23,7 +23,9 @@ class ResultHandlerTestCase(unittest.TestCase):
         self.validate_draft4(schema)
 
     def test_valid_json_schema_for_context(self):
-        schema = ctx_json_schema.schema('glb')
+        handler = MockHandler()
+        query_params = ParamDict(handler, context_name='glb')
+        schema = ctx_json_schema.schema(query_params)
         self.validate_draft4(schema)
 
     def test_valid_json_schema_for_collection(self):

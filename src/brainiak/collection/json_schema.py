@@ -25,6 +25,7 @@ def schema(query_params):
         "required": ["items", "_class_prefix", "@id"],
         "properties": {
             "_class_prefix": {"type": "string"},
+            "_query_expression": {"type": "string"},  # used in _search service responses
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
             "@id": {"type": "string", "format": "uri"},
@@ -77,7 +78,7 @@ def schema(query_params):
                 "schema": {"$ref": schema_ref}
             },
             {
-                "href": "/_search?graph_uri={0}&class_uri={1}".format(query_params['graph_uri'],
+                "href": "/_search?graph_uri={0}&class_uri={1}&pattern={{pattern}}".format(query_params['graph_uri'],
                                                                       query_params['class_uri']),
                 "method": "GET",
                 "rel": "search",

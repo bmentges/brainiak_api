@@ -18,7 +18,8 @@ def mock_schema(properties_and_types_dict, context=None):
     type2datatype = {'string': 'xsd:string',
                      'integer': 'xsd:integer',
                      'date': 'xsd:date',
-                     'datetime': 'xsd:dateTime'}
+                     'datetime': 'xsd:dateTime',
+                     'boolean': 'xsd:boolean'}
     for property_name, type_value in properties_and_types_dict.items():
         property_uri = expand_uri(property_name, context=context)
         if type_value is None:

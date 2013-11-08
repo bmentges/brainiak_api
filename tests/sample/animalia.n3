@@ -214,6 +214,9 @@
       :nickname "City of York" ;
       :description "York is a walled city, situated at the confluence of the Rivers Ouse and Foss in North Yorkshire, England." .
 
+:DuplicatedYork a :City ;
+                :nickname "City of York" .
+
 :Male a :Gender .
 :Female a :Gender .
 :Transgender a :Gender .

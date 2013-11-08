@@ -6,16 +6,15 @@ from brainiak import settings, triplestore
 from brainiak.prefixes import uri_to_slug, safe_slug_to_prefix
 from brainiak.schema.get_class import get_cached_schema
 from brainiak.search_engine import run_search, run_analyze
-from brainiak.utils import resources, sparql
-
-
-RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
+from brainiak.utils import resources
+from brainiak.utils.sparql import RDFS_LABEL, is_result_empty, add_language_support, \
+    filter_values
 
 
 def do_suggest(query_params, suggest_params):
     search_params = suggest_params["search"]
     range_result = _get_predicate_ranges(query_params, search_params)
-    if sparql.is_result_empty(range_result):
+    if is_result_empty(range_result):
         message = u"Either the predicate {0} does not exists or it does not have" + \
             " any rdfs:range defined in the triplestore"
         message = message.format(search_params["target"])
@@ -112,7 +111,7 @@ SELECT DISTINCT ?range ?range_label ?range_graph {
 
 
 def _build_predicate_ranges_query(query_params, search_params):
-    params = sparql.add_language_support(query_params, "range_label")[0]
+    params = add_language_support(query_params, "range_label")[0]
     params.update(search_params)
     return QUERY_PREDICATE_RANGES % params
 
@@ -137,7 +136,7 @@ def _get_subproperties(query_params, super_property):
     }
     query = QUERY_SUBPROPERTIES % params
     result = triplestore.query_sparql(query, query_params.triplestore_config)
-    return sparql.filter_values(result, "property")
+    return filter_values(result, "property")
 
 
 def _get_search_fields(query_params, search_params):
@@ -151,7 +150,7 @@ def _get_search_fields(query_params, search_params):
 
 
 def _validate_class_restriction(search_params, range_result):
-    classes = set(sparql.filter_values(range_result, "range"))
+    classes = set(filter_values(range_result, "range"))
     if "classes" in search_params:
         classes_not_in_range = list(set(search_params["classes"]).difference(classes))
         if classes_not_in_range:
@@ -163,7 +162,7 @@ def _validate_class_restriction(search_params, range_result):
 
 
 def _validate_graph_restriction(search_params, range_result):
-    graphs = set(sparql.filter_values(range_result, "range_graph"))
+    graphs = set(filter_values(range_result, "range_graph"))
     if "graphs" in search_params:
         graphs_set = set(search_params["graphs"])
         graphs_not_in_range = list(graphs_set.difference(graphs))
@@ -204,7 +203,7 @@ def _build_class_fields_query(classes, field):
 def _get_class_fields_value(query_params, classes, meta_field):
     query = _build_class_fields_query(classes, meta_field)
     class_field_query_response = triplestore.query_sparql(query, query_params.triplestore_config)
-    class_field_values = sparql.filter_values(class_field_query_response, "field_value")
+    class_field_values = filter_values(class_field_query_response, "field_value")
     return class_field_values
 
 
@@ -306,24 +305,24 @@ def _build_body_query(query_params, search_params, classes, search_fields, respo
         "size": int(query_params.get("per_page", settings.DEFAULT_PER_PAGE)),
         "fields": response_fields,
         "query": {
-                "bool": {
-                    "must": {
-                        "query_string": {
-                            "fields": search_fields,
-                            "query": query_string,
-                            "analyze_wildcard": True,
-                            "analyzer": analyzer
-                        }
-                    },
-                    "should": {
-                        "query_string": {
-                            "fields": search_fields,
-                            "query": u'\"{0}\"'.format(query_string),
-                            "analyze_wildcard": True,
-                            "analyzer": "default"
-                        }
+            "bool": {
+                "must": {
+                    "query_string": {
+                        "fields": search_fields,
+                        "query": query_string,
+                        "analyze_wildcard": True,
+                        "analyzer": analyzer
+                    }
+                },
+                "should": {
+                    "query_string": {
+                        "fields": search_fields,
+                        "query": u'\"{0}\"'.format(query_string),
+                        "analyze_wildcard": True,
+                        "analyzer": "default"
                     }
                 }
+            }
         },
         "filter": _build_type_filters(classes)
     }

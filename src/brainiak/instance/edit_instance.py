@@ -20,7 +20,7 @@ def edit_instance(query_params, instance_data):
         raise HTTPError(404, log_message=u"Parameter <{0:s}> is missing in order to update instance.".format(ex))
 
     class_object = get_cached_schema(query_params)
-    triples = create_explicit_triples(instance_uri, instance_data, class_object)
+    triples = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params)
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
     triples.extend(implicit_triples)
     unique_triples = set(triples)

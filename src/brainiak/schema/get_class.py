@@ -17,7 +17,6 @@ class SchemaNotFound(Exception):
 
 
 def get_cached_schema(query_params):
-
     schema_key = build_schema_key(query_params)
     class_object = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
     if not class_object:
@@ -27,13 +26,10 @@ def get_cached_schema(query_params):
 
 
 def get_schema(query_params):
-
     context = MemorizeContext(normalize_uri=query_params['expand_uri'])
-
     class_schema = query_class_schema(query_params)
     if not class_schema["results"]["bindings"]:
         return
-
     query_params["superclasses"] = query_superclasses(query_params)
     predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
     response_dict = assemble_schema_dict(query_params,
@@ -41,7 +37,6 @@ def get_schema(query_params):
                                          predicates_and_cardinalities,
                                          context,
                                          comment=get_one_value(class_schema, "comment"))
-
     return response_dict
 
 

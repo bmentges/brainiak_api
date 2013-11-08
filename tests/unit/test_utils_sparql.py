@@ -270,6 +270,19 @@ class IsResultTrueTestCase(unittest.TestCase):
 
 class CreateExplicitTriples(unittest.TestCase):
 
+    def test_create_explicit_triples_undefined_property(self):
+        instance_uri = "http://personpedia.com/Person/OscarWilde"
+        instance_data = {
+            "@context": {"personpedia": "http://personpedia.com/"},
+            "http://personpedia.com/occupation": "http://someurl/profession/writer",
+        }
+        class_object = mock_schema({}, context=instance_data['@context'])
+        with self.assertRaises(InstanceError) as exception:
+            response = create_explicit_triples(instance_uri, instance_data, class_object)
+        expected_error_msg = "Inexistent property (http://personpedia.com/occupation) in the schema (None), used to create instance (http://personpedia.com/Person/OscarWilde)"
+        self.assertEqual(str(exception.exception), expected_error_msg)
+        
+
     def test_create_explicit_triples_predicates_and_objects_are_full_uris(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
@@ -373,6 +386,55 @@ class CreateExplicitTriples(unittest.TestCase):
             ("<http://personpedia.com/Person/OscarWilde>", "<http://personpedia.com/child>", "<http://personpedia.com/CyrilHolland>")
         ]
         self.assertEqual(sorted(response), sorted(expected))
+
+    def test_create_explicit_triples_predicates_raises_exception_due_to_wrong_boolean_value(self):
+        instance_uri = "http://personpedia.com/Person/OscarWilde"
+        instance_data = {
+            "@context": {"personpedia": "http://personpedia.com/"},
+            "http://personpedia.com/isAlive": "0",
+
+        }
+        class_object = mock_schema(
+            {
+                "http://personpedia.com/isAlive": "boolean",
+
+            },
+            context=instance_data['@context']
+        )
+        
+        with self.assertRaises(InstanceError) as exception:
+            create_explicit_triples(instance_uri, instance_data, class_object)
+        excepted_error_msg = 'Incorrect value for property (http://personpedia.com/isAlive). A (xsd:boolean) was expected, but (0) was given.'
+        self.assertEqual(str(exception.exception), excepted_error_msg)
+
+    def test_create_explicit_triples_predicates_raises_exception_due_to_multiple_wrong_values(self):
+        instance_uri = "http://personpedia.com/Person/OscarWilde"
+        instance_data = {
+            "@context": {"personpedia": "http://personpedia.com/"},
+            "http://personpedia.com/isAlive": "http://personpedia.com/TheImportanceOfBeingEarnest",
+            "http://personpedia.com/deathAge": "Irish",
+            "http://personpedia.com/hasNationality": 46,
+            "http://personpedia.com/wroteBook": "true",
+        }
+        class_object = mock_schema(
+            {
+                "http://personpedia.com/isAlive": "boolean",
+                "http://personpedia.com/deathAge": "integer",
+                "http://personpedia.com/hasNationality": "string",
+                "http://personpedia.com/wroteBook": None
+            },
+            context=instance_data['@context']
+        )
+        
+        with self.assertRaises(InstanceError) as exception:
+            response = create_explicit_triples(instance_uri, instance_data, class_object)
+
+        expected_error_msg = [
+            "Incorrect value for property (http://personpedia.com/wroteBook). A (owl:ObjectProperty) was expected, but (true) was given.",
+            "Incorrect value for property (http://personpedia.com/hasNationality). A (xsd:string) was expected, but (46) was given.",
+            "Incorrect value for property (http://personpedia.com/deathAge). A (xsd:integer) was expected, but (Irish) was given.",
+            "Incorrect value for property (http://personpedia.com/isAlive). A (xsd:boolean) was expected, but (http://personpedia.com/TheImportanceOfBeingEarnest) was given."]
+        self.assertEqual(str(exception.exception).split("\n"), expected_error_msg)
 
     def test_unpack_tuples(self):
         instance_data = {
@@ -665,16 +727,6 @@ class GetPredicatedDatatypeTestCase(unittest.TestCase):
         result = get_predicate_datatype(self.class_object, "http://example.onto/partOfCountry")
         self.assertIsNone(result)
 
-    def test_get_predicate_datatype_xml_literal(self):
-        result = get_predicate_datatype(self.class_object, "http://www.w3.org/2000/01/rdf-schema#label")
-        self.assertEqual(result, "")
-
-    def test_get_predicate_datatype_xsd_string(self):
-        expected = u""
-        result = get_predicate_datatype(self.class_object, "http://example.onto/description")
-        self.assertIsNotNone(result)
-        self.assertEqual(result, expected)
-
 
 class EncodeBooleanTestCase(unittest.TestCase):
 
@@ -687,7 +739,7 @@ class EncodeBooleanTestCase(unittest.TestCase):
         self.assertEqual(result, "false")
 
     def test_encode_other_value(self):
-        self.assertRaises(TypeError, encode_boolean, "aaa")
+        self.assertRaises(InstanceError, encode_boolean, "aaa")
 
 
 class DecodeBooleanTestCase(unittest.TestCase):
@@ -701,7 +753,7 @@ class DecodeBooleanTestCase(unittest.TestCase):
         self.assertEqual(result, False)
 
     def test_decode_other_value(self):
-        self.assertRaises(TypeError, decode_boolean, "aaa")
+        self.assertRaises(InstanceError, decode_boolean, "aaa")
 
 
 class BindingsToDictTestCase(unittest.TestCase):
@@ -749,3 +801,96 @@ class BindingsToDictTestCase(unittest.TestCase):
         expected = {}
         computed = bindings_to_dict(key_name, bindings)
         self.assertEqual(computed, expected)
+
+
+class SparqlfyTestCase(unittest.TestCase):
+
+    def test_generic_sparqlfy(self):
+        response = generic_sparqlfy("dummy")
+        expected = '"dummy"'
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_string_without_lang(self):
+        response = sparqlfy_string("No i18n")
+        expected = '"No i18n"'
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_string_with_lang(self):
+        response = sparqlfy_string("'English string'@en")
+        expected = "'English string'@en"
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_boolean_true(self):
+        response = sparqlfy_boolean(True, "http://www.w3.org/2001/XMLSchema#boolean")
+        expected = '"true"^^<http://www.w3.org/2001/XMLSchema#boolean>'
+        self.assertEqual(response, expected) 
+
+    def test_sparqlfy_boolean_false(self):
+        response = sparqlfy_boolean(False, "xsd:boolean")
+        expected = '"false"^^xsd:boolean'
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_boolean_1(self):
+        response = sparqlfy_boolean(1, "xsd:boolean")
+        expected = '"true"^^xsd:boolean'
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_object(self):
+        response = sparqlfy_object("http://some/object")
+        expected = "<http://some/object>"
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_object_compressed(self):
+        response = sparqlfy_object("xsd:object")
+        expected = "xsd:object"
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_object_raises_exception(self):
+        with self.assertRaises(InstanceError) as exception:
+            response = sparqlfy_object("non_uri")
+        expected_msg = "(non_uri) is not a URI or cURI"
+        self.assertEqual(str(exception.exception), expected_msg)
+
+    def test_sparqlfy_object_dict(self):
+        response = sparqlfy_object({"@id": "http://some/object"})
+        expected = "<http://some/object>"
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_with_casting(self):
+        response = sparqlfy_with_casting("value", "http://some/cast")
+        expected = u'"value"^^<http://some/cast>'
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_with_casting_compressed(self):
+        response = sparqlfy_with_casting("value", "some:cast")
+        expected = u'"value"^^some:cast'
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_xmlliteral(self):
+        response = sparqlfy("some literal", "rdf:XMLLiteral")
+        expected = '"some literal"'
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_xmlstring(self):
+        response = sparqlfy('"some string"@en', "xsd:string")
+        expected = '"some string"@en'
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_anyuri(self):
+        response = sparqlfy('http://any.uri', "xsd:string")
+        expected = '"http://any.uri"'
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_boolean(self):
+        response = sparqlfy(False, "xsd:boolean")
+        expected = '"false"^^xsd:boolean'
+        self.assertEqual(response, expected)
+
+    def test_sparqlfy_integer(self):
+        response = sparqlfy(2, "xsd:integer")
+        expected = '"2"^^xsd:integer'
+        self.assertEqual(response, expected)
+
+def sparqlfy(value, predicate_datatype):
+    sparqlfy_function = SPARQLFY_MAP.get(predicate_datatype) or sparqlfy_with_casting
+    return sparqlfy_function(value, predicate_datatype)

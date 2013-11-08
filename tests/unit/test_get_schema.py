@@ -400,6 +400,7 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                 u'title': {u'type': u'literal', u'value': u'Creation Date'},
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#DatatypeProperty'},
                 u'domain_class': {u'type': u'uri', u'value': u'http://test/person/AnyClass'},
+                u'unique_value': {u'type': u'typed-literal', u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'value': u'1'}
             }
         ]
         hierarchy = [u'http://test/person/AnyClass']
@@ -411,7 +412,8 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
                 'class': u'http://test/person/AnyClass',
                 'type': 'string',
                 'format': 'date',
-                'datatype': u'http://www.w3.org/2001/XMLSchema#dateTime'
+                'datatype': u'http://www.w3.org/2001/XMLSchema#dateTime',
+                'unique_value': True
             }
         }
 

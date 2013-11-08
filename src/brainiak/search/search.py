@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from tornado.web import HTTPError
 
 from brainiak import settings
 from brainiak.prefixes import uri_to_slug
@@ -10,18 +9,14 @@ from brainiak.utils.sparql import RDFS_LABEL
 
 def do_search(query_params):
 
-    if not 'pattern' in query_params:
-        message = u"Required parameter 'pattern' was not given to search service"
-        raise HTTPError(400, message)
-
     search_fields = _get_search_fields()
     elasticsearch_result = do_search_query(query_params, search_fields)
     total_items = elasticsearch_result["hits"]["total"]
     if total_items:
         response_items = _build_items(elasticsearch_result)
-        response = _build_json(response_items, total_items, query_params)
     else:
-        response = {}
+        response_items = {}
+    response = _build_json(response_items, total_items, query_params)
 
     return response
 

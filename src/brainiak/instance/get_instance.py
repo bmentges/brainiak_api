@@ -118,10 +118,9 @@ def assemble_instance_json(query_params, query_result_dict):
 
     if include_meta_properties:
         class_url = build_class_url(query_params)
-        query_params.resource_url = u"{0}/{1}".format(class_url, query_params['instance_id'])
-        response = split_prefix_and_id_from_uri(query_params['instance_uri'])
         instance_uri = query_params['instance_uri']
         instance_prefix, instance_id = split_prefix_and_id_from_uri(instance_uri)
+        query_params.resource_url = u"{0}/{1}".format(class_url, instance_id)
         instance = {
             "_base_url": query_params.base_url,
             "_instance_prefix": instance_prefix,
@@ -203,7 +202,6 @@ def _convert_to_python(object_value, class_schema, predicate_uri):
         elif python_type == bool:
             converted_value = decode_boolean(object_value)
         else:
-            # TODO: unittest
             msg = u"The property {0} is mapped to a inconsistent value {1}".format(predicate_uri, object_value)
             try:
                 converted_value = python_type(object_value)

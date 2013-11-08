@@ -46,6 +46,13 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         body = json.loads(response.body)
         self.assertIn("HTTP error: 500\nException:\n", body["errors"][0])
 
+    @patch("brainiak.handlers.logger")
+    @patch("brainiak.handlers.memoize", side_effect=RuntimeError)
+    def test_500_with_CORS_header_in_the_response(self, mocked_memoize, log):
+        response = self.fetch("/?invalid_param=1", method='GET')
+        self.assertEqual(response.code, 400)
+        self.assertIn("Access-Control-Allow-Origin", response.headers.keys())
+
     def test_200(self):
         # disclaimer: this test assumes UPPER graph exists in Virtuoso and contains triples
         response = self.fetch("/", method='GET')

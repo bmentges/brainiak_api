@@ -58,7 +58,7 @@ class SuggestTestCase(TestCase):
 
         self.assertEqual(expected, response)
 
-    @patch("brainiak.suggest.suggest.sparql.filter_values", return_value=["class1", "class2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])
     def test_validate_classes_restriction(self, mocked_filter_values):
         expected = ["class1"]
 
@@ -69,7 +69,7 @@ class SuggestTestCase(TestCase):
         response = suggest._validate_class_restriction(search_params, None)  # None because filter_values is mocked
         self.assertEqual(expected, response)
 
-    @patch("brainiak.suggest.suggest.sparql.filter_values", return_value=["class1", "class2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])
     def test_validate_classes_restriction_with_no_restriction_param(self, mocked_filter_values):
         expected = ["class1", "class2"]
 
@@ -78,7 +78,7 @@ class SuggestTestCase(TestCase):
         response = suggest._validate_class_restriction(params, None)  # None because filter_values is mocked
         self.assertListEqual(sorted(expected), sorted(response))
 
-    @patch("brainiak.suggest.suggest.sparql.filter_values", return_value=["class1", "class2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["class1", "class2"])
     def test_validate_classes_restriction_raises_error(self, mocked_filter_values):
         params = {
             "classes": ["class1", "class2", "class3"],
@@ -86,7 +86,7 @@ class SuggestTestCase(TestCase):
         }
         self.assertRaises(HTTPError, suggest._validate_class_restriction, params, None)  # None because filter_values is mocked
 
-    @patch("brainiak.suggest.suggest.sparql.filter_values", return_value=["graph1", "graph2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["graph1", "graph2"])
     def test_validate_graphs_restriction(self, mocked_filter_values):
         expected = ["graph1"]
 
@@ -97,7 +97,7 @@ class SuggestTestCase(TestCase):
         response = suggest._validate_graph_restriction(params, None)  # None because filter_values is mocked
         self.assertEqual(expected, response)
 
-    @patch("brainiak.suggest.suggest.sparql.filter_values", return_value=["graph1", "graph2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["graph1", "graph2"])
     def test_validate_graphs_restriction_with_no_restriction_param(self, mocked_filter_values):
         expected = ["graph1", "graph2"]
 
@@ -106,7 +106,7 @@ class SuggestTestCase(TestCase):
         response = suggest._validate_graph_restriction(params, None)  # None because filter_values is mocked
         self.assertListEqual(sorted(expected), sorted(response))
 
-    @patch("brainiak.suggest.suggest.sparql.filter_values", return_value=["graph1", "graph2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["graph1", "graph2"])
     def test_validate_graphs_restriction_raises_error(self, mocked_filter_values):
         expected_message = "Classes in the range of predicate 'predicate1' are not in graphs ['graph3']"
         params = {
@@ -121,7 +121,7 @@ class SuggestTestCase(TestCase):
         else:
             self.fail("a HTTPError should be raised")
 
-    @patch("brainiak.suggest.suggest.sparql.filter_values", return_value=["graph_without_instances1", "graph_without_instances2"])
+    @patch("brainiak.suggest.suggest.filter_values", return_value=["graph_without_instances1", "graph_without_instances2"])
     @patch("brainiak.suggest.suggest.settings", GRAPHS_WITHOUT_INSTANCES=["graph_without_instances1", "graph_without_instances2"])
     def test_validate_graphs_restriction_raises_error_for_graphs_without_instances(self, mocked_settings, mocked_filter_values):
         expected_message = "Classes in the range of predicate 'predicate1' are in graphs without instances," + \

@@ -300,6 +300,7 @@ def build_json(items_list, query_params):
 
     json = {
         '_schema_url': schema_url,
+        'pattern': '',
         '_class_prefix': query_params['class_prefix'],
         '_base_url': remove_last_slash(query_params.base_url),
         'items': items_list,

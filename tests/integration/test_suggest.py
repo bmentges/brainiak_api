@@ -8,9 +8,8 @@ from mock import patch
 
 from brainiak.suggest.suggest import QUERY_PREDICATE_RANGES, \
     QUERY_SUBPROPERTIES, _build_class_fields_query, \
-    get_instance_class_schema, _build_body_query, _build_body_query_compatible_with_uatu_and_es_19_in_envs
-from brainiak.utils.params import LIST_PARAMS, ParamDict
-from brainiak.utils.sparql import filter_values, compress_keys_and_values
+    _build_body_query_compatible_with_uatu_and_es_19_in_envs
+from brainiak.utils.sparql import filter_values
 from brainiak import settings
 
 from tests.sparql import QueryTestCase
@@ -255,7 +254,6 @@ class QueryTestCase(ElasticSearchQueryTestCase):
 
     def query_by_pattern(self, pattern, fields):
         query_params = {"page": "0"}
-        search_params = {"pattern": pattern}
         classes = ["person", "pet"]
         search_fields = fields
         response_fields = ["name", "birthDate"]
@@ -425,7 +423,6 @@ class ComplexQueryTestCase(ElasticSearchQueryTestCase):
 
     def query_by_pattern(self, pattern, fields):
         query_params = {"page": "0"}
-        search_params = {"pattern": pattern}
         classes = ["sports:Match", "sports:Team"]
         search_fields = fields
         response_fields = ["title"]

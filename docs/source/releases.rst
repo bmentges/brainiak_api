@@ -5,7 +5,7 @@ Version 2.3.9 - 2013//
 --------------------------
 
 Fix
-___________
+_____________
 
 - class_prefix was being rendered with an incorrect trailing ':'. This char ':' is not part of the URL.
 
@@ -18,6 +18,11 @@ Fix
 ___________
 
 - Suggest query using custom fields (before it wasn't working properly)
+
+- The CORS header 'Access-Control-Allow-Origin: *' was absent in error responses
+
+- Fix in error messages when context_name, class_name, instance_id received '_',
+  now error messages render the contents of class_uri. graph_uri and instance_uri.
 
 
 Version 2.3.7 - 2013/10/31
@@ -38,7 +43,7 @@ ___________
 - Remove xsd:string from instances when adding new instance
 
 Version 2.3.3-2.3.5 - 2013/10/28
---------------------------
+---------------------------------
 
 Enhacements
 ___________

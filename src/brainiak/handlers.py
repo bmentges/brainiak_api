@@ -597,6 +597,10 @@ class SearchHandler(BrainiakRequestHandler):
         response = do_search(self.query_params)
         self.finalize(response)
 
+    def finalize(self, response):
+        self.write(response)
+        self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
+
 
 class PrefixHandler(BrainiakRequestHandler):
 

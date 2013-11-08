@@ -25,7 +25,7 @@ def schema(query_params):
         "required": ["items", "_class_prefix", "@id"],
         "properties": {
             "_class_prefix": {"type": "string"},
-            "_query_expression": {"type": "string"},  # used in _search service responses
+            "pattern": {"type": "string"},  # used in _search service responses
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
             "@id": {"type": "string", "format": "uri"},

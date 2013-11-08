@@ -9,6 +9,7 @@ from brainiak.suggest import json_schema as suggest_json_schema
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler
 
+
 class ResultHandlerTestCase(unittest.TestCase):
 
     def validate_draft4(self, schema):

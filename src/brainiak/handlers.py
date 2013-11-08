@@ -587,6 +587,7 @@ class SearchJsonSchemaHandler(BrainiakRequestHandler):
 
 class SearchHandler(BrainiakRequestHandler):
 
+    @greenlet_asynchronous
     def get(self):
         valid_params = SEARCH_PARAMS
         with safe_params(valid_params):

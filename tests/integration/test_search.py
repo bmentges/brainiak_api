@@ -1,13 +1,14 @@
 import json
-from unittest import TestCase
 from urllib import quote_plus
+from mock import patch
 
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 import requests
 
 from brainiak import settings
 
 
-class SearchIntegrationTestCase(TestCase):
+class SearchIntegrationTestCase(TornadoAsyncHTTPTestCase):
 
     def setUp(self):
         super(SearchIntegrationTestCase, self).setUp()
@@ -26,8 +27,11 @@ class SearchIntegrationTestCase(TestCase):
         super(SearchIntegrationTestCase, self).setUp()
         requests.delete(self.elastic_request_url)
 
-    def test_successful_search(self):
-        pass
+    @patch("brainiak.search.search.uri_to_slug", return_value="example.onto")
+    def test_successful_search(self, mock_uri_to_slug):
+        response = self.fetch('/_search?pattern=yo' +
+                   '&graph_uri=http://example.onto/' +
+                   '&class_uri=http://example.onto/City')
 
     def test_search_not_found(self):
         pass

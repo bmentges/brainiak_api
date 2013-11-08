@@ -147,6 +147,8 @@ def is_compressed_uri(candidate, extra_prefixes=None):
 
 
 def expand_uri(short_uri, translation_map=_MAP_SLUG_TO_PREFIX, context=None):
+    if short_uri is None:
+        return ''
     if is_uri(short_uri):
         return short_uri
     try:

@@ -43,4 +43,4 @@ def do_search_query(query_params, search_fields):
 
 
 def parse_result(elasticsearch_result):
-    return {}
+    return elasticsearch_result

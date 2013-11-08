@@ -21,7 +21,6 @@ def run_search(body, indexes=None):
         "headers": {u"Content-Type": u"application/x-www-form-urlencoded"},
         "body": unicode(json.dumps(body))
     }
-    #import pdb; pdb.set_trace()
     request = HTTPRequest(**request_params)
     time_i = time.time()
     response = greenlet_fetch(request)

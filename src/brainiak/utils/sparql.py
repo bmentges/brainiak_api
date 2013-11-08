@@ -2,6 +2,7 @@
 import re
 import uuid
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
+from brainiak.type_mapper import MAP_RDF_TYPE_TO_PYTHON
 
 
 PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
@@ -307,78 +308,119 @@ def get_predicate_datatype(class_object, expanded_predicate_name):
     predicate = class_object['properties'][expanded_predicate_name]
     if 'range' in predicate:
         return None
-    # Without range it is a datatype property
-
-    # Typecasted XMLLiteral is causing bugs on triplestore
-    datatype = predicate['datatype']
-    if datatype in IGNORED_DATATYPES or expand_uri(datatype) in IGNORED_DATATYPES:
-        return ""
     else:
-        return datatype
+        return predicate['datatype']
+    # # Without range it is a datatype property
+
+    # # Typecasted XMLLiteral is causing bugs on triplestore
+    # datatype = predicate['datatype']
+    # if datatype in IGNORED_DATATYPES or expand_uri(datatype) in IGNORED_DATATYPES:
+    #     return ""
+    # else:
+    #     return datatype
 
 
-class InvalidSchema(Exception):
+class InstanceError(Exception):
     pass
 
 
-def create_explicit_triples(instance_uri, instance_data, class_object):
-    # TODO-2:
-    # lang = query_params["lang"]
-    # if lang is "undefined":
-    #     lang_tag = ""
-    # else:
-    #     lang_tag = "@%s" % lang
+def is_instance(value, _type):
+    python_type = MAP_RDF_TYPE_TO_PYTHON[_type]
+    return isinstance(value, python_type)
 
-    instance = u"<%s>" % instance_uri
+
+def generic_sparqlfy(value, *args):
+    return u'"{0}"'.format(value)
+
+
+def sparqlfy_string(value, *args):
+    if has_lang(value):
+        return value
+    value = escape_quotes(value)
+    return generic_sparqlfy(value)
+
+
+def sparqlfy_boolean(value, predicate_datatype):
+    value = {False: "false", True: "true"}.get(value)
+    return sparqlfy_with_casting(value, predicate_datatype)
+
+
+def sparqlfy_object(value, *args):
+    if isinstance(value, dict):
+        value = value["@id"]
+
+    if is_uri(value):
+        return u"<{0}>".format(value)
+    elif is_compressed_uri(value):
+        return value
+    else:
+        raise InstanceError("({0}) is not a URI or cURI".format(value))
+
+
+def sparqlfy_with_casting(value, predicate_datatype):
+    if is_uri(predicate_datatype):
+        template = u'"{0}"^^<{1}>'
+    else:
+        template = u'"{0}"^^{1}'
+    return template.format(value, predicate_datatype)
+
+
+SPARQLFY_MAP = {
+    "rdf:XMLLiteral": generic_sparqlfy,
+    "xsd:string": sparqlfy_string,
+    "xsd:anyURI": sparqlfy_object,
+    "xsd:boolean": sparqlfy_boolean 
+}
+
+
+def sparqlfy(value, predicate_datatype):
+    sparqlfy_function = SPARQLFY_MAP.get(predicate_datatype) or sparqlfy_with_casting
+    return sparqlfy_function(value, predicate_datatype)
+
+
+def create_explicit_triples(instance_uri, instance_data, class_object):
     predicate_object_tuples = unpack_tuples(instance_data)
+
     triples = []
+    errors = []
+    template_msg = u'Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was given.'
+
 
     for (predicate_uri, object_value) in predicate_object_tuples:
+
         if not is_reserved_attribute(predicate_uri):
 
             try:
                 predicate_datatype = get_predicate_datatype(class_object, predicate_uri)
             except KeyError:
-                msg = u'Property {0} was not found in the schema of instance {1}'
-                raise InvalidSchema(msg.format(predicate_uri, instance_uri))
-
-            predicate_uri = "<%s>" % predicate_uri
-
-            if predicate_datatype is not None:
-                # Datatype property
-                # TODO refactor to a function to return object_
-
-                # TODO: if literal is string and not i18n, add lang
-                if has_lang(object_value):
-                    object_ = object_value
-                else:
-                    if predicate_datatype == XSD_BOOLEAN or predicate_datatype == XSD_BOOLEAN_SHORT:
-                        object_value = encode_boolean(object_value)
-                    else:
-                        object_value = escape_quotes(object_value)
-
-                    if is_uri(predicate_datatype):
-                        typecast_template = u'"{0}"^^<{1}>'
-                    elif predicate_datatype:
-                        typecast_template = u'"{0}"^^{1}'
-                    else:
-                        typecast_template = u'"{0}"{1}'  # {1} empty not typecasted, e.g. XML_LITERAL
-
-                    object_ = typecast_template.format(object_value, predicate_datatype)
+                class_id = class_object.get("id")
+                template = u'Inexistent property ({0}) in the schema ({1}), used to create instance ({2})'
+                msg = template.format(predicate_uri, class_id, instance_uri)
+                errors.append(msg)
+                predicate_datatype = None
             else:
-                # Object property
-                # TODO refactor to a function to return object_
-                if is_uri(object_value):
-                    object_ = u"<%s>" % object_value
-                elif is_compressed_uri(object_value, instance_data.get("@context", {})):
-                    object_ = object_value
-                elif isinstance(object_value, dict):
-                    object_ = u"<%s>" % object_value["@id"]
+                if predicate_datatype is None:  # ObjectProperty
+                    try:
+                        object_ = sparqlfy_object(object_value)
+                    except InstanceError:
+                        msg = template_msg.format(object_value, predicate_uri, "owl:ObjectProperty")
+                        errors.append(msg)
                 else:
-                    raise InvalidSchema(u'Unexpected value {0} for object property {1}'.format(object_value, predicate_uri))
+                    if is_instance(object_value, predicate_datatype):
+                        object_ = sparqlfy(object_value, predicate_datatype)
+                    else:
+                        msg = template_msg.format(object_value, predicate_uri, predicate_datatype)
+                        errors.append(msg)
 
-            triple = (instance, predicate_uri, object_)
-            triples.append(triple)
+                if not errors:
+                    instance = sparqlfy_object(instance_uri)
+                    predicate = sparqlfy_object(predicate_uri)
+                    triple = (instance, predicate, object_)
+                    triples.append(triple)
+
+    if errors:
+        error_msg = u"\n".join(errors)
+        raise InstanceError(error_msg)
 
     return triples
 
@@ -394,18 +436,16 @@ def escape_quotes(object_value):
         escaped_value = object_value
         for char in ESCAPED_QUOTES:
             escaped_value = escaped_value.replace(char, ESCAPED_QUOTES[char])
-
         return escaped_value
     else:
         return object_value
 
 
-def encode_boolean(object_value):
-    if object_value is False:
-        return "false"
-    elif object_value is True:
-        return "true"
-    raise TypeError(u"Could not encode boolean using {0}".format(object_value))
+def encode_boolean(value):
+    encoded_value = {False: "false", True: "true"}.get(value)
+    if encoded_value:
+        return encoded_value
+    raise InstanceError(u"Could not encode boolean using {0}".format(value))
 
 
 def decode_boolean(object_value):
@@ -414,7 +454,7 @@ def decode_boolean(object_value):
     elif object_value == "1":
         return True
     else:
-        raise TypeError(u"Could not decode boolean using {0}".format(object_value))
+        raise InstanceError(u"Could not decode boolean using {0}".format(object_value))
 
 
 def create_implicit_triples(instance_uri, class_uri):

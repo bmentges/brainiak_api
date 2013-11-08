@@ -11,6 +11,7 @@ XML_LITERAL = u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'
 XSD_BOOLEAN = u'http://www.w3.org/2001/XMLSchema#boolean'
 XSD_BOOLEAN_SHORT = u'xsd:boolean'
 XSD_STRING = u'http://www.w3.org/2001/XMLSchema#string'
+RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 IGNORED_DATATYPES = [XML_LITERAL, XSD_STRING]
 

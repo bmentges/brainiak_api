@@ -16,9 +16,14 @@ def do_search(query_params):
 
     search_fields = _get_search_fields()
     elasticsearch_result = do_search_query(query_params, search_fields)
+    total_items = elasticsearch_result["hits"]["total"]
+    if total_items:
+        response_items = _build_items(elasticsearch_result)
+        response = _build_json(response_items, total_items, query_params)
+    else:
+        response = {}
 
-    response_items = _build_items(elasticsearch_result)
-    return response_items
+    return response
 
 
 def do_search_query(query_params, search_fields):
@@ -56,6 +61,21 @@ def _build_items(elasticsearch_result):
     return items
 
 
+def _build_json(items_list, item_count, query_params):
+
+    json = {
+        '_base_url': query_params.base_url,
+        'items': items_list,
+        "@context": {"@language": query_params.get("lang")},
+        "_query_expression": query_params["pattern"]
+    }
+
+    calculate_total_items = lambda: item_count
+    resources.decorate_dict_with_pagination(json, query_params, calculate_total_items)
+
+    return json
+
+
 # TODO consider rdfs:label subproperties
 def _get_search_fields():
-    return []
+    return [RDFS_LABEL]

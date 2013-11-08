@@ -1,7 +1,11 @@
 # coding: utf-8
 import re
 import uuid
+
+from tornado.web import HTTPError
+
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
+from brainiak import triplestore
 
 
 PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
@@ -11,6 +15,7 @@ XML_LITERAL = u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'
 XSD_BOOLEAN = u'http://www.w3.org/2001/XMLSchema#boolean'
 XSD_BOOLEAN_SHORT = u'xsd:boolean'
 XSD_STRING = u'http://www.w3.org/2001/XMLSchema#string'
+RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 IGNORED_DATATYPES = [XML_LITERAL, XSD_STRING]
 
@@ -303,8 +308,8 @@ def clean_up_reserved_attributes(instance_data):
     return clean_instance
 
 
-def get_predicate_datatype(class_object, expanded_predicate_name):
-    predicate = class_object['properties'][expanded_predicate_name]
+def get_predicate_datatype(class_object, predicate_uri):
+    predicate = class_object['properties'][predicate_uri]
     if 'range' in predicate:
         return None
     # Without range it is a datatype property
@@ -321,7 +326,7 @@ class InvalidSchema(Exception):
     pass
 
 
-def create_explicit_triples(instance_uri, instance_data, class_object):
+def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params):
     # TODO-2:
     # lang = query_params["lang"]
     # if lang is "undefined":
@@ -342,7 +347,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                 msg = u'Property {0} was not found in the schema of instance {1}'
                 raise InvalidSchema(msg.format(predicate_uri, instance_uri))
 
-            predicate_uri = "<%s>" % predicate_uri
+            predicate_uri_with_brackets = "<%s>" % predicate_uri
 
             if predicate_datatype is not None:
                 # Datatype property
@@ -377,7 +382,9 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                 else:
                     raise InvalidSchema(u'Unexpected value {0} for object property {1}'.format(object_value, predicate_uri))
 
-            triple = (instance, predicate_uri, object_)
+            validate_value_uniqueness(instance_uri, object_, predicate_uri, class_object, graph_uri, query_params)
+
+            triple = (instance, predicate_uri_with_brackets, object_)
             triples.append(triple)
 
     return triples
@@ -415,6 +422,33 @@ def decode_boolean(object_value):
         return True
     else:
         raise TypeError(u"Could not decode boolean using {0}".format(object_value))
+
+
+QUERY_VALUE_EXISTS = u"""
+ASK FROM <%(graph_uri)s> {
+  ?s a <%(class_uri)s> .
+  ?s <%(predicate_uri)s> %(object_value)s
+  FILTER (?s != <%(instance_uri)s>)
+}
+"""
+
+
+def validate_value_uniqueness(instance_uri, object_value, predicate_uri, class_object, graph_uri, query_params):
+    if class_object['properties'][predicate_uri].get("unique_value", False):
+        class_uri = class_object['id']
+        query = QUERY_VALUE_EXISTS % {
+            "graph_uri": graph_uri,
+            "class_uri": class_uri,
+            "instance_uri": instance_uri,
+            "predicate_uri": predicate_uri,
+            "object_value": object_value
+        }
+        query_result = triplestore.query_sparql(query, query_params.triplestore_config)
+        if is_result_true(query_result):
+            error_message = u"The value '{0}' for instances of class {1} in predicate {2} already exists." + \
+                " This property does not allow duplicated values."
+            error_message = error_message.format(object_value, class_uri, predicate_uri)
+            raise HTTPError(400, log_message=error_message)
 
 
 def create_implicit_triples(instance_uri, class_uri):

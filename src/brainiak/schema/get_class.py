@@ -7,7 +7,7 @@ from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND
 from brainiak.utils.cache import build_schema_key, memoize
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
 from brainiak.utils.resources import LazyObject
-from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InvalidSchema, bindings_to_dict
+from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InstanceError, bindings_to_dict
 
 logger = LazyObject(get_logger)
 
@@ -119,9 +119,9 @@ def get_predicates_and_cardinalities(context, query_params):
 
     try:
         cardinalities = _extract_cardinalities(query_result['results']['bindings'], predicate_dict)
-    except InvalidSchema as ex:
+    except InstanceError as ex:
         msg = u"{0} for class {1}".format(ex.message, query_params.get('class_uri', ''))
-        raise InvalidSchema(msg)
+        raise InstanceError(msg)
 
     return convert_bindings_dict(context,
                                  bindings['results']['bindings'],
@@ -140,7 +140,7 @@ def _extract_cardinalities(bindings, predicate_dict):
                 range_ = predicate_dict[property_]["range"]["value"]
             except KeyError:
                 msg = u"The property {0} is not defined properly".format(property_)
-                raise InvalidSchema(msg)
+                raise InstanceError(msg)
 
         if not property_ in cardinalities:
             cardinalities[property_] = {}
@@ -156,7 +156,7 @@ def _extract_cardinalities(bindings, predicate_dict):
                 min_value = int(min_value)
             except ValueError:
                 msg = u"The property {0} defines a non-integer owl:minQualifiedCardinality {1}".format(property_, min_value)
-                raise InvalidSchema(msg)
+                raise InstanceError(msg)
             else:
                 current_property[range_].update({"minItems": min_value})
                 if min_value:
@@ -168,7 +168,7 @@ def _extract_cardinalities(bindings, predicate_dict):
                 max_value = int(max_value)
             except ValueError:
                 msg = u"The property {0} defines a non-integer owl:maxQualifiedCardinality {1}".format(property_, max_value)
-                raise InvalidSchema(msg)
+                raise InstanceError(msg)
             else:
                 current_property[range_].update({"maxItems": max_value})
 
@@ -371,7 +371,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
     else:  # TODO: owl:AnnotationProperty
         msg = u"Predicates of type {0} are not supported yet".format(predicate_type)
-        raise InvalidSchema(msg)
+        raise InstanceError(msg)
 
     if predicate["type"] == "array":
         if (predicate_uri in cardinalities) and (range_uri in cardinalities[predicate_uri]):
@@ -479,7 +479,7 @@ def convert_bindings_dict(context, bindings, cardinalities, superclasses):
 
             else:
                 msg = u"The property {0} seems to be duplicated in class {1}"
-                raise InvalidSchema(msg.format(predicate_uri, predicate["class"]))
+                raise InstanceError(msg.format(predicate_uri, predicate["class"]))
 
         else:
             assembled_predicates[predicate_uri] = predicate

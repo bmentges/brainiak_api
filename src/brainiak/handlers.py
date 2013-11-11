@@ -37,7 +37,7 @@ from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
 from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, DEFAULT_PARAMS, RequiredParamMissing, DefaultParamsDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
-from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InvalidSchema
+from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InstanceError
 
 
 logger = LazyObject(get_logger)
@@ -151,7 +151,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             logger.error(message)
             self.send_error(status_code, message=message)
 
-        elif isinstance(e, InvalidSchema):
+        elif isinstance(e, InstanceError):
             logger.error(u"Ontology inconsistency: {0}\n".format(error_message))
             self.send_error(status_code, message=e.message)
 
@@ -361,7 +361,7 @@ class CollectionHandler(BrainiakRequestHandler):
 
         try:
             (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
-        except InvalidSchema as ex:
+        except InstanceError as ex:
             raise HTTPError(500, log_message=unicode(ex))
 
         instance_url = self.build_resource_url(instance_id)
@@ -474,7 +474,7 @@ class InstanceHandler(BrainiakRequestHandler):
             else:
                 edit_instance(self.query_params, instance_data)
                 status = 200
-        except InvalidSchema as ex:
+        except InstanceError as ex:
             raise HTTPError(400, log_message=unicode(ex))
         except SchemaNotFound as ex:
             raise HTTPError(404, log_message=unicode(ex))

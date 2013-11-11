@@ -503,10 +503,11 @@ def sparqlfy(value, predicate_datatype):
 
 
 def property_must_map_a_unique_value(class_object, predicate_uri):
-    class_object['properties'][predicate_uri].get("unique_value", False)
+    return class_object['properties'][predicate_uri].get("unique_value", False)
 
 
 def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params):
+    class_id = class_object.get("id")
     predicate_object_tuples = unpack_tuples(instance_data)
 
     triples = []
@@ -520,7 +521,6 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
             try:
                 predicate_datatype = get_predicate_datatype(class_object, predicate_uri)
             except KeyError:
-                class_id = class_object.get("id")
                 template = u'Inexistent property ({0}) in the schema ({1}), used to create instance ({2})'
                 msg = template.format(predicate_uri, class_id, instance_uri)
                 errors.append(msg)
@@ -552,7 +552,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
                 if property_must_map_a_unique_value(class_object, predicate_uri):
                     if not is_value_unique(instance_uri, object_, predicate_uri, class_object, graph_uri, query_params):
                         template = u"The property ({0}) defined in the schema ({1}) must map a unique value. The value provided ({2}) is already used by another instance."
-                        msg = template.format(predicate_uri, class_uri, _object)
+                        msg = template.format(predicate_uri, class_id, object_value)
                         errors.append(msg)
 
     if errors:

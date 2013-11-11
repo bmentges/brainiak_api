@@ -8,13 +8,14 @@ from brainiak.utils.sparql import create_explicit_triples, create_instance_uri, 
 
 def create_instance(query_params, instance_data, instance_uri=None):
     class_uri = query_params["class_uri"]
+    graph_uri = query_params["graph_uri"]
 
     if not instance_uri:
         instance_uri = create_instance_uri(class_uri)
 
     class_object = get_cached_schema(query_params)
 
-    triples = create_explicit_triples(instance_uri, instance_data, class_object)
+    triples = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params)
 
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
     triples.extend(implicit_triples)

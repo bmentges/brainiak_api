@@ -210,12 +210,12 @@ def query_predicates(query_params):
     return response
 
 QUERY_PREDICATE_WITH_LANG = u"""
-SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
+SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class ?unique_value
 WHERE {
     {
       GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
     } UNION {
-      graph ?predicate_graph {?predicate rdfs:domain ?blank} .
+      GRAPH ?predicate_graph {?predicate rdfs:domain ?blank} .
       ?blank a owl:Class .
       ?blank owl:unionOf ?enumeration .
       OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
@@ -229,12 +229,13 @@ WHERE {
       ?blank owl:unionOf ?enumeration .
       OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
       OPTIONAL { ?list_node rdf:first ?range } .
-      FILTER (bound(?range))
+      FILTER (BOUND(?range))
     }
     FILTER (!isBlank(?range))
     ?predicate rdfs:label ?title .
     ?predicate rdf:type ?type .
     OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+    OPTIONAL { ?predicate base:tem_valor_unico ?unique_value } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
     FILTER(langMatches(lang(?title), "%(lang)s") OR langMatches(lang(?title), "")) .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
@@ -256,12 +257,12 @@ def _query_predicate_with_lang(query_params):
 
 
 QUERY_PREDICATE_WITHOUT_LANG = u"""
-SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class
+SELECT DISTINCT ?predicate ?predicate_graph ?predicate_comment ?type ?range ?title ?range_graph ?range_label ?super_property ?domain_class ?unique_value
 WHERE {
     {
       GRAPH ?predicate_graph { ?predicate rdfs:domain ?domain_class  } .
     } UNION {
-      graph ?predicate_graph {?predicate rdfs:domain ?blank} .
+      GRAPH ?predicate_graph {?predicate rdfs:domain ?blank} .
       ?blank a owl:Class .
       ?blank owl:unionOf ?enumeration .
       OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
@@ -275,12 +276,13 @@ WHERE {
       ?blank owl:unionOf ?enumeration .
       OPTIONAL { ?enumeration rdf:rest ?list_node OPTION(TRANSITIVE, t_min (0)) } .
       OPTIONAL { ?list_node rdf:first ?range } .
-      FILTER (bound(?range))
+      FILTER (BOUND(?range))
     }
     FILTER (!isBlank(?range))
     ?predicate rdfs:label ?title .
     ?predicate rdf:type ?type .
     OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
+    OPTIONAL { ?predicate base:tem_valor_unico ?unique_value } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
     OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . } } .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
@@ -313,16 +315,26 @@ def _query_superclasses(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-def items_from_range(range_uri):
+def items_from_range(range_uri, min_items=1, max_items=1):
+    # Compute first a dict that will either be used as the root type or the item type of an array
     if range_uri == 'http://www.w3.org/2001/XMLSchema#date' or range_uri == 'http://www.w3.org/2001/XMLSchema#dateTime':
-        predicate = {"type": "string", "format": "date"}
+        nested_predicate = {"type": "string", "format": "date"}
     else:
         mapped_type = _MAP_EXPAND_XSD_TO_JSON_TYPE.get(range_uri, None)
         if mapped_type:
-            predicate = {"type": mapped_type}
+            nested_predicate = {"type": mapped_type}
         else:
             logger.error("Range URI {0} not mapped to JSON type.".format(range_uri))
-            predicate = {"type": "string"}
+            nested_predicate = {"type": "string"}
+
+    # decide if thtis is an array or a scalar type
+    if (min_items > 1) or (max_items > 1) or (not min_items and not max_items):
+        predicate = {
+            "type": "array",
+            "items": nested_predicate
+        }
+    else:
+        predicate = nested_predicate
 
     predicate["datatype"] = range_uri
     return predicate
@@ -366,8 +378,10 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
             predicate["format"] = "uri"
 
     elif predicate_type == DATATYPE_PROPERTY:
+        max_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('maxItems', 1)
+        min_items = cardinalities.get(predicate_uri, {}).get(range_uri, {}).get('minItems', 1)
         # add predicate['type'] and (optional) predicate['format']
-        predicate.update(items_from_range(range_uri))
+        predicate.update(items_from_range(range_uri, min_items, max_items))
 
     else:  # TODO: owl:AnnotationProperty
         msg = u"Predicates of type {0} are not supported yet".format(predicate_type)
@@ -483,5 +497,8 @@ def convert_bindings_dict(context, bindings, cardinalities, superclasses):
 
         else:
             assembled_predicates[predicate_uri] = predicate
+
+        if "unique_value" in binding_row and binding_row["unique_value"]["value"] == "1":
+            assembled_predicates[predicate_uri]["unique_value"] = True
 
     return assembled_predicates

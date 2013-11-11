@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 from brainiak.utils.links import merge_schemas, pagination_schema
+from brainiak.search.json_schema import SEARCH_PARAM_SCHEMA
 
 
-def schema(context_name, class_name, class_prefix):
+def schema(query_params):
+    context_name = query_params['context_name']
+    class_name = query_params['class_name']
+    class_prefix = query_params.get('class_prefix', None)
     args = (context_name, class_name, class_prefix)
+
     if class_prefix is not None:
         schema_ref = u"/{0}/{1}/_schema?class_prefix={2}".format(*args)
         href = u"/{0}/{1}?class_prefix={2}".format(*args)
@@ -20,6 +25,7 @@ def schema(context_name, class_name, class_prefix):
         "required": ["items", "_class_prefix", "@id"],
         "properties": {
             "_class_prefix": {"type": "string"},
+            "pattern": {"type": "string"},  # used in _search service responses
             "do_item_count": {"type": "integer"},
             "item_count": {"type": "integer"},
             "@id": {"type": "string", "format": "uri"},
@@ -44,7 +50,7 @@ def schema(context_name, class_name, class_prefix):
                             "href": link,
                             "method": "GET",
                             "rel": "instance"
-                        },
+                        }
                     ]
                 }
             },
@@ -70,6 +76,13 @@ def schema(context_name, class_name, class_prefix):
                 "method": "POST",
                 "rel": "add",
                 "schema": {"$ref": schema_ref}
+            },
+            {
+                "href": "/_search?graph_uri={0}&class_uri={1}&pattern={{pattern}}".format(query_params['graph_uri'],
+                                                                      query_params['class_uri']),
+                "method": "GET",
+                "rel": "search",
+                "schema": SEARCH_PARAM_SCHEMA
             }
         ]
     }

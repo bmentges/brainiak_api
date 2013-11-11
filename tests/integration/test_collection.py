@@ -69,9 +69,10 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 200)
         received_response = json.loads(response.body)
 
-        self.assertEqual(len(received_response), 10)
+        self.assertEqual(len(received_response), 11)
         keys = received_response.keys()
         self.assertIn("items", keys)
+        self.assertIn("pattern", keys)
         self.assertIn("item_count", keys)
         self.assertIn('_base_url', keys)
         self.assertIn('_first_args', keys)
@@ -283,8 +284,9 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         body = json.loads(response.body)
 
         keys = body.keys()
-        self.assertEqual(len(keys), 9)
+        self.assertEqual(len(keys), 10)
         self.assertIn("items", keys)
+        self.assertIn("pattern", keys)
         self.assertIn("item_count", keys)
         self.assertIn('_base_url', keys)
         self.assertIn('_first_args', keys)

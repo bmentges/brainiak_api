@@ -19,6 +19,7 @@ see :ref:`concept-context`, :ref:`concept-schema`, :ref:`concept-collection`, an
    services/collection/collection.rst
    services/schema/schema.rst
    services/instance/instance.rst
+   services/search/search.rst
    services/suggest/suggest.rst
    services/parameters.rst
    services/links.rst

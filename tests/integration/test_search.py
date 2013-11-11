@@ -31,6 +31,11 @@ class SearchIntegrationTestCase(TornadoAsyncHTTPTestCase):
     def test_successful_search(self, mock_uri_to_slug):
         expected_answer_dict = {
             u'@context': {u'@language': u'pt'},
+            u'_class_name': u'City',
+            u'_class_prefix': u'http://example.onto/',
+            u'_class_uri': u'http://example.onto/City',
+            u'_context_name': u'example.onto',
+            u'_graph_uri': u'http://example.onto/',
             u'_first_args': u'pattern=yo&graph_uri=http://example.onto/&page=1&class_uri=http://example.onto/City',
             u'_next_args': u'pattern=yo&graph_uri=http://example.onto/&page=2&class_uri=http://example.onto/City',
             u'items': [

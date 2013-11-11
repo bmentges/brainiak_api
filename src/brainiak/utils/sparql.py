@@ -1,8 +1,14 @@
 # coding: utf-8
 import re
 import uuid
+from datetime import datetime
+from brainiak.log import get_logger
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, shorten_uri
 from brainiak.type_mapper import MAP_RDF_TYPE_TO_PYTHON
+from brainiak.utils.resources import LazyObject
+
+
+logger = LazyObject(get_logger)
 
 
 PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
@@ -325,13 +331,43 @@ class InstanceError(Exception):
 
 
 def is_instance(value, _type):
-    try:
-        python_type = MAP_RDF_TYPE_TO_PYTHON[_type]
-    except KeyError:
-        _type = shorten_uri(_type)
-        python_type = MAP_RDF_TYPE_TO_PYTHON[_type]
+    mapper = MAP_RDF_TYPE_TO_PYTHON
+    short_type = shorten_uri(_type)
 
-    return isinstance(value, python_type)
+    python_type = mapper.get(_type) or mapper.get(short_type)
+
+    if python_type:
+        return isinstance(value, python_type)
+    elif "xsd:dateTime" in [_type, short_type]:
+        # Based on "DateTime Data Type" definition, available at:
+        # http://www.w3schools.com/schema/schema_dtypes_date.asp
+        pattern = "%Y-%m-%dT%H:%M:%S"
+        pattern_size = 19
+        timezone = False
+
+        if value.endswith("Z"):  # UTC Time
+            datetime_ = value[:-1]
+        elif len(value) > pattern_size:  # Contains timezone (+HH:MM or -HH:MM)
+            datetime_ = value[:-6]
+            timezone = value[-5:]
+        else:  # Default pattern, without timezone
+            datetime_ = value
+
+        try:
+            datetime.strptime(datetime_, pattern)
+        except ValueError:
+            return False
+
+        if timezone:
+            try:
+                datetime.strptime(timezone, "%H:%M")
+            except ValueError:
+                return False
+    else:
+        msg = u"Could not validate input due to unknown property type: <{0}>".format(_type)
+        logger.info(msg)
+
+    return True
 
 
 def generic_sparqlfy(value, *args):

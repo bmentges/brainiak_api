@@ -331,6 +331,10 @@ class InstanceError(Exception):
 
 
 def is_instance(value, _type):
+    """
+    Return wheter an object is an instance of _type or not (e.g: xsd:String).
+    If _type is unkown, log and return True.
+    """
     mapper = MAP_RDF_TYPE_TO_PYTHON
     short_type = shorten_uri(_type)
 
@@ -371,10 +375,32 @@ def is_instance(value, _type):
 
 
 def generic_sparqlfy(value, *args):
+    """
+    Create SPARQL-friendly string representation of the value.
+
+    Example:
+
+    >>> generic_sparqlfy('word')
+    ... '"word"'
+    """
     return u'"{0}"'.format(value)
 
 
 def sparqlfy_string(value, *args):
+    """
+    Create SPARQL-friendly string representation of the value.
+    WARNING: Scapes quotes.
+
+    Example:
+
+    >>> sparqlfy_string('word')
+    ... '"word"'
+
+    >>> sparqlfy_string('"english sentence"@en')
+    ... '"english sentence"@en'
+
+    """
+
     if has_lang(value):
         return value
     value = escape_quotes(value)
@@ -382,11 +408,37 @@ def sparqlfy_string(value, *args):
 
 
 def sparqlfy_boolean(value, predicate_datatype):
+    """
+    Create SPARQL-friendly string representation of the value.
+
+    Example:
+
+    >>> sparqlfy_boolean(True, "xsd:boolean")
+    ... '"true"^^xsd:boolean'
+
+    """
+
     value = {False: "false", True: "true"}.get(value)
     return sparqlfy_with_casting(value, predicate_datatype)
 
 
 def sparqlfy_object(value, *args):
+    """
+    Create SPARQL-friendly string representation of the value, considering
+    it is or contains a URI. Raises an exception if the value is neither.
+
+    Example:
+
+    >>> sparqlfy_object("compressed:uri)
+    ... "compressed:uri"
+
+    >>> sparqlfy_object("http://some.uri)
+    ... "<http://some.uri>"
+
+    >>> sparqlfy_object({"@id": "http://some.uri})
+    ... "<http://some.uri>"
+
+    """
     if isinstance(value, dict):
         value = value["@id"]
 
@@ -399,6 +451,15 @@ def sparqlfy_object(value, *args):
 
 
 def sparqlfy_with_casting(value, predicate_datatype):
+    """
+    Create SPARQL-friendly string representation of the value, adding
+    the property casting.
+
+    Example:
+    >>> sparqlfy_with_casting(1, "xsd:int")
+    ... '"1"^^xsd:int'
+
+    """
     if is_uri(predicate_datatype):
         template = u'"{0}"^^<{1}>'
     else:
@@ -415,6 +476,22 @@ SPARQLFY_MAP = {
 
 
 def sparqlfy(value, predicate_datatype):
+    """
+    Create SPARQL-friendly string representation of the value, based on the
+    predicate_datatype.
+
+    Examples:
+
+    >>> sparqlfy("http://expanded.uri", "xsd:anyURI")
+    ... "<http://expanded.uri>"
+
+    >>> sparqlfy("compressed:uri", "xsd:anyURI")
+    ... "compressed:uri"
+
+    >>> sparqlfy(True, "xsd:boolean")
+    ... '"true"^^xsd:boolean'
+
+    """
     sparqlfy_function = SPARQLFY_MAP.get(predicate_datatype) or sparqlfy_with_casting
     return sparqlfy_function(value, predicate_datatype)
 

@@ -331,11 +331,7 @@ def is_instance(value, _type):
         _type = shorten_uri(_type)
         python_type = MAP_RDF_TYPE_TO_PYTHON[_type]
 
-    if python_type:
-        answer = isinstance(value, python_type) or isinstance(value, unicode)
-    else:
-        answer = isinstance(value, python_type)
-    return answer
+    return isinstance(value, python_type)
 
 
 def generic_sparqlfy(value, *args):

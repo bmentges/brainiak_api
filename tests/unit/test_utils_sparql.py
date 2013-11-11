@@ -281,8 +281,8 @@ class CreateExplicitTriples(unittest.TestCase):
         class_object = mock_schema({}, context=instance_data['@context'])
         with self.assertRaises(InstanceError) as exception:
             response = create_explicit_triples(instance_uri, instance_data, class_object)
-        expected_error_msg = "Inexistent property (http://personpedia.com/occupation) in the schema (None), used to create instance (http://personpedia.com/Person/OscarWilde)"
-        self.assertEqual(str(exception.exception), expected_error_msg)
+        expected_error_msg = [u"Inexistent property (http://personpedia.com/occupation) in the schema (None), used to create instance (http://personpedia.com/Person/OscarWilde)"]
+        self.assertEqual(json.loads(str(exception.exception)), expected_error_msg)
 
     def test_create_explicit_triples_predicates_and_objects_are_full_uris(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
@@ -404,8 +404,8 @@ class CreateExplicitTriples(unittest.TestCase):
         )
         with self.assertRaises(InstanceError) as exception:
             create_explicit_triples(instance_uri, instance_data, class_object)
-        excepted_error_msg = 'Incorrect value for property (http://personpedia.com/isAlive). A (xsd:boolean) was expected, but (0) was given.'
-        self.assertEqual(str(exception.exception), excepted_error_msg)
+        excepted_error_msg = [u'Incorrect value for property (http://personpedia.com/isAlive). A (xsd:boolean) was expected, but (0) was given.']
+        self.assertEqual(json.loads(str(exception.exception)), excepted_error_msg)
 
     def test_create_explicit_triples_predicates_raises_exception_due_to_multiple_wrong_values(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
@@ -429,11 +429,11 @@ class CreateExplicitTriples(unittest.TestCase):
             response = create_explicit_triples(instance_uri, instance_data, class_object)
 
         expected_error_msg = [
-            "Incorrect value for property (http://personpedia.com/wroteBook). A (owl:ObjectProperty) was expected, but (true) was given.",
-            "Incorrect value for property (http://personpedia.com/hasNationality). A (xsd:string) was expected, but (46) was given.",
-            "Incorrect value for property (http://personpedia.com/deathAge). A (xsd:integer) was expected, but (Irish) was given.",
-            "Incorrect value for property (http://personpedia.com/isAlive). A (xsd:boolean) was expected, but (http://personpedia.com/TheImportanceOfBeingEarnest) was given."]
-        self.assertEqual(str(exception.exception).split("\n"), expected_error_msg)
+            u"Incorrect value for property (http://personpedia.com/wroteBook). A (owl:ObjectProperty) was expected, but (true) was given.",
+            u"Incorrect value for property (http://personpedia.com/hasNationality). A (xsd:string) was expected, but (46) was given.",
+            u"Incorrect value for property (http://personpedia.com/deathAge). A (xsd:integer) was expected, but (Irish) was given.",
+            u"Incorrect value for property (http://personpedia.com/isAlive). A (xsd:boolean) was expected, but (http://personpedia.com/TheImportanceOfBeingEarnest) was given."]
+        self.assertEqual(json.loads(str(exception.exception)), expected_error_msg)
 
     def test_unpack_tuples(self):
         instance_data = {

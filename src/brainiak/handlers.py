@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import ast
 import sys
 import traceback
 from contextlib import contextmanager
@@ -156,6 +157,14 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             self.send_error(status_code, message=e.message)
 
         elif isinstance(e, HTTPError):
+            try:
+                possible_list = json.loads(e.log_message)
+            except ValueError:
+                pass
+            else:
+                if isinstance(possible_list, list):
+                    self.send_error(status_code, errors_list=possible_list)
+                    return
             if e.log_message:
                 error_message += u"\n  {0}".format(e.log_message)
             if status_code == 500:
@@ -164,7 +173,6 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             else:
                 logger.error(u"HTTP error: {0}\n".format(error_message))
                 self.send_error(status_code, message=e.log_message)
-
         else:
             logger.error(u"Uncaught exception: {0}\n".format(error_message), exc_info=True)
             self.send_error(status_code, exc_info=sys.exc_info())
@@ -190,15 +198,19 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         # Tornado clear the headers in case of errors, and the CORS headers are lost, we call prepare to reset CORS
         self.prepare()
 
-        error_message = u"HTTP error: %d" % status_code
-        if "message" in kwargs and kwargs.get("message") is not None:
-            error_message += u"\n{0}".format(kwargs.get("message"))
-        if "exc_info" in kwargs:
-            etype, value, tb = kwargs.get("exc_info")
-            exception_msg = u'\n'.join(traceback.format_exception(etype, value, tb))
-            error_message += u"\nException:\n{0}".format(exception_msg)
+        if 'errors_list' in kwargs:
+            error_json = {"errors": kwargs["errors_list"]}
+        else:
+            error_message = u"HTTP error: %d" % status_code
+            if "message" in kwargs and kwargs.get("message") is not None:
+                error_message += u"\n{0}".format(kwargs.get("message"))
+            if "exc_info" in kwargs:
+                etype, value, tb = kwargs.get("exc_info")
+                exception_msg = u'\n'.join(traceback.format_exception(etype, value, tb))
+                error_message += u"\nException:\n{0}".format(exception_msg)
 
-        error_json = {"errors": [error_message]}
+            error_json = {"errors": [error_message]}
+
         self.finish(error_json)
 
     def build_resource_url(self, resource_id):

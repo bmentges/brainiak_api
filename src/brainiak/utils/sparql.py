@@ -2,6 +2,9 @@
 import re
 import uuid
 from datetime import datetime
+
+import ujson as json
+
 from brainiak.log import get_logger
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, shorten_uri
 from brainiak.type_mapper import MAP_RDF_TYPE_TO_PYTHON
@@ -536,7 +539,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                     triples.append(triple)
 
     if errors:
-        error_msg = u"\n".join(errors)
+        error_msg = json.dumps(errors)
         raise InstanceError(error_msg)
 
     return triples

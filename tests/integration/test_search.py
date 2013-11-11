@@ -36,7 +36,7 @@ class SearchIntegrationTestCase(TornadoAsyncHTTPTestCase):
             u'items': [
                 {u'@id': u'http://example.onto/York', u'title': u'York'}
             ],
-            u'_query_expression': u'yo'
+            u'pattern': u'yo'
         }
         response = self.fetch('/_search?pattern=yo' +
                               '&graph_uri=http://example.onto/' +

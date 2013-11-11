@@ -137,7 +137,6 @@ class ParamDict(dict):
                     self[key] = self.optionals[key]
                 del kw[key]  # I have consumed this item, remove it to check for invalid params
 
-        # TODO: test
         unprocessed_keys = kw.keys()
         for key in unprocessed_keys:
             if self._matches_dynamic_pattern(key):
@@ -172,9 +171,22 @@ class ParamDict(dict):
         """
         if key == 'graph_uri':
             dict.__setitem__(self, key, safe_slug_to_prefix(value))
+            try:
+                dict.__getitem__(self, 'context_name')
+            except KeyError:
+                # FIXME: the code below should disappear after #10602 - Normalização no tratamento de parâmetros no Brainiak
+                context_name_value = value.split("/")[-1]
+                dict.__setitem__(self, 'context_name', safe_slug_to_prefix(context_name_value))
+
 
         elif key == 'class_uri':
             dict.__setitem__(self, key, expand_uri(value))
+            try:
+                dict.__getitem__(self, 'class_name')
+            except KeyError:
+                # FIXME: the code below should disappear after #10602 - Normalização no tratamento de parâmetros no Brainiak
+                class_name_value = value.split("/")[-1]
+                dict.__setitem__(self, 'class_name', safe_slug_to_prefix(class_name_value))
 
         elif key == "context_name":
             dict.__setitem__(self, key, value)

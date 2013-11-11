@@ -2,6 +2,7 @@
 from copy import copy
 from urllib import urlencode
 from urlparse import unquote, parse_qs
+from contextlib import contextmanager
 
 from tornado.web import HTTPError
 
@@ -100,6 +101,13 @@ VALID_PATTERNS = (
     PATTERN_O
 )
 
+@contextmanager
+def safe_split():
+    try:
+        yield
+    except IndexError as ex:
+        pass
+
 
 class ParamDict(dict):
     "Utility class to generate default params on demand and memoize results"
@@ -169,24 +177,35 @@ class ParamDict(dict):
         """Process collateral effects in params that are related.
         Changes in *_prefix should reflect in *_uri.
         """
-        if key == 'graph_uri':
-            dict.__setitem__(self, key, safe_slug_to_prefix(value))
+        def _key_is_undefined(key):
             try:
-                dict.__getitem__(self, 'context_name')
+                value = dict.__getitem__(self, key)
+                return not value or value == '_'
             except KeyError:
-                # FIXME: the code below should disappear after #10602 - Normalização no tratamento de parâmetros no Brainiak
-                context_name_value = value.split("/")[-1]
-                dict.__setitem__(self, 'context_name', safe_slug_to_prefix(context_name_value))
+                return True
 
+        if key == 'graph_uri':
+            graph_uri_value = safe_slug_to_prefix(value)
+            dict.__setitem__(self, key, graph_uri_value)
+            with safe_split():
+                if graph_uri_value and _key_is_undefined('context_name'):
+                    # FIXME: the code below should disappear after #10602 - Normalização no tratamento de parâmetros no Brainiak
+                    context_name_value = graph_uri_value.split("/")[-2]
+                    dict.__setitem__(self, 'context_name', context_name_value)
 
         elif key == 'class_uri':
-            dict.__setitem__(self, key, expand_uri(value))
-            try:
-                dict.__getitem__(self, 'class_name')
-            except KeyError:
+            class_uri_value = expand_uri(value)
+            dict.__setitem__(self, key, class_uri_value)
+            with safe_split():
                 # FIXME: the code below should disappear after #10602 - Normalização no tratamento de parâmetros no Brainiak
-                class_name_value = value.split("/")[-1]
-                dict.__setitem__(self, 'class_name', safe_slug_to_prefix(class_name_value))
+                if class_uri_value and _key_is_undefined('class_name'):
+                    class_name_value = class_uri_value.split("/")[-1]
+                    dict.__setitem__(self, 'class_name', class_name_value)
+
+                # FIXME: the code below should disappear after #10602 - Normalização no tratamento de parâmetros no Brainiak
+                if class_uri_value and _key_is_undefined('class_prefix'):
+                    class_prefix_value = "/".join(class_uri_value.split("/")[:-1]) + "/"
+                    dict.__setitem__(self, 'class_prefix', class_prefix_value)
 
         elif key == "context_name":
             dict.__setitem__(self, key, value)
@@ -258,7 +277,7 @@ class ParamDict(dict):
 
             value = self.arguments.get(key, None)
             if value is not None:
-                self[expand_uri(key)] = expand_uri(value)
+                self[key] = expand_uri(value)
 
     def _post_override(self):
         "This method is called after override_with() is called to do any post processing"

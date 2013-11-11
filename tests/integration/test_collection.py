@@ -951,7 +951,7 @@ class GetCollectionDirectObjectTestCase(TornadoAsyncHTTPTestCase, QueryTestCase)
                 "resource_id": "Nina",
                 "instance_prefix": "http://example.onto/",
                 "@id": "http://example.onto/Nina",
-                "class_prefix": "_",
+                "class_prefix": "http://example.onto/",
                 "title": "Nina Fox"
             }
         ]

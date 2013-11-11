@@ -281,7 +281,6 @@ class CreateExplicitTriples(unittest.TestCase):
             response = create_explicit_triples(instance_uri, instance_data, class_object)
         expected_error_msg = "Inexistent property (http://personpedia.com/occupation) in the schema (None), used to create instance (http://personpedia.com/Person/OscarWilde)"
         self.assertEqual(str(exception.exception), expected_error_msg)
-        
 
     def test_create_explicit_triples_predicates_and_objects_are_full_uris(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
@@ -401,7 +400,6 @@ class CreateExplicitTriples(unittest.TestCase):
             },
             context=instance_data['@context']
         )
-        
         with self.assertRaises(InstanceError) as exception:
             create_explicit_triples(instance_uri, instance_data, class_object)
         excepted_error_msg = 'Incorrect value for property (http://personpedia.com/isAlive). A (xsd:boolean) was expected, but (0) was given.'
@@ -425,7 +423,6 @@ class CreateExplicitTriples(unittest.TestCase):
             },
             context=instance_data['@context']
         )
-        
         with self.assertRaises(InstanceError) as exception:
             response = create_explicit_triples(instance_uri, instance_data, class_object)
 
@@ -823,7 +820,7 @@ class SparqlfyTestCase(unittest.TestCase):
     def test_sparqlfy_boolean_true(self):
         response = sparqlfy_boolean(True, "http://www.w3.org/2001/XMLSchema#boolean")
         expected = '"true"^^<http://www.w3.org/2001/XMLSchema#boolean>'
-        self.assertEqual(response, expected) 
+        self.assertEqual(response, expected)
 
     def test_sparqlfy_boolean_false(self):
         response = sparqlfy_boolean(False, "xsd:boolean")
@@ -915,10 +912,8 @@ class SparqlfyTestCase(unittest.TestCase):
         response = is_instance(value, _type)
         self.assertTrue(response)
 
-
     def test_is_instance_expanded_string_true(self):
         value = "abc"
         _type = "http://www.w3.org/2001/XMLSchema#string"
         response = is_instance(value, _type)
         self.assertTrue(response)
-        

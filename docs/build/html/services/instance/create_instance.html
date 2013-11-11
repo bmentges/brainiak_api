@@ -98,6 +98,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../collection/collection.html">Managing Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schema/schema.html">Managing Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="instance.html">Managing Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../search/search.html">Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../suggest/suggest.html">Suggest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../parameters.html">Overriding URIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html">Hypermap of Resources</a></li>
@@ -174,12 +175,13 @@
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 500 Internal Server Error
 Server: nginx
-Date: Wed, 06 Nov 2013 11:58:49 GMT
+Date: Fri, 08 Nov 2013 19:08:39 GMT
 Content-Type: application/json; charset=UTF-8
 Content-Length: 1350
 Connection: keep-alive
+Access-Control-Allow-Origin: *
 
-{&quot;errors&quot;: [&quot;HTTP error: 500\nAccess to backend service failed.  HTTP 500: Internal Server Error.\nResponse:\nVirtuoso RDF02 Error SR619: SPARUL INSERT access denied: database user 119 (api-semantica) has no write permission on graph http://semantica.globo.com/place/\n\nSPARQL query:\n\n#output-format:application/sparql-results+json\n\n\nINSERT DATA INTO &lt;http://semantica.globo.com/place/&gt;\n{\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; &lt;http://semantica.globo.com/place/latitude&gt; \&quot;-22.958314\&quot;^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; &lt;http://semantica.globo.com/place/partOfState&gt; &lt;http://semantica.globo.com/base/UF_RJ&gt; .\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; &lt;http://semantica.globo.com/place/longitude&gt; \&quot;-43.407133\&quot;^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; &lt;http://semantica.globo.com/upper/name&gt; \&quot;Globoland\&quot; .\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; &lt;http://semantica.globo.com/upper/fullName&gt; \&quot;Globoland (RJ)\&quot; .\n   &lt;http://semantica.globo.com/place/City/663d9f40-b3de-4461-bdf1-4e69e744202a&gt; a &lt;http://semantica.globo.com/place/City&gt; .\n}\n&quot;]}
+{&quot;errors&quot;: [&quot;HTTP error: 500\nAccess to backend service failed.  HTTP 500: Internal Server Error.\nResponse:\nVirtuoso RDF02 Error SR619: SPARUL INSERT access denied: database user 119 (api-semantica) has no write permission on graph http://semantica.globo.com/place/\n\nSPARQL query:\n\n#output-format:application/sparql-results+json\n\n\nINSERT DATA INTO &lt;http://semantica.globo.com/place/&gt;\n{\n   &lt;http://semantica.globo.com/place/City/ab94f416-879c-4235-ab71-4f991f6b8d01&gt; &lt;http://semantica.globo.com/place/latitude&gt; \&quot;-22.958314\&quot;^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .\n   &lt;http://semantica.globo.com/place/City/ab94f416-879c-4235-ab71-4f991f6b8d01&gt; &lt;http://semantica.globo.com/place/partOfState&gt; &lt;http://semantica.globo.com/base/UF_RJ&gt; .\n   &lt;http://semantica.globo.com/place/City/ab94f416-879c-4235-ab71-4f991f6b8d01&gt; &lt;http://semantica.globo.com/place/longitude&gt; \&quot;-43.407133\&quot;^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .\n   &lt;http://semantica.globo.com/place/City/ab94f416-879c-4235-ab71-4f991f6b8d01&gt; &lt;http://semantica.globo.com/upper/name&gt; \&quot;Globoland\&quot; .\n   &lt;http://semantica.globo.com/place/City/ab94f416-879c-4235-ab71-4f991f6b8d01&gt; &lt;http://semantica.globo.com/upper/fullName&gt; \&quot;Globoland (RJ)\&quot; .\n   &lt;http://semantica.globo.com/place/City/ab94f416-879c-4235-ab71-4f991f6b8d01&gt; a &lt;http://semantica.globo.com/place/City&gt; .\n}\n&quot;]}
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -234,7 +236,7 @@ a instance from the API. For retrieving it, use the retrieve instance primitive 
 is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;errors&quot;: [
-        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_object_properties, expand_uri, graph_uri, graph_uri, instance_prefix, instance_uri, lang, meta_properties.&quot;
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_object_properties, expand_uri, graph_uri, instance_prefix, instance_uri, lang, meta_properties.&quot;
     ]
 }
 </pre></div>

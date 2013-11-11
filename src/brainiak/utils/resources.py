@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import re
-from tornado.web import HTTPError
 from brainiak.prefixes import expand_uri, is_compressed_uri, ROOT_CONTEXT
 from brainiak.utils.links import pagination_items
 from brainiak.settings import EVENT_BUS_PORT

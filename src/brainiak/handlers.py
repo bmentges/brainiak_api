@@ -30,13 +30,15 @@ from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
 from brainiak.schema.get_class import SchemaNotFound
+from brainiak.search.search import do_search
 from brainiak.suggest.json_schema import schema as suggest_schema
+from brainiak.search.json_schema import schema as search_schema
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
-from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, ParamDict, DEFAULT_PARAMS, RequiredParamMissing, DefaultParamsDict
+from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InstanceError
 
@@ -58,7 +60,7 @@ def safe_params(valid_params=None, body_params=None):
     except InvalidParam as ex:
         msg = u"Argument {0:s} is not supported.".format(ex)
         if valid_params is not None:
-            params_msg = ", ".join(sorted(valid_params.keys() + DEFAULT_PARAMS.keys()))
+            params_msg = ", ".join(sorted(set(valid_params.keys() + DEFAULT_PARAMS.keys())))
             msg += u" The supported querystring arguments are: {0}.".format(params_msg)
         if body_params is not None:
             body_msg = ", ".join(body_params)
@@ -71,7 +73,7 @@ def safe_params(valid_params=None, body_params=None):
 
 def get_routes():
     return [
-        # internal resources for monitoring and meta-infromation inspection
+        # INTERNAL resources for monitoring and meta-infromation inspection
         URLSpec(r'/healthcheck/?', HealthcheckHandler),
         URLSpec(r'/_version/?', VersionHandler),
         URLSpec(r'/_prefixes/?', PrefixHandler),
@@ -79,13 +81,15 @@ def get_routes():
         URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
         URLSpec(r'/_status/cache/?', CacheStatusHandler),
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
-        # json-schemas
+        # Json-schemas for LISTING resources
         URLSpec(r'/_schema_list/?', RootJsonSchemaHandler),
-        URLSpec(r'/_suggest/?', SuggestHandler),
         URLSpec(r'/_suggest/_schema_list/?', SuggestJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/_schema_list/?', ContextJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema_list/?', CollectionJsonSchemaHandler),
-        # resources that represents concepts
+        # TEXTUAL search
+        URLSpec(r'/_suggest/?', SuggestHandler),
+        URLSpec(r'/_search/?', SearchHandler),
+        # resources that represents CONCEPTS
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', ClassHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/(?P<instance_id>[\w\-]+)/?', InstanceHandler),
@@ -264,7 +268,9 @@ class RootHandler(BrainiakRequestHandler):
 class ContextJsonSchemaHandler(BrainiakRequestHandler):
 
     def get(self, context_name):
-        self.finalize(context_schema(context_name))
+        with safe_params():
+            self.query_params = ParamDict(self, context_name=context_name)
+        self.finalize(context_schema(self.query_params))
 
 
 class ContextHandler(BrainiakRequestHandler):
@@ -321,7 +327,7 @@ class CollectionJsonSchemaHandler(BrainiakRequestHandler):
 
     def get(self, context_name, class_name):
         query_params = ParamDict(self, context_name=context_name, class_name=class_name)
-        self.finalize(collection_schema(context_name, class_name, query_params.get('class_prefix', None)))
+        self.finalize(collection_schema(query_params))
 
 
 class CollectionHandler(BrainiakRequestHandler):
@@ -567,7 +573,6 @@ class SuggestHandler(BrainiakRequestHandler):
                 raise HTTPError(400, log_message=u"Invalid json parameter passed to suggest.\n {0:s}".format(ex))
 
             self.query_params = ParamDict(self, **valid_params)
-            self.query_params.validate_required(self, valid_params)
 
         response = do_suggest(self.query_params, body_params)
         if self.query_params['expand_uri'] == "0":
@@ -586,6 +591,29 @@ class SuggestHandler(BrainiakRequestHandler):
             # A call to finalize() was removed from here! -- rodsenra 2013/04/25
 
 
+class SearchJsonSchemaHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.finalize(search_schema())
+
+
+class SearchHandler(BrainiakRequestHandler):
+
+    @greenlet_asynchronous
+    def get(self):
+        valid_params = SEARCH_PARAMS + PAGING_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, **valid_params)
+            self.query_params.validate_required(self, valid_params)
+
+        response = do_search(self.query_params)
+        self.finalize(response)
+
+    def finalize(self, response):
+        self.write(response)
+        self.set_header("Content-Type", content_type_profile(build_schema_url(self.query_params)))
+
+
 class PrefixHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
@@ -595,7 +623,6 @@ class PrefixHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, **valid_params)
 
         response = list_prefixes()
-
         self.finalize(response)
 
 

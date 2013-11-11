@@ -62,7 +62,7 @@ def _build_json(items_list, item_count, query_params):
         '_base_url': query_params.base_url,
         'items': items_list,
         "@context": {"@language": query_params.get("lang")},
-        "_query_expression": query_params["pattern"]
+        "pattern": query_params["pattern"]
     }
 
     calculate_total_items = lambda: item_count

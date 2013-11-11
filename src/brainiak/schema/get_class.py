@@ -7,7 +7,7 @@ from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND
 from brainiak.utils.cache import build_schema_key, memoize
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
 from brainiak.utils.resources import LazyObject
-from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InvalidSchema, bindings_to_dict
+from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InstanceError, bindings_to_dict
 
 logger = LazyObject(get_logger)
 
@@ -17,7 +17,6 @@ class SchemaNotFound(Exception):
 
 
 def get_cached_schema(query_params):
-
     schema_key = build_schema_key(query_params)
     class_object = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
     if not class_object:
@@ -27,13 +26,10 @@ def get_cached_schema(query_params):
 
 
 def get_schema(query_params):
-
     context = MemorizeContext(normalize_uri=query_params['expand_uri'])
-
     class_schema = query_class_schema(query_params)
     if not class_schema["results"]["bindings"]:
         return
-
     query_params["superclasses"] = query_superclasses(query_params)
     predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
     response_dict = assemble_schema_dict(query_params,
@@ -41,7 +37,6 @@ def get_schema(query_params):
                                          predicates_and_cardinalities,
                                          context,
                                          comment=get_one_value(class_schema, "comment"))
-
     return response_dict
 
 
@@ -124,9 +119,9 @@ def get_predicates_and_cardinalities(context, query_params):
 
     try:
         cardinalities = _extract_cardinalities(query_result['results']['bindings'], predicate_dict)
-    except InvalidSchema as ex:
+    except InstanceError as ex:
         msg = u"{0} for class {1}".format(ex.message, query_params.get('class_uri', ''))
-        raise InvalidSchema(msg)
+        raise InstanceError(msg)
 
     return convert_bindings_dict(context,
                                  bindings['results']['bindings'],
@@ -145,7 +140,7 @@ def _extract_cardinalities(bindings, predicate_dict):
                 range_ = predicate_dict[property_]["range"]["value"]
             except KeyError:
                 msg = u"The property {0} is not defined properly".format(property_)
-                raise InvalidSchema(msg)
+                raise InstanceError(msg)
 
         if not property_ in cardinalities:
             cardinalities[property_] = {}
@@ -161,7 +156,7 @@ def _extract_cardinalities(bindings, predicate_dict):
                 min_value = int(min_value)
             except ValueError:
                 msg = u"The property {0} defines a non-integer owl:minQualifiedCardinality {1}".format(property_, min_value)
-                raise InvalidSchema(msg)
+                raise InstanceError(msg)
             else:
                 current_property[range_].update({"minItems": min_value})
                 if min_value:
@@ -173,7 +168,7 @@ def _extract_cardinalities(bindings, predicate_dict):
                 max_value = int(max_value)
             except ValueError:
                 msg = u"The property {0} defines a non-integer owl:maxQualifiedCardinality {1}".format(property_, max_value)
-                raise InvalidSchema(msg)
+                raise InstanceError(msg)
             else:
                 current_property[range_].update({"maxItems": max_value})
 
@@ -390,7 +385,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
 
     else:  # TODO: owl:AnnotationProperty
         msg = u"Predicates of type {0} are not supported yet".format(predicate_type)
-        raise InvalidSchema(msg)
+        raise InstanceError(msg)
 
     if predicate["type"] == "array":
         if (predicate_uri in cardinalities) and (range_uri in cardinalities[predicate_uri]):
@@ -498,7 +493,7 @@ def convert_bindings_dict(context, bindings, cardinalities, superclasses):
 
             else:
                 msg = u"The property {0} seems to be duplicated in class {1}"
-                raise InvalidSchema(msg.format(predicate_uri, predicate["class"]))
+                raise InstanceError(msg.format(predicate_uri, predicate["class"]))
 
         else:
             assembled_predicates[predicate_uri] = predicate

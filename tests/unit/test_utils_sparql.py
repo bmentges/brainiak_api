@@ -970,6 +970,24 @@ class SparqlfyTestCase(unittest.TestCase):
 
 class ValidateValueUniquenessTestCase(unittest.TestCase):
 
+    def test_property_must_map_a_unique_value_is_true(self):
+        class_object = {
+            "properties": {
+                "some_property": {"unique_value": True}
+            }
+        }
+        computed = property_must_map_a_unique_value(class_object, "some_property")
+        self.assertTrue(computed)
+
+    def test_property_must_map_a_unique_value_is_false(self):
+        class_object = {
+            "properties": {
+                "some_property": {}
+            }
+        }
+        computed = property_must_map_a_unique_value(class_object, "some_property")
+        self.assertFalse(computed)
+
     @patch("brainiak.utils.sparql.triplestore.query_sparql")
     @patch("brainiak.utils.sparql.is_result_true", return_value=False)
     def test_property_with_unique_value(self, mock_is_result_true, mock_query_sparql):

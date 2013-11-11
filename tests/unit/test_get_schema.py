@@ -23,9 +23,9 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
     #        u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
     #                 u'type': u'typed-literal', u'value': u'1'}
     #    }]
-    #    with self.assertRaises(schema.InvalidSchema) as error:
+    #    with self.assertRaises(schema.InstanceError) as error:
     #        _extract_cardinalities(binding, {})
-    #        self.assertEqual(error.exception, "InvalidSchema: The property http://test/person/gender does not have a range definition")
+    #        self.assertEqual(error.exception, "InstanceError: The property http://test/person/gender does not have a range definition")
 
     def test_extract_cardinalities_raises_exception_due_to_improper_min_value(self):
         binding = [{
@@ -36,9 +36,9 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
             u'min': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
                      u'type': u'typed-literal', u'value': u'abc'}
         }]
-        with self.assertRaises(schema.InvalidSchema) as error:
+        with self.assertRaises(schema.InstanceError) as error:
             _extract_cardinalities(binding, {})
-            self.assertEqual(error.exception, "InvalidSchema: The property http://test/person/gender defines a non-integer owl:minQualifiedCardinality abc")
+            self.assertEqual(error.exception, "InstanceError: The property http://test/person/gender defines a non-integer owl:minQualifiedCardinality abc")
 
     def test_extract_cardinalities_raises_exception_due_to_improper_max_value(self):
         binding = [{
@@ -49,9 +49,9 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
             u'max': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
                      u'type': u'typed-literal', u'value': u'abc'}
         }]
-        with self.assertRaises(schema.InvalidSchema) as error:
+        with self.assertRaises(schema.InstanceError) as error:
             _extract_cardinalities(binding, {})
-            self.assertEqual(error.exception, "InvalidSchema: The property http://test/person/gender defines a non-integer owl:maxQualifiedCardinality abc")
+            self.assertEqual(error.exception, "InstanceError: The property http://test/person/gender defines a non-integer owl:maxQualifiedCardinality abc")
 
     def test_extract_min_1_required_true(self):
         binding = [{
@@ -153,9 +153,9 @@ class AuxiliaryFunctionsTestCase(unittest.TestCase):
         cardinalities = {u'http://test/person/gender': {u'http://test/person/Gender': {'minItems': 1, 'maxItems': 1}}}
         context = prefixes.MemorizeContext(normalize_uri=SHORTEN)
         context.prefix_to_slug('http://test/person')
-        with self.assertRaises(schema.InvalidSchema) as error:
+        with self.assertRaises(schema.InstanceError) as error:
             assemble_predicate(name, predicate, cardinalities, context)
-            self.assertEqual(error.exception, "InvalidSchema: Predicates of type http://www.w3.org/2002/07/owl#AnnotationProperty are not supported yet")
+            self.assertEqual(error.exception, "InstanceError: Predicates of type http://www.w3.org/2002/07/owl#AnnotationProperty are not supported yet")
 
     def test_assemble_predicate_with_datatype_property(self):
         expected_predicate_dict = {'description': u'Nome completo da pessoa',
@@ -549,9 +549,9 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
         ]
         hierarchy = [u'http://test/person/AnyClass']
 
-        with self.assertRaises(schema.InvalidSchema) as error:
+        with self.assertRaises(schema.InstanceError) as error:
             convert_bindings_dict(context, bindings, cardinalities, hierarchy)
-            self.assertEqual(error.exception, "InvalidSchema: The property g1:cita_a_entidade seems to be duplicated in class http://test/person/AnyClass")
+            self.assertEqual(error.exception, "InstanceError: The property g1:cita_a_entidade seems to be duplicated in class http://test/person/AnyClass")
 
     def test_convert_bindings_dict_single_predicate_multiple_ranges_of_same_type(self):
 

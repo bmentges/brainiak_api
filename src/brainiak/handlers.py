@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import ast
 import sys
 import traceback
 from contextlib import contextmanager
@@ -39,7 +40,7 @@ from brainiak.utils.cache import memoize
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
 from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
-from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InvalidSchema
+from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InstanceError
 
 
 logger = LazyObject(get_logger)
@@ -156,11 +157,19 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             logger.error(message)
             self.send_error(status_code, message=message)
 
-        elif isinstance(e, InvalidSchema):
+        elif isinstance(e, InstanceError):
             logger.error(u"Ontology inconsistency: {0}\n".format(error_message))
             self.send_error(status_code, message=e.message)
 
         elif isinstance(e, HTTPError):
+            try:
+                possible_list = json.loads(e.log_message)
+            except ValueError:
+                pass
+            else:
+                if isinstance(possible_list, list):
+                    self.send_error(status_code, errors_list=possible_list)
+                    return
             if e.log_message:
                 error_message += u"\n  {0}".format(e.log_message)
             if status_code == 500:
@@ -169,7 +178,6 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             else:
                 logger.error(u"HTTP error: {0}\n".format(error_message))
                 self.send_error(status_code, message=e.log_message)
-
         else:
             logger.error(u"Uncaught exception: {0}\n".format(error_message), exc_info=True)
             self.send_error(status_code, exc_info=sys.exc_info())
@@ -195,15 +203,19 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         # Tornado clear the headers in case of errors, and the CORS headers are lost, we call prepare to reset CORS
         self.prepare()
 
-        error_message = u"HTTP error: %d" % status_code
-        if "message" in kwargs and kwargs.get("message") is not None:
-            error_message += u"\n{0}".format(kwargs.get("message"))
-        if "exc_info" in kwargs:
-            etype, value, tb = kwargs.get("exc_info")
-            exception_msg = u'\n'.join(traceback.format_exception(etype, value, tb))
-            error_message += u"\nException:\n{0}".format(exception_msg)
+        if 'errors_list' in kwargs:
+            error_json = {"errors": kwargs["errors_list"]}
+        else:
+            error_message = u"HTTP error: %d" % status_code
+            if "message" in kwargs and kwargs.get("message") is not None:
+                error_message += u"\n{0}".format(kwargs.get("message"))
+            if "exc_info" in kwargs:
+                etype, value, tb = kwargs.get("exc_info")
+                exception_msg = u'\n'.join(traceback.format_exception(etype, value, tb))
+                error_message += u"\nException:\n{0}".format(exception_msg)
 
-        error_json = {"errors": [error_message]}
+            error_json = {"errors": [error_message]}
+
         self.finish(error_json)
 
     def build_resource_url(self, resource_id):
@@ -368,7 +380,7 @@ class CollectionHandler(BrainiakRequestHandler):
 
         try:
             (instance_uri, instance_id) = create_instance(self.query_params, instance_data)
-        except InvalidSchema as ex:
+        except InstanceError as ex:
             raise HTTPError(500, log_message=unicode(ex))
 
         instance_url = self.build_resource_url(instance_id)
@@ -481,7 +493,7 @@ class InstanceHandler(BrainiakRequestHandler):
             else:
                 edit_instance(self.query_params, instance_data)
                 status = 200
-        except InvalidSchema as ex:
+        except InstanceError as ex:
             raise HTTPError(400, log_message=unicode(ex))
         except SchemaNotFound as ex:
             raise HTTPError(404, log_message=unicode(ex))

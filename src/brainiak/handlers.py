@@ -295,6 +295,8 @@ class ContextHandler(BrainiakRequestHandler):
 
 class ClassHandler(BrainiakRequestHandler):
 
+    SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
+
     def __init__(self, *args, **kwargs):
         super(ClassHandler, self).__init__(*args, **kwargs)
 
@@ -302,6 +304,7 @@ class ClassHandler(BrainiakRequestHandler):
     def get(self, context_name, class_name):
         self.request.query = unquote(self.request.query)
 
+        #valid_params = CACHE_PARAMS
         valid_params = {}
         with safe_params(valid_params):
             self.query_params = ParamDict(self,
@@ -311,16 +314,15 @@ class ClassHandler(BrainiakRequestHandler):
         del context_name
         del class_name
 
-        response = schema_resource.get_schema(self.query_params)
-        if response is None:
-            msg = u"Schema for class {0} in context {1} was not found."
-            error_message = msg.format(self.query_params['class_uri'], self.query_params['graph_uri'])
-            raise HTTPError(404, log_message=error_message)
+        try:
+            response = schema_resource.get_cached_schema(self.query_params, include_meta=True)
+        except schema_resource.SchemaNotFound, e:
+            raise HTTPError(404, log_message=e.message)
 
         if self.query_params['expand_uri'] == "0":
             response = normalize_all_uris_recursively(response, mode=SHORTEN)
-
-        self.finalize(response)
+        self.add_cache_headers(response['meta'])
+        self.finalize(response['body'])
 
 
 class CollectionJsonSchemaHandler(BrainiakRequestHandler):

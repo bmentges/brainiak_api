@@ -60,6 +60,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
             method='PUT',
             body=json.dumps(actual_new_york_dict))
+        import pdb; pdb.set_trace()
         self.assertEqual(modified_new_york.code, 200)
         mock_notify_bus.assert_called_with(**expected_message)
 

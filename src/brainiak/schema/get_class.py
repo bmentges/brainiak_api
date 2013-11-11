@@ -16,13 +16,16 @@ class SchemaNotFound(Exception):
     pass
 
 
-def get_cached_schema(query_params):
+def get_cached_schema(query_params, include_meta=False):
     schema_key = build_schema_key(query_params)
-    class_object = memoize(query_params, get_schema, query_params, key=schema_key)["body"]
-    if not class_object:
+    class_object = memoize(query_params, get_schema, query_params, key=schema_key)
+    if not class_object["body"]:
         msg = u"The class definition for {0} was not found in graph {1}"
         raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['graph_uri']))
-    return class_object
+    if include_meta:
+        return class_object
+    else:
+        return class_object['body']
 
 
 def get_schema(query_params):

@@ -48,7 +48,7 @@ def _build_items(elasticsearch_result):
     es_items = elasticsearch_result["hits"].get("hits", [])
     for item in es_items:
         item_dict = {
-            "@id": item["_id"],
+            "id": item["_id"],
             "title": item["_source"][RDFS_LABEL],
         }
         items.append(item_dict)

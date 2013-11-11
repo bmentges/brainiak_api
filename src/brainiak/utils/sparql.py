@@ -1,7 +1,7 @@
 # coding: utf-8
 import re
 import uuid
-from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
+from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, shorten_uri
 from brainiak.type_mapper import MAP_RDF_TYPE_TO_PYTHON
 
 
@@ -325,8 +325,17 @@ class InstanceError(Exception):
 
 
 def is_instance(value, _type):
-    python_type = MAP_RDF_TYPE_TO_PYTHON[_type]
-    return isinstance(value, python_type)
+    try:
+        python_type = MAP_RDF_TYPE_TO_PYTHON[_type]
+    except KeyError:
+        _type = shorten_uri(_type)
+        python_type = MAP_RDF_TYPE_TO_PYTHON[_type]
+
+    if python_type:
+        answer = isinstance(value, python_type) or isinstance(value, unicode)
+    else:
+        answer = isinstance(value, python_type) 
+    return answer
 
 
 def generic_sparqlfy(value, *args):

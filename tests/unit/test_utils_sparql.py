@@ -891,6 +891,34 @@ class SparqlfyTestCase(unittest.TestCase):
         expected = '"2"^^xsd:integer'
         self.assertEqual(response, expected)
 
-def sparqlfy(value, predicate_datatype):
-    sparqlfy_function = SPARQLFY_MAP.get(predicate_datatype) or sparqlfy_with_casting
-    return sparqlfy_function(value, predicate_datatype)
+    def test_is_instance_unicode_true(self):
+        value = u"Some random unicode"
+        _type = "xsd:string"
+        response = is_instance(value, _type)
+        self.assertTrue(response)
+
+    def test_is_instance_string_true(self):
+        value = u"Some random string"
+        _type = "xsd:string"
+        response = is_instance(value, _type)
+        self.assertTrue(response)
+
+    def test_is_instance_integer_true(self):
+        value = 1
+        _type = "xsd:int"
+        response = is_instance(value, _type)
+        self.assertTrue(response)
+
+    def test_is_instance_integer_false(self):
+        value = True
+        _type = "xsd:int"
+        response = is_instance(value, _type)
+        self.assertTrue(response)
+
+
+    def test_is_instance_expanded_string_true(self):
+        value = "abc"
+        _type = "http://www.w3.org/2001/XMLSchema#string"
+        response = is_instance(value, _type)
+        self.assertTrue(response)
+        

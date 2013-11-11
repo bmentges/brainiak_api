@@ -14,13 +14,13 @@ SEARCH_PARAM_SCHEMA = {
 
 
 def schema():
-    schema_ref = u"/{{_context_name}}/{{_class_name}}/_schema?class_prefix={{_class_prefix}}"
-    href = u"/{{_context_name}}/{{_class_name}}/?class_prefix={{_class_prefix}}"
-    link = u"/{{_context_name}}/{{_class_name}}/{{resource_id}}?class_prefix={{_class_prefix}}&instance_prefix={{instance_prefix}}"
+    schema_ref = u"/{_context_name}/{_class_name}/_schema?class_prefix={_class_prefix}"
+    href = u"/{_context_name}/{_class_name}/?class_prefix={_class_prefix}"
+    link = u"/{_context_name}/{_class_name}/{resource_id}?class_prefix={_class_prefix}&instance_prefix={instance_prefix}"
 
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
-        "title": "Collection Schema that lists instances",
+        "title": "Search Schema that lists instances that satisfy search criteria",
         "type": "object",
         "required": ["items", "_class_prefix", "@id"],
         "properties": {
@@ -71,7 +71,7 @@ def schema():
                 "rel": "class"
             },
             {
-                "href": u"/{{_context_name}}",
+                "href": u"/{_context_name}",
                 "method": "GET",
                 "rel": "context"
             },
@@ -82,7 +82,7 @@ def schema():
                 "schema": {"$ref": schema_ref}
             },
             {
-                "href": "/_search?graph_uri={{_graph_uri}}&class_uri={{_class_uri}}&pattern={{pattern}}",
+                "href": "/_search?graph_uri={_graph_uri}&class_uri={_class_uri}&pattern={pattern}",
                 "method": "GET",
                 "rel": "search",
                 "schema": SEARCH_PARAM_SCHEMA
@@ -90,8 +90,8 @@ def schema():
         ]
     }
 
-    base_pagination_url = u'/{{_context_name}}/{{_class_name}}'
-    extra_url_params = '&class_prefix={_class_prefix}'
+    base_pagination_url = u'/_search'
+    extra_url_params = '&graph_uri={_graph_uri}&class_uri={_class_uri}'
     pagination_dict = pagination_schema(base_pagination_url, extra_url_params)
     merge_schemas(base, pagination_dict)
     return base

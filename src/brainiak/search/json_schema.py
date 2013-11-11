@@ -16,7 +16,7 @@ SEARCH_PARAM_SCHEMA = {
 def schema():
     schema_ref = u"/{_context_name}/{_class_name}/_schema?class_prefix={_class_prefix}"
     href = u"/{_context_name}/{_class_name}/?class_prefix={_class_prefix}"
-    link = u"/{_context_name}/{_class_name}/{resource_id}?class_prefix={_class_prefix}&instance_prefix={instance_prefix}"
+    link = u"/_/_/_?instance_uri={id}"
 
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
@@ -37,10 +37,10 @@ def schema():
                 "type": "array",
                 "items": {
                     "type": "object",
-                    "required": ["title", "@id", "resource_id", "instance_prefix"],
+                    "required": ["title", "id", "resource_id", "instance_prefix"],
                     "properties": {
                         "title": {"type": "string"},
-                        "@id": {"type": "string"},
+                        "id": {"type": "string"},
                         "resource_id": {"type": "string"},
                         "instance_prefix": {"type": "string", "format": "uri"},
                     },

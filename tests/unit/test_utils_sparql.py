@@ -1,6 +1,8 @@
 import unittest
 import uuid
 
+from mock import patch
+
 from brainiak.prefixes import MemorizeContext
 from brainiak.utils.sparql import *
 from tests.mocks import mock_schema
@@ -904,13 +906,52 @@ class SparqlfyTestCase(unittest.TestCase):
         self.assertTrue(response)
 
     def test_is_instance_integer_false(self):
-        value = True
+        value = 1.1
         _type = "xsd:int"
         response = is_instance(value, _type)
-        self.assertTrue(response)
+        self.assertFalse(response)
 
     def test_is_instance_expanded_string_true(self):
         value = "abc"
         _type = "http://www.w3.org/2001/XMLSchema#string"
         response = is_instance(value, _type)
         self.assertTrue(response)
+
+    @patch("brainiak.utils.sparql.logger.info")
+    def test_is_instance_undefined_type(self, mock_info):
+        value = 1
+        _type = "http://undefined/property"
+        response = is_instance(value, _type)
+        self.assertTrue(response)
+        msg = u"Could not validate input due to unknown property type: <http://undefined/property>"
+        mock_info.assert_called_with(msg)
+
+    def test_is_instance_datetime_without_zone(self):
+        value = "2002-05-30T09:00:00"
+        _type = "xsd:dateTime"
+        response = is_instance(value, _type)
+        self.assertTrue(response)
+
+    def test_is_instance_datetime_in_utc_time(self):
+        value = "2002-05-30T09:30:10Z"
+        _type = "xsd:dateTime"
+        response = is_instance(value, _type)
+        self.assertTrue(response)
+
+    def test_is_instance_datetime_with_utc_offset(self):
+        value = "2002-05-30T09:30:10-06:00"
+        _type = "xsd:dateTime"
+        response = is_instance(value, _type)
+        self.assertTrue(response)
+
+    def test_is_instance_datetime_with_invalid_utc_offset(self):
+        value = "2002-05-30T09:30:10-AB:CD"
+        _type = "xsd:dateTime"
+        response = is_instance(value, _type)
+        self.assertFalse(response)
+
+    def test_is_instance_with_invalid_offset(self):
+        value = "abc"
+        _type = "xsd:dateTime"
+        response = is_instance(value, _type)
+        self.assertFalse(response)

@@ -51,10 +51,10 @@ _MAP_JSON_TO_PYTHON = {
 }
 
 MAP_RDF_TYPE_TO_PYTHON = {
-    "rdf:XMLLiteral": str,
-    "rdfs:Literal": str,
-    "xsd:string": str,
-    "xsd:anyURI": str,
+    "rdf:XMLLiteral": basestring,
+    "rdfs:Literal": basestring,
+    "xsd:string": basestring,
+    "xsd:anyURI": basestring,
     "xsd:float": float,
     "xsd:double": float,
     "xsd:integer": int,

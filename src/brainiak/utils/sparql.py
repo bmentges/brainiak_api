@@ -4,7 +4,9 @@ import uuid
 from datetime import datetime
 
 import ujson as json
+from tornado.web import HTTPError
 
+from brainiak import triplestore
 from brainiak.log import get_logger
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, shorten_uri
 from brainiak.type_mapper import MAP_RDF_TYPE_TO_PYTHON
@@ -21,6 +23,7 @@ XML_LITERAL = u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'
 XSD_BOOLEAN = u'http://www.w3.org/2001/XMLSchema#boolean'
 XSD_BOOLEAN_SHORT = u'xsd:boolean'
 XSD_STRING = u'http://www.w3.org/2001/XMLSchema#string'
+RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 IGNORED_DATATYPES = [XML_LITERAL, XSD_STRING]
 
@@ -313,8 +316,8 @@ def clean_up_reserved_attributes(instance_data):
     return clean_instance
 
 
-def get_predicate_datatype(class_object, expanded_predicate_name):
-    predicate = class_object['properties'][expanded_predicate_name]
+def get_predicate_datatype(class_object, predicate_uri):
+    predicate = class_object['properties'][predicate_uri]
     if 'range' in predicate:
         return None
     else:
@@ -499,7 +502,11 @@ def sparqlfy(value, predicate_datatype):
     return sparqlfy_function(value, predicate_datatype)
 
 
-def create_explicit_triples(instance_uri, instance_data, class_object):
+def property_must_map_a_unique_value(class_object, predicate_uri):
+    class_object['properties'][predicate_uri].get("unique_value", False)
+
+
+def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params):
     predicate_object_tuples = unpack_tuples(instance_data)
 
     triples = []
@@ -509,7 +516,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
     for (predicate_uri, object_value) in predicate_object_tuples:
 
         if not is_reserved_attribute(predicate_uri):
-
+            predicate_has_error = False
             try:
                 predicate_datatype = get_predicate_datatype(class_object, predicate_uri)
             except KeyError:
@@ -518,6 +525,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                 msg = template.format(predicate_uri, class_id, instance_uri)
                 errors.append(msg)
                 predicate_datatype = None
+                predicate_has_error = True
             else:
                 if predicate_datatype is None:  # ObjectProperty
                     try:
@@ -525,12 +533,14 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                     except InstanceError:
                         msg = template_msg.format(object_value, predicate_uri, "owl:ObjectProperty")
                         errors.append(msg)
+                        predicate_has_error = True
                 else:
                     if is_instance(object_value, predicate_datatype):
                         object_ = sparqlfy(object_value, predicate_datatype)
                     else:
                         msg = template_msg.format(object_value, predicate_uri, predicate_datatype)
                         errors.append(msg)
+                        predicate_has_error = True
 
                 if not errors:
                     instance = sparqlfy_object(instance_uri)
@@ -538,10 +548,16 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
                     triple = (instance, predicate, object_)
                     triples.append(triple)
 
+            if not predicate_has_error:
+                if property_must_map_a_unique_value(class_object, predicate_uri):
+                    if not is_value_unique(instance_uri, object_, predicate_uri, class_object, graph_uri, query_params):
+                        template = u"The property ({0}) defined in the schema ({1}) must map a unique value. The value provided ({2}) is already used by another instance."
+                        msg = template.format(predicate_uri, class_uri, _object)
+                        errors.append(msg)
+
     if errors:
         error_msg = json.dumps(errors)
         raise InstanceError(error_msg)
-
     return triples
 
 
@@ -575,6 +591,28 @@ def decode_boolean(object_value):
         return True
     else:
         raise InstanceError(u"Could not decode boolean using {0}".format(object_value))
+
+
+QUERY_VALUE_EXISTS = u"""
+ASK FROM <%(graph_uri)s> {
+  ?s a <%(class_uri)s> .
+  ?s <%(predicate_uri)s> %(object_value)s
+  FILTER (?s != <%(instance_uri)s>)
+}
+"""
+
+
+def is_value_unique(instance_uri, object_value, predicate_uri, class_object, graph_uri, query_params):
+    class_uri = class_object['id']
+    query = QUERY_VALUE_EXISTS % {
+        "graph_uri": graph_uri,
+        "class_uri": class_uri,
+        "instance_uri": instance_uri,
+        "predicate_uri": predicate_uri,
+        "object_value": object_value
+    }
+    query_result = triplestore.query_sparql(query, query_params.triplestore_config)
+    return is_result_true(query_result)
 
 
 def create_implicit_triples(instance_uri, class_uri):

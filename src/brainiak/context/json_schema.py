@@ -2,7 +2,8 @@
 from brainiak.utils.links import merge_schemas, pagination_schema
 
 
-def schema(context_name):
+def schema(query_params):
+    context_name = query_params['context_name']
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
         "title": "Context Schema that lists collections",

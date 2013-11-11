@@ -688,19 +688,16 @@ class POTestCase(unittest.TestCase):
         self.assertFalse(PATTERN_O.match("other_key"))
         self.assertFalse(PATTERN_O.match("no"))
 
-    def escape_quotes(self):
-        object_value = 'Aos 15 anos, lan\xe7ou o 1\xba disco com o sucesso "Musa do ver\xe3o"'
-
-        expected_object_value = 'Aos 15 anos, lan\xe7ou o 1\xba disco com o sucesso \\"Musa do ver\xe3o\\"'
-
+    def test_escape_quotes(self):
+        object_value = u'Aos 15 anos, lan\xe7ou o 1\xba disco com o sucesso "Musa do ver\xe3o"'
+        expected_object_value = u'Aos 15 anos, lan\xe7ou o 1\xba disco com o sucesso \\"Musa do ver\xe3o\\"'
         self.assertEqual(expected_object_value, escape_quotes(object_value))
 
-    def escape_quotes_not_string(self):
+    def test_escape_quotes_not_string(self):
         object_value = 15
-
-        expected_object_value = 15
-
-        self.assertEqual(expected_object_value, escape_quotes(object_value))
+        expected = 15
+        computed = escape_quotes(object_value)
+        self.assertEqual(computed, expected)
 
 
 class GetPredicatedDatatypeTestCase(unittest.TestCase):

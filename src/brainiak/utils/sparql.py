@@ -334,7 +334,7 @@ def is_instance(value, _type):
     if python_type:
         answer = isinstance(value, python_type) or isinstance(value, unicode)
     else:
-        answer = isinstance(value, python_type) 
+        answer = isinstance(value, python_type)
     return answer
 
 
@@ -378,7 +378,7 @@ SPARQLFY_MAP = {
     "rdf:XMLLiteral": generic_sparqlfy,
     "xsd:string": sparqlfy_string,
     "xsd:anyURI": sparqlfy_object,
-    "xsd:boolean": sparqlfy_boolean 
+    "xsd:boolean": sparqlfy_boolean
 }
 
 
@@ -393,7 +393,6 @@ def create_explicit_triples(instance_uri, instance_data, class_object):
     triples = []
     errors = []
     template_msg = u'Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was given.'
-
 
     for (predicate_uri, object_value) in predicate_object_tuples:
 

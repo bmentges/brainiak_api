@@ -3,7 +3,7 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.schema.get_class import get_cached_schema
 from brainiak.utils.sparql import create_explicit_triples, create_instance_uri, create_implicit_triples, \
-    extract_instance_id, join_triples, join_prefixes, is_insert_response_successful
+    extract_instance_id, join_triples, join_prefixes, is_insert_response_successful, InstanceError
 
 
 def create_instance(query_params, instance_data, instance_uri=None):
@@ -15,7 +15,10 @@ def create_instance(query_params, instance_data, instance_uri=None):
 
     class_object = get_cached_schema(query_params)
 
-    triples = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params)
+    try:
+        triples = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params)
+    except InstanceError, exception:
+        raise HTTPError(400, log_message=exception.message)
 
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
     triples.extend(implicit_triples)

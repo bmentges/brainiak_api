@@ -82,6 +82,10 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))
         self.assertTrue(location.endswith("/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/"))
+        
+        resource_id = response.headers['X-Brainiak-Resource-Uri']
+        self.assertTrue(resource_id, "http://semantica.globo.com/place/Place/InexistentCity")
+
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}, id="http://tatipedia.org/Place"))

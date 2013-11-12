@@ -48,7 +48,7 @@ def _build_items(elasticsearch_result):
     es_items = elasticsearch_result["hits"].get("hits", [])
     for item in es_items:
         item_dict = {
-            "@id": item["_id"],
+            "id": item["_id"],
             "title": item["_source"][RDFS_LABEL],
         }
         items.append(item_dict)
@@ -62,7 +62,13 @@ def _build_json(items_list, item_count, query_params):
         '_base_url': query_params.base_url,
         'items': items_list,
         "@context": {"@language": query_params.get("lang")},
-        "pattern": query_params["pattern"]
+        "pattern": query_params["pattern"],
+        # Variables needed for corresponding json-schema
+        "_class_name": query_params["class_name"],
+        "_graph_uri": query_params["graph_uri"],
+        "_class_prefix": query_params["class_prefix"],
+        "_context_name": query_params["context_name"],
+        "_class_uri": query_params["class_uri"]
     }
 
     calculate_total_items = lambda: item_count

@@ -49,3 +49,27 @@ _MAP_JSON_TO_PYTHON = {
     "integer": int,
     "boolean": bool
 }
+
+MAP_RDF_TYPE_TO_PYTHON = {
+    "rdf:XMLLiteral": basestring,
+    "rdfs:Literal": basestring,
+    "xsd:string": basestring,
+    "xsd:anyURI": basestring,
+    "xsd:float": float,
+    "xsd:double": float,
+    "xsd:integer": int,
+    "xsd:nonPositiveInteger": int,
+    "xsd:nonNegativeInteger": int,
+    "xsd:negativeInteger": int,
+    "xsd:positiveInteger": int,
+    "xsd:long": int,
+    "xsd:int": int,
+    "xsd:short": int,
+    "xsd:byte": int,
+    "xsd:decimal": float,
+    "xsd:unsignedLong": int,
+    "xsd:unsignedInt": int,
+    "xsd:unsignedShort": int,
+    "xsd:unsignedByte": int,
+    "xsd:boolean": bool
+}

@@ -9,7 +9,7 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 
-class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
     # The class variables below are handled by QueryTestCase
@@ -27,18 +27,8 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         "tpedia:partOfContinent": "place:America"
     }
 
-    def setUp(self):
-        super(EditInstanceTestCase, self).setUp()
-        response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='DELETE')
-
     def get_app(self):
         return server.Application()
-
-    def setUp(self):
-        super(EditInstanceTestCase, self).setUp()
-
-    def tearDown(self):
-        pass
 
     @patch("brainiak.handlers.logger")
     def test_edit_instance_500(self, log):
@@ -73,7 +63,7 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.instance.create_instance.get_cached_schema",
            return_value=mock_schema({"rdfs:label": "string",
                                      "rdfs:comment": "string",
-                                     "http://tatipedia.org/speak": "string"}, id="http://tatipedia.org/Place"))
+                                     "http://tatipedia.org/speak": "string"}, "http://tatipedia.org/Place"))
     def test_edit_instance_that_doesnt_exist_201(self, mock_schema, mock_log):  # Bus notification test is in a separated test file
         response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                               method='PUT',
@@ -82,14 +72,12 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))
         self.assertTrue(location.endswith("/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/"))
-        
+
         resource_id = response.headers['X-Brainiak-Resource-Uri']
         self.assertTrue(resource_id, "http://semantica.globo.com/place/Place/InexistentCity")
 
-
-    @patch("brainiak.handlers.logger")
-    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}, id="http://tatipedia.org/Place"))
-    def test_edit_instance_200_adding_predicate(self, mock_schema, mock_log):
+    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}, "http://tatipedia.org/Place"))
+    def test_edit_instance_200_adding_predicate(self, mock_schema):
         actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='GET')
         self.assertEqual(actual_new_york.code, 200)
         actual_new_york_dict = json.loads(actual_new_york.body)
@@ -138,7 +126,7 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(modified_new_york.body, "")
 
 
-class EditInstanceResourceTestCase(QueryTestCase):
+class EditInstanceQueriesTestCase(QueryTestCase):
 
     maxDiff = None
     allow_triplestore_connection = True

@@ -15,7 +15,7 @@ from brainiak.schema.get_class import build_class_schema_query, \
     QUERY_CARDINALITIES, QUERY_PREDICATE_WITHOUT_LANG, \
     QUERY_PREDICATE_WITH_LANG, QUERY_SUPERCLASS, SchemaNotFound
 from brainiak.utils.params import ParamDict
-from brainiak.utils.cache import delete
+from brainiak.utils.cache import delete, retrieve
 from tests.mocks import MockHandler, MockRequest, Params
 from tests.sparql import QueryTestCase
 from tests.tornado_cases import TornadoAsyncTestCase, TornadoAsyncHTTPTestCase
@@ -671,10 +671,55 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
     def setUp(self):
         TornadoAsyncHTTPTestCase.setUp(self)
         delete('http://example.onto/@@http://example.onto/Place##class')
+        delete('http://semantica.globo.com/person/@@http://semantica.globo.com/person/Gender##class')
 
     def tearDown(self):
         TornadoAsyncHTTPTestCase.tearDown(self)
         delete('http://example.onto/@@http://example.onto/Place##class')
+        delete('http://semantica.globo.com/person/@@http://semantica.globo.com/person/Gender##class')
+
+    @patch("brainiak.utils.cache.retrieve", return_value={"cache": "to be purged"})
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_200_with_cache_but_with_purge(self, enable_cache, retrieve):
+        response = self.fetch("/person/Gender/_schema?purge=1", method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        self.assertIn("properties", body.keys())
+        self.assertTrue(response.headers.get('Last-Modified'))
+        self.assertTrue(response.headers['X-Cache'].startswith('MISS from localhost'))
+
+    @patch("brainiak.utils.cache.retrieve", return_value={"body": {"i am": "cached"}, "meta": {"cache": "HIT", "last_modified": "123"}})
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_200_with_cache(self, enable_cache, retrieve):
+        response = self.fetch("/person/Gender/_schema", method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        self.assertIn("i am", body.keys())
+        self.assertTrue(response.headers.get('Last-Modified'))
+        self.assertTrue(response.headers['X-Cache'].startswith('HIT from localhost'))
+
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_200_with_miss(self, enable_cache):
+        cached_value = retrieve("http://semantica.globo.com/person/@@http://semantica.globo.com/person/Gender##class")
+        self.assertEqual(cached_value, None)
+
+        response = self.fetch("/person/Gender/_schema", method='GET')
+        self.assertEqual(response.code, 200)
+        body = json.loads(response.body)
+        self.assertIn("properties", body.keys())
+        self.assertTrue(response.headers.get('Last-Modified'))
+        self.assertTrue(response.headers['X-Cache'].startswith('MISS from localhost'))
+
+        cached_value = retrieve("http://semantica.globo.com/person/@@http://semantica.globo.com/person/Gender##class")
+        self.assertTrue(cached_value)
+
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=False)
+    def test_purge_returns_405_when_cache_is_disabled(self, enable_cache):
+        response = self.fetch("/person/Gender/_schema", method='PURGE')
+        self.assertEqual(response.code, 405)
+        received = json.loads(response.body)
+        expected = {u'errors': [u"HTTP error: 405\nCache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"]}
+        self.assertEqual(received, expected)
 
     def test_collection_has_options(self):
         response = self.fetch('/person/Gender/_schema', method='OPTIONS')
@@ -735,7 +780,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_with_invalid_params(self, log):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
-        self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, graph_uri, lang."]}')
+        self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, graph_uri, lang, purge."]}')
 
     @patch("brainiak.handlers.logger")
     def test_schema_handler_class_undefined(self, log):

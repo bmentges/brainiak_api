@@ -21,7 +21,7 @@ def do_search(query_params):
     return response
 
 
-def do_search_query(query_params, search_fields):
+def do_search_query(query_params, search_fields, analyzer=settings.ES_ANALYZER):
     ELASTICSEARCH_QUERY_DICT = {
         "filter": {
             "type": {
@@ -32,6 +32,8 @@ def do_search_query(query_params, search_fields):
             "multi_match": {
                 "query": "{0}".format(query_params["pattern"]),
                 "fields": search_fields,
+                "analyzer": analyzer,
+                "fuzziness": 0.7  # based on manual tests
             },
         },
         "from": int(resources.calculate_offset(query_params)),

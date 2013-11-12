@@ -73,3 +73,5 @@ MAP_RDF_TYPE_TO_PYTHON = {
     "xsd:unsignedByte": int,
     "xsd:boolean": bool
 }
+
+MAP_RDF_EXPANDED_TYPE_TO_PYTHON = {expand_uri(k): v for k, v in MAP_RDF_TYPE_TO_PYTHON.items()}

@@ -101,8 +101,8 @@ def check_and_clean_rdftype(instance_type, items):
     else:
         rdftype = None
     if rdftype is not None:
-        msg = u"The type specified={0} is not the same informed from the triplestore={1}"
         if instance_type != items[rdftype]:
+            msg = u"The type specified={0} is not the same informed from the triplestore={1}"
             raise Exception(msg.format(instance_type, items[rdftype]))
         del items[rdftype]
 

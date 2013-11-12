@@ -254,6 +254,19 @@ class ParamsTestCase(TestCase):
         params = ParamDict(handler, do_item_count='1')
         self.assertEqual(params["do_item_count"], '1')
 
+    def test_context_name_from_graph_uri(self):
+        handler = MockHandler()
+        pd = ParamDict(handler, graph_uri='http://somedomain/someGraphName/')
+        self.assertEquals(pd["graph_uri"], "http://somedomain/someGraphName/")
+        self.assertEquals(pd["context_name"], "someGraphName")
+
+    def test_class_name_from_class_uri(self):
+        handler = MockHandler()
+        pd = ParamDict(handler, class_uri='http://somedomain/someGraphName/someClassName')
+        self.assertEquals(pd["class_uri"], "http://somedomain/someGraphName/someClassName")
+        self.assertEquals(pd["class_name"], "someClassName")
+        self.assertEquals(pd["class_prefix"], "http://somedomain/someGraphName/")
+
 
 class ExpandUriTestCase(TestCase):
 

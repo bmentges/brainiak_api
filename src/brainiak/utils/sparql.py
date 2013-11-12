@@ -1,11 +1,19 @@
 # coding: utf-8
 import re
 import uuid
+from datetime import datetime
 
+import ujson as json
 from tornado.web import HTTPError
 
-from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
 from brainiak import triplestore
+from brainiak.log import get_logger
+from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, shorten_uri
+from brainiak.type_mapper import MAP_RDF_TYPE_TO_PYTHON
+from brainiak.utils.resources import LazyObject
+
+
+logger = LazyObject(get_logger)
 
 
 PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
@@ -312,81 +320,244 @@ def get_predicate_datatype(class_object, predicate_uri):
     predicate = class_object['properties'][predicate_uri]
     if 'range' in predicate:
         return None
-    # Without range it is a datatype property
-
-    # Typecasted XMLLiteral is causing bugs on triplestore
-    datatype = predicate['datatype']
-    if datatype in IGNORED_DATATYPES or expand_uri(datatype) in IGNORED_DATATYPES:
-        return ""
     else:
-        return datatype
+        return predicate['datatype']
+    # # Without range it is a datatype property
+
+    # # Typecasted XMLLiteral is causing bugs on triplestore
+    # datatype = predicate['datatype']
+    # if datatype in IGNORED_DATATYPES or expand_uri(datatype) in IGNORED_DATATYPES:
+    #     return ""
+    # else:
+    #     return datatype
 
 
-class InvalidSchema(Exception):
+class InstanceError(Exception):
     pass
 
 
-def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params):
-    # TODO-2:
-    # lang = query_params["lang"]
-    # if lang is "undefined":
-    #     lang_tag = ""
-    # else:
-    #     lang_tag = "@%s" % lang
+def is_instance(value, _type):
+    """
+    Return wheter an object is an instance of _type or not (e.g: xsd:String).
+    If _type is unkown, log and return True.
+    """
+    mapper = MAP_RDF_TYPE_TO_PYTHON
+    short_type = shorten_uri(_type)
 
-    instance = u"<%s>" % instance_uri
+    python_type = mapper.get(_type) or mapper.get(short_type)
+
+    if python_type:
+        return isinstance(value, python_type)
+    elif "xsd:dateTime" in [_type, short_type]:
+        # Based on "DateTime Data Type" definition, available at:
+        # http://www.w3schools.com/schema/schema_dtypes_date.asp
+        pattern = "%Y-%m-%dT%H:%M:%S"
+        pattern_size = 19
+        timezone = False
+
+        if value.endswith("Z"):  # UTC Time
+            datetime_ = value[:-1]
+        elif len(value) > pattern_size:  # Contains timezone (+HH:MM or -HH:MM)
+            datetime_ = value[:-6]
+            timezone = value[-5:]
+        else:  # Default pattern, without timezone
+            datetime_ = value
+
+        try:
+            datetime.strptime(datetime_, pattern)
+        except ValueError:
+            return False
+
+        if timezone:
+            try:
+                datetime.strptime(timezone, "%H:%M")
+            except ValueError:
+                return False
+    else:
+        msg = u"Could not validate input due to unknown property type: <{0}>".format(_type)
+        logger.info(msg)
+
+    return True
+
+
+def generic_sparqlfy(value, *args):
+    """
+    Create SPARQL-friendly string representation of the value.
+
+    Example:
+
+    >>> generic_sparqlfy('word')
+    ... '"word"'
+    """
+    return u'"{0}"'.format(value)
+
+
+def sparqlfy_string(value, *args):
+    """
+    Create SPARQL-friendly string representation of the value.
+    WARNING: Scapes quotes.
+
+    Example:
+
+    >>> sparqlfy_string('word')
+    ... '"word"'
+
+    >>> sparqlfy_string('"english sentence"@en')
+    ... '"english sentence"@en'
+
+    """
+
+    if has_lang(value):
+        return value
+    value = escape_quotes(value)
+    return generic_sparqlfy(value)
+
+
+def sparqlfy_boolean(value, predicate_datatype):
+    """
+    Create SPARQL-friendly string representation of the value.
+
+    Example:
+
+    >>> sparqlfy_boolean(True, "xsd:boolean")
+    ... '"true"^^xsd:boolean'
+
+    """
+
+    value = {False: "false", True: "true"}.get(value)
+    return sparqlfy_with_casting(value, predicate_datatype)
+
+
+def sparqlfy_object(value, *args):
+    """
+    Create SPARQL-friendly string representation of the value, considering
+    it is or contains a URI. Raises an exception if the value is neither.
+
+    Example:
+
+    >>> sparqlfy_object("compressed:uri)
+    ... "compressed:uri"
+
+    >>> sparqlfy_object("http://some.uri)
+    ... "<http://some.uri>"
+
+    >>> sparqlfy_object({"@id": "http://some.uri})
+    ... "<http://some.uri>"
+
+    """
+    if isinstance(value, dict):
+        value = value["@id"]
+
+    if is_uri(value):
+        return u"<{0}>".format(value)
+    elif is_compressed_uri(value):
+        return value
+    else:
+        raise InstanceError("({0}) is not a URI or cURI".format(value))
+
+
+def sparqlfy_with_casting(value, predicate_datatype):
+    """
+    Create SPARQL-friendly string representation of the value, adding
+    the property casting.
+
+    Example:
+    >>> sparqlfy_with_casting(1, "xsd:int")
+    ... '"1"^^xsd:int'
+
+    """
+    if is_uri(predicate_datatype):
+        template = u'"{0}"^^<{1}>'
+    else:
+        template = u'"{0}"^^{1}'
+    return template.format(value, predicate_datatype)
+
+
+SPARQLFY_MAP = {
+    "rdf:XMLLiteral": generic_sparqlfy,
+    "xsd:string": sparqlfy_string,
+    "xsd:anyURI": sparqlfy_object,
+    "xsd:boolean": sparqlfy_boolean
+}
+
+
+def sparqlfy(value, predicate_datatype):
+    """
+    Create SPARQL-friendly string representation of the value, based on the
+    predicate_datatype.
+
+    Examples:
+
+    >>> sparqlfy("http://expanded.uri", "xsd:anyURI")
+    ... "<http://expanded.uri>"
+
+    >>> sparqlfy("compressed:uri", "xsd:anyURI")
+    ... "compressed:uri"
+
+    >>> sparqlfy(True, "xsd:boolean")
+    ... '"true"^^xsd:boolean'
+
+    """
+    sparqlfy_function = SPARQLFY_MAP.get(predicate_datatype) or sparqlfy_with_casting
+    return sparqlfy_function(value, predicate_datatype)
+
+
+def property_must_map_a_unique_value(class_object, predicate_uri):
+    return class_object['properties'][predicate_uri].get("unique_value", False)
+
+
+def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params):
+    class_id = class_object.get("id")
     predicate_object_tuples = unpack_tuples(instance_data)
+
     triples = []
+    errors = []
+    template_msg = u'Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was given.'
 
     for (predicate_uri, object_value) in predicate_object_tuples:
-        if not is_reserved_attribute(predicate_uri):
 
+        if not is_reserved_attribute(predicate_uri):
+            predicate_has_error = False
             try:
                 predicate_datatype = get_predicate_datatype(class_object, predicate_uri)
             except KeyError:
-                msg = u'Property {0} was not found in the schema of instance {1}'
-                raise InvalidSchema(msg.format(predicate_uri, instance_uri))
-
-            predicate_uri_with_brackets = "<%s>" % predicate_uri
-
-            if predicate_datatype is not None:
-                # Datatype property
-                # TODO refactor to a function to return object_
-
-                # TODO: if literal is string and not i18n, add lang
-                if has_lang(object_value):
-                    object_ = object_value
-                else:
-                    if predicate_datatype == XSD_BOOLEAN or predicate_datatype == XSD_BOOLEAN_SHORT:
-                        object_value = encode_boolean(object_value)
-                    else:
-                        object_value = escape_quotes(object_value)
-
-                    if is_uri(predicate_datatype):
-                        typecast_template = u'"{0}"^^<{1}>'
-                    elif predicate_datatype:
-                        typecast_template = u'"{0}"^^{1}'
-                    else:
-                        typecast_template = u'"{0}"{1}'  # {1} empty not typecasted, e.g. XML_LITERAL
-
-                    object_ = typecast_template.format(object_value, predicate_datatype)
+                template = u'Inexistent property ({0}) in the schema ({1}), used to create instance ({2})'
+                msg = template.format(predicate_uri, class_id, instance_uri)
+                errors.append(msg)
+                predicate_datatype = None
+                predicate_has_error = True
             else:
-                # Object property
-                # TODO refactor to a function to return object_
-                if is_uri(object_value):
-                    object_ = u"<%s>" % object_value
-                elif is_compressed_uri(object_value, instance_data.get("@context", {})):
-                    object_ = object_value
-                elif isinstance(object_value, dict):
-                    object_ = u"<%s>" % object_value["@id"]
+                if predicate_datatype is None:  # ObjectProperty
+                    try:
+                        object_ = sparqlfy_object(object_value)
+                    except InstanceError:
+                        msg = template_msg.format(object_value, predicate_uri, "owl:ObjectProperty")
+                        errors.append(msg)
+                        predicate_has_error = True
                 else:
-                    raise InvalidSchema(u'Unexpected value {0} for object property {1}'.format(object_value, predicate_uri))
+                    if is_instance(object_value, predicate_datatype):
+                        object_ = sparqlfy(object_value, predicate_datatype)
+                    else:
+                        msg = template_msg.format(object_value, predicate_uri, predicate_datatype)
+                        errors.append(msg)
+                        predicate_has_error = True
 
-            validate_value_uniqueness(instance_uri, object_, predicate_uri, class_object, graph_uri, query_params)
+                if not errors:
+                    instance = sparqlfy_object(instance_uri)
+                    predicate = sparqlfy_object(predicate_uri)
+                    triple = (instance, predicate, object_)
+                    triples.append(triple)
 
-            triple = (instance, predicate_uri_with_brackets, object_)
-            triples.append(triple)
+            if not predicate_has_error:
+                if property_must_map_a_unique_value(class_object, predicate_uri):
+                    if not is_value_unique(instance_uri, object_, predicate_uri, class_object, graph_uri, query_params):
+                        template = u"The property ({0}) defined in the schema ({1}) must map a unique value. The value provided ({2}) is already used by another instance."
+                        msg = template.format(predicate_uri, class_id, object_value)
+                        errors.append(msg)
 
+    if errors:
+        error_msg = json.dumps(errors)
+        raise InstanceError(error_msg)
     return triples
 
 
@@ -401,18 +572,16 @@ def escape_quotes(object_value):
         escaped_value = object_value
         for char in ESCAPED_QUOTES:
             escaped_value = escaped_value.replace(char, ESCAPED_QUOTES[char])
-
         return escaped_value
     else:
         return object_value
 
 
-def encode_boolean(object_value):
-    if object_value is False:
-        return "false"
-    elif object_value is True:
-        return "true"
-    raise TypeError(u"Could not encode boolean using {0}".format(object_value))
+def encode_boolean(value):
+    encoded_value = {False: "false", True: "true"}.get(value)
+    if encoded_value:
+        return encoded_value
+    raise InstanceError(u"Could not encode boolean using {0}".format(value))
 
 
 def decode_boolean(object_value):
@@ -421,7 +590,7 @@ def decode_boolean(object_value):
     elif object_value == "1":
         return True
     else:
-        raise TypeError(u"Could not decode boolean using {0}".format(object_value))
+        raise InstanceError(u"Could not decode boolean using {0}".format(object_value))
 
 
 QUERY_VALUE_EXISTS = u"""
@@ -433,22 +602,17 @@ ASK FROM <%(graph_uri)s> {
 """
 
 
-def validate_value_uniqueness(instance_uri, object_value, predicate_uri, class_object, graph_uri, query_params):
-    if class_object['properties'][predicate_uri].get("unique_value", False):
-        class_uri = class_object['id']
-        query = QUERY_VALUE_EXISTS % {
-            "graph_uri": graph_uri,
-            "class_uri": class_uri,
-            "instance_uri": instance_uri,
-            "predicate_uri": predicate_uri,
-            "object_value": object_value
-        }
-        query_result = triplestore.query_sparql(query, query_params.triplestore_config)
-        if is_result_true(query_result):
-            error_message = u"The value '{0}' for instances of class {1} in predicate {2} already exists." + \
-                " This property does not allow duplicated values."
-            error_message = error_message.format(object_value, class_uri, predicate_uri)
-            raise HTTPError(400, log_message=error_message)
+def is_value_unique(instance_uri, object_value, predicate_uri, class_object, graph_uri, query_params):
+    class_uri = class_object['id']
+    query = QUERY_VALUE_EXISTS % {
+        "graph_uri": graph_uri,
+        "class_uri": class_uri,
+        "instance_uri": instance_uri,
+        "predicate_uri": predicate_uri,
+        "object_value": object_value
+    }
+    query_result = triplestore.query_sparql(query, query_params.triplestore_config)
+    return is_result_true(query_result)
 
 
 def create_implicit_triples(instance_uri, class_uri):

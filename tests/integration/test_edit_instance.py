@@ -100,6 +100,24 @@ class EditInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(modified_new_york.body, "")
 
     @patch("brainiak.handlers.logger")
+    @patch("brainiak.instance.create_instance.get_cached_schema",
+           return_value=mock_schema({"rdfs:label": "string",
+                                     "rdfs:comment": "string",
+                                     "http://tatipedia.org/speak": "string"}))
+    def test_edit_instance_with_incorrect_values_raises_400(self, mock_schema, mock_log):  # Bus notification test is in a separated test file
+        response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+                              method='PUT',
+                              body=json.dumps({"rdfs:label": 1}))
+        self.assertEqual(response.code, 400)
+        computed_payload = json.loads(response.body)
+        expected_payload = {
+            "errors": [
+                "Incorrect value for property (http://www.w3.org/2000/01/rdf-schema#label). A (xsd:string) was expected, but (1) was given."
+            ]
+        }
+        self.assertEqual(computed_payload, expected_payload)
+
+    @patch("brainiak.handlers.logger")
     @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}))
     def test_edit_instance_by_instance_uri_return_200_adding_predicate(self, mock_schema, mock_log):
         actual_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york', method='GET')

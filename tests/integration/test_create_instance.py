@@ -7,17 +7,6 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 
-JSON_CITY_GLOBOLAND = {
-    "@context": {
-        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-        "place": "http://example.onto/place/",
-        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-        "ex": "http://example.onto/"
-    },
-    "ex:name": "Globoland",
-}
-
-
 class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
@@ -110,13 +99,25 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     def test_create_instance_201(self, mock_get_schema, mock_get_instance_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
                                  mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
         mockeed_triplestore.query_sparql = self.query
-        payload = JSON_CITY_GLOBOLAND
+        payload = {
+            "@context": {
+            "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            "place": "http://example.onto/place/",
+            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+            "ex": "http://example.onto/"
+            },
+            "ex:name": "Globoland",
+        }
         response = self.fetch('/example/City?graph_uri=http://example.onto/&class_prefix=http://example.onto/',
             method='POST',
             body=json.dumps(payload))
         self.assertEqual(response.code, 201)
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))
+        
+        resource_id = response.headers['X-Brainiak-Resource-Uri']
+        self.assertTrue('http://example.onto/City/' in resource_id)
+
         self.assertTrue("/example/City" in location)
         self.assertEqual(response.body, "")
         self.assertTrue(mocked_notify_bus.called)
@@ -128,6 +129,34 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             'graph': 'http://example.onto/'
         }
         mocked_notify_bus.assert_called_once_with(**expected)
+
+    @patch("brainiak.handlers.logger")
+    @patch("brainiak.handlers.notify_bus")
+    @patch("brainiak.handlers.schema_resource.get_schema", return_value=True)
+    @patch("brainiak.instance.create_instance.create_instance_uri", return_value="http://example.onto/City/123")
+    @patch("brainiak.instance.get_instance.settings", DEFAULT_RULESET_URI="{0}ruleset".format(graph_uri))
+    @patch("brainiak.instance.get_instance.triplestore")
+    @patch("brainiak.handlers.settings", NOTIFY_BUS=True)
+    @patch("brainiak.instance.get_instance.get_class.get_cached_schema",
+           return_value={"properties": {"http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}}})
+    @patch("brainiak.instance.create_instance.get_cached_schema",
+           return_value={"properties": {"http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}}})
+    def test_create_instance_with_invalid_values_return_400(self, mock_get_schema, mock_get_instance_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
+                                 mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
+        mockeed_triplestore.query_sparql = self.query
+        payload = {
+            "@context": {
+            "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            "place": "http://example.onto/place/",
+            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+            "ex": "http://example.onto/"
+            },
+            "ex:name": 1,
+        }
+        response = self.fetch('/example/City?graph_uri=http://example.onto/&class_prefix=http://example.onto/',
+            method='POST',
+            body=json.dumps(payload))
+        self.assertEqual(response.code, 400)
 
     def test_query(self):
         self.graph_uri = "http://fofocapedia.org/"

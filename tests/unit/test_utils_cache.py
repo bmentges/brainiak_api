@@ -4,7 +4,7 @@ import unittest
 import redis
 from mock import patch
 
-from brainiak.utils.cache import build_schema_key, CacheError, connect, memoize, ping, safe_redis, status
+from brainiak.utils.cache import build_key_for_class, CacheError, connect, memoize, ping, safe_redis, status
 from tests.mocks import MockRequest
 
 
@@ -185,11 +185,11 @@ class SafeRedisTestCase(unittest.TestCase):
 
 class CacheUtilsTestCase(unittest.TestCase):
 
-    def test_build_schema_key(self):
+    def test_build_key_for_class(self):
         params = {
             "graph_uri": "graph",
             "class_uri": "Class"
         }
-        computed = build_schema_key(params)
+        computed = build_key_for_class(params)
         expected = "graph@@Class##class"
         self.assertEqual(computed, expected)

@@ -9,11 +9,25 @@ from brainiak import settings
 from brainiak import log
 
 
-# graph_uri@@class_uri##class
-build_schema_key = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
+# # Root-related
+# build_key_for_root_schema = lambda: u"_##json_schema"
+# build_key_for_collection_of_contexts = lambda: u"_##collection"
 
-#graph@@predicate##property_range
-#graph@@predicate##subproperty
+# # Class/collection-related
+# build_key_for_class = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
+# # TODO:
+# # graph_uri@@class_uri##collection
+# # graph_uri@@class_uri##json_schema
+
+# # Instance-related
+# # graph_uri@@class_uri@@instance_uri##instance
+
+# # Properties-related
+# # graph@@predicate##range
+# # graph@@predicate##subproperty
+
+
+build_schema_key = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
 
 
 class CacheError(redis.exceptions.RedisError):

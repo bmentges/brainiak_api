@@ -480,6 +480,7 @@ SPARQLFY_MAP = {
     "xsd:boolean": sparqlfy_boolean
 }
 
+SPARQLFY_MAP_EXPANDED = {expand_uri(k): v for k, v in SPARQLFY_MAP.items()}
 
 def sparqlfy(value, predicate_datatype):
     """
@@ -498,7 +499,7 @@ def sparqlfy(value, predicate_datatype):
     ... '"true"^^xsd:boolean'
 
     """
-    sparqlfy_function = SPARQLFY_MAP.get(predicate_datatype) or sparqlfy_with_casting
+    sparqlfy_function = SPARQLFY_MAP_EXPANDED.get(predicate_datatype) or sparqlfy_with_casting
     return sparqlfy_function(value, predicate_datatype)
 
 

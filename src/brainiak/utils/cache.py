@@ -27,7 +27,7 @@ from brainiak import log
 # # graph@@predicate##subproperty
 
 
-build_schema_key = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
+build_key_for_class = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
 
 
 class CacheError(redis.exceptions.RedisError):

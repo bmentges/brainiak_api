@@ -4,7 +4,7 @@ from brainiak import triplestore
 from brainiak.log import get_logger
 from brainiak.prefixes import MemorizeContext
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND_XSD_TO_JSON_TYPE
-from brainiak.utils.cache import build_schema_key, memoize
+from brainiak.utils.cache import build_key_for_class, memoize
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InstanceError, bindings_to_dict
@@ -17,7 +17,7 @@ class SchemaNotFound(Exception):
 
 
 def get_cached_schema(query_params, include_meta=False):
-    schema_key = build_schema_key(query_params)
+    schema_key = build_key_for_class(query_params)
     class_object = memoize(query_params, get_schema, query_params, key=schema_key)
     if not class_object["body"]:
         msg = u"The class definition for {0} was not found in graph {1}"

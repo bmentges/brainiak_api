@@ -107,9 +107,6 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     def __init__(self, *args, **kwargs):
         super(BrainiakRequestHandler, self).__init__(*args, **kwargs)
 
-    def get_cache_path(self):
-        return self.request.path
-
     @greenlet_asynchronous
     def purge(self, **kargs):
         if settings.ENABLE_CACHE:
@@ -239,6 +236,9 @@ class RootJsonSchemaHandler(BrainiakRequestHandler):
 
     SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
 
+    def get_cache_path(self):
+        return self.request.path
+
     def get(self):
         valid_params = CACHE_PARAMS
         with safe_params(valid_params):
@@ -251,6 +251,9 @@ class RootJsonSchemaHandler(BrainiakRequestHandler):
 class RootHandler(BrainiakRequestHandler):
 
     SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
+
+    def get_cache_path(self):
+        return self.request.path
 
     @greenlet_asynchronous
     def get(self):
@@ -305,7 +308,7 @@ class ClassHandler(BrainiakRequestHandler):
         super(ClassHandler, self).__init__(*args, **kwargs)
 
     def get_cache_path(self):
-        return build_schema_key(self.query_params)
+        return build_key_for_class(self.query_params)
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):

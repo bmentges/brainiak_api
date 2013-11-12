@@ -5,7 +5,6 @@ from mock import patch
 from tornado.web import HTTPError
 
 from brainiak.instance.create_instance import create_instance
-from brainiak.utils.sparql import InstanceError
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler, mock_schema
 
@@ -23,7 +22,7 @@ class TestCaseInstanceCreateResource(unittest.TestCase):
         handler = MockHandler()
         params = ParamDict(handler, class_uri="http://somedomain/class", graph_uri="http://somedomain/graph")
         instance_data = {"http://www.w3.org/2000/01/rdf-schema#label": "teste"}
-        with self.assertRaises(InstanceError) as e:
+        with self.assertRaises(HTTPError) as e:
             create_instance(params, instance_data, "http://uri-teste")
         expected = ["The property (http://www.w3.org/2000/01/rdf-schema#label) defined in the schema (None) must map a unique value. The value provided (teste) is already used by another instance."]
-        self.assertEqual(json.loads(str(e.exception)), expected)
+        self.assertEqual(json.loads(str(e.exception.log_message)), expected)

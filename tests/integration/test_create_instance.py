@@ -102,6 +102,10 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 201)
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))
+        
+        resource_id = response.headers['X-Brainiak-Resource-Uri']
+        self.assertTrue('http://example.onto/City/' in resource_id)
+
         self.assertTrue("/example/City" in location)
         self.assertEqual(response.body, "")
         self.assertTrue(mocked_notify_bus.called)

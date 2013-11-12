@@ -24,5 +24,5 @@ class TestCaseInstanceCreateResource(unittest.TestCase):
         instance_data = {"http://www.w3.org/2000/01/rdf-schema#label": "teste"}
         with self.assertRaises(HTTPError) as e:
             create_instance(params, instance_data, "http://uri-teste")
-        expected = ["The property (http://www.w3.org/2000/01/rdf-schema#label) defined in the schema (http://somedomain/class) must map a unique value. The value provided (teste) is already used by another instance."]
-        self.assertEqual(json.loads(str(e.exception)), expected)
+            expected = ["The property (http://www.w3.org/2000/01/rdf-schema#label) defined in the schema (http://somedomain/class) must map a unique value. The value provided (teste) is already used by another instance."]
+            self.assertEqual(json.loads(str(e.exception)), expected)

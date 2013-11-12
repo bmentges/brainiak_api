@@ -3,10 +3,6 @@ import unittest
 import uuid
 from mock import patch
 
-from tornado.web import HTTPError
-
-from mock import patch
-
 from brainiak.prefixes import MemorizeContext
 from brainiak.utils.sparql import *
 
@@ -20,6 +16,7 @@ class MockSchemaTestCase(unittest.TestCase):
             {"personpedia:birthPlace": None,
              "personpedia:gender": None,
              "personpedia:wife": None},
+            id="http://personpedia.com/Person",
             context={"personpedia": "http://personpedia.com/"}
         )
         expected_object = {
@@ -33,7 +30,8 @@ class MockSchemaTestCase(unittest.TestCase):
                 'http://personpedia.com/wife': {
                     'range': {'type': 'string', 'format': 'uri'}
                 }
-            }
+            },
+            "id": "http://personpedia.com/Person"
         }
         self.assertEqual(class_object, expected_object)
 
@@ -277,16 +275,22 @@ class IsResultTrueTestCase(unittest.TestCase):
 
 class CreateExplicitTriplesTestCase(unittest.TestCase):
 
+    maxDiff = None
+
     def test_create_explicit_triples_undefined_property(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
             "@context": {"personpedia": "http://personpedia.com/"},
             "http://personpedia.com/occupation": "http://someurl/profession/writer",
         }
-        class_object = mock_schema({}, context=instance_data['@context'])
+        class_object = mock_schema(
+            {},
+            id="http://personpedia.com/Person",
+            context=instance_data['@context']
+        )
         with self.assertRaises(InstanceError) as exception:
-            response = create_explicit_triples(instance_uri, instance_data, class_object, None, None)
-        expected_error_msg = [u"Inexistent property (http://personpedia.com/occupation) in the schema (None), used to create instance (http://personpedia.com/Person/OscarWilde)"]
+            create_explicit_triples(instance_uri, instance_data, class_object, None, None)
+        expected_error_msg = [u"Inexistent property (http://personpedia.com/occupation) in the schema (http://personpedia.com/Person), used to create instance (http://personpedia.com/Person/OscarWilde)"]
         self.assertEqual(json.loads(str(exception.exception)), expected_error_msg)
 
     def test_create_explicit_triples_predicates_and_objects_are_full_uris(self):
@@ -302,6 +306,7 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
             {"personpedia:birthPlace": None,
              "personpedia:gender": None,
              "personpedia:wife": None},
+            id="http://personpedia.com/Person",
             context=instance_data['@context']
         )
         response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, {})
@@ -325,6 +330,7 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
             {"http://personpedia.com/birthDate": 'string',
              "http://personpedia.com/birthPlace": None,
              "http://personpedia.com/occupation": 'string'},
+            id="http://personpedia.com/Person",
             context=instance_data['@context']
         )
         response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, {})
@@ -342,7 +348,9 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
             "@context": {"personpedia": "http://personpedia.com/"},
             "http://personpedia.com/occupation": "http://someurl/profession/writer",
         }
-        class_object = mock_schema({"personpedia:occupation": 'string'}, context=instance_data['@context'])
+        class_object = mock_schema({"personpedia:occupation": 'string'},
+                                   id="http://personpedia.com/Person",
+                                   context=instance_data['@context'])
         response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, {})
         expected = [
             ("<http://personpedia.com/Person/OscarWilde>",
@@ -364,6 +372,7 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
             {"http://personpedia.com/birthDate": 'string',
              "http://personpedia.com/birthPlace": None,
              "http://personpedia.com/occupation": 'string'},
+            id="http://personpedia.com/Person",
             context=instance_data['@context']
         )
         response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, {})
@@ -387,6 +396,7 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
             {"http://www.w3.org/2000/01/rdf-schema#label": 'string',
              "http://personpedia.com/gender": None,
              "http://personpedia.com/child": None},
+            id="http://personpedia.com/Person",
             context=instance_data['@context']
         )
         response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, {})
@@ -410,11 +420,12 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
                 "http://personpedia.com/isAlive": "boolean",
 
             },
+            id="http://personpedia.com/Person",
             context=instance_data['@context']
         )
         with self.assertRaises(InstanceError) as exception:
             create_explicit_triples(instance_uri, instance_data, class_object, None, None)
-        excepted_error_msg = [u'Incorrect value for property (http://personpedia.com/isAlive). A (xsd:boolean) was expected, but (0) was given.']
+        excepted_error_msg = [u'Incorrect value for property (http://personpedia.com/isAlive). A (http://www.w3.org/2001/XMLSchema#boolean) was expected, but (0) was given.']
         self.assertEqual(json.loads(str(exception.exception)), excepted_error_msg)
 
     def test_create_explicit_triples_predicates_raises_exception_due_to_multiple_wrong_values(self):
@@ -433,16 +444,17 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
                 "http://personpedia.com/hasNationality": "string",
                 "http://personpedia.com/wroteBook": None
             },
+            id="http://personpedia.com/Person",
             context=instance_data['@context']
         )
         with self.assertRaises(InstanceError) as exception:
-            response = create_explicit_triples(instance_uri, instance_data, class_object, None, None)
+            create_explicit_triples(instance_uri, instance_data, class_object, None, None)
 
         expected_error_msg = [
             u"Incorrect value for property (http://personpedia.com/wroteBook). A (owl:ObjectProperty) was expected, but (true) was given.",
-            u"Incorrect value for property (http://personpedia.com/hasNationality). A (xsd:string) was expected, but (46) was given.",
-            u"Incorrect value for property (http://personpedia.com/deathAge). A (xsd:integer) was expected, but (Irish) was given.",
-            u"Incorrect value for property (http://personpedia.com/isAlive). A (xsd:boolean) was expected, but (http://personpedia.com/TheImportanceOfBeingEarnest) was given."]
+            u"Incorrect value for property (http://personpedia.com/hasNationality). A (http://www.w3.org/2001/XMLSchema#string) was expected, but (46) was given.",
+            u"Incorrect value for property (http://personpedia.com/deathAge). A (http://www.w3.org/2001/XMLSchema#integer) was expected, but (Irish) was given.",
+            u"Incorrect value for property (http://personpedia.com/isAlive). A (http://www.w3.org/2001/XMLSchema#boolean) was expected, but (http://personpedia.com/TheImportanceOfBeingEarnest) was given."]
         self.assertEqual(json.loads(str(exception.exception)), expected_error_msg)
 
     def test_unpack_tuples(self):
@@ -832,13 +844,13 @@ class SparqlfyTestCase(unittest.TestCase):
         self.assertEqual(response, expected)
 
     def test_sparqlfy_boolean_false(self):
-        response = sparqlfy_boolean(False, "xsd:boolean")
-        expected = '"false"^^xsd:boolean'
+        response = sparqlfy_boolean(False, "http://www.w3.org/2001/XMLSchema#boolean")
+        expected = '"false"^^<http://www.w3.org/2001/XMLSchema#boolean>'
         self.assertEqual(response, expected)
 
     def test_sparqlfy_boolean_1(self):
-        response = sparqlfy_boolean(1, "xsd:boolean")
-        expected = '"true"^^xsd:boolean'
+        response = sparqlfy_boolean(1, "http://www.w3.org/2001/XMLSchema#boolean")
+        expected = '"true"^^<http://www.w3.org/2001/XMLSchema#boolean>'
         self.assertEqual(response, expected)
 
     def test_sparqlfy_object(self):
@@ -853,7 +865,7 @@ class SparqlfyTestCase(unittest.TestCase):
 
     def test_sparqlfy_object_raises_exception(self):
         with self.assertRaises(InstanceError) as exception:
-            response = sparqlfy_object("non_uri")
+            sparqlfy_object("non_uri")
         expected_msg = "(non_uri) is not a URI or cURI"
         self.assertEqual(str(exception.exception), expected_msg)
 
@@ -868,56 +880,56 @@ class SparqlfyTestCase(unittest.TestCase):
         self.assertEqual(response, expected)
 
     def test_sparqlfy_with_casting_compressed(self):
-        response = sparqlfy_with_casting("value", "some:cast")
-        expected = u'"value"^^some:cast'
+        response = sparqlfy_with_casting("value", "http://some/cast")
+        expected = u'"value"^^<http://some/cast>'
         self.assertEqual(response, expected)
 
     def test_sparqlfy_xmlliteral(self):
-        response = sparqlfy("some literal", "rdf:XMLLiteral")
+        response = sparqlfy("some literal", "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral")
         expected = '"some literal"'
         self.assertEqual(response, expected)
 
     def test_sparqlfy_xmlstring(self):
-        response = sparqlfy('"some string"@en', "xsd:string")
+        response = sparqlfy('"some string"@en', "http://www.w3.org/2001/XMLSchema#string")
         expected = '"some string"@en'
         self.assertEqual(response, expected)
 
     def test_sparqlfy_anyuri(self):
-        response = sparqlfy('http://any.uri', "xsd:string")
+        response = sparqlfy('http://any.uri', "http://www.w3.org/2001/XMLSchema#string")
         expected = '"http://any.uri"'
         self.assertEqual(response, expected)
 
     def test_sparqlfy_boolean(self):
-        response = sparqlfy(False, "xsd:boolean")
-        expected = '"false"^^xsd:boolean'
+        response = sparqlfy(False, "http://www.w3.org/2001/XMLSchema#boolean")
+        expected = '"false"^^<http://www.w3.org/2001/XMLSchema#boolean>'
         self.assertEqual(response, expected)
 
     def test_sparqlfy_integer(self):
-        response = sparqlfy(2, "xsd:integer")
-        expected = '"2"^^xsd:integer'
+        response = sparqlfy(2, "http://www.w3.org/2001/XMLSchema#integer")
+        expected = '"2"^^<http://www.w3.org/2001/XMLSchema#integer>'
         self.assertEqual(response, expected)
 
     def test_is_instance_unicode_true(self):
         value = u"Some random unicode"
-        _type = "xsd:string"
+        _type = "http://www.w3.org/2001/XMLSchema#string"
         response = is_instance(value, _type)
         self.assertTrue(response)
 
     def test_is_instance_string_true(self):
         value = u"Some random string"
-        _type = "xsd:string"
+        _type = "http://www.w3.org/2001/XMLSchema#string"
         response = is_instance(value, _type)
         self.assertTrue(response)
 
     def test_is_instance_integer_true(self):
         value = 1
-        _type = "xsd:int"
+        _type = "http://www.w3.org/2001/XMLSchema#int"
         response = is_instance(value, _type)
         self.assertTrue(response)
 
     def test_is_instance_integer_false(self):
         value = 1.1
-        _type = "xsd:int"
+        _type = "http://www.w3.org/2001/XMLSchema#int"
         response = is_instance(value, _type)
         self.assertFalse(response)
 
@@ -939,31 +951,31 @@ class SparqlfyTestCase(unittest.TestCase):
 
     def test_is_instance_datetime_without_zone(self):
         value = "2002-05-30T09:00:00"
-        _type = "xsd:dateTime"
+        _type = "http://www.w3.org/2001/XMLSchema#dateTime"
         response = is_instance(value, _type)
         self.assertTrue(response)
 
     def test_is_instance_datetime_in_utc_time(self):
         value = "2002-05-30T09:30:10Z"
-        _type = "xsd:dateTime"
+        _type = "http://www.w3.org/2001/XMLSchema#dateTime"
         response = is_instance(value, _type)
         self.assertTrue(response)
 
     def test_is_instance_datetime_with_utc_offset(self):
         value = "2002-05-30T09:30:10-06:00"
-        _type = "xsd:dateTime"
+        _type = "http://www.w3.org/2001/XMLSchema#dateTime"
         response = is_instance(value, _type)
         self.assertTrue(response)
 
     def test_is_instance_datetime_with_invalid_utc_offset(self):
         value = "2002-05-30T09:30:10-AB:CD"
-        _type = "xsd:dateTime"
+        _type = "http://www.w3.org/2001/XMLSchema#dateTime"
         response = is_instance(value, _type)
         self.assertFalse(response)
 
     def test_is_instance_with_invalid_offset(self):
         value = "abc"
-        _type = "xsd:dateTime"
+        _type = "http://www.w3.org/2001/XMLSchema#dateTime"
         response = is_instance(value, _type)
         self.assertFalse(response)
 
@@ -1008,7 +1020,7 @@ class ValidateValueUniquenessTestCase(unittest.TestCase):
             "id": "http://example.onto/City"
         }
         is_value_unique(instance_uri, object_value, predicate_uri,
-                                  class_object, graph_uri, QueryParams())
+                        class_object, graph_uri, QueryParams())
 
     @patch("brainiak.utils.sparql.triplestore.query_sparql")
     @patch("brainiak.utils.sparql.is_result_true", return_value=False)

@@ -13,7 +13,7 @@ triplestore_config = {
 }
 
 
-def mock_schema(properties_and_types_dict, context=None):
+def mock_schema(properties_and_types_dict, id, context=None):
     properties_schema = {}
     type2datatype = {'string': 'xsd:string',
                      'integer': 'xsd:integer',
@@ -25,8 +25,13 @@ def mock_schema(properties_and_types_dict, context=None):
         if type_value is None:
             properties_schema[property_uri] = {'range': {'type': 'string', 'format': 'uri'}}
         else:
-            properties_schema[property_uri] = {'type': type_value, 'datatype': type2datatype[type_value]}
-    return {'properties': properties_schema}
+            properties_schema[property_uri] = {'type': type_value, 'datatype': expand_uri(type2datatype[type_value], context=context)}
+    schema = {'properties': properties_schema}
+
+    if id is not None:
+        schema["id"] = id
+
+    return schema
 
 
 class MockSimpleRequest(object):

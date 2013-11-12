@@ -92,9 +92,21 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.instance.get_instance.triplestore")
     @patch("brainiak.handlers.settings", NOTIFY_BUS=True)
     @patch("brainiak.instance.get_instance.get_class.get_cached_schema",
-           return_value={"properties": {"http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}}})
+           return_value={
+               "properties": {
+                   "http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"},
+                   "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}
+               },
+               "id": "http://example.onto/City"
+           })
     @patch("brainiak.instance.create_instance.get_cached_schema",
-           return_value={"properties": {"http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"}, "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}}})
+           return_value={
+               "properties": {
+                   "http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"},
+                   "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}
+               },
+               "id": "http://example.onto/City"
+           })
     def test_create_instance_201(self, mock_get_schema, mock_get_instance_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
                                  mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
         mockeed_triplestore.query_sparql = self.query

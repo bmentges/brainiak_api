@@ -4,12 +4,11 @@ import uuid
 from datetime import datetime
 
 import ujson as json
-from tornado.web import HTTPError
 
 from brainiak import triplestore
 from brainiak.log import get_logger
-from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, shorten_uri
-from brainiak.type_mapper import MAP_RDF_TYPE_TO_PYTHON
+from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
+from brainiak.type_mapper import MAP_RDF_EXPANDED_TYPE_TO_PYTHON
 from brainiak.utils.resources import LazyObject
 
 
@@ -19,10 +18,12 @@ logger = LazyObject(get_logger)
 PATTERN_P = re.compile(r'p(?P<index>\d*)$')  # p, p1, p2, p3 ...
 PATTERN_O = re.compile(r'o(?P<index>\d*)$')  # o, o1, o2, o3 ...
 
-XML_LITERAL = u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'
 XSD_BOOLEAN = u'http://www.w3.org/2001/XMLSchema#boolean'
-XSD_BOOLEAN_SHORT = u'xsd:boolean'
+XSD_DATETIME = u'http://www.w3.org/2001/XMLSchema#dateTime'
 XSD_STRING = u'http://www.w3.org/2001/XMLSchema#string'
+
+XML_LITERAL = u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'
+
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
 
 IGNORED_DATATYPES = [XML_LITERAL, XSD_STRING]
@@ -338,17 +339,16 @@ class InstanceError(Exception):
 
 def is_instance(value, _type):
     """
-    Return wheter an object is an instance of _type or not (e.g: xsd:String).
+    Return wheter an object is an instance of _type or not (e.g: xsd:string).
     If _type is unkown, log and return True.
     """
-    mapper = MAP_RDF_TYPE_TO_PYTHON
-    short_type = shorten_uri(_type)
+    mapper = MAP_RDF_EXPANDED_TYPE_TO_PYTHON
 
-    python_type = mapper.get(_type) or mapper.get(short_type)
+    python_type = mapper.get(_type)
 
     if python_type:
         return isinstance(value, python_type)
-    elif "xsd:dateTime" in [_type, short_type]:
+    elif XSD_DATETIME in [_type, _type]:
         # Based on "DateTime Data Type" definition, available at:
         # http://www.w3schools.com/schema/schema_dtypes_date.asp
         pattern = "%Y-%m-%dT%H:%M:%S"
@@ -419,8 +419,8 @@ def sparqlfy_boolean(value, predicate_datatype):
 
     Example:
 
-    >>> sparqlfy_boolean(True, "xsd:boolean")
-    ... '"true"^^xsd:boolean'
+    >>> sparqlfy_boolean(True, "http://www.w3.org/2001/XMLSchema#boolean")
+    ... '"true"^^<http://www.w3.org/2001/XMLSchema#boolean>'
 
     """
 
@@ -435,13 +435,13 @@ def sparqlfy_object(value, *args):
 
     Example:
 
-    >>> sparqlfy_object("compressed:uri)
+    >>> sparqlfy_object("compressed:uri")
     ... "compressed:uri"
 
-    >>> sparqlfy_object("http://some.uri)
+    >>> sparqlfy_object("http://some.uri")
     ... "<http://some.uri>"
 
-    >>> sparqlfy_object({"@id": "http://some.uri})
+    >>> sparqlfy_object({"@id": "http://some.uri"})
     ... "<http://some.uri>"
 
     """
@@ -462,14 +462,12 @@ def sparqlfy_with_casting(value, predicate_datatype):
     the property casting.
 
     Example:
-    >>> sparqlfy_with_casting(1, "xsd:int")
-    ... '"1"^^xsd:int'
+    >>> sparqlfy_with_casting(1, "http://www.w3.org/2001/XMLSchema#int")
+    ... '"1"^^<http://www.w3.org/2001/XMLSchema#int>'
 
     """
-    if is_uri(predicate_datatype):
-        template = u'"{0}"^^<{1}>'
-    else:
-        template = u'"{0}"^^{1}'
+    assert is_uri(predicate_datatype)
+    template = u'"{0}"^^<{1}>'
     return template.format(value, predicate_datatype)
 
 
@@ -482,6 +480,7 @@ SPARQLFY_MAP = {
 
 SPARQLFY_MAP_EXPANDED = {expand_uri(k): v for k, v in SPARQLFY_MAP.items()}
 
+
 def sparqlfy(value, predicate_datatype):
     """
     Create SPARQL-friendly string representation of the value, based on the
@@ -489,14 +488,14 @@ def sparqlfy(value, predicate_datatype):
 
     Examples:
 
-    >>> sparqlfy("http://expanded.uri", "xsd:anyURI")
+    >>> sparqlfy("http://expanded.uri", "http://www.w3.org/2001/XMLSchema#anyURI")
     ... "<http://expanded.uri>"
 
-    >>> sparqlfy("compressed:uri", "xsd:anyURI")
+    >>> sparqlfy("compressed:uri", "http://www.w3.org/2001/XMLSchema#anyURI")
     ... "compressed:uri"
 
-    >>> sparqlfy(True, "xsd:boolean")
-    ... '"true"^^xsd:boolean'
+    >>> sparqlfy(True, "http://www.w3.org/2001/XMLSchema#boolean")
+    ... '"true"^^<http://www.w3.org/2001/XMLSchema#boolean>'
 
     """
     sparqlfy_function = SPARQLFY_MAP_EXPANDED.get(predicate_datatype) or sparqlfy_with_casting
@@ -508,7 +507,7 @@ def property_must_map_a_unique_value(class_object, predicate_uri):
 
 
 def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params):
-    class_id = class_object.get("id")
+    class_id = class_object["id"]
     predicate_object_tuples = unpack_tuples(instance_data)
 
     triples = []

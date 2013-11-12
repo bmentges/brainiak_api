@@ -22,9 +22,9 @@ class SearchUnitTestCase(TestCase):
                 }
             },
             "query": {
-                "query_string": {
+                "multi_match": {
                     "fields": ["http://www.w3.org/2000/01/rdf-schema#label"],
-                    "query": "*Yo*"
+                    "query": "Yo"
                 }
             },
             "from": 0,

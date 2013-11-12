@@ -101,6 +101,7 @@ VALID_PATTERNS = (
     PATTERN_O
 )
 
+
 @contextmanager
 def safe_split():
     try:

@@ -110,16 +110,15 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     @greenlet_asynchronous
     def purge(self, **kargs):
         if settings.ENABLE_CACHE:
-            purge_all = int(self.request.headers.get('X-Cache-all', '0'))
-            if purge_all:
-                cache.purge("*")
-                return
 
             path = self.get_cache_path()
             recursive = int(self.request.headers.get('X-Cache-recursive', '0'))
+            purge_all = int(self.request.headers.get('X-Cache-all', '0'))
+
             if recursive:
                 cache.purge(path)
-
+            elif purge_all:
+                cache.purge("*")
             else:
                 cache.delete(path)
 
@@ -237,13 +236,17 @@ class RootJsonSchemaHandler(BrainiakRequestHandler):
     SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
 
     def get_cache_path(self):
-        return self.request.path
+        return cache.build_key_for_root_schema()
 
     def get(self):
         valid_params = CACHE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
-        response = memoize(self.query_params, root_schema)
+        response = memoize(
+            self.query_params,
+            root_schema,
+            key=self.get_cache_path()
+        )
         self.add_cache_headers(response['meta'])
         self.finalize(response['body'])
 
@@ -253,7 +256,7 @@ class RootHandler(BrainiakRequestHandler):
     SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
 
     def get_cache_path(self):
-        return self.request.path
+        return cache.build_key_for_collection_of_contexts()
 
     @greenlet_asynchronous
     def get(self):
@@ -262,7 +265,8 @@ class RootHandler(BrainiakRequestHandler):
             self.query_params = ParamDict(self, **valid_params)
         response = memoize(self.query_params,
                            list_all_contexts,
-                           function_arguments=self.query_params)
+                           function_arguments=self.query_params,
+                           key=self.get_cache_path())
         self.add_cache_headers(response['meta'])
         self.finalize(response['body'])
 
@@ -308,7 +312,7 @@ class ClassHandler(BrainiakRequestHandler):
         super(ClassHandler, self).__init__(*args, **kwargs)
 
     def get_cache_path(self):
-        return build_key_for_class(self.query_params)
+        return cache.build_key_for_class(self.query_params)
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):

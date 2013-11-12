@@ -120,7 +120,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     def test_purge_returns_200_when_cache_is_enabled(self, enable_cache, purge, delete):
         response = self.fetch("/", method='PURGE')
         self.assertEqual(response.code, 200)
-        delete.assert_called_once_with("/")
+        delete.assert_called_once_with("_##collection")
         self.assertFalse(purge.called)
         self.assertFalse(response.body)
 
@@ -130,7 +130,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     def test_purge_returns_200_recursive(self, enable_cache, purge, delete):
         response = self.fetch("/", method='PURGE', headers={'X-Cache-Recursive': '1'})
         self.assertEqual(response.code, 200)
-        purge.assert_called_once_with("/")
+        purge.assert_called_once_with("_##collection")
         self.assertFalse(delete.called)
         self.assertFalse(response.body)
 

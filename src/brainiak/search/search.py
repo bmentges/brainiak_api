@@ -21,7 +21,7 @@ def do_search(query_params):
     return response
 
 
-def do_search_query(query_params, search_fields):
+def do_search_query(query_params, search_fields, analyzer=settings.ES_ANALYZER):
     ELASTICSEARCH_QUERY_DICT = {
         "filter": {
             "type": {
@@ -29,10 +29,12 @@ def do_search_query(query_params, search_fields):
             }
         },
         "query": {
-            "query_string": {
+            "multi_match": {
+                "query": "{0}".format(query_params["pattern"]),
                 "fields": search_fields,
-                "query": "*{0}*".format(query_params["pattern"])
-            }
+                "analyzer": analyzer,
+                "fuzziness": 0.7  # based on manual tests
+            },
         },
         "from": int(resources.calculate_offset(query_params)),
         "size": int(query_params.get("per_page", settings.DEFAULT_PER_PAGE)),
@@ -48,7 +50,7 @@ def _build_items(elasticsearch_result):
     es_items = elasticsearch_result["hits"].get("hits", [])
     for item in es_items:
         item_dict = {
-            "@id": item["_id"],
+            "id": item["_id"],
             "title": item["_source"][RDFS_LABEL],
         }
         items.append(item_dict)
@@ -62,7 +64,13 @@ def _build_json(items_list, item_count, query_params):
         '_base_url': query_params.base_url,
         'items': items_list,
         "@context": {"@language": query_params.get("lang")},
-        "pattern": query_params["pattern"]
+        "pattern": query_params["pattern"],
+        # Variables needed for corresponding json-schema
+        "_class_name": query_params["class_name"],
+        "_graph_uri": query_params["graph_uri"],
+        "_class_prefix": query_params["class_prefix"],
+        "_context_name": query_params["context_name"],
+        "_class_uri": query_params["class_uri"]
     }
 
     calculate_total_items = lambda: item_count

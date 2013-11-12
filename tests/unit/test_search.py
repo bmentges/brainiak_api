@@ -4,6 +4,7 @@ from mock import patch
 from brainiak.search.search import do_search_query, _build_items
 from brainiak import settings
 
+
 class SearchUnitTestCase(TestCase):
 
     @patch("brainiak.search.search.uri_to_slug", return_value="example.onto")

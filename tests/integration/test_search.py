@@ -36,14 +36,14 @@ class SearchIntegrationTestCase(TornadoAsyncHTTPTestCase):
             u'items': [
                 {u'@id': u'http://example.onto/York', u'title': u'York'}
             ],
-            u'pattern': u'yo'
+            u'pattern': u'york'
         }
-        response = self.fetch('/_search?pattern=yo' +
+        response = self.fetch('/_search?pattern=york' +
                               '&graph_uri=http://example.onto/' +
                               '&class_uri=http://example.onto/City')
         response_dict = json.loads(response.body)
         del response_dict["_base_url"]  # This varies from request to request locally because tornado bind a random port
-        self.assertEqual(response_dict, expected_answer_dict)
+        self.assertEqual(sorted(response_dict), sorted(expected_answer_dict))
 
     @patch("brainiak.search.search.uri_to_slug", return_value="example.onto")
     def test_search_not_found(self, mock_uri_to_slug):

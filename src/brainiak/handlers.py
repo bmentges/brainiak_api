@@ -402,6 +402,7 @@ class CollectionHandler(BrainiakRequestHandler):
         instance_url = self.build_resource_url(instance_id)
 
         self.set_header("location", instance_url)
+        self.set_header("X-Brainiak-Resource-URI", instance_uri)
 
         self.query_params["instance_uri"] = instance_uri
         self.query_params["instance_id"] = instance_id
@@ -506,6 +507,7 @@ class InstanceHandler(BrainiakRequestHandler):
                 resource_url = self.request.full_url()
                 status = 201
                 self.set_header("location", resource_url)
+                self.set_header("X-Brainiak-Resource-URI", instance_uri)
             else:
                 edit_instance(self.query_params, instance_data)
                 status = 200

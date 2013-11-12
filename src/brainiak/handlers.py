@@ -107,18 +107,22 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     def __init__(self, *args, **kwargs):
         super(BrainiakRequestHandler, self).__init__(*args, **kwargs)
 
+    def get_cache_path(self):
+        return self.request.path
+
     @greenlet_asynchronous
-    def purge(self):
+    def purge(self, **kargs):
         if settings.ENABLE_CACHE:
             purge_all = int(self.request.headers.get('X-Cache-all', '0'))
             if purge_all:
                 cache.purge("*")
                 return
 
-            path = self.request.path
+            path = self.get_cache_path()
             recursive = int(self.request.headers.get('X-Cache-recursive', '0'))
             if recursive:
                 cache.purge(path)
+
             else:
                 cache.delete(path)
 
@@ -300,12 +304,15 @@ class ClassHandler(BrainiakRequestHandler):
     def __init__(self, *args, **kwargs):
         super(ClassHandler, self).__init__(*args, **kwargs)
 
+    def get_cache_path(self):
+        return build_schema_key(self.query_params)
+
     @greenlet_asynchronous
     def get(self, context_name, class_name):
         self.request.query = unquote(self.request.query)
 
         #valid_params = CACHE_PARAMS
-        valid_params = {}
+        valid_params = CACHE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,

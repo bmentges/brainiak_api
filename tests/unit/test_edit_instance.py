@@ -25,6 +25,7 @@ class ErrorTestCase(unittest.TestCase):
             edit_instance.edit_instance(dummy_query_params, {})
         self.assertEqual(exception.exception.status_code, 400)
 
+
 class TestCaseInstanceResource(unittest.TestCase):
 
     def setUp(self):

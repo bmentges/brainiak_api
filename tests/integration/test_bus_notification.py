@@ -39,7 +39,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.notify_bus")
     @patch("brainiak.handlers.logger")
     @patch("brainiak.event_bus.logger")
-    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}))
+    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}, "http://tatipedia.org/Place"))
     def test_notify_event_bus_on_put(self, mock_schema, log, log2, mock_notify_bus):
         expected_message = {
             "instance": "http://tatipedia.org/new_york",
@@ -83,7 +83,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.notify_bus")
     @patch("brainiak.event_bus.logger")
     @patch("brainiak.handlers.logger")
-    @patch("brainiak.instance.create_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "http://tatipedia.org/stadium": "string"}))
+    @patch("brainiak.instance.create_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "http://tatipedia.org/stadium": "string"}, "http://tatipedia.org/SoccerClub"))
     def test_notify_event_bus_on_post(self, mock_schema, log, log2, mock_notify_bus):
         CSA_FOOTBALL_TEAM = {
             "@context": {

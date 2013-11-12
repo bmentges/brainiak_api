@@ -83,6 +83,7 @@ def get_routes():
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
         # Json-schemas for LISTING resources
         URLSpec(r'/_schema_list/?', RootJsonSchemaHandler),
+        URLSpec(r'/_search/_schema_list/?', SearchJsonSchemaHandler),
         URLSpec(r'/_suggest/_schema_list/?', SuggestJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/_schema_list/?', ContextJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema_list/?', CollectionJsonSchemaHandler),

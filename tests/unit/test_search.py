@@ -2,7 +2,7 @@ from unittest import TestCase
 from mock import patch
 
 from brainiak.search.search import do_search_query, _build_items
-
+from brainiak import settings
 
 class SearchUnitTestCase(TestCase):
 
@@ -22,9 +22,11 @@ class SearchUnitTestCase(TestCase):
                 }
             },
             "query": {
-                "query_string": {
+                "multi_match": {
                     "fields": ["http://www.w3.org/2000/01/rdf-schema#label"],
-                    "query": "*Yo*"
+                    "query": "Yo",
+                    "analyzer": settings.ES_ANALYZER,
+                    "fuzziness": 0.7,
                 }
             },
             "from": 0,
@@ -37,7 +39,7 @@ class SearchUnitTestCase(TestCase):
     def test_build_items(self):
         expected_items = [
             {
-                "@id": "http://example.onto/Brazil",
+                "id": "http://example.onto/Brazil",
                 "title": u"Brazil"
             }
         ]

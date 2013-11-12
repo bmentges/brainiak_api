@@ -86,7 +86,18 @@ def schema():
                 "method": "GET",
                 "rel": "search",
                 "schema": SEARCH_PARAM_SCHEMA
+            },
+            {
+                "href": u"/{_context_name}/{_class_name}?class_prefix={_class_prefix}",
+                "method": "GET",
+                "rel": "list"
+            },
+            {
+                "href": u"/{_context_name}/{_class_name}?class_prefix={_class_prefix}",
+                "method": "GET",
+                "rel": "collection"
             }
+
         ]
     }
 

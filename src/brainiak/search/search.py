@@ -29,10 +29,10 @@ def do_search_query(query_params, search_fields):
             }
         },
         "query": {
-            "query_string": {
+            "multi_match": {
+                "query": "{0}".format(query_params["pattern"]),
                 "fields": search_fields,
-                "query": "*{0}*".format(query_params["pattern"])
-            }
+            },
         },
         "from": int(resources.calculate_offset(query_params)),
         "size": int(query_params.get("per_page", settings.DEFAULT_PER_PAGE)),

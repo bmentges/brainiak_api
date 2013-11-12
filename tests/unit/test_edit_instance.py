@@ -3,10 +3,27 @@
 import unittest
 from mock import patch
 from tornado.web import HTTPError
+
+from brainiak.utils.sparql import InstanceError
 from brainiak.instance import edit_instance
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler, mock_schema
 
+
+class ErrorTestCase(unittest.TestCase):
+
+    @patch("brainiak.instance.edit_instance.create_explicit_triples", side_effect=InstanceError())
+    @patch("brainiak.instance.edit_instance.get_cached_schema")
+    @patch("brainiak.instance.edit_instance.must_retrieve_graph_and_class_uri", return_value=False)
+    def test_raises_400(self, mock_must, mock_get_cache, mock_create_triples):
+        dummy_query_params = {
+            "instance_uri": 1,
+            "class_uri": 2,
+            "graph_uri": 3
+        }
+        with self.assertRaises(HTTPError) as exception:
+            edit_instance.edit_instance(dummy_query_params, {})
+        self.assertEqual(exception.exception.status_code, 400)
 
 class TestCaseInstanceResource(unittest.TestCase):
 

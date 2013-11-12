@@ -3,7 +3,7 @@ from brainiak import triplestore
 from brainiak.instance.common import extract_class_uri, extract_graph_uri, get_class_and_graph, must_retrieve_graph_and_class_uri
 from brainiak.schema.get_class import get_cached_schema
 from brainiak.utils.sparql import is_result_true, create_explicit_triples, create_implicit_triples,\
-    join_triples, is_modify_response_successful, join_prefixes
+    join_triples, is_modify_response_successful, join_prefixes, InstanceError
 
 
 def edit_instance(query_params, instance_data):
@@ -20,7 +20,10 @@ def edit_instance(query_params, instance_data):
         raise HTTPError(404, log_message=u"Parameter <{0:s}> is missing in order to update instance.".format(ex))
 
     class_object = get_cached_schema(query_params)
-    triples = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params)
+    try:
+        triples = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params)
+    except InstanceError, exception:
+        raise HTTPError(400, log_message=exception.message)
     implicit_triples = create_implicit_triples(instance_uri, class_uri)
     triples.extend(implicit_triples)
     unique_triples = set(triples)

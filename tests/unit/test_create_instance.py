@@ -21,7 +21,7 @@ class TestCaseInstanceCreateResource(unittest.TestCase):
                                    mocked_response_successful, mocked_query_create_instances,
                                    mocked_property_must_map_a_unique_value):
         handler = MockHandler()
-        params = ParamDict(handler, class_uri="class", graph_uri="graph")
+        params = ParamDict(handler, class_uri="http://somedomain/class", graph_uri="http://somedomain/graph")
         instance_data = {"http://www.w3.org/2000/01/rdf-schema#label": "teste"}
         with self.assertRaises(InstanceError) as e:
             create_instance(params, instance_data, "http://uri-teste")

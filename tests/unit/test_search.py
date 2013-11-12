@@ -39,7 +39,7 @@ class SearchUnitTestCase(TestCase):
     def test_build_items(self):
         expected_items = [
             {
-                "@id": "http://example.onto/Brazil",
+                "id": "http://example.onto/Brazil",
                 "title": u"Brazil"
             }
         ]

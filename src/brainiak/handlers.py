@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import ast
 import sys
 import traceback
 from contextlib import contextmanager
@@ -243,6 +242,7 @@ class RootJsonSchemaHandler(BrainiakRequestHandler):
         valid_params = CACHE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
+
         response = memoize(
             self.query_params,
             root_schema,

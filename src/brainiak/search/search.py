@@ -80,5 +80,5 @@ def _build_json(items_list, item_count, query_params):
 
 
 # TODO consider rdfs:label subproperties
-def _get_search_fields():
+def _get_search_fields():  # pragma: no cover
     return [RDFS_LABEL]

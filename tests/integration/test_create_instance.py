@@ -144,8 +144,7 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                    "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}
                },
                "id": "http://example.onto/City"
-           },
-          )
+           })
     @patch("brainiak.instance.create_instance.get_cached_schema",
            return_value={
                "properties": {

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import ast
 import sys
 import traceback
 from contextlib import contextmanager
@@ -108,21 +107,16 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
     def __init__(self, *args, **kwargs):
         super(BrainiakRequestHandler, self).__init__(*args, **kwargs)
 
+    def get_cache_path(self):
+        raise Exception(u"Method get_cache_path should be overwritten for caching & purging purposes")
+
     @greenlet_asynchronous
     def purge(self, **kargs):
         if settings.ENABLE_CACHE:
 
             path = self.get_cache_path()
             recursive = int(self.request.headers.get('X-Cache-recursive', '0'))
-            purge_all = int(self.request.headers.get('X-Cache-all', '0'))
-
-            if recursive:
-                cache.purge(path)
-            elif purge_all:
-                cache.purge("*")
-            else:
-                cache.delete(path)
-
+            cache.purge_by_path(path, recursive)
         else:
             raise HTTPError(405, log_message="Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)")
 
@@ -243,6 +237,7 @@ class RootJsonSchemaHandler(BrainiakRequestHandler):
         valid_params = CACHE_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
+
         response = memoize(
             self.query_params,
             root_schema,

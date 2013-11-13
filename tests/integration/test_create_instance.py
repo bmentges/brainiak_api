@@ -48,8 +48,8 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             raise Exception()
         schema_resource.get_schema = lambda params: raise_exception()
         response = self.fetch('/person/Person/',
-            method='POST',
-            body=json.dumps({}))
+                                method='POST',
+                                body=json.dumps({}))
         self.assertEqual(response.code, 500)
         body = json.loads(response.body)
         self.assertIn("HTTP error: 500\nException:\n", body["errors"][0])
@@ -57,8 +57,8 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.logger")
     def test_create_instance_400_invalid_json(self, log):
         response = self.fetch('/place/City/',
-            method='POST',
-            body="invalid input")
+                                method='POST',
+                                body="invalid input")
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
         self.assertEquals(body["errors"], ['HTTP error: 400\nNo JSON object could be decoded'])
@@ -67,8 +67,8 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     def test_create_instance_404_inexistant_class(self, log):
         payload = {}
         response = self.fetch('/xubiru/X/',
-            method='POST',
-            body=json.dumps(payload))
+                                method='POST',
+                                body=json.dumps(payload))
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
         self.assertEqual(body["errors"], [u"HTTP error: 404\nClass xubiru/X doesn't exist in context xubiru."])
@@ -109,8 +109,8 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             "ex:name": "Globoland",
         }
         response = self.fetch('/example/City?graph_uri=http://example.onto/&class_prefix=http://example.onto/',
-            method='POST',
-            body=json.dumps(payload))
+                                method='POST',
+                                body=json.dumps(payload))
         self.assertEqual(response.code, 201)
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))

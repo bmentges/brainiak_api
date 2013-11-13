@@ -1019,7 +1019,7 @@ class ValidateValueUniquenessTestCase(unittest.TestCase):
             },
             "id": "http://example.onto/City"
         }
-        is_value_unique(instance_uri, object_value, predicate_uri,
+        is_value_already_used(instance_uri, object_value, predicate_uri,
                         class_object, graph_uri, QueryParams())
 
     @patch("brainiak.utils.sparql.triplestore.query_sparql")
@@ -1042,5 +1042,5 @@ class ValidateValueUniquenessTestCase(unittest.TestCase):
             },
             "id": "http://example.onto/City"
         }
-        response = is_value_unique(instance_uri, object_value, predicate_uri, class_object, graph_uri, QueryParams())
+        response = is_value_already_used(instance_uri, object_value, predicate_uri, class_object, graph_uri, QueryParams())
         self.assertFalse(response)

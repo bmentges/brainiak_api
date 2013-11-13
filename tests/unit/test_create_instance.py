@@ -15,7 +15,7 @@ class TestCaseInstanceCreateResource(unittest.TestCase):
     @patch("brainiak.instance.create_instance.query_create_instances")
     @patch("brainiak.instance.create_instance.is_insert_response_successful", return_value=False)
     @patch("brainiak.instance.create_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string"}, id="http://somedomain/class"))
-    @patch("brainiak.utils.sparql.is_value_unique", return_value=False)
+    @patch("brainiak.utils.sparql.is_value_already_used", return_value=True)
     def test_instance_not_inserted(self, mock_value_uniqueness, mock_get_cached_schema,
                                    mocked_response_successful, mocked_query_create_instances,
                                    mocked_property_must_map_a_unique_value):

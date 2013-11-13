@@ -130,16 +130,6 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     def test_purge_returns_200_recursive(self, enable_cache, purge, delete):
         response = self.fetch("/", method='PURGE', headers={'X-Cache-Recursive': '1'})
         self.assertEqual(response.code, 200)
-        purge.assert_called_once_with("_##collection")
-        self.assertFalse(delete.called)
-        self.assertFalse(response.body)
-
-    @patch("brainiak.utils.cache.delete")
-    @patch("brainiak.utils.cache.purge")
-    @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
-    def test_purge_returns_200_all(self, enable_cache, purge, delete):
-        response = self.fetch("/", method='PURGE', headers={'X-Cache-All': '1'})
-        self.assertEqual(response.code, 200)
         purge.assert_called_once_with("*")
         self.assertFalse(delete.called)
         self.assertFalse(response.body)

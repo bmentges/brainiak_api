@@ -14,7 +14,7 @@ build_key_for_root_schema = lambda: u"_##json_schema"
 build_key_for_collection_of_contexts = lambda: u"_##collection"
 
 # # Class/collection-related
-# build_key_for_class = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
+build_key_for_class = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
 # # TODO:
 # # graph_uri@@class_uri##collection
 # # graph_uri@@class_uri##json_schema
@@ -25,9 +25,6 @@ build_key_for_collection_of_contexts = lambda: u"_##collection"
 # # Properties-related
 # # graph@@predicate##range
 # # graph@@predicate##subproperty
-
-
-build_key_for_class = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
 
 
 class CacheError(redis.exceptions.RedisError):
@@ -167,3 +164,14 @@ def status():
             msg = success_msg
 
     return msg % params
+
+
+def purge_by_path(path, recursive):
+    purge_all = recursive and path.startswith("_##")
+    if purge_all:
+        purge("*")
+    elif recursive:
+        relative_path = path.rsplit("##")[0]
+        purge(relative_path)
+    else:
+        delete(path)

@@ -70,6 +70,9 @@ class PrefixesTestCase(unittest.TestCase):
         misleading_value = "Some value: this is no CURIE"
         self.assertEqual(misleading_value, expand_uri(misleading_value))
 
+    def test_expand_uri_with_None(self):
+        self.assertEqual('', expand_uri(None))
+
     def test_is_compressed_uri_given_a_literal(self):
         self.assertEqual(is_compressed_uri("oi"), False)
 
@@ -239,6 +242,10 @@ class ExpansionTestCase(unittest.TestCase):
 
     def test_normalize_recursively_with_invalid_type(self):
         d = {'invalid': 3}
+        self.assertDictEqual(normalize_all_uris_recursively(d), d)
+
+    def test_normalize_recursively_with_lang(self):
+        d = {'@context': {'@language': 'pt'}}
         self.assertDictEqual(normalize_all_uris_recursively(d), d)
 
     def test_real_resource(self):

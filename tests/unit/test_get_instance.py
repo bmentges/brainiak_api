@@ -7,7 +7,7 @@ from brainiak import settings, triplestore
 from brainiak.instance import get_instance
 from brainiak.prefixes import SHORTEN
 from brainiak.utils.params import ParamDict
-from tests.mocks import MockRequest, MockHandler
+from tests.mocks import MockRequest, MockHandler, mock_schema
 from tests.sparql import strip
 
 
@@ -188,10 +188,17 @@ class BuildItemsDictTestCase(unittest.TestCase):
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "datatype": u'http://www.w3.org/2001/XMLSchema#integer'
                 },
-                "key2": {"type": "string"},
-                "rdf:type": {"type": "string"}
+                "key2": {
+                    "type": "string",
+                    "datatype": u'http://www.w3.org/2001/XMLSchema#string'
+                },
+                "rdf:type": {
+                    "type": "string",
+                    "datatype": u'http://www.w3.org/2001/XMLSchema#string'
+                }
             }
         }
         expected = {
@@ -218,13 +225,11 @@ class BuildItemsDictTestCase(unittest.TestCase):
                 u'object_label': {u'type': u'literal', u'value': u'Cricket'}
             }
         ]
-        class_schema = {
-            "properties": {
-                u'http://www.w3.org/2000/01/rdf-schema#label': {"type": "string"},
-                u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': {"type": "string"},
-                u'http://brmedia.com/related_to': {"type": "object"}
-            }
-        }
+        class_schema = mock_schema({
+            u'http://www.w3.org/2000/01/rdf-schema#label': "string",
+            u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': "string",
+            u'http://brmedia.com/related_to': "string_uri"
+        }, "http://dbpedia.org/ontology/News")
         computed = get_instance.build_items_dict(bindings, "http://dbpedia.org/ontology/News", 1, class_schema)
         expected = {
             u'http://www.w3.org/2000/01/rdf-schema#label': u'Cricket becomes the most popular sport of Brazil',
@@ -242,18 +247,12 @@ class BuildItemsDictTestCase(unittest.TestCase):
                 u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/Cricket'},
             }
         ]
-        class_schema = {
-            "properties": {
-                u'http://www.w3.org/2000/01/rdf-schema#label': {"type": "string"},
-                u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': {"type": "string"},
-                u'http://brmedia.com/related_to': {"type": "object"}
-            }
-        }
-        response = get_instance.build_items_dict(bindings, "http://dbpedia.org/ontology/News", 1, class_schema)
-        expected = {
-            u'http://brmedia.com/related_to': {'@id': u'http://dbpedia.org/ontology/Cricket'},
-            u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': u'http://dbpedia.org/ontology/News'
-        }
+        class_schema = mock_schema({
+            u'http://www.w3.org/2000/01/rdf-schema#label': "string",
+            u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': "string",
+            u'http://brmedia.com/related_to': "string_uri"
+        }, "http://dbpedia.org/ontology/News")
+        get_instance.build_items_dict(bindings, "http://dbpedia.org/ontology/News", 1, class_schema)
         expected_msg = "The predicate http://brmedia.com/related_to refers to an object http://dbpedia.org/ontology/Cricket which doesn't have a label. Set expand_object_properties=0 if you don't care about this ontological inconsistency."
         self.assertTrue(mdebug.called)
         self.assertEqual(mdebug.call_args[0][0], expected_msg)
@@ -276,12 +275,11 @@ class BuildItemsDictTestCase(unittest.TestCase):
 
     def test_build_items_dict_with_super_property_and_same_value(self):
         bindings = self.prepare_input_and_expected_output(object_value="Rio de Janeiro")
-        class_schema = {
-            "properties": {
-                "birthPlace": {"type": "string"},
-                "birthCity": {"type": "string"}
-            }
-        }
+        class_schema = mock_schema({
+            u'birthPlace': "string",
+            u'birthCity': "string",
+        }, "http://class.uri")
+
         expected = {
             "birthCity": "Rio de Janeiro",
             'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'http://class.uri'
@@ -292,13 +290,13 @@ class BuildItemsDictTestCase(unittest.TestCase):
 
     def test_build_items_dict_with_super_property_and_different_values(self):
         bindings = self.prepare_input_and_expected_output(object_value="Brasil")
-        class_schema = {
-            "properties": {
-                "birthCity": {"type": "string"},
-                "birthPlace": {"type": "string"},
-                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {"type": "string"}
-            }
-        }
+
+        class_schema = mock_schema({
+            u'birthPlace': "string",
+            u'birthCity': "string",
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "string"
+        }, "http://class.uri")
+
         expected = {
             "birthCity": "Rio de Janeiro",
             "birthPlace": "Brasil",
@@ -309,13 +307,12 @@ class BuildItemsDictTestCase(unittest.TestCase):
 
     def test_build_items_dict_with_super_property_and_different_values_expanding_uri(self):
         bindings = self.prepare_input_and_expected_output(object_value="Brasil")
-        class_schema = {
-            "properties": {
-                "birthCity": {"type": "string"},
-                "birthPlace": {"type": "string"},
-                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {"type": "string"}
-            }
-        }
+
+        class_schema = mock_schema({
+            u'birthPlace': "string",
+            u'birthCity': "string",
+        }, "http://class.uri")
+
         expected = {
             "birthCity": "Rio de Janeiro",
             "birthPlace": "Brasil",
@@ -372,10 +369,17 @@ class BuildItemsDictTestCase(unittest.TestCase):
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "datatype": u'http://www.w3.org/2001/XMLSchema#integer'
                 },
-                "key2": {"type": "string"},
-                "rdf:type": {"type": "string"}
+                "key2": {
+                    "type": "string",
+                    "datatype": u'http://www.w3.org/2001/XMLSchema#integer'
+                },
+                "rdf:type": {
+                    "type": "string",
+                    "datatype": u'http://www.w3.org/2001/XMLSchema#integer'
+                }
             }
         }
         predicate_uri = "key1"
@@ -387,7 +391,10 @@ class BuildItemsDictTestCase(unittest.TestCase):
     def test_convert_to_python_float(self):
         class_schema = {
             "properties": {
-                "key1": {"type": "number"},
+                "key1": {
+                    "type": "number",
+                    "datatype": u'http://www.w3.org/2001/XMLSchema#float'
+                },
             }
         }
         predicate_uri = "key1"
@@ -399,7 +406,10 @@ class BuildItemsDictTestCase(unittest.TestCase):
     def test_convert_to_python_boolean(self):
         class_schema = {
             "properties": {
-                "key1": {"type": "boolean"},
+                "key1": {
+                    "type": "boolean",
+                    "datatype": u'http://www.w3.org/2001/XMLSchema#boolean'
+                },
             }
         }
         predicate_uri = "key1"
@@ -411,7 +421,10 @@ class BuildItemsDictTestCase(unittest.TestCase):
     def test_convert_to_python_string(self):
         class_schema = {
             "properties": {
-                "key1": {"type": "string"},
+                "key1": {
+                    "type": "string",
+                    "datatype": u'http://www.w3.org/2001/XMLSchema#string'
+                },
             }
         }
         predicate_uri = "key1"

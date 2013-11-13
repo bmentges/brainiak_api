@@ -88,13 +88,13 @@ def safe_redis(function):
     def wrapper(*params):
         try:
             response = function(*params)
-        except exceptions as e:
+        except exceptions:
             log.logger.error(u"CacheError: First try returned {0}".format(traceback.format_exc()))
             try:
                 global redis_client
                 redis_client = connect()
                 response = function(*params)
-            except exceptions as e:
+            except exceptions:
                 log.logger.error(u"CacheError: Second try returned {0}".format(traceback.format_exc()))
                 response = None
         return response

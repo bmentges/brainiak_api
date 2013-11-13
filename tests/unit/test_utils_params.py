@@ -4,7 +4,7 @@ from brainiak import settings
 from brainiak.utils import params
 from brainiak.prefixes import ROOT_CONTEXT, SHORTEN
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals, RequiredParamMissing
 from tests.mocks import MockHandler
 
 
@@ -205,6 +205,13 @@ class ParamsTestCase(TestCase):
                           context_name='dbpedia',
                           class_name="default_class_name",
                           class_prefix=None)
+
+    def test_invalid_request_missing_dependent_param(self):
+        handler = MockHandler(querystring="class_prefix=http://someDomain.com/someContext/")
+        self.assertRaises(RequiredParamMissing,
+                          ParamDict,
+                          handler,
+                          context_name='someContext')
 
     def test_class_uri_from_context_and_class(self):
         handler = MockHandler()

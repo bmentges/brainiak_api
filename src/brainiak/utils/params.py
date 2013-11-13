@@ -278,7 +278,10 @@ class ParamDict(dict):
 
             value = self.arguments.get(key, None)
             if value is not None:
-                self[key] = expand_uri(value)
+                try:
+                    self[key] = expand_uri(value)
+                except KeyError as ex:
+                    raise RequiredParamMissing(unicode(ex))
 
     def _post_override(self):
         "This method is called after override_with() is called to do any post processing"

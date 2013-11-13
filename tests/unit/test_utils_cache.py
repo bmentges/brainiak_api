@@ -4,7 +4,7 @@ import unittest
 import redis
 from mock import patch
 
-from brainiak.utils.cache import build_key_for_class, CacheError, connect, memoize, ping, safe_redis, status
+from brainiak.utils.cache import build_key_for_class, CacheError, connect, memoize, ping, purge_by_path, safe_redis, status
 from tests.mocks import MockRequest
 
 
@@ -193,3 +193,43 @@ class CacheUtilsTestCase(unittest.TestCase):
         computed = build_key_for_class(params)
         expected = "graph@@Class##class"
         self.assertEqual(computed, expected)
+
+    @patch("brainiak.utils.cache.delete")
+    @patch("brainiak.utils.cache.purge")
+    def test_purge_by_path(self, mock_purge, mock_delete):
+        purge_by_path(u"_##json_schema", False)
+        self.assertFalse(mock_purge.called)
+        self.assertTrue(mock_delete.called)
+        mock_delete.assert_called_with(u"_##json_schema")
+
+    @patch("brainiak.utils.cache.delete")
+    @patch("brainiak.utils.cache.purge")
+    def test_purge_by_path_all(self, mock_purge, mock_delete):
+        purge_by_path(u"_##json_schema", True)
+        self.assertFalse(mock_delete.called)
+        self.assertTrue(mock_purge.called)
+        mock_purge.assert_called_with(u"*")
+
+    @patch("brainiak.utils.cache.delete")
+    @patch("brainiak.utils.cache.purge")
+    def test_purge_by_path_all_second_version(self, mock_purge, mock_delete):
+        purge_by_path(u"_##collection", True)
+        self.assertFalse(mock_delete.called)
+        self.assertTrue(mock_purge.called)
+        mock_purge.assert_called_with(u"*")
+
+    @patch("brainiak.utils.cache.delete")
+    @patch("brainiak.utils.cache.purge")
+    def test_purge_by_path_recursive(self, mock_purge, mock_delete):
+        purge_by_path(u"graph@@class##type", True)
+        self.assertFalse(mock_delete.called)
+        self.assertTrue(mock_purge.called)
+        mock_purge.assert_called_with(u"graph@@class")
+
+    @patch("brainiak.utils.cache.delete")
+    @patch("brainiak.utils.cache.purge")
+    def test_purge_by_path_recursive(self, mock_purge, mock_delete):
+        purge_by_path(u"graph@@class##type", False)
+        self.assertFalse(mock_purge.called)
+        self.assertTrue(mock_delete.called)
+        mock_delete.assert_called_with(u"graph@@class##type")

@@ -472,9 +472,8 @@ def sparqlfy_with_casting(value, predicate_datatype):
 
 
 SPARQLFY_MAP = {
-    "rdf:XMLLiteral": generic_sparqlfy,
+    "rdf:XMLLiteral": sparqlfy_string,
     "xsd:string": sparqlfy_string,
-    "xsd:anyURI": sparqlfy_object,
     "xsd:boolean": sparqlfy_boolean
 }
 
@@ -488,11 +487,8 @@ def sparqlfy(value, predicate_datatype):
 
     Examples:
 
-    >>> sparqlfy("http://expanded.uri", "http://www.w3.org/2001/XMLSchema#anyURI")
-    ... "<http://expanded.uri>"
-
-    >>> sparqlfy("compressed:uri", "http://www.w3.org/2001/XMLSchema#anyURI")
-    ... "compressed:uri"
+    >>> sparqlfy("http://expanded.uri", "http://www.w3.org/2001/XMLSchema#string")
+    ... "http://expanded.uri"
 
     >>> sparqlfy(True, "http://www.w3.org/2001/XMLSchema#boolean")
     ... '"true"^^<http://www.w3.org/2001/XMLSchema#boolean>'
@@ -550,7 +546,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
 
             if not predicate_has_error:
                 if property_must_map_a_unique_value(class_object, predicate_uri):
-                    if not is_value_unique(instance_uri, object_, predicate_uri, class_object, graph_uri, query_params):
+                    if is_value_already_used(instance_uri, object_, predicate_uri, class_object, graph_uri, query_params):
                         template = u"The property ({0}) defined in the schema ({1}) must map a unique value. The value provided ({2}) is already used by another instance."
                         msg = template.format(predicate_uri, class_id, object_value)
                         errors.append(msg)
@@ -602,7 +598,7 @@ ASK FROM <%(graph_uri)s> {
 """
 
 
-def is_value_unique(instance_uri, object_value, predicate_uri, class_object, graph_uri, query_params):
+def is_value_already_used(instance_uri, object_value, predicate_uri, class_object, graph_uri, query_params):
     class_uri = class_object['id']
     query = QUERY_VALUE_EXISTS % {
         "graph_uri": graph_uri,

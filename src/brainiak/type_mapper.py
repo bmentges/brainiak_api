@@ -31,8 +31,6 @@ _MAP_XSD_TO_JSON_TYPE = {
 }
 _MAP_EXPAND_XSD_TO_JSON_TYPE = {expand_uri(k): v for k, v in _MAP_XSD_TO_JSON_TYPE.items()}
 
-# TODO: Use annotations in json-schema and remove this dict
-
 _MAP_JSON_TO_XSD_TYPE = {
     "string": "xsd:string",
     "number": "xsd:double",
@@ -43,18 +41,18 @@ _MAP_JSON_TO_EXPAND_XSD_TYPE = {k: expand_uri(v) for k, v in _MAP_XSD_TO_JSON_TY
 
 # TODO: support other JSON types:  "object", "array"
 
-_MAP_JSON_TO_PYTHON = {
-    "string": unicode,
-    "number": float,
-    "integer": int,
-    "boolean": bool
-}
+#_MAP_JSON_TO_PYTHON = {
+#    "string": unicode,
+#    "number": float,
+#    "integer": int,
+#    "boolean": bool
+#}
 
 MAP_RDF_TYPE_TO_PYTHON = {
-    "rdf:XMLLiteral": basestring,
-    "rdfs:Literal": basestring,
-    "xsd:string": basestring,
-    "xsd:anyURI": basestring,
+    "rdf:XMLLiteral": unicode,
+    "rdfs:Literal": unicode,
+    "xsd:string": unicode,
+    "xsd:anyURI": unicode,
     "xsd:float": float,
     "xsd:double": float,
     "xsd:integer": int,

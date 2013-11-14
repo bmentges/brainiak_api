@@ -120,10 +120,13 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(body[u'http://example.onto/birthCity'], [u'http://example.onto/York'])
 
     def test_instance_has_property_that_is_array_but_contains_a_single_value(self):
-        response = self.fetch('/_/Human/RodrigoSenra?class_prefix=http://example.onto/&instance_prefix=http://example.onto/&graph_uri=http://test.com/', method='GET')
+        response = self.fetch('/_/Human/RodrigoSenra?class_prefix=http://example.onto/&instance_prefix=http://example.onto/&graph_uri=http://test.com/&expand_object_properties=1', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
-        self.assertEqual(body[u'http://example.onto/hasChild'], [u'http://example.onto/Naruto'])
+        self.assertEqual(
+            body[u'http://example.onto/hasChild'],
+            [{u'@id': u'http://example.onto/Naruto', u'title': u'Naruto Senra'}]
+        )
 
 
 class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
@@ -151,17 +154,31 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'},
                 u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/News'},
-                u'object_label': {u'type': u'literal', u'value': u'News'}
+                u'object_label': {u'type': u'literal', u'value': u'News'},
+                u'is_object_blank': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'0'
+                }
             },
             {
-
                 u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
-                u'object': {u'type': u'literal', u'value': u'Cricket becomes the most popular sport of Brazil'}
+                u'object': {u'type': u'literal', u'value': u'Cricket becomes the most popular sport of Brazil'},
+                u'is_object_blank': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'0'
+                }
             },
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},
                 u'object': {u'type': u'uri', u'value': u'http://dbpedia.org/ontology/Cricket'},
-                u'object_label': {u'type': u'literal', u'value': u'Cricket'}
+                u'object_label': {u'type': u'literal', u'value': u'Cricket'},
+                u'is_object_blank': {
+                    u'datatype': u'http://www.w3.org/2001/XMLSchema#integer',
+                    u'type': u'typed-literal',
+                    u'value': u'0'
+                }
             }
         ]
         self.assertEqual(sorted(computed), sorted(expected))

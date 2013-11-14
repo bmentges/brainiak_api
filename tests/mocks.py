@@ -22,8 +22,15 @@ def mock_schema(properties_and_types_dict, id, context=None):
                      'boolean': 'xsd:boolean'}
     for property_name, type_value in properties_and_types_dict.items():
         property_uri = expand_uri(property_name, context=context)
-        if type_value is None:
-            properties_schema[property_uri] = {'range': {'type': 'string', 'format': 'uri'}}
+        if type_value in ["string_uri", "array_string_uri"]:
+            properties_schema[property_uri] = {
+                'range': {'type': 'string', 'format': 'uri'}
+            }
+            if type_value == "string_uri":
+                properties_schema[property_uri]["type"] = "string"
+            else:
+                properties_schema[property_uri]["type"] = "array"
+                properties_schema[property_uri]['items'] = {'type': 'string', 'format': 'uri'}
         else:
             properties_schema[property_uri] = {'type': type_value, 'datatype': expand_uri(type2datatype[type_value], context=context)}
     schema = {'properties': properties_schema}

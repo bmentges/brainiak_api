@@ -83,8 +83,14 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.instance.get_instance.get_class.get_cached_schema",
            return_value={
                "properties": {
-                   "http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"},
-                   "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}
+                   "http://www.w3.org/2000/01/rdf-schema#label": {
+                       "type": "string",
+                       "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                   },
+                   "http://example.onto/name": {
+                       "type": "string",
+                       "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                   }
                },
                "id": "http://example.onto/City"
            })

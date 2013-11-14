@@ -38,9 +38,9 @@ def build_items_dict(bindings, class_uri, expand_object_properties, class_schema
 
     items_dict = {}
     for item in bindings:
-        predicate_uri = item["predicate"]["value"]
         is_object_blank_node = int(item.get("is_object_blank", {}).get("value", "0"))
         if not is_object_blank_node:
+            predicate_uri = item["predicate"]["value"]
             object_value = item["object"]["value"]
             object_type = item["object"].get("type")
             object_label = item.get("object_label", {}).get("value")

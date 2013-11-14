@@ -62,6 +62,12 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
             'rel': "class",
             'href': self_url(query_params),
             'method': "GET"
+        },
+        {
+            "href": href.replace('_schema', ''),
+            "method": "POST",
+            "rel": "create",
+            "schema": {"$ref": "{+_base_url}"}
         }
     ]
     add_link(links, "collection", href.replace('_schema', ''))

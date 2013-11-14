@@ -200,22 +200,22 @@ class LinksTestCase(URLTestCase):
         expected = {
             'links': [
                 {
-                    'href': '{+_first_args}',
+                    'href': '?{+_first_args}',
                     'method': 'GET',
                     'rel': 'first'
                 },
                 {
-                    'href': '{+_previous_args}',
+                    'href': '?{+_previous_args}',
                     'method': 'GET',
                     'rel': 'previous'
                 },
                 {
-                    'href': '{+_next_args}',
+                    'href': '?{+_next_args}',
                     'method': 'GET',
                     'rel': 'next'
                 },
                 {
-                    'href': '{+_last_args}',
+                    'href': '?{+_last_args}',
                     'method': 'GET',
                     'rel': 'last'
                 }

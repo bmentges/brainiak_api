@@ -337,6 +337,7 @@ class ClassHandler(BrainiakRequestHandler):
 
 class CollectionJsonSchemaHandler(BrainiakRequestHandler):
 
+    @greenlet_asynchronous
     def get(self, context_name, class_name):
         query_params = ParamDict(self, context_name=context_name, class_name=class_name)
         self.finalize(collection_schema(query_params))

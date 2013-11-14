@@ -948,6 +948,13 @@ class GetCollectionDirectObjectTestCase(TornadoAsyncHTTPTestCase, QueryTestCase)
         computed_items = json.loads(response.body)["items"]
         expected_items = [
             {
+                "resource_id": "Naruto",
+                "instance_prefix": "http://example.onto/",
+                "@id": "http://example.onto/Naruto",
+                "class_prefix": "http://example.onto/",
+                "title": "Naruto Senra"
+            },
+            {
                 "resource_id": "Nina",
                 "instance_prefix": "http://example.onto/",
                 "@id": "http://example.onto/Nina",

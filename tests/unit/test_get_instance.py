@@ -220,10 +220,17 @@ class BuildItemsDictTestCase(unittest.TestCase):
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "datatype": "http://www.w3.org/2001/XMLSchema#integer"
                 },
-                "key2": {"type": "string"},
-                "rdf:type": {"type": "string"}
+                "key2": {
+                    "type": "string",
+                    "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "rdf:type": {
+                    "type": "string",
+                    "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
             }
         }
         expected = {

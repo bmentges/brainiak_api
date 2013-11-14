@@ -11,24 +11,29 @@ from tests.mocks import mock_schema, triplestore_config
 
 class MockSchemaTestCase(unittest.TestCase):
 
+    maxDiff = None
+
     def test_mock_schema(self):
         class_object = mock_schema(
-            {"personpedia:birthPlace": None,
-             "personpedia:gender": None,
-             "personpedia:wife": None},
+            {"personpedia:birthPlace": 'string_uri',
+             "personpedia:gender": 'string_uri',
+             "personpedia:wife": 'string_uri'},
             id="http://personpedia.com/Person",
             context={"personpedia": "http://personpedia.com/"}
         )
         expected_object = {
             'properties': {
                 'http://personpedia.com/birthPlace': {
-                    'range': {'type': 'string', 'format': 'uri'}
+                    'range': {'type': 'string', 'format': 'uri'},
+                    'type': 'string'
                 },
                 'http://personpedia.com/gender': {
-                    'range': {'type': 'string', 'format': 'uri'}
+                    'range': {'type': 'string', 'format': 'uri'},
+                    'type': 'string'
                 },
                 'http://personpedia.com/wife': {
-                    'range': {'type': 'string', 'format': 'uri'}
+                    'range': {'type': 'string', 'format': 'uri'},
+                    'type': 'string'
                 }
             },
             "id": "http://personpedia.com/Person"
@@ -303,9 +308,9 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
             "http://personpedia.com/wife": "http://personpedia.com/ConstanceLloyd"
         }
         class_object = mock_schema(
-            {"personpedia:birthPlace": None,
-             "personpedia:gender": None,
-             "personpedia:wife": None},
+            {"personpedia:birthPlace": 'string_uri',
+             "personpedia:gender": 'string_uri',
+             "personpedia:wife": 'string_uri'},
             id="http://personpedia.com/Person",
             context=instance_data['@context']
         )
@@ -322,13 +327,13 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
         graph_uri = "http://personpedia.com/"
         instance_data = {
             "@context": {"personpedia": "http://personpedia.com/"},
-            "http://personpedia.com/birthDate": "16/10/1854",
-            "http://personpedia.com/birthPlace": "place:Dublin",
-            "http://personpedia.com/occupation": "writer",
+            "http://personpedia.com/birthDate": u"16/10/1854",
+            "http://personpedia.com/birthPlace": u"place:Dublin",
+            "http://personpedia.com/occupation": u"writer",
         }
         class_object = mock_schema(
             {"http://personpedia.com/birthDate": 'string',
-             "http://personpedia.com/birthPlace": None,
+             "http://personpedia.com/birthPlace": 'string_uri',
              "http://personpedia.com/occupation": 'string'},
             id="http://personpedia.com/Person",
             context=instance_data['@context']
@@ -345,8 +350,8 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         graph_uri = "http://personpedia.com/"
         instance_data = {
-            "@context": {"personpedia": "http://personpedia.com/"},
-            "http://personpedia.com/occupation": "http://someurl/profession/writer",
+            "@context": {"personpedia": u"http://personpedia.com/"},
+            "http://personpedia.com/occupation": u"http://someurl/profession/writer",
         }
         class_object = mock_schema({"personpedia:occupation": 'string'},
                                    id="http://personpedia.com/Person",
@@ -363,15 +368,15 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         graph_uri = "http://personpedia.com/"
         instance_data = {
-            "@context": {"personpedia": "http://personpedia.com/"},
-            "http://personpedia.com/birthDate": "16/10/1854",
-            "http://personpedia.com/birthPlace": "place:Dublin",
-            "http://personpedia.com/occupation": "'writer'@en",
+            "@context": {"personpedia": u"http://personpedia.com/"},
+            "http://personpedia.com/birthDate": u"16/10/1854",
+            "http://personpedia.com/birthPlace": u"place:Dublin",
+            "http://personpedia.com/occupation": u"'writer'@en",
         }
         class_object = mock_schema(
-            {"http://personpedia.com/birthDate": 'string',
-             "http://personpedia.com/birthPlace": None,
-             "http://personpedia.com/occupation": 'string'},
+            {"http://personpedia.com/birthDate": u'string',
+             "http://personpedia.com/birthPlace": u'string_uri',
+             "http://personpedia.com/occupation": u'string'},
             id="http://personpedia.com/Person",
             context=instance_data['@context']
         )
@@ -387,15 +392,15 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         graph_uri = "http://personpedia.com/"
         instance_data = {
-            "@context": {"personpedia": "http://personpedia.com/"},
-            "http://www.w3.org/2000/01/rdf-schema#label": "Oscar Wilde",
-            "http://personpedia.com/gender": "http://personpedia.com/Male",
-            "http://personpedia.com/child": ["http://personpedia.com/VyvyanHolland", "http://personpedia.com/CyrilHolland"]
+            "@context": {"personpedia": u"http://personpedia.com/"},
+            "http://www.w3.org/2000/01/rdf-schema#label": u"Oscar Wilde",
+            "http://personpedia.com/gender": u"http://personpedia.com/Male",
+            "http://personpedia.com/child": [u"http://personpedia.com/VyvyanHolland", u"http://personpedia.com/CyrilHolland"]
         }
         class_object = mock_schema(
             {"http://www.w3.org/2000/01/rdf-schema#label": 'string',
-             "http://personpedia.com/gender": None,
-             "http://personpedia.com/child": None},
+             "http://personpedia.com/gender": 'string_uri',
+             "http://personpedia.com/child": 'array_string_uri'},
             id="http://personpedia.com/Person",
             context=instance_data['@context']
         )
@@ -432,17 +437,17 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
             "@context": {"personpedia": "http://personpedia.com/"},
-            "http://personpedia.com/isAlive": "http://personpedia.com/TheImportanceOfBeingEarnest",
-            "http://personpedia.com/deathAge": "Irish",
+            "http://personpedia.com/isAlive": u"http://personpedia.com/TheImportanceOfBeingEarnest",
+            "http://personpedia.com/deathAge": u"Irish",
             "http://personpedia.com/hasNationality": 46,
-            "http://personpedia.com/wroteBook": "true",
+            "http://personpedia.com/wroteBook": u"true",
         }
         class_object = mock_schema(
             {
                 "http://personpedia.com/isAlive": "boolean",
                 "http://personpedia.com/deathAge": "integer",
                 "http://personpedia.com/hasNationality": "string",
-                "http://personpedia.com/wroteBook": None
+                "http://personpedia.com/wroteBook": "string_uri"
             },
             id="http://personpedia.com/Person",
             context=instance_data['@context']
@@ -934,7 +939,7 @@ class SparqlfyTestCase(unittest.TestCase):
         self.assertFalse(response)
 
     def test_is_instance_expanded_string_true(self):
-        value = "abc"
+        value = u"abc"
         _type = "http://www.w3.org/2001/XMLSchema#string"
         response = is_instance(value, _type)
         self.assertTrue(response)

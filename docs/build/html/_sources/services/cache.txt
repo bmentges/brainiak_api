@@ -72,7 +72,7 @@ It is also possible to cleanup recursively, calling ``PURGE`` with the header ``
 
 .. code-block:: bash
 
-  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://brainiak.semantica.dev.globoi.com/
+  $ curl -i -X PURGE --header "X-Cache-Recursive: 1" http://brainiak.semantica.dev.globoi.com/
 
 Be careful when using this feature, all cached resources from that point on will be purged.
 
@@ -87,7 +87,7 @@ And the command below is run:
 
 .. code-block:: bash
 
-  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://brainiak.semantica.dev.globoi.com/
+  $ curl -i -X PURGE --header "X-Cache-Recursive: 1" http://brainiak.semantica.dev.globoi.com/
 
 All cache will be purged (a, b, c and d).
 
@@ -95,18 +95,18 @@ Otherwise, to purge only (c) and (d), the command bellow should be run:
 
 .. code-block:: bash
 
-  $ curl -i -X --header "X-Cache-Recursive: 1"  PURGE http://brainiak.semantica.dev.globoi.com/person/Person
+  $ curl -i -X PURGE --header "X-Cache-Recursive: 1" http://brainiak.semantica.dev.globoi.com/person/Person
 
 
 
 Purge all
 ---------
 
-It is possible to exclude all cache by calling ``PURGE`` with the header ``X-Cache-All`` set to ``1``.
+It is possible to exclude all cache by calling ``PURGE`` at the root of the API using the header ``X-Cache-Recursive`` set to ``1``.
 
 Be careful.
 
 .. code-block:: bash
 
-  $ curl -i -X --header "X-Cache-All: 1"  PURGE http://brainiak.semantica.dev.globoi.com
+  $ curl -i -X PURGE --header "X-Cache-Recursive: 1" http://brainiak.semantica.dev.globoi.com/
 

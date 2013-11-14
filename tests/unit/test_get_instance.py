@@ -82,12 +82,12 @@ class TestCaseInstanceResource(unittest.TestCase):
         computed = get_instance.query_all_properties_and_objects(params)
         expected = """
             DEFINE input:inference <http://semantica.globo.com/ruleset>
-            SELECT DISTINCT ?predicate ?object ?object_label ?super_property {
+            SELECT DISTINCT ?predicate ?object ?object_label ?super_property isBlank(?object) as ?is_object_blank {
                 <instance_uri> a <class_uri> ;
                     ?predicate ?object .
             OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
             OPTIONAL { ?object rdfs:label ?object_label } .
-            FILTER((langMatches(lang(?object), "en") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
+            FILTER((langMatches(lang(?object), "en") OR langMatches(lang(?object), "")) OR (IsURI(?object)) AND !isBlank(?object)) .
             }
             """
         self.assertEqual(strip(computed), strip(expected))
@@ -109,12 +109,12 @@ class TestCaseInstanceResource(unittest.TestCase):
         computed = get_instance.query_all_properties_and_objects(params)
         expected = """
             DEFINE input:inference <http://semantica.globo.com/ruleset>
-            SELECT DISTINCT ?predicate ?object  ?super_property {
+            SELECT DISTINCT ?predicate ?object  ?super_property isBlank(?object) as ?is_object_blank {
                 <instance_uri> a <class_uri> ;
                     ?predicate ?object .
             OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
 
-            FILTER((langMatches(lang(?object), "en") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
+            FILTER((langMatches(lang(?object), "en") OR langMatches(lang(?object), "")) OR (IsURI(?object)) AND !isBlank(?object)) .
             }
             """
         self.assertEqual(strip(computed), strip(expected))
@@ -196,6 +196,31 @@ class BuildItemsDictTestCase(unittest.TestCase):
         }
         expected = {
             "key1": [1, 2],
+            "key2": "value2",
+            u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': "some:Class"}
+        response = get_instance.build_items_dict(bindings, "some:Class", True, class_schema)
+        self.assertEqual(response, expected)
+
+    def test_build_items_dict_with_blank_nodes(self):
+        bindings = [
+            {"predicate": {"value": "key1"}, "object": {"value": 1}, "label": {"value": "label1"}, "is_object_blank": {"value": "1"}},
+            {"predicate": {"value": "key1"}, "object": {"value": 2}, "label": {"value": "label1"}},
+            {"predicate": {"value": "key2"}, "object": {"value": "value2"}, "label": {"value": "label1"}}
+        ]
+        class_schema = {
+            "properties": {
+                "key1": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "key2": {"type": "string"},
+                "rdf:type": {"type": "string"}
+            }
+        }
+        expected = {
+            "key1": [2],
             "key2": "value2",
             u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': "some:Class"}
         response = get_instance.build_items_dict(bindings, "some:Class", True, class_schema)

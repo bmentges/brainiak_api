@@ -1,11 +1,8 @@
 import json
 from mock import patch
 
-from brainiak.root.get_root import QUERY_LIST_CONTEXT
-from brainiak.utils import sparql
 from brainiak.handlers import RootJsonSchemaHandler
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
-from tests.sparql import QueryTestCase
 
 
 def raise_exception():

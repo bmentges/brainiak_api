@@ -16,10 +16,10 @@ class TestRootJsonSchema(unittest.TestCase):
     def test_list_contexts(self):
         computed_schema = root_schema()
         expected_links = [
-            {'href': '?{+_first_args}', 'method': 'GET', 'rel': 'first'},
-            {'href': '?{+_last_args}', 'method': 'GET', 'rel': 'last'},
-            {'href': '?{+_next_args}', 'method': 'GET', 'rel': 'next'},
-            {'href': '?{+_previous_args}', 'method': 'GET', 'rel': 'previous'},
+            {'href': '{+_first_args}', 'method': 'GET', 'rel': 'first'},
+            {'href': '{+_last_args}', 'method': 'GET', 'rel': 'last'},
+            {'href': '{+_next_args}', 'method': 'GET', 'rel': 'next'},
+            {'href': '{+_previous_args}', 'method': 'GET', 'rel': 'previous'},
             {'href': '{+_base_url}', 'method': 'GET', 'rel': 'self'},
             {
                 'href': '/_suggest',

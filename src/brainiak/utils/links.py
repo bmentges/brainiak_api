@@ -130,21 +130,21 @@ def pagination_items(query_params, total_items=None):
     per_page = int(query_params["per_page"])
 
     result = {
-        "_first_args": merge_querystring(query_string, {"page": 1})
+        "_first_args": '?' + merge_querystring(query_string, {"page": 1})
     }
 
     last_page = None
     if (query_params.get("do_item_count", None) == "1") and (total_items is not None):
         last_page = get_last_page(total_items, per_page)
-        result["_last_args"] = merge_querystring(query_string, {"page": last_page})
+        result["_last_args"] = '?' + merge_querystring(query_string, {"page": last_page})
 
     previous_page = get_previous_page(page)
     if previous_page:
-        result["_previous_args"] = merge_querystring(query_string, {"page": previous_page})
+        result["_previous_args"] = '?' + merge_querystring(query_string, {"page": previous_page})
 
     next_page = get_next_page(page, last_page)
     if next_page:
-        result["_next_args"] = merge_querystring(query_string, {"page": next_page})
+        result["_next_args"] = '?' + merge_querystring(query_string, {"page": next_page})
 
     return result
 
@@ -167,10 +167,10 @@ def pagination_schema(root_url, extra_url_params='', method="GET"):
             "_last_args": {"type": "string"},
         },
         "links": [
-            link('first', '?{+_first_args}'),
-            link('previous', '?{+_previous_args}'),
-            link('next', '?{+_next_args}'),
-            link('last', '?{+_last_args}')
+            link('first', '{+_first_args}'),
+            link('previous', '{+_previous_args}'),
+            link('next', '{+_next_args}'),
+            link('last', '{+_last_args}')
         ]
     }
     return result

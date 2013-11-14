@@ -1,15 +1,20 @@
 Releases
 ========
 
-Version 2.3.9 - 2013//
---------------------------
+Version 2.4.0 - 2013//
+----------------------
+
+New Features
+____________
+
+- Textual Search for `instances` (see :doc:`/services/search/search`).
+
 
 Fix
 _____________
 
+- TODO: check all fixes from tag 2.3.8 to now
 - class_prefix was being rendered with an incorrect trailing ':'. This char ':' is not part of the URL.
-
-
 
 Version 2.3.8 - 2013/10/04
 --------------------------

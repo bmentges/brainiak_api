@@ -66,7 +66,7 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../releases.html">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-9-2013">Version 2.3.9 - 2013//</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-0-2013">Version 2.4.0 - 2013//</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-8-2013-10-04">Version 2.3.8 - 2013/10/04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-7-2013-10-31">Version 2.3.7 - 2013/10/31</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-6-2013-10-28">Version 2.3.6 - 2013/10/28</a></li>
@@ -131,7 +131,7 @@
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
 <li><a class="reference internal" href="#">Search</a><ul>
-<li><a class="reference internal" href="#response-body-parameters">Response body parameters</a></li>
+<li><a class="reference internal" href="#possible-responses">Possible responses</a></li>
 </ul>
 </li>
 </ul>
@@ -169,27 +169,97 @@
 <h1>Search<a class="headerlink" href="#search" title="Permalink to this headline">¶</a></h1>
 <p>Given a target textual query expression,
 the search service tries to match the textual query expression with the label of the items that belong to the search scope.</p>
-<p>For the time being, Brainiak only supports textual searches over instances of a given class in a given graph.</p>
-<p>The textual pattern provided by the user is wrapped in a query expression such as &#8220;<em>&lt;pattern&gt;</em>&#8221;, that allows the pattern
-to match in any position of the searched text.</p>
-<p>Two supported parameters are:</p>
-<p><strong>pattern</strong>: textual expression that will be matched or partially-matched against some instances in the search scope.
-<strong>graph_uri</strong>: Set the graph URI, defining a subset of classes belonging to the search scope.
-<strong>class_uri</strong>: Defines the URI of a given class, whose instances&#8217; labels should be searched.</p>
+<p>For the time being, Brainiak only supports textual searches over instances of a given class in a given graph,
+therefore both class and graph must be specified.</p>
+<p>The textual pattern provided by the user is tokenized and analyzed against a index that contains all the labels for instances.
+For example, the search for <tt class="docutils literal"><span class="pre">unido</span></tt> matches <tt class="docutils literal"><span class="pre">Estados</span> <span class="pre">Unidos</span></tt>, <tt class="docutils literal"><span class="pre">Reino</span> <span class="pre">Unido</span></tt>, and so on.
+The type of query used is a <a class="reference external" href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-match-query.html">Elastic Search match query</a>.</p>
+<p>The mandatory parameters are:</p>
+<p><strong>pattern</strong>: textual expression that will be matched or partially-matched against some instances in the search scope.</p>
+<p><strong>graph_uri</strong>: Set the graph URI, defining a subset of classes belonging to the search scope.</p>
+<p><strong>class_uri</strong>: Defines the URI of a given class, whose instances&#8217; labels should be searched.</p>
 <p><strong>Basic usage</strong></p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_search&amp;graph_uri=place&amp;class_uri=place:Country&amp;pattern=Bra&#39;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_search?graph_uri=glb&amp;class_uri=base:Pais&amp;pattern=unido&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;errors&quot;: [
-        &quot;HTTP error: 404\nThe URL (http://brainiak.semantica.dev.globoi.com/_search&amp;graph_uri=place&amp;class_uri=place:Country&amp;pattern=Bra) is not recognized.&quot;
-    ]
+    &quot;@context&quot;: {
+        &quot;@language&quot;: &quot;pt&quot;
+    },
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/_search/&quot;,
+    &quot;_class_name&quot;: &quot;Pais&quot;,
+    &quot;_class_prefix&quot;: &quot;http://semantica.globo.com/base/&quot;,
+    &quot;_class_uri&quot;: &quot;http://semantica.globo.com/base/Pais&quot;,
+    &quot;_context_name&quot;: &quot;semantica.globo.com&quot;,
+    &quot;_first_args&quot;: &quot;pattern=unido&amp;graph_uri=glb&amp;page=1&amp;class_uri=base:Pais&quot;,
+    &quot;_graph_uri&quot;: &quot;http://semantica.globo.com/&quot;,
+    &quot;_next_args&quot;: &quot;pattern=unido&amp;graph_uri=glb&amp;page=2&amp;class_uri=base:Pais&quot;,
+    &quot;items&quot;: [
+        {
+            &quot;id&quot;: &quot;http://semantica.globo.com/base/Pais_estados-unidos-da-america&quot;,
+            &quot;title&quot;: &quot;Estados Unidos&quot;
+        },
+        {
+            &quot;id&quot;: &quot;http://semantica.globo.com/base/Pais_reino-unido&quot;,
+            &quot;title&quot;: &quot;Reino Unido&quot;
+        },
+        {
+            &quot;id&quot;: &quot;http://semantica.globo.com/base/Pais_ilhas-virgens-estados-unidos&quot;,
+            &quot;title&quot;: &quot;Ilhas Virgens dos Estados Unidos&quot;
+        },
+        {
+            &quot;id&quot;: &quot;http://semantica.globo.com/base/Pais_ilhas-menores-dos-estados-unidos&quot;,
+            &quot;title&quot;: &quot;Ilhas Menores dos Estados Unidos&quot;
+        }
+    ],
+    &quot;pattern&quot;: &quot;unido&quot;
 }
 </pre></div>
 </div>
-<div class="section" id="response-body-parameters">
-<h2>Response body parameters<a class="headerlink" href="#response-body-parameters" title="Permalink to this headline">¶</a></h2>
-<p>Example of response:</p>
+<div class="section" id="possible-responses">
+<h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>
+<p><strong>Status 200</strong></p>
+<p>If the search is successfull, a response JSON is returned, showing the matched instances. For example, for the pattern <tt class="docutils literal"><span class="pre">brasil</span></tt>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_search?graph_uri=glb&amp;class_uri=base:Pais&amp;pattern=brasil&#39;</span>
+</pre></div>
+</div>
+<p>If there are no matches found, the <tt class="docutils literal"><span class="pre">&quot;items&quot;</span></tt> dict will be empty.</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;@context&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;@language&quot;</span><span class="p">:</span> <span class="s2">&quot;pt&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;brasil&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/base/Pais_Brasil&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Brasil&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;_class_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Pais&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;_context_name&quot;</span><span class="p">:</span> <span class="s2">&quot;semantica.globo.com&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;_base_url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://brainiak.semantica.dev.globoi.com/_search/&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;_class_prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/base/&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;_graph_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;_next_args&quot;</span><span class="p">:</span> <span class="s2">&quot;pattern=brasil&amp;graph_uri=glb&amp;page=2&amp;class_uri=base:Pais&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;_first_args&quot;</span><span class="p">:</span> <span class="s2">&quot;pattern=brasil&amp;graph_uri=glb&amp;page=1&amp;class_uri=base:Pais&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;_class_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/base/Pais&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Status 400</strong></p>
+<p>If the request is malformed due to with invalid parameters, a 400 HTTP error is returned.</p>
+<p>This is due to the following reasons:</p>
+<ul class="simple">
+<li>Missing required parameters. If the request body does not have the keys <tt class="docutils literal"><span class="pre">pattern</span></tt>, <tt class="docutils literal"><span class="pre">graph_uri</span></tt> or <tt class="docutils literal"><span class="pre">class_uri</span></tt>.</li>
+</ul>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 400\nRequired parameter (pattern) was not given.&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Status 500</strong></p>
+<p>Internal server error. Please, contact the team &lt;<a class="reference external" href="mailto:semantica&#37;&#52;&#48;corp&#46;globo&#46;com">semantica<span>&#64;</span>corp<span>&#46;</span>globo<span>&#46;</span>com</a>&gt;
+and provide the URL, JSON and error message.</p>
 </div>
 </div>
 

@@ -217,14 +217,16 @@
 :DuplicatedYork a :City ;
                 :nickname "City of York" .
 
-:Male a :Gender .
+:Male a :Gender ;
+      rdfs:label "Male" .
 :Female a :Gender .
 :Transgender a :Gender .
 
 :Black a :FurColour .
 :White a :FurColour .
 :Brown a :FurColour .
-:Blonde a :FurColour .
+:Blonde a :FurColour ;
+        rdfs:label "Yellow" .
 
 :Short a :FurLenght .
 :Medium a :FurLenght .
@@ -235,7 +237,8 @@
      rdfs:label "Nina Fox" .
 
 
-:Naruto a :Cat .
+:Naruto a :Cat ;
+        rdfs:label "Naruto Senra" .
 :Chloe a :Cat .
 
 :RodrigoSenra a :Human ;

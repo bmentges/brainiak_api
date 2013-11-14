@@ -38,41 +38,43 @@ def build_items_dict(bindings, class_uri, expand_object_properties, class_schema
 
     items_dict = {}
     for item in bindings:
-        predicate_uri = item["predicate"]["value"]
-        object_value = item["object"]["value"]
-        object_type = item["object"].get("type")
-        object_label = item.get("object_label", {}).get("value")
-        if expand_object_properties and object_type == "uri":
-            if object_label:
-                value = {"@id": object_value, "title": object_label}
-            else:
-                msg = u"The predicate {0} refers to an object {1} which doesn't have a label.".format(predicate_uri, object_value) + \
-                    " Set expand_object_properties=0 if you don't care about this ontological inconsistency."
-                value = {"@id": object_value}
-                logger.debug(msg)
-                # raise Exception(msg)
-        else:
-            value = _convert_to_python(object_value, class_schema, predicate_uri)
-
-        if predicate_uri in items_dict:
-            if not isinstance(items_dict[predicate_uri], list):
-                value_list = [items_dict[predicate_uri]]
-            else:
-                value_list = items_dict[predicate_uri]
-            value_list.append(value)
-            items_dict[predicate_uri] = value_list
-        else:
-            base_uri = None
-            if predicate_uri in class_schema["properties"]:
-                base_uri = predicate_uri
-
-            # Here we IGNORE predicate/object values that exist in the triplestore
-            #  but the predicate is not in the class schema
-            if base_uri:
-                if class_schema["properties"][base_uri][u'type'] == u'array':
-                    items_dict[predicate_uri] = [value]
+        is_object_blank_node = int(item.get("is_object_blank", {}).get("value", "0"))
+        if not is_object_blank_node:
+            predicate_uri = item["predicate"]["value"]
+            object_value = item["object"]["value"]
+            object_type = item["object"].get("type")
+            object_label = item.get("object_label", {}).get("value")
+            if expand_object_properties and object_type == "uri":
+                if object_label:
+                    value = {"@id": object_value, "title": object_label}
                 else:
-                    items_dict[predicate_uri] = value
+                    msg = u"The predicate {0} refers to an object {1} which doesn't have a label.".format(predicate_uri, object_value) + \
+                        " Set expand_object_properties=0 if you don't care about this ontological inconsistency."
+                    value = {"@id": object_value}
+                    logger.debug(msg)
+                    # raise Exception(msg)
+            else:
+                value = _convert_to_python(object_value, class_schema, predicate_uri)
+
+            if predicate_uri in items_dict:
+                if not isinstance(items_dict[predicate_uri], list):
+                    value_list = [items_dict[predicate_uri]]
+                else:
+                    value_list = items_dict[predicate_uri]
+                value_list.append(value)
+                items_dict[predicate_uri] = value_list
+            else:
+                base_uri = None
+                if predicate_uri in class_schema["properties"]:
+                    base_uri = predicate_uri
+
+                # Here we IGNORE predicate/object values that exist in the triplestore
+                #  but the predicate is not in the class schema
+                if base_uri:
+                    if class_schema["properties"][base_uri][u'type'] == u'array':
+                        items_dict[predicate_uri] = [value]
+                    else:
+                        items_dict[predicate_uri] = value
 
     remove_super_properties(items_dict, super_predicates)
 
@@ -136,15 +138,17 @@ def assemble_instance_json(query_params, query_result_dict):
     instance.update(items)
     return instance
 
-
+# Note: we will filter (remove) blank nodes using Python code due to a problem
+# on filtering using isBlank when inference is enabled at Virtuoso. We've
+# reported the bug to the DB team and we expect soon an answer from OpenLink.
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = u"""
 DEFINE input:inference <%(ruleset)s>
-SELECT DISTINCT ?predicate ?object %(object_label_variable)s ?super_property {
+SELECT DISTINCT ?predicate ?object %(object_label_variable)s ?super_property isBlank(?object) as ?is_object_blank {
     <%(instance_uri)s> a <%(class_uri)s> ;
     ?predicate ?object .
 OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
 %(object_label_optional_clause)s
-FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")) OR (IsURI(?object))) .
+FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")) OR (IsURI(?object)) AND !isBlank(?object)) .
 }
 """
 

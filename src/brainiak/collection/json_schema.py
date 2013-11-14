@@ -23,7 +23,7 @@ def schema(query_params):
 
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
-        "title": "Collection of " + class_schema.get('title', ''),
+        "title": class_schema.get('title', ''),
         "type": "object",
         "required": ["items", "_class_prefix", "@id"],
         "properties": {

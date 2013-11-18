@@ -101,6 +101,5 @@ translate_portuguese: translate_template
 
 # i18n #4
 # Compile Portuguese translation file (PO) into a .MO file, which is used by Brainiak
-# Note: apparently Tornado doesn't require this!
 compile_portuguese:
 	@cd locale/pt_BR/LC_MESSAGES; msgfmt brainiak.po -o brainiak.mo

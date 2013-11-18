@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-18 15:49-0200\n"
+"POT-Creation-Date: 2013-11-18 18:25-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: brainiak/handlers.py:646
+#: brainiak/utils/sparql.py:512
+msgid ""
+"Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was "
+"given."
+msgstr ""
+
+#: brainiak/utils/sparql.py:521
+msgid ""
+"Inexistent property ({0}) in the schema ({1}), used to create instance ({2})"
+msgstr ""
+
+#: brainiak/utils/sparql.py:551
+msgid ""
+"The property ({0}) defined in the schema ({1}) must map a unique value. The "
+"value provided ({2}) is already used by another instance."
+msgstr ""
+
+#: brainiak/handlers.py:649
 msgid "WORKING"
 msgstr ""

@@ -63,7 +63,8 @@ class MockRequest(object):
     def __init__(self,
                  uri="http://localhost:5100/ctx/klass/",
                  query_string="",
-                 instance=""):
+                 instance="",
+                 headers={}):
         self.query = query_string
         self.uri = uri
         if instance:
@@ -75,11 +76,15 @@ class MockRequest(object):
         self.base_url = u"{0}://{1}{2}".format(self.protocol, self.host, normalize_last_slash(self.path))
         self.resource_url = self.base_url + "{resource_id}"
         self.headers = {'Host': self.host}
+        self.headers.update(**headers)
         if query_string:
             self.uri = u"%s?%s" % (self.uri, query_string)
 
     def full_url(self):
         return self.uri
+
+    def supports_http_1_1(self, *args, **kwargs):
+        True
 
 
 class MockResponse(object):

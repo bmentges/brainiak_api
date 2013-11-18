@@ -80,3 +80,27 @@ docs: clean
 console: build_settings
 	@echo "Console Python inside Brainiak code (you must be on the correct Virtualenv)"
 	@PYTHONPATH="$(BRAINIAK_CODE):$(NEW_PYTHONPATH)" python
+
+
+# i18n #0
+# If "string" should be translated, wrapp it using _("string")
+
+# i18n #1
+# Create Brainiak translation template (POT) at locale/brainiak.pot, based on strings wrapped using _()
+# Note: should be run whenever new strings wrapped using _() are added to Brainiak
+translate_template:
+	@xgettext --language=Python --keyword=_ --directory=src --output=locale/brainiak.pot --from-code=UTF-8 `cd src; find . -name "*.py"`
+
+# i18n #2
+# Merge translation template (POT) definitions to existing Portuguese translation file (PO)
+translate_portuguese: translate_template
+	@msgmerge --update --backup=off locale/pt_BR/LC_MESSAGES/brainiak.po locale/brainiak.pot
+
+# i18n #3
+# Translate whatever needs to be translated at brainiak.po file
+
+# i18n #4
+# Compile Portuguese translation file (PO) into a .MO file, which is used by Brainiak
+# Note: apparently Tornado doesn't require this!
+compile_portuguese:
+	@cd locale/pt_BR/LC_MESSAGES; msgfmt brainiak.po -o brainiak.mo

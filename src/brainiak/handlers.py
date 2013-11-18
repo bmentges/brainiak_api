@@ -158,7 +158,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         elif isinstance(e, HTTPError):
             try:
                 possible_list = json.loads(e.log_message)
-            except ValueError:
+            except (TypeError, ValueError):
                 pass
             else:
                 if isinstance(possible_list, list):

@@ -503,12 +503,13 @@ def property_must_map_a_unique_value(class_object, predicate_uri):
 
 
 def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params):
+    _ = query_params.translate
     class_id = class_object["id"]
     predicate_object_tuples = unpack_tuples(instance_data)
 
     triples = []
     errors = []
-    template_msg = u'Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was given.'
+    template_msg = _(u'Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was given.')
 
     for (predicate_uri, object_value) in predicate_object_tuples:
 
@@ -517,7 +518,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
             try:
                 predicate_datatype = get_predicate_datatype(class_object, predicate_uri)
             except KeyError:
-                template = u'Inexistent property ({0}) in the schema ({1}), used to create instance ({2})'
+                template = _(u'Inexistent property ({0}) in the schema ({1}), used to create instance ({2})')
                 msg = template.format(predicate_uri, class_id, instance_uri)
                 errors.append(msg)
                 predicate_datatype = None
@@ -547,7 +548,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
             if not predicate_has_error:
                 if property_must_map_a_unique_value(class_object, predicate_uri):
                     if is_value_already_used(instance_uri, object_, predicate_uri, class_object, graph_uri, query_params):
-                        template = u"The property ({0}) defined in the schema ({1}) must map a unique value. The value provided ({2}) is already used by another instance."
+                        template = _(u"The property ({0}) defined in the schema ({1}) must map a unique value. The value provided ({2}) is already used by another instance.")
                         msg = template.format(predicate_uri, class_id, object_value)
                         errors.append(msg)
 

@@ -83,11 +83,11 @@ console: build_settings
 
 
 # i18n #0
-# If "string" should be translated, wrapp it using _("string")
+# If "string" should be translated, wrap it using _("string")
 
 # i18n #1
 # Create Brainiak translation template (POT) at locale/brainiak.pot, based on strings wrapped using _()
-# Note: should be run whenever new strings wrapped using _() are added to Brainiak
+# Note: run whenever new strings wrapped using _() are added to Brainiak
 translate_template:
 	@xgettext --language=Python --keyword=_ --directory=src --output=locale/brainiak.pot --from-code=UTF-8 `cd src; find . -name "*.py"`
 
@@ -101,5 +101,6 @@ translate_portuguese: translate_template
 
 # i18n #4
 # Compile Portuguese translation file (PO) into a .MO file, which is used by Brainiak
+# This final .MO file is used by Tornado
 compile_portuguese:
 	@cd locale/pt_BR/LC_MESSAGES; msgfmt brainiak.po -o brainiak.mo

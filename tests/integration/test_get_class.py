@@ -741,7 +741,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         received_rels = [link['rel'] for link in json_received['links']]
-        self.assertListEqual(received_rels, ['self', 'class', 'collection', 'delete', 'update'])
+        self.assertListEqual(received_rels, ['self', 'class', 'create', 'collection', 'delete', 'update'])
         # TODO: test the URLs of the links
 
     def test_schema_handler_with_default_uri_normalization(self):

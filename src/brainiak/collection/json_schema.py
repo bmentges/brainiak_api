@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from brainiak.utils.links import merge_schemas, pagination_schema
 from brainiak.search.json_schema import SEARCH_PARAM_SCHEMA
+from brainiak.schema.get_class import get_cached_schema
 
 
 def schema(query_params):
@@ -8,6 +9,8 @@ def schema(query_params):
     class_name = query_params['class_name']
     class_prefix = query_params.get('class_prefix', None)
     args = (context_name, class_name, class_prefix)
+
+    class_schema = get_cached_schema(query_params)
 
     if class_prefix is not None:
         schema_ref = u"/{0}/{1}/_schema?class_prefix={2}".format(*args)
@@ -20,7 +23,7 @@ def schema(query_params):
 
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
-        "title": "Collection Schema that lists instances",
+        "title": class_schema.get('title', ''),
         "type": "object",
         "required": ["items", "_class_prefix", "@id"],
         "properties": {

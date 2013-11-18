@@ -644,7 +644,9 @@ class PrefixHandler(BrainiakRequestHandler):
 class HealthcheckHandler(BrainiakRequestHandler):
 
     def get(self):
-        self.write("WORKING")
+        query_params = ParamDict(self)
+        _ = query_params.translate
+        self.write(_(u"WORKING"))
 
 
 class VersionHandler(BrainiakRequestHandler):

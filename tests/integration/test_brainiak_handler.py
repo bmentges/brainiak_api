@@ -133,3 +133,34 @@ class AuthenticatedAccessTestCase(TornadoAsyncHTTPTestCase):
         eureka_client_id = 'YXA67LOpsLMnEeKa8nvYJ9aXRQ'
         response = self.fetch("/", method='GET', headers={'X-Brainiak-Client-Id': eureka_client_id})
         self.assertEqual(response.code, 200)
+
+
+from tornado import locale
+
+
+class TranslateTestCase(TornadoAsyncHTTPTestCase):
+
+    class Handler(BrainiakRequestHandler):
+
+        def get(self):
+            locale.load_gettext_translations(directory="locale", domain="brainiak")
+            user_locale = self.get_browser_locale()
+            _ = user_locale.translate
+            self.finalize(_("WORKING"))
+
+    def get_app(self):
+        return Application([('/', self.Handler)],
+                           log_function=lambda x: None)
+
+    @patch_mock("brainiak.handlers.logger")
+    def test_request_portuguese(self, mock_logger):
+        headers = {"Accept-Language": "pt_BR;q=0.8,en;q=0.2"}
+        response = self.fetch('/', method='GET', headers=headers)
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.body, "FUNCIONANDO")
+
+    @patch_mock("brainiak.handlers.logger")
+    def test_request_default(self, mock_logger):
+        response = self.fetch('/', method='GET')
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.body, "WORKING")

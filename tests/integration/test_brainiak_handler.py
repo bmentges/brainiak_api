@@ -2,6 +2,7 @@ import json
 import StringIO
 from mock import patch as patch_mock
 
+from tornado import locale
 from tornado.web import Application, HTTPError
 from tornado.curl_httpclient import CurlError
 from tornado.httpclient import HTTPError as ClientHTTPError
@@ -133,9 +134,6 @@ class AuthenticatedAccessTestCase(TornadoAsyncHTTPTestCase):
         eureka_client_id = 'YXA67LOpsLMnEeKa8nvYJ9aXRQ'
         response = self.fetch("/", method='GET', headers={'X-Brainiak-Client-Id': eureka_client_id})
         self.assertEqual(response.code, 200)
-
-
-from tornado import locale
 
 
 class TranslateTestCase(TornadoAsyncHTTPTestCase):

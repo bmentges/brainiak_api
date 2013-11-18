@@ -7,28 +7,38 @@ Version 2.4.0 - 2013//
 New Features
 ____________
 
-- Textual Search for `instances` (see :doc:`/services/search/search`).
+ - Textual Search for instances (see :doc:`/services/search/search`).
 
+ - Added X-Brainiak-Resource-Uri to response header when creeting instances, in order to refer to the URI created
+
+ - Validating value uniqueness when property has the annotation property ``:tem_valor_unico``
 
 Fix
-_____________
+___
 
-- TODO: check all fixes from tag 2.3.8 to now
-- class_prefix was being rendered with an incorrect trailing ':'. This char ':' is not part of the URL.
+ - TODO: check all fixes from commit 3a350181e5fb8962de9ef6f10b2b644f42e2e67f (last commit checked) to now
+
+ - Added ``rel='create'`` to class schema
+
+ - Bugfix for absent ``Access-Control-Allow-Origin: *`` in error responses
+
+ - When retrieving instances, blank nodes are ignored in the response
+
+ - class_prefix was being rendered with an incorrect trailing ``:``. This char ``:`` is not part of the URL.
+
 
 Version 2.3.8 - 2013/10/04
 --------------------------
 
 Fix
-___________
+___
 
-- Suggest query using custom fields (before it wasn't working properly)
+ - Suggest query using custom fields (before it wasn't working properly)
 
-- The CORS header 'Access-Control-Allow-Origin: *' was absent in error responses
+ - The CORS header 'Access-Control-Allow-Origin: *' was absent in error responses
 
-- Fix in error messages when context_name, class_name, instance_id received '_',
+ - Fix in error messages when context_name, class_name, instance_id received '_',
   now error messages render the contents of class_uri. graph_uri and instance_uri.
-
 
 Version 2.3.7 - 2013/10/31
 --------------------------
@@ -36,7 +46,7 @@ Version 2.3.7 - 2013/10/31
 Enhacements
 ___________
 
-- General improvements on Suggest query (support unicode and partial queries)
+ - General improvements on Suggest query (support unicode and partial queries)
 
 
 Version 2.3.6 - 2013/10/28
@@ -45,7 +55,7 @@ Version 2.3.6 - 2013/10/28
 Enhacements
 ___________
 
-- Remove xsd:string from instances when adding new instance
+ - Remove xsd:string from instances when adding new instance
 
 Version 2.3.3-2.3.5 - 2013/10/28
 ---------------------------------
@@ -53,7 +63,7 @@ Version 2.3.3-2.3.5 - 2013/10/28
 Enhacements
 ___________
 
-- General log improvements
+ - General log improvements
 
 
 Version 2.3.2 - 2013/10/28
@@ -62,7 +72,7 @@ Version 2.3.2 - 2013/10/28
 Enhacements
 ___________
 
-- General improvements on Suggest query
+ - General improvements on Suggest query
 
 
 Version 2.3.1 - 2013/10/23
@@ -71,13 +81,13 @@ Version 2.3.1 - 2013/10/23
 Enhacements
 ___________
 
-- Suggest works both with ElasticSearch 0.19.x and 0.90.x
+ - Suggest works both with ElasticSearch 0.19.x and 0.90.x
 
 Fixes
 _____
 
-- Suggest supports queries ending and not ending in ``s`` (e.g. James)
-- During GET instances, if datatype is not defined in schema, return value as string and not as object (as before)
+ - Suggest supports queries ending and not ending in ``s`` (e.g. James)
+ - During GET instances, if datatype is not defined in schema, return value as string and not as object (as before)
 
 
 Version 2.3.0 - 2013/10/22
@@ -86,35 +96,32 @@ Version 2.3.0 - 2013/10/22
 New features
 ____________
 
-- Retrieve (GET) and update (PUT) only by instance URI
+ - Retrieve (GET) and update (PUT) instances only by instance URI (see :doc:`/services/instance/instance`)
 
 Refactorings
 ____________
 
-- Default to all resources is to use compressed URIs (``expand_uri=0``) in the response
-- Return 200 and empty items in listing resources (before it was 404)
+ - Default to all resources is to use compressed URIs (``expand_uri=0``) in the response
+ - Return 200 and empty items in listing resources (before it was 404)
 
 Enhacements
 ___________
 
-- Enable caching to schema
-- Improved performace of suggest in 30x (subproperties are now cached at Redis)
-- Validate instance data during POST/PUT using its schema
-- Validate instance data during GET using its schema, to return values of properties as their types and cardinalities
+ - Enable caching to schema
+ - Improved performace of suggest in 30x (subproperties are now cached at Redis)
+ - Validate instance data during POST/PUT using its schema
+ - Validate instance data during GET using its schema, to return values of properties as their types and cardinalities
 
 
 Fixes
 _____
 
-- Suggest query returns first exact match
-- Suggest query supports searches in values which include ``/``
+ - Suggest query returns first exact match
+ - Suggest query supports searches in values which include ``/``
 
 
 Version 2.2.5 - 2013/10/15
 -----------------------------------
-
-.. TODO meta_properties on releases.
-.. TODO review all other changes.
 
 New features
 ____________
@@ -177,8 +184,8 @@ Version 2.2.0 + 2.2.2 - 2013/08/29
 New features
 ____________
 
- - Suggest resource (_suggest) with pagination (uses ElasticSearch)
- - Support to multiple triplestore endpoints
+ - Suggest resource (see :doc:`/services/suggest/suggest`) with pagination (uses ElasticSearch)
+ - Support to multiple triplestore endpoints (see :doc:`/troubleshoot` and X-Brainiak-Client-Id entry)
 
 Refactor
 ________
@@ -214,10 +221,14 @@ Version 2.1.0 - 2013/08/01
 New features
 ____________
 
- - New parameters for optional URI expansion in responses: exapnd_uri, expand_uri_keys and expand_uri_values.
- - Root schema now have direct hyperlinks to collection and instance.
- - Instances filter with PO ignores literals' type
+ - New parameters for optional URI expansion in responses: expand_uri, expand_uri_keys and expand_uri_values (see :doc:`services/instance/get_instance`).
+ - Root schema now have direct hyperlinks to collection and instance (see :doc:`services/links`).
  - DOCs are now being deployed by default
+
+Fixes
+_____
+
+ - Instances filter with PO ignores literals' type
 
 Version 2.0.0 - 2013/07/18
 --------------------------

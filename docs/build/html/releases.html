@@ -188,13 +188,14 @@
 </li>
 <li><a class="reference internal" href="#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a><ul>
 <li><a class="reference internal" href="#id19">New features</a></li>
+<li><a class="reference internal" href="#id20">Fixes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a><ul>
-<li><a class="reference internal" href="#id20">New features</a></li>
-<li><a class="reference internal" href="#id21">Refactor</a></li>
+<li><a class="reference internal" href="#id21">New features</a></li>
+<li><a class="reference internal" href="#id22">Refactor</a></li>
 <li><a class="reference internal" href="#documentation">Documentation</a></li>
-<li><a class="reference internal" href="#id22">Developers&#8217; notes</a></li>
+<li><a class="reference internal" href="#id23">Developers&#8217; notes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
@@ -238,112 +239,144 @@
 <h2>Version 2.4.0 - 2013//<a class="headerlink" href="#version-2-4-0-2013" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="new-features">
 <h3>New Features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>Textual Search for <cite>instances</cite> (see <a class="reference internal" href="services/search/search.html"><em>Search</em></a>).</li>
+<blockquote>
+<div><ul class="simple">
+<li>Textual Search for instances (see <a class="reference internal" href="services/search/search.html"><em>Search</em></a>).</li>
+<li>Added X-Brainiak-Resource-Uri to response header when creeting instances, in order to refer to the URI created</li>
+<li>Validating value uniqueness when property has the annotation property <tt class="docutils literal"><span class="pre">:tem_valor_unico</span></tt></li>
 </ul>
+</div></blockquote>
 </div>
 <div class="section" id="fix">
 <h3>Fix<a class="headerlink" href="#fix" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>TODO: check all fixes from tag 2.3.8 to now</li>
-<li>class_prefix was being rendered with an incorrect trailing &#8216;:&#8217;. This char &#8216;:&#8217; is not part of the URL.</li>
+<blockquote>
+<div><ul class="simple">
+<li>TODO: check all fixes from commit 3a350181e5fb8962de9ef6f10b2b644f42e2e67f (last commit checked) to now</li>
+<li>Added <tt class="docutils literal"><span class="pre">rel='create'</span></tt> to class schema</li>
+<li>Bugfix for absent <tt class="docutils literal"><span class="pre">Access-Control-Allow-Origin:</span> <span class="pre">*</span></tt> in error responses</li>
+<li>When retrieving instances, blank nodes are ignored in the response</li>
+<li>class_prefix was being rendered with an incorrect trailing <tt class="docutils literal"><span class="pre">:</span></tt>. This char <tt class="docutils literal"><span class="pre">:</span></tt> is not part of the URL.</li>
 </ul>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="version-2-3-8-2013-10-04">
 <h2>Version 2.3.8 - 2013/10/04<a class="headerlink" href="#version-2-3-8-2013-10-04" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id1">
 <h3>Fix<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>Suggest query using custom fields (before it wasn&#8217;t working properly)</li>
 <li>The CORS header &#8216;Access-Control-Allow-Origin: <a href="#id2"><span class="problematic" id="id3">*</span></a>&#8216; was absent in error responses</li>
-<li>Fix in error messages when context_name, class_name, instance_id received &#8216;_&#8217;,
-now error messages render the contents of class_uri. graph_uri and instance_uri.</li>
+<li>Fix in error messages when context_name, class_name, instance_id received &#8216;_&#8217;,</li>
 </ul>
+<blockquote>
+<div>now error messages render the contents of class_uri. graph_uri and instance_uri.</div></blockquote>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="version-2-3-7-2013-10-31">
 <h2>Version 2.3.7 - 2013/10/31<a class="headerlink" href="#version-2-3-7-2013-10-31" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="enhacements">
 <h3>Enhacements<a class="headerlink" href="#enhacements" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>General improvements on Suggest query (support unicode and partial queries)</li>
 </ul>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="version-2-3-6-2013-10-28">
 <h2>Version 2.3.6 - 2013/10/28<a class="headerlink" href="#version-2-3-6-2013-10-28" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id4">
 <h3>Enhacements<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>Remove xsd:string from instances when adding new instance</li>
 </ul>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="version-2-3-3-2-3-5-2013-10-28">
 <h2>Version 2.3.3-2.3.5 - 2013/10/28<a class="headerlink" href="#version-2-3-3-2-3-5-2013-10-28" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id5">
 <h3>Enhacements<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>General log improvements</li>
 </ul>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="version-2-3-2-2013-10-28">
 <h2>Version 2.3.2 - 2013/10/28<a class="headerlink" href="#version-2-3-2-2013-10-28" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id6">
 <h3>Enhacements<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>General improvements on Suggest query</li>
 </ul>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="version-2-3-1-2013-10-23">
 <h2>Version 2.3.1 - 2013/10/23<a class="headerlink" href="#version-2-3-1-2013-10-23" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id7">
 <h3>Enhacements<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>Suggest works both with ElasticSearch 0.19.x and 0.90.x</li>
 </ul>
+</div></blockquote>
 </div>
 <div class="section" id="fixes">
 <h3>Fixes<a class="headerlink" href="#fixes" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>Suggest supports queries ending and not ending in <tt class="docutils literal"><span class="pre">s</span></tt> (e.g. James)</li>
 <li>During GET instances, if datatype is not defined in schema, return value as string and not as object (as before)</li>
 </ul>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="version-2-3-0-2013-10-22">
 <h2>Version 2.3.0 - 2013/10/22<a class="headerlink" href="#version-2-3-0-2013-10-22" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id8">
 <h3>New features<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>Retrieve (GET) and update (PUT) only by instance URI</li>
+<blockquote>
+<div><ul class="simple">
+<li>Retrieve (GET) and update (PUT) instances only by instance URI (see <a class="reference internal" href="services/instance/instance.html"><em>Managing Instances</em></a>)</li>
 </ul>
+</div></blockquote>
 </div>
 <div class="section" id="refactorings">
 <h3>Refactorings<a class="headerlink" href="#refactorings" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>Default to all resources is to use compressed URIs (<tt class="docutils literal"><span class="pre">expand_uri=0</span></tt>) in the response</li>
 <li>Return 200 and empty items in listing resources (before it was 404)</li>
 </ul>
+</div></blockquote>
 </div>
 <div class="section" id="id9">
 <h3>Enhacements<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>Enable caching to schema</li>
 <li>Improved performace of suggest in 30x (subproperties are now cached at Redis)</li>
 <li>Validate instance data during POST/PUT using its schema</li>
 <li>Validate instance data during GET using its schema, to return values of properties as their types and cardinalities</li>
 </ul>
+</div></blockquote>
 </div>
 <div class="section" id="id10">
 <h3>Fixes<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>Suggest query returns first exact match</li>
 <li>Suggest query supports searches in values which include <tt class="docutils literal"><span class="pre">/</span></tt></li>
 </ul>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="version-2-2-5-2013-10-15">
@@ -424,8 +457,8 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 <h3>New features<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
-<li>Suggest resource (_suggest) with pagination (uses ElasticSearch)</li>
-<li>Support to multiple triplestore endpoints</li>
+<li>Suggest resource (see <a class="reference internal" href="services/suggest/suggest.html"><em>Suggest</em></a>) with pagination (uses ElasticSearch)</li>
+<li>Support to multiple triplestore endpoints (see <a class="reference internal" href="troubleshoot.html"><em>Troubleshooting</em></a> and X-Brainiak-Client-Id entry)</li>
 </ul>
 </div></blockquote>
 </div>
@@ -472,18 +505,25 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 <h3>New features<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
-<li>New parameters for optional URI expansion in responses: exapnd_uri, expand_uri_keys and expand_uri_values.</li>
-<li>Root schema now have direct hyperlinks to collection and instance.</li>
-<li>Instances filter with PO ignores literals&#8217; type</li>
+<li>New parameters for optional URI expansion in responses: expand_uri, expand_uri_keys and expand_uri_values (see <a class="reference internal" href="services/instance/get_instance.html"><em>Get an Instance</em></a>).</li>
+<li>Root schema now have direct hyperlinks to collection and instance (see <a class="reference internal" href="services/links.html"><em>Hypermap of Resources</em></a>).</li>
 <li>DOCs are now being deployed by default</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id20">
+<h3>Fixes<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Instances filter with PO ignores literals&#8217; type</li>
 </ul>
 </div></blockquote>
 </div>
 </div>
 <div class="section" id="version-2-0-0-2013-07-18">
 <h2>Version 2.0.0 - 2013/07/18<a class="headerlink" href="#version-2-0-0-2013-07-18" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id20">
-<h3>New features<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id21">
+<h3>New features<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Instances list (filtering) resource supports multiple predicates and objects</li>
@@ -495,8 +535,8 @@ available on cached resources</li>
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id21">
-<h3>Refactor<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id22">
+<h3>Refactor<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Instances list (filtering) resource now applies lang to objects (?o) when
@@ -540,8 +580,8 @@ literals are provided</li>
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id22">
-<h3>Developers&#8217; notes<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id23">
+<h3>Developers&#8217; notes<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>SPARQL queries logging is now compatible to Globo.com DBA team&#8217;s expectations</li>

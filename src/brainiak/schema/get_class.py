@@ -5,7 +5,7 @@ from brainiak.log import get_logger
 from brainiak.prefixes import MemorizeContext
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND_XSD_TO_JSON_TYPE
 from brainiak.utils.cache import build_key_for_class, memoize
-from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash, build_class_url
+from brainiak.utils.links import assemble_url, add_link, crud_links, build_class_url
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InstanceError, bindings_to_dict
 

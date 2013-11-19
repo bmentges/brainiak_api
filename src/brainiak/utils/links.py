@@ -23,7 +23,6 @@ def merge_querystring(querystring, params):
     existing_params = parse_qs(querystring)
     params = dict(existing_params, **params)
     return unquote(urlencode(params, doseq=True))
-    #return urlencode(params, doseq=True)
 
 
 # test: order between declarations in url and in params

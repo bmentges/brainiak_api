@@ -75,6 +75,8 @@ def memoize(params, function, function_arguments=None, key=False):
             return fresh_json
         else:
             cached_json["meta"]["cache"] = "HIT"
+            cached_json["meta"]["last_modified"] = current_time()
+            create(key, ujson.dumps(cached_json))
             return cached_json
     else:
         return _fresh_retrieve(function, function_arguments)

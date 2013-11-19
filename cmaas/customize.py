@@ -40,7 +40,7 @@ if __name__ == "__main__":
         print("Success. {0}".format(response.text))
 
     response = client.get(config['repos'])
-    if response.status_code != 200:
+    if response.status_code not in (200, 201):
         print("Customize failed, error {0}: {1}".format(response.status_code, response.text))
     else:
         print(response.text)

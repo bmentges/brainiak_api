@@ -73,7 +73,8 @@ class SuggestIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'title': u'York',
                 u'rdfs:label': u'York',
                 u'@type': u'http://example.onto/City',
-                u'type_title': u'City'
+                u'type_title': u'City',
+                u'_type_title': u'City'
             }
         ]
         response = self.fetch('/_suggest',
@@ -99,7 +100,8 @@ class SuggestIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'title': u'York',
                 u'rdfs:label': u'York',
                 u'@type': u'http://example.onto/City',
-                u'type_title': u'City'
+                u'type_title': u'City',
+                u'_type_title': u'City'
             }
         ]
         response = self.fetch('/_suggest',
@@ -119,6 +121,7 @@ class SuggestIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'rdfs:label': u'York',
                 u'@type': u'http://example.onto/City',
                 u'type_title': u'City',
+                u'_type_title': u'City',
                 u"instance_fields": [
                     {
                         u"predicate_id": u"http://example.onto/description",

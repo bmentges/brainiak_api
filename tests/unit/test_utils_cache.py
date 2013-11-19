@@ -94,10 +94,10 @@ class MemoizeTestCase(unittest.TestCase):
 
         params = {'request': MockRequest(uri="/home")}
         answer = memoize(params, clean_up)
-
-        self.assertEqual(answer, {"status": "Dishes cleaned up", "meta": {"cache": "HIT"}})
+        self.assertEqual(answer['status'], "Dishes cleaned up")
+        self.assertEqual(answer["meta"]["cache"], "HIT")
         self.assertEqual(redis_get.call_count, 1)
-        self.assertEqual(redis_set.call_count, 0)
+        self.assertEqual(redis_set.call_count, 1)
 
 
 class GeneralFunctionsTestCase(unittest.TestCase):

@@ -50,7 +50,8 @@ class CacheTestCase(unittest.TestCase):
 
         params = {'request': MockRequest(uri="/home")}
         answer = memoize(params, clean_up)
-        self.assertEqual(answer, {"status": "Dishes cleaned up", "meta": {"cache": "HIT"}})
+        self.assertEqual(answer['status'], "Dishes cleaned up")
+        self.assertEqual(answer['meta']['cache'], "HIT")
 
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     def test_memoize_cache_enabled_and_hit_with_different_key(self, settings):
@@ -60,7 +61,8 @@ class CacheTestCase(unittest.TestCase):
 
         params = {'request': MockRequest(uri="/home")}
         answer = memoize(params, ressurect, key="/grave")
-        self.assertEqual(answer, {"status": "Sleeping", "meta": {"cache": "HIT"}})
+        self.assertEqual(answer["status"], "Sleeping")
+        self.assertEqual(answer['meta']['cache'], "HIT")
 
 
 class PurgeTestCase(unittest.TestCase):

@@ -1,5 +1,6 @@
 import json
 from mock import patch
+import ujson
 from brainiak import settings, server
 
 from brainiak.instance import get_instance
@@ -251,11 +252,19 @@ class InstanceCauseSchemaToBeCachedTestCase(TornadoAsyncHTTPTestCase, QueryTestC
     def test_get_instance_generate_schema_cache_entry(self, mock_settings):
         expected_redis_key = "http://brmedia.com/@@http://dbpedia.org/ontology/News##class"
 
-        instance_response = self.fetch('/dbpedia/News/?class_prefix=http://brmedia.com/&graph_uri=http://brmedia.com/', method='GET')
-        self.assertEqual(instance_response.code, 200)
+        class_response = self.fetch('/dbpedia/News/?class_prefix=http://dbpedia.org/ontology/&graph_uri=http://brmedia.com/', method='GET')
+        self.assertEqual(class_response.code, 200)
+        cached_schema_by_direct_access_str = self.redis_test_client.get(expected_redis_key)
+        cached_schema_by_direct_access = ujson.loads(cached_schema_by_direct_access_str)
+
+        # Clean cache
+        self.redis_test_client.delete([expected_redis_key])
 
         instance_response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/&graph_uri=http://brmedia.com/', method='GET')
         self.assertEqual(instance_response.code, 200)
+        cached_schema_caused_by_get_instance_str = self.redis_test_client.get(expected_redis_key)
+        cached_schema_caused_by_get_instance = ujson.loads(cached_schema_caused_by_get_instance_str)
 
-        cached_schema_caused_by_get_instance = self.redis_test_client.get(expected_redis_key).get('body')
-        self.assertEqual(cached_schema_caused_by_get_instance, {})
+        self.assertEqual(cached_schema_caused_by_get_instance['body'], cached_schema_by_direct_access['body'])
+        self.assertEqual(cached_schema_caused_by_get_instance['meta']['cache'], 'HIT')
+        self.assertEqual(cached_schema_by_direct_access['meta']['cache'], 'HIT')

@@ -43,7 +43,10 @@
                 "base:descricao",
                 "base:slug_topico",
                 "eureka:Keywords",
-                "eureka:PertenceAEditoriaOuDisciplina"
+                {
+                    "key": "eureka:PertenceAEditoriaOuDisciplina",
+                    "type": "suggest-brainiak"
+                }
             ]
         },
         "eureka_Disciplina_instance": {
@@ -64,7 +67,11 @@
             "form": [
                 "rdfs:label",
                 "eureka:Ano",
-                "eureka:PertenceAoProcessoSeletivo"
+                {
+                    "key": "eureka:PertenceAoProcessoSeletivo",
+                    "type": "suggest-brainiak"
+                }
+
             ]
         },
         "eureka_Prova_instance": {
@@ -74,8 +81,15 @@
                 "base:slug_topico",
                 "eureka:Keywords",
                 "eureka:Disclaimer",
-                "eureka:PertenceAEdicao",
-                "eureka:PertenceADisciplina"
+                {
+                    "key": "eureka:PertenceAEdicao",
+                    "type": "suggest-brainiak"
+                },
+                {
+                    "key": "eureka:PertenceADisciplina",
+                    "type": "suggest-brainiak"
+                }
+
             ]
         }
     }

@@ -16,7 +16,7 @@ from tests.sparql import QueryTestCase
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
-class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
+class SuggestIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
@@ -32,7 +32,7 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
     }
 
     def setUp(self):
-        super(TestSuggest, self).setUp()
+        super(SuggestIntegrationTestCase, self).setUp()
         # ONLY VALID FOR VALID_BODY_PARAMS
         self.elastic_request_url = "http://" + settings.ELASTICSEARCH_ENDPOINT + "/semantica.example.onto/"
         self.elastic_request_url += quote_plus("http://example.onto/City") + "/"
@@ -46,7 +46,7 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
 
     def tearDown(self):
-        super(TestSuggest, self).setUp()
+        super(SuggestIntegrationTestCase, self).setUp()
         requests.delete(self.elastic_request_url)
 
     def test_request_with_invalid_predicate(self):
@@ -69,8 +69,11 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
     def test_successful_request(self, mocked_uri_to_slug, mock_safe_slug_to_prefix):
         expected_items = [
             {
-                u'@id': u'http://example.onto/York', u'title': u'York',
-                u'@type': u'http://example.onto/City', u'type_title': u'City'
+                u'@id': u'http://example.onto/York',
+                u'title': u'York',
+                u'rdfs:label': u'York',
+                u'@type': u'http://example.onto/City',
+                u'type_title': u'City'
             }
         ]
         response = self.fetch('/_suggest',
@@ -92,8 +95,11 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         }
         expected_items = [
             {
-                u'@id': u'http://example.onto/York', u'title': u'York',
-                u'@type': u'http://example.onto/City', u'type_title': u'City'
+                u'@id': u'http://example.onto/York',
+                u'title': u'York',
+                u'rdfs:label': u'York',
+                u'@type': u'http://example.onto/City',
+                u'type_title': u'City'
             }
         ]
         response = self.fetch('/_suggest',
@@ -108,8 +114,11 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
     def test_successful_request_with_metafields(self, mocked_uri_to_slug, mock_safe_slug_to_prefix):
         expected_items = [
             {
-                u'@id': u'http://example.onto/York', u'title': u'York',
-                u'@type': u'http://example.onto/City', u'type_title': u'City',
+                u'@id': u'http://example.onto/York',
+                u'title': u'York',
+                u'rdfs:label': u'York',
+                u'@type': u'http://example.onto/City',
+                u'type_title': u'City',
                 u"instance_fields": [
                     {
                         u"predicate_id": u"http://example.onto/description",
@@ -221,7 +230,7 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(expected, meta_field_values)
 
 
-class QueryTestCase(ElasticSearchQueryTestCase):
+class SuggestIntegrationElasticSearchQueryTestCase(ElasticSearchQueryTestCase):
 
     fixtures = [
         {
@@ -336,7 +345,7 @@ class QueryTestCase(ElasticSearchQueryTestCase):
         self.assertEqual(response["hits"]["hits"][0]["fields"]["birthDate"], u"Saturday - 11/05/1974")
 
 
-class ComplexQueryTestCase(ElasticSearchQueryTestCase):
+class SuggestIntegrationElasticSearchComplexQueriesTestCase(ElasticSearchQueryTestCase):
     # ElasticSearch 0.90.5
     host = "http://esearch.dev.globoi.com/"
     analyzer = "globo_analyzer"
@@ -445,7 +454,7 @@ class ComplexQueryTestCase(ElasticSearchQueryTestCase):
         self.assertEqual(response["hits"]["hits"][0]["fields"]["title"], u"Flamengo")
 
 
-class DevQueryTestCase(ElasticSearchQueryTestCase):
+class SuggestIntegrationElasticSearchDevQueryTestCase(ElasticSearchQueryTestCase):
     # ElasticSearch 0.90.5
     host = "http://esearch.dev.globoi.com/"
     analyzer = "globo_analyzer"

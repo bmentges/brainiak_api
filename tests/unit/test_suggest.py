@@ -181,13 +181,13 @@ class SuggestTestCase(TestCase):
         }
         title_fields = []  # mocked _get_title_value
         query_params = []  # needed to get_instance_fields, mocked
-        required_fields = []  # needed to get_instance_fields, mocked
         class_fields = []  # needed to _get_class_fields_to_response, mocked
 
         computed = suggest._build_items(query_params, elasticsearch_result, title_fields, class_fields)
         expected = {
             "@id": "http://semantica.globo.com/place/City/9d9e1ae6-a02f-4c2e-84d3-4219bf9d243a",
             "title": "Globoland",
+            "rdfs:label": "Globoland",
             "@type": "http://semantica.globo.com/place/City",
             "type_title": "Cidade",
         }

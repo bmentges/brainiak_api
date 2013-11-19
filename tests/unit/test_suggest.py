@@ -190,6 +190,7 @@ class SuggestTestCase(TestCase):
             "rdfs:label": "Globoland",
             "@type": "http://semantica.globo.com/place/City",
             "type_title": "Cidade",
+            "_type_title": "Cidade"
         }
 
         self.assertEqual(len(computed), 1)

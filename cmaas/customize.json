@@ -68,7 +68,7 @@
                 "rdfs:label",
                 "eureka:Ano",
                 {
-                    "key": "eureka:PertenceAoProcessoSeletivo"
+                    "key": "eureka:PertenceAoProcessoSeletivo",
                     "type": "suggest-brainiak"
                 }
 
@@ -86,7 +86,7 @@
                     "type": "suggest-brainiak"
                 },
                 {
-                    "key": "eureka:PertenceADisciplina"
+                    "key": "eureka:PertenceADisciplina",
                     "type": "suggest-brainiak"
                 }
 

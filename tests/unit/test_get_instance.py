@@ -143,7 +143,7 @@ class AssembleTestCase(unittest.TestCase):
             param_dict.update({'meta_properties': meta_properties})
         handler = MockHandler(uri=instance_uri, **param_dict)
         self.query_params = ParamDict(handler, **param_dict)
-        self.query_params["class_schema"] = {}
+        self.query_params["class_schema"] = {"title": "class label"}
         self.query_result_dict = {'results': {'bindings': []}}
 
     def assertResults(self, computed):

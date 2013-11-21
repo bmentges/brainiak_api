@@ -91,12 +91,14 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(modified_new_york.code, 200)
         self.assertEqual(modified_new_york.body, "")
 
+
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.logger")
     @patch("brainiak.instance.create_instance.get_cached_schema",
            return_value=mock_schema({"rdfs:label": "string",
                                      "rdfs:comment": "string",
                                      "http://tatipedia.org/speak": "string"}, id="http://tatipedia.org/Place"))
-    def test_edit_instance_with_incorrect_values_raises_400(self, mock_schema, mock_log):  # Bus notification test is in a separated test file
+    def test_edit_instance_with_incorrect_values_raises_400(self, mock_schema, mock_log, mock_settings):
         response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                               method='PUT',
                               body=json.dumps({"rdfs:label": 1}))

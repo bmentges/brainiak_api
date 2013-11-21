@@ -45,7 +45,11 @@
                 "eureka:Keywords",
                 {
                     "key": "eureka:PertenceAEditoriaOuDisciplina",
-                    "type": "suggest-brainiak"
+                    "type": "suggest-brainiak",
+                    "options": {
+                        "relItem": "relatedInstance",
+                        "relItems": "suggest"
+                    }
                 }
             ]
         },
@@ -69,7 +73,11 @@
                 "eureka:Ano",
                 {
                     "key": "eureka:PertenceAoProcessoSeletivo",
-                    "type": "suggest-brainiak"
+                    "type": "suggest-brainiak",
+                    "options": {
+                        "relItem": "relatedInstance",
+                        "relItems": "suggest"
+                    }
                 }
 
             ]
@@ -83,13 +91,20 @@
                 "eureka:Disclaimer",
                 {
                     "key": "eureka:PertenceAEdicao",
-                    "type": "suggest-brainiak"
+                    "type": "suggest-brainiak",
+                    "options": {
+                        "relItem": "relatedInstance",
+                        "relItems": "suggest"
+                    }
                 },
                 {
                     "key": "eureka:PertenceADisciplina",
-                    "type": "suggest-brainiak"
+                    "type": "suggest-brainiak",
+                    "options": {
+                        "relItem": "relatedInstance",
+                        "relItems": "suggest"
+                    }
                 }
-
             ]
         }
     }

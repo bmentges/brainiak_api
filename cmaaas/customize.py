@@ -31,6 +31,8 @@ if __name__ == "__main__":
                     client_id=config['client_id'],
                     client_secret=config['client_secret'])
 
+    print("Valid client, authorization OK")
+
     payload = open("customize.json").read()
     response = client.put(config['repos'], headers={"Content-Type": "application/json"}, data=payload)
 

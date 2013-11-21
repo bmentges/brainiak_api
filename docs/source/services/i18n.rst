@@ -9,3 +9,22 @@ Brainiak supports the internationalization of:
 It is possible to define the default language of both by editing ``settings.py``'s ``DEFAULT_LANG`` variable.
 
 Despite this, it is also possible to customize the language of (2) in most of Brainiak services, by adding ``lang=pt`` to the request querystring.
+
+Developers' notes
+-----------------
+
+Brainiak error messages are translated using GETTEXT.
+
+The following steps must be followed in order to internationlize a phrase inside Brainiak source code:
+
+ i. Wrap the string to be translated using _().
+ E.g. if "some expression" must be translated, replace it by _("some expression")
+
+ ii. Create or update Brainiak translation template:
+ ``make translate_template``
+
+ iii. Update Brainiak Portuguese dictionary based on translation template
+ ``make portuguese_dictionary``
+
+ iv. Compile Portuguese dictionary, so the machine can understand the translations
+ ``make compile_portuguese``

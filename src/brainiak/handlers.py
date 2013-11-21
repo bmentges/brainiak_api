@@ -58,16 +58,16 @@ def safe_params(valid_params=None, body_params=None):
     try:
         yield
     except InvalidParam as ex:
-        msg = u"Argument {0:s} is not supported.".format(ex)
+        msg = _(u"Argument {0:s} is not supported.").format(ex)
         if valid_params is not None:
             params_msg = ", ".join(sorted(set(valid_params.keys() + DEFAULT_PARAMS.keys())))
-            msg += u" The supported querystring arguments are: {0}.".format(params_msg)
+            msg += _(u" The supported querystring arguments are: {0}.").format(params_msg)
         if body_params is not None:
             body_msg = ", ".join(body_params)
-            msg += u" The supported body arguments are: {0}.".format(body_msg)
+            msg += _(u" The supported body arguments are: {0}.").format(body_msg)
         raise HTTPError(400, log_message=msg)
     except RequiredParamMissing as ex:
-        msg = u"Required parameter ({0:s}) was not given.".format(ex)
+        msg = _(u"Required parameter ({0:s}) was not given.").format(ex)
         raise HTTPError(400, log_message=unicode(msg))
 
 
@@ -109,7 +109,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         super(BrainiakRequestHandler, self).__init__(*args, **kwargs)
 
     def get_cache_path(self):
-        raise Exception(u"Method get_cache_path should be overwritten for caching & purging purposes")
+        raise Exception(_(u"Method get_cache_path should be overwritten for caching & purging purposes"))
 
     @greenlet_asynchronous
     def purge(self, **kargs):
@@ -119,7 +119,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             recursive = int(self.request.headers.get('X-Cache-recursive', '0'))
             cache.purge_by_path(path, recursive)
         else:
-            raise HTTPError(405, log_message="Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)")
+            raise HTTPError(405, log_message=_("Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"))
 
     def _request_summary(self):
         return u"{0} {1} ({2})".format(
@@ -139,7 +139,7 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             self.send_error(status_code, message=message)
 
         elif isinstance(e, HTTPClientError):
-            message = u"Access to backend service failed.  {0:s}.".format(unicode(e))
+            message = _(u"Access to backend service failed.  {0:s}.").format(unicode(e))
             extra_messages = check_messages_when_port_is_mentioned(unicode(e))
             if extra_messages:
                 for msg in extra_messages:
@@ -147,13 +147,13 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
 
             if hasattr(e, "response") and e.response is not None and \
                hasattr(e.response, "body") and e.response.body is not None:
-                    message += u"\nResponse:\n" + unicode(str(e.response.body).decode("utf-8"))
+                    message += _(u"\nResponse:\n") + unicode(str(e.response.body).decode("utf-8"))
 
             logger.error(message)
             self.send_error(status_code, message=message)
 
         elif isinstance(e, InstanceError):
-            logger.error(u"Ontology inconsistency: {0}\n".format(error_message))
+            logger.error(_(u"Ontology inconsistency: {0}\n").format(error_message))
             self.send_error(status_code, message=e.message)
 
         elif isinstance(e, HTTPError):
@@ -168,13 +168,13 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             if e.log_message:
                 error_message += u"\n  {0}".format(e.log_message)
             if status_code == 500:
-                logger.error(u"Unknown HTTP error [{0}]:\n  {1}\n".format(e.status_code, error_message))
+                logger.error(_(u"Unknown HTTP error [{0}]:\n  {1}\n").format(e.status_code, error_message))
                 self.send_error(status_code, exc_info=sys.exc_info(), message=e.log_message)
             else:
-                logger.error(u"HTTP error: {0}\n".format(error_message))
+                logger.error(_(u"HTTP error: {0}\n").format(error_message))
                 self.send_error(status_code, message=e.log_message)
         else:
-            logger.error(u"Uncaught exception: {0}\n".format(error_message), exc_info=True)
+            logger.error(_(u"Uncaught exception: {0}\n").format(error_message), exc_info=True)
             self.send_error(status_code, exc_info=sys.exc_info())
 
     def add_cache_headers(self, meta):
@@ -292,7 +292,7 @@ class ContextHandler(BrainiakRequestHandler):
 
         response = list_classes(self.query_params)
         if response is None:
-            raise HTTPError(404, log_message=u"Context {0} not found".format(self.query_params['graph_uri']))
+            raise HTTPError(404, log_message=_(u"Context {0} not found").format(self.query_params['graph_uri']))
 
         self.finalize(response)
 
@@ -382,12 +382,12 @@ class CollectionHandler(BrainiakRequestHandler):
         if schema is None:
             class_uri = self.query_params["class_uri"]
             graph_uri = self.query_params["graph_uri"]
-            raise HTTPError(404, log_message=u"Class {0} doesn't exist in context {1}.".format(class_uri, graph_uri))
+            raise HTTPError(404, log_message=_(u"Class {0} doesn't exist in context {1}.").format(class_uri, graph_uri))
 
         try:
             instance_data = json.loads(self.request.body)
         except ValueError:
-            raise HTTPError(400, log_message=u"No JSON object could be decoded")
+            raise HTTPError(400, log_message=_(u"No JSON object could be decoded"))
 
         instance_data = normalize_all_uris_recursively(instance_data)
 
@@ -427,7 +427,7 @@ class CollectionHandler(BrainiakRequestHandler):
                     filter_message.append(u" with o{0}=({1})".format(index, o))
             self.query_params["filter_message"] = "".join(filter_message)
             self.query_params["page"] = int(self.query_params["page"]) + 1  # Showing real page in response
-            msg = u"Instances of class ({class_uri}) in graph ({graph_uri}){filter_message}, language=({lang}) and in page=({page}) were not found."
+            msg = _(u"Instances of class ({class_uri}) in graph ({graph_uri}){filter_message}, language=({lang}) and in page=({page}) were not found.")
 
             response = {
                 "warning": msg.format(**self.query_params),
@@ -462,7 +462,7 @@ class InstanceHandler(BrainiakRequestHandler):
 
         response = get_instance(self.query_params)
         if response is None:
-            error_message = u"Instance ({0}) of class ({1}) in graph ({2}) was not found.".format(
+            error_message = _(u"Instance ({0}) of class ({1}) in graph ({2}) was not found.").format(
                 self.query_params['instance_uri'],
                 self.query_params['class_uri'],
                 self.query_params['graph_uri'])
@@ -489,7 +489,7 @@ class InstanceHandler(BrainiakRequestHandler):
         try:
             instance_data = json.loads(self.request.body)
         except ValueError:
-            raise HTTPError(400, log_message="No JSON object could be decoded")
+            raise HTTPError(400, log_message=_("No JSON object could be decoded"))
 
         instance_data = normalize_all_uris_recursively(instance_data)
 
@@ -497,7 +497,7 @@ class InstanceHandler(BrainiakRequestHandler):
             if not instance_exists(self.query_params):
                 schema = schema_resource.get_schema(self.query_params)
                 if schema is None:
-                    msg = u"Class {0} doesn't exist in graph {1}."
+                    msg = _(u"Class {0} doesn't exist in graph {1}.")
                     raise HTTPError(404, log_message=msg.format(self.query_params["class_uri"],
                                                                 self.query_params["graph_uri"]))
                 instance_uri, instance_id = create_instance(self.query_params, instance_data, self.query_params["instance_uri"])
@@ -541,7 +541,7 @@ class InstanceHandler(BrainiakRequestHandler):
             if settings.NOTIFY_BUS:
                 self._notify_bus(action="DELETE")
         else:
-            msg = u"Instance ({0}) of class ({1}) in graph ({2}) was not found."
+            msg = _(u"Instance ({0}) of class ({1}) in graph ({2}) was not found.")
             error_message = msg.format(self.query_params["instance_uri"],
                                        self.query_params["class_uri"],
                                        self.query_params["graph_uri"])
@@ -576,7 +576,7 @@ class SuggestHandler(BrainiakRequestHandler):
             try:
                 raw_body_params = json.loads(self.request.body)
             except ValueError:
-                error_message = "JSON malformed. Received: {0}."
+                error_message = _("JSON malformed. Received: {0}.")
                 raise HTTPError(400, log_message=error_message.format(self.request.body))
 
             body_params = normalize_all_uris_recursively(raw_body_params)
@@ -586,7 +586,7 @@ class SuggestHandler(BrainiakRequestHandler):
             try:
                 validate(body_params, SUGGEST_PARAM_SCHEMA)
             except ValidationError as ex:
-                raise HTTPError(400, log_message=u"Invalid json parameter passed to suggest.\n {0:s}".format(ex))
+                raise HTTPError(400, log_message=_(u"Invalid json parameter passed to suggest.\n {0:s}").format(ex))
 
             self.query_params = ParamDict(self, **valid_params)
 
@@ -597,7 +597,7 @@ class SuggestHandler(BrainiakRequestHandler):
 
     def finalize(self, response):
         if response is None:
-            msg = "There were no search results."
+            msg = _("There were no search results.")
             raise HTTPError(404, log_message=msg)
         elif isinstance(response, dict):
             self.write(response)
@@ -692,7 +692,7 @@ class StatusHandler(BrainiakRequestHandler):
 class UnmatchedHandler(BrainiakRequestHandler):
 
     def default_action(self):
-        raise HTTPError(404, log_message=u"The URL ({0}) is not recognized.".format(self.request.full_url()))
+        raise HTTPError(404, log_message=_(u"The URL ({0}) is not recognized.").format(self.request.full_url()))
 
     @greenlet_asynchronous
     def get(self):

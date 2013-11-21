@@ -4,6 +4,7 @@ from brainiak import triplestore
 from brainiak.log import get_logger
 from brainiak.prefixes import MemorizeContext
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND_XSD_TO_JSON_TYPE
+from brainiak.utils.i18n import _
 from brainiak.utils.cache import build_key_for_class, memoize
 from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
 from brainiak.utils.resources import LazyObject
@@ -20,7 +21,7 @@ def get_cached_schema(query_params, include_meta=False):
     schema_key = build_key_for_class(query_params)
     class_object = memoize(query_params, get_schema, query_params, key=schema_key)
     if not class_object["body"]:
-        msg = u"The class definition for {0} was not found in graph {1}"
+        msg = _(u"The class definition for {0} was not found in graph {1}")
         raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['graph_uri']))
     if include_meta:
         return class_object
@@ -129,7 +130,7 @@ def get_predicates_and_cardinalities(context, query_params):
     try:
         cardinalities = _extract_cardinalities(query_result['results']['bindings'], predicate_dict)
     except InstanceError as ex:
-        msg = u"{0} for class {1}".format(ex.message, query_params.get('class_uri', ''))
+        msg = _(u"{0} for class {1}").format(ex.message, query_params.get('class_uri', ''))
         raise InstanceError(msg)
 
     return convert_bindings_dict(context,
@@ -148,7 +149,7 @@ def _extract_cardinalities(bindings, predicate_dict):
             try:
                 range_ = predicate_dict[property_]["range"]["value"]
             except KeyError:
-                msg = u"The property {0} is not defined properly".format(property_)
+                msg = _(u"The property {0} is not defined properly").format(property_)
                 raise InstanceError(msg)
 
         if not property_ in cardinalities:
@@ -164,7 +165,7 @@ def _extract_cardinalities(bindings, predicate_dict):
             try:
                 min_value = int(min_value)
             except ValueError:
-                msg = u"The property {0} defines a non-integer owl:minQualifiedCardinality {1}".format(property_, min_value)
+                msg = _(u"The property {0} defines a non-integer owl:minQualifiedCardinality {1}").format(property_, min_value)
                 raise InstanceError(msg)
             else:
                 current_property[range_].update({"minItems": min_value})
@@ -176,7 +177,7 @@ def _extract_cardinalities(bindings, predicate_dict):
             try:
                 max_value = int(max_value)
             except ValueError:
-                msg = u"The property {0} defines a non-integer owl:maxQualifiedCardinality {1}".format(property_, max_value)
+                msg = _(u"The property {0} defines a non-integer owl:maxQualifiedCardinality {1}").format(property_, max_value)
                 raise InstanceError(msg)
             else:
                 current_property[range_].update({"maxItems": max_value})
@@ -333,7 +334,7 @@ def items_from_range(range_uri, min_items=1, max_items=1):
         if mapped_type:
             nested_predicate = {"type": mapped_type}
         else:
-            logger.error("Range URI {0} not mapped to JSON type.".format(range_uri))
+            logger.error(_(u"Range URI {0} not mapped to JSON type.").format(range_uri))
             nested_predicate = {"type": "string"}
 
     # decide if thtis is an array or a scalar type
@@ -393,7 +394,7 @@ def assemble_predicate(predicate_uri, binding_row, cardinalities, context):
         predicate.update(items_from_range(range_uri, min_items, max_items))
 
     else:  # TODO: owl:AnnotationProperty
-        msg = u"Predicates of type {0} are not supported yet".format(predicate_type)
+        msg = _(u"Predicates of type {0} are not supported yet").format(predicate_type)
         raise InstanceError(msg)
 
     if predicate["type"] == "array":
@@ -501,7 +502,7 @@ def convert_bindings_dict(context, bindings, cardinalities, superclasses):
                 assembled_predicates[predicate_uri] = join_predicates(existing_predicate, predicate)
 
             else:
-                msg = u"The property {0} seems to be duplicated in class {1}"
+                msg = _(u"The property {0} seems to be duplicated in class {1}")
                 raise InstanceError(msg.format(predicate_uri, predicate["class"]))
 
         else:

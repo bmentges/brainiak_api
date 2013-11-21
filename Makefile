@@ -93,7 +93,7 @@ translate_template:
 
 # i18n #2
 # Merge translation template (POT) definitions to existing Portuguese translation file (PO)
-translate_portuguese: translate_template
+portuguese_dictionary: translate_template
 	@msgmerge --update --backup=off locale/pt_BR/LC_MESSAGES/brainiak.po locale/brainiak.pot
 
 # i18n #3

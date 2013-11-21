@@ -36,6 +36,7 @@ from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
+from brainiak.utils.i18n import _
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
 from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
@@ -644,8 +645,6 @@ class PrefixHandler(BrainiakRequestHandler):
 class HealthcheckHandler(BrainiakRequestHandler):
 
     def get(self):
-        query_params = ParamDict(self)
-        _ = query_params.translate
         self.write(_(u"WORKING"))
 
 

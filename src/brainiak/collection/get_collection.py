@@ -5,7 +5,7 @@ from tornado.web import HTTPError
 
 from brainiak import settings, triplestore
 from brainiak.prefixes import shorten_uri
-from brainiak.utils.links import build_schema_url_for_instance, remove_last_slash
+from brainiak.utils.links import build_schema_url_for_instance, remove_last_slash, build_class_url
 from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination, calculate_offset
 from brainiak.utils.sparql import compress_keys_and_values, is_literal, is_url, normalize_term, get_one_value, \
         extract_po_tuples, is_result_true
@@ -296,7 +296,8 @@ def filter_instances(query_params):
 
 
 def build_json(items_list, query_params):
-    schema_url = unquote(build_schema_url_for_instance(query_params))
+    class_url = build_class_url(query_params)
+    schema_url = unquote(build_schema_url_for_instance(query_params, class_url))
 
     json = {
         '_schema_url': schema_url,

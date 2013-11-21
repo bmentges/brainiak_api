@@ -49,7 +49,11 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
 
     query_params.resource_url = query_params.base_url
     class_url = build_relative_class_url(query_params)
-    href = assemble_url(class_url, {"class_prefix": query_params.get("class_prefix", "")})
+    schema_url = class_url if class_url.endswith('_schema') else class_url + '/_schema'
+    href = assemble_url(class_url.replace('_schema', ''),
+                        {"class_prefix": query_params.get("class_prefix", "")})
+
+    href_class = assemble_url(schema_url, {"class_prefix": query_params.get("class_prefix", "")})
 
     instance_href = u"/_/_/_?instance_uri={_instance_uri}"
 
@@ -61,11 +65,11 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
         },
         {
             'rel': "class",
-            'href': href,
+            'href': href_class,
             'method': "GET"
         },
         {
-            "href": href.replace('_schema', ''),
+            "href": href,
             "method": "POST",
             "rel": "create",
             "schema": {"$ref": "{+_base_url}"}
@@ -76,7 +80,7 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
             "rel": "instance"
         }
     ]
-    add_link(links, "collection", href.replace('_schema', ''))
+    add_link(links, "collection", href)
 
     action_links = crud_links(query_params, class_url)
     links.extend(action_links)

@@ -123,6 +123,7 @@ class TestUnmatchedHandler(TornadoAsyncHTTPTestCase):
 
 class AuthenticatedAccessTestCase(TornadoAsyncHTTPTestCase):
 
+    @patch_mock("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     def test_auth_access_with_invalid_user_returns_404(self):
         response = self.fetch("/", method='GET', headers={'X-Brainiak-Client-Id': '1'})
         self.assertEqual(response.code, 404)

@@ -168,11 +168,12 @@ class SafeRedisTestCase(unittest.TestCase):
         response = some_function(self)
         self.assertEqual(response, "ru")
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.utils.cache.log.logger.error")
     @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
     @patch("brainiak.utils.cache.connect")
     @patch("brainiak.utils.cache.redis_client.ping", return_value=True)
-    def test_safe_redis_fails_all_times(self, ping, connect, logger, error):
+    def test_safe_redis_fails_all_times(self, ping, connect, logger, error, settings):
 
         @safe_redis
         def some_function(self):

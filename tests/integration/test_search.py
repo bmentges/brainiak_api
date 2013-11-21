@@ -86,7 +86,8 @@ class SearchIntegrationTestCase(TornadoAsyncHTTPTestCase):
         response_items = response_dict["items"]
         self.assertEqual(expected_items, response_items)
 
-    def test_search_with_missing_parameters(self):
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    def test_search_with_missing_parameters(self, settings):
         response = self.fetch('/_search')
         self.assertEqual(response.code, 400)
         error_message = response.body

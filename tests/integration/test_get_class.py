@@ -713,8 +713,8 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         cached_value = retrieve("http://semantica.globo.com/person/@@http://semantica.globo.com/person/Gender##class")
         self.assertTrue(cached_value)
 
-    @patch("brainiak.handlers.settings", ENABLE_CACHE=False)
-    def test_purge_returns_405_when_cache_is_disabled(self, enable_cache):
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=False, DEFAULT_LANG="en")
+    def test_purge_returns_405_when_cache_is_disabled(self, enable_cache, settings):
         response = self.fetch("/person/Gender/_schema", method='PURGE')
         self.assertEqual(response.code, 405)
         received = json.loads(response.body)
@@ -776,8 +776,9 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         format_value = json_received['properties']['http://semantica.globo.com/upper/description']['datatype']
         self.assertEqual('http://www.w3.org/2001/XMLSchema#string', format_value)
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.logger")
-    def test_schema_handler_with_invalid_params(self, log):
+    def test_schema_handler_with_invalid_params(self, log, settings):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
         self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, graph_uri, lang, purge."]}')

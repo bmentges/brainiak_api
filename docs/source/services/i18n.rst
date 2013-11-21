@@ -1,4 +1,11 @@
 Internationalization
 ====================
 
- TODO: explain about the lang parameter and the json layout for multi-language text.
+Brainiak supports the internationalization of:
+
+ 1. Error messages, and
+ 2. Ontology & instances string literals
+
+It is possible to define the default language of both by editing ``settings.py``'s ``DEFAULT_LANG`` variable.
+
+Despite this, it is also possible to customize the language of (2) in most of Brainiak services, by adding ``lang=pt`` to the request querystring.

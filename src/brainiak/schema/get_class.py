@@ -5,7 +5,7 @@ from brainiak.log import get_logger
 from brainiak.prefixes import MemorizeContext
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND_XSD_TO_JSON_TYPE
 from brainiak.utils.cache import build_key_for_class, memoize
-from brainiak.utils.links import assemble_url, add_link, crud_links, build_class_url
+from brainiak.utils.links import assemble_url, add_link, crud_links, build_class_url, build_relative_class_url
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InstanceError, bindings_to_dict
 
@@ -48,7 +48,7 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
     effective_context.update(context.context)
 
     query_params.resource_url = query_params.base_url
-    class_url = build_class_url(query_params)
+    class_url = build_relative_class_url(query_params)
     href = assemble_url(class_url, {"class_prefix": query_params.get("class_prefix", "")})
 
     links = [
@@ -71,7 +71,7 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
     ]
     add_link(links, "collection", href.replace('_schema', ''))
 
-    action_links = crud_links(query_params)
+    action_links = crud_links(query_params, class_url)
     links.extend(action_links)
 
     schema = {

@@ -49,7 +49,8 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         super(TestSuggest, self).setUp()
         requests.delete(self.elastic_request_url)
 
-    def test_request_with_invalid_predicate(self):
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    def test_request_with_invalid_predicate(self, settings):
         INVALID_PARAMS = {
             "search": {
                 'pattern': 'york',
@@ -155,7 +156,8 @@ class TestSuggest(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, '{}')
 
-    def test_suggest_with_invalid_json(self):
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    def test_suggest_with_invalid_json(self, settings):
         response = self.fetch('/_suggest',
                               method='POST',
                               body="Invalid JSON")

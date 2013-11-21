@@ -61,8 +61,9 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 400)
         self.assertEqual(expected_error_json, json.loads(response.body))
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
-    def test_400_client_error(self, log):
+    def test_400_client_error(self, log, settings):
         expected_error_message = ["HTTP error: 500\nAccess to backend service failed." +
                                   "  HTTP 400: Bad request.\nResponse:\nMalformed query"]
         response = self.fetch('/', method='PUT', body="400")
@@ -124,7 +125,7 @@ class TestUnmatchedHandler(TornadoAsyncHTTPTestCase):
 class AuthenticatedAccessTestCase(TornadoAsyncHTTPTestCase):
 
     @patch_mock("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
-    def test_auth_access_with_invalid_user_returns_404(self):
+    def test_auth_access_with_invalid_user_returns_404(self, settings):
         response = self.fetch("/", method='GET', headers={'X-Brainiak-Client-Id': '1'})
         self.assertEqual(response.code, 404)
         expected_body = {"errors": [u"HTTP error: 404\nClient-Id provided at 'X-Brainiak-Client-Id' (1) is not known"]}

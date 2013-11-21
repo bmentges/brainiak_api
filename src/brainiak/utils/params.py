@@ -8,6 +8,7 @@ from tornado.web import HTTPError
 
 from brainiak import settings
 from brainiak.prefixes import expand_uri, safe_slug_to_prefix, extract_prefix
+from brainiak.utils.i18n import _
 from brainiak.utils.sparql import PATTERN_O, PATTERN_P
 from brainiak.utils.config_parser import ConfigParserNoSectionError, parse_section
 
@@ -172,7 +173,7 @@ class ParamDict(dict):
         try:
             self.triplestore_config = parse_section(section=auth_client_id)
         except ConfigParserNoSectionError:
-            raise HTTPError(404, u"Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id))
+            raise HTTPError(404, _(u"Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id)))
 
     def __setitem__(self, key, value):
         """Process collateral effects in params that are related.

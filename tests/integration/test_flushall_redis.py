@@ -2,6 +2,7 @@
 import unittest
 from brainiak.utils import cache
 
+
 class FlushAllTestCase(unittest.TestCase):
 
     def test_flushall_after_import_cache(self):

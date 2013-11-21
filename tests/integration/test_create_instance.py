@@ -18,11 +18,11 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     def setUp(self):
         self.original_schema_resource_get_schema = schema_resource.get_schema
-        super(CollectionResourceTestCase, self).setUp()
+        super(CreateInstanceTestCase, self).setUp()
 
     def tearDown(self):
         schema_resource.get_schema = self.original_schema_resource_get_schema
-        super(CollectionResourceTestCase, self).tearDown()
+        super(CreateInstanceTestCase, self).tearDown()
 
     def checkInstanceExistance(self, class_uri, instance_uri):
         query_string = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % {

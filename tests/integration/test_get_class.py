@@ -713,8 +713,9 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         cached_value = retrieve("http://semantica.globo.com/person/@@http://semantica.globo.com/person/Gender##class")
         self.assertTrue(cached_value)
 
-    @patch("brainiak.handlers.settings", ENABLE_CACHE=False, DEFAULT_LANG="en")
-    def test_purge_returns_405_when_cache_is_disabled(self, enable_cache, settings):
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=False)
+    def test_purge_returns_405_when_cache_is_disabled(self, enable_cache, default_lang):
         response = self.fetch("/person/Gender/_schema", method='PURGE')
         self.assertEqual(response.code, 405)
         received = json.loads(response.body)

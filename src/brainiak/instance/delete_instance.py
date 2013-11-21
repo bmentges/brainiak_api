@@ -1,6 +1,7 @@
 from tornado.web import HTTPError
 
 from brainiak import triplestore
+from brainiak.utils.i18n import _
 from brainiak.utils.sparql import some_triples_deleted, is_result_empty
 
 
@@ -10,7 +11,7 @@ def delete_instance(query_params):
     if not is_result_empty(dependants_result_dict):
         values = [item['dependant']['value'] for item in dependants_result_dict['results']['bindings']]
         str_values = ", ".join(values)
-        raise HTTPError(409, log_message=u"Cannot exclude instance because of the dependencies: {0}".format(str_values))
+        raise HTTPError(409, log_message=_(u"Cannot exclude instance because of the dependencies: {0}".format(str_values)))
 
     query_result_dict = query_delete(query_params)
 

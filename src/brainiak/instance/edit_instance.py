@@ -2,6 +2,7 @@ from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.instance.common import extract_class_uri, extract_graph_uri, get_class_and_graph, must_retrieve_graph_and_class_uri
 from brainiak.schema.get_class import get_cached_schema
+from brainiak.utils.i18n import _
 from brainiak.utils.sparql import is_result_true, create_explicit_triples, create_implicit_triples,\
     join_triples, is_modify_response_successful, join_prefixes, InstanceError
 
@@ -17,7 +18,7 @@ def edit_instance(query_params, instance_data):
         graph_uri = query_params['graph_uri']
         class_uri = query_params['class_uri']
     except KeyError as ex:
-        raise HTTPError(404, log_message=u"Parameter <{0:s}> is missing in order to update instance.".format(ex))
+        raise HTTPError(404, log_message=_(u"Parameter <{0:s}> is missing in order to update instance.".format(ex)))
 
     class_object = get_cached_schema(query_params)
     try:
@@ -39,7 +40,7 @@ def edit_instance(query_params, instance_data):
 
     response = modify_instance(query_params)
     if not is_modify_response_successful(response):
-        raise HTTPError(500, log_message="Triplestore could not update triples.")
+        raise HTTPError(500, log_message=_(u"Triplestore could not update triples."))
 
 
 MODIFY_QUERY = u"""

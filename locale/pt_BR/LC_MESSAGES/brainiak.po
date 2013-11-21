@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-18 18:25-0200\n"
+"POT-Creation-Date: 2013-11-21 16:11-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Semantic Team <semantica@corp.globo.com>\n"
 "Language-Team: Semantic Team <semantica@corp.globo.com>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: brainiak/utils/sparql.py:512
+#: brainiak/utils/sparql.py:511
 msgid ""
 "Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was "
 "given."
@@ -25,14 +25,14 @@ msgstr ""
 "Valor incorreto para a propriedade ({1}). Um ({2}) era esperado, mas ({0}) "
 "foi fornecido."
 
-#: brainiak/utils/sparql.py:521
+#: brainiak/utils/sparql.py:520
 msgid ""
 "Inexistent property ({0}) in the schema ({1}), used to create instance ({2})"
 msgstr ""
 "Propriedade inexistente ({0}) na classe ({1}), usada para criar a instância "
 "({2})"
 
-#: brainiak/utils/sparql.py:551
+#: brainiak/utils/sparql.py:550
 msgid ""
 "The property ({0}) defined in the schema ({1}) must map a unique value. The "
 "value provided ({2}) is already used by another instance."
@@ -40,6 +40,30 @@ msgstr ""
 "A propriedade ({0}) definida na classe ({1}) deve referenciar um valor "
 "único. O valor fornecido ({2}) já está em uso por outra instância."
 
-#: brainiak/handlers.py:649
+#: brainiak/utils/sparql.py:580
+msgid "Could not encode boolean using {0}"
+msgstr "Não foi possível codificar o valor booleano usando {0}"
+
+#: brainiak/utils/sparql.py:589
+msgid "Could not decode boolean using {0}"
+msgstr "Não foi possível decodificar o valor booleano usando {0}"
+
+#: brainiak/utils/params.py:176
+msgid "Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known"
+msgstr "O Client-Id fornecido pelo parâmetro 'X-Brainiak-Client-Id' ({0}) não é conhecido"
+
+#: brainiak/handlers.py:648
 msgid "WORKING"
 msgstr "FUNCIONANDO"
+
+#: brainiak/instance/edit_instance.py:21
+msgid "Parameter <{0:s}> is missing in order to update instance."
+msgstr "O parâmetro <{0:s}> está faltando e é necessário para atualizar a instância."
+
+#: brainiak/instance/edit_instance.py:43
+msgid "Triplestore could not update triples."
+msgstr "Não foi possível atualizar os dados no banco de triplas."
+
+#: brainiak/instance/delete_instance.py:14
+msgid "Cannot exclude instance because of the dependencies: {0}"
+msgstr "Não foi possível excluir instâncias devido às dependências: {0}"

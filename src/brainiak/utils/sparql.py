@@ -577,7 +577,7 @@ def encode_boolean(value):
     encoded_value = {False: "false", True: "true"}.get(value)
     if encoded_value:
         return encoded_value
-    raise InstanceError(u"Could not encode boolean using {0}".format(value))
+    raise InstanceError(_(u"Could not encode boolean using {0}".format(value)))
 
 
 def decode_boolean(object_value):
@@ -586,7 +586,7 @@ def decode_boolean(object_value):
     elif object_value == "1":
         return True
     else:
-        raise InstanceError(u"Could not decode boolean using {0}".format(object_value))
+        raise InstanceError(_(u"Could not decode boolean using {0}".format(object_value)))
 
 
 QUERY_VALUE_EXISTS = u"""

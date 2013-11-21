@@ -20,8 +20,9 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     def test_root_handler_allows_purge(self):
         self.assertIn("PURGE", RootJsonSchemaHandler.SUPPORTED_METHODS)
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.logger")
-    def test_400(self, log):
+    def test_400(self, log, settings):
         response = self.fetch("/_schema_list/?invalid_param=xubiru", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)

@@ -7,7 +7,7 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
 
-class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
 
@@ -54,8 +54,9 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         body = json.loads(response.body)
         self.assertIn("HTTP error: 500\nException:\n", body["errors"][0])
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.logger")
-    def test_create_instance_400_invalid_json(self, log):
+    def test_create_instance_400_invalid_json(self, log, settings):
         response = self.fetch('/place/City/',
                                 method='POST',
                                 body="invalid input")
@@ -63,8 +64,9 @@ class CollectionResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         body = json.loads(response.body)
         self.assertEquals(body["errors"], ['HTTP error: 400\nNo JSON object could be decoded'])
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.logger")
-    def test_create_instance_404_inexistant_class(self, log):
+    def test_create_instance_404_inexistant_class(self, log, settings):
         payload = {}
         response = self.fetch('/xubiru/X/',
                                 method='POST',

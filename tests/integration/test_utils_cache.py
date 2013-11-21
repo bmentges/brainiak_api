@@ -4,6 +4,7 @@ import unittest
 from mock import patch
 
 from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, retrieve
+from brainiak.utils.i18n import _
 from tests.mocks import MockRequest
 
 
@@ -77,30 +78,33 @@ class PurgeTestCase(unittest.TestCase):
         delete("some_other_url")
         delete("some_url")
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.utils.cache.log.logger.debug")
     @patch("brainiak.utils.cache.log.logger.info")
     @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
-    def test_cleanup_inexistent_url(self, logger, info, debug):
+    def test_cleanup_inexistent_url(self, logger, info, debug, settings):
         purge("inexistent_url")
         self.assertEqual(info.call_count, 1)
         info.assert_called_with('Cache: 0 key(s), matching the pattern: inexistent_url')
         self.assertEqual(debug.call_count, 1)
         debug.assert_called_with('Cache: key(s) to be deleted: []')
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.utils.cache.log.logger.debug")
     @patch("brainiak.utils.cache.log.logger.info")
     @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
-    def test_cleanup_existent_url(self, logger, info, debug):
+    def test_cleanup_existent_url(self, logger, info, debug, settings):
         purge("some_url")
         self.assertEqual(info.call_count, 1)
         info.assert_called_with('Cache: purged with success 1 key(s), matching the pattern: some_url')
         self.assertEqual(debug.call_count, 1)
         debug.assert_called_with("Cache: key(s) to be deleted: ['some_url']")
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.utils.cache.log.logger.debug")
     @patch("brainiak.utils.cache.log.logger.info")
     @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
-    def test_cleanup_2_existent_url(self, logger, info, debug):
+    def test_cleanup_2_existent_url(self, logger, info, debug, settings):
         purge("some")
         self.assertEqual(info.call_count, 1)
         info.assert_called_with('Cache: purged with success 2 key(s), matching the pattern: some')
@@ -110,11 +114,12 @@ class PurgeTestCase(unittest.TestCase):
         except:
             debug.assert_called_with("Cache: key(s) to be deleted: ['some_other_url', 'some_url']")
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.utils.cache.delete", return_value=False)
     @patch("brainiak.utils.cache.log.logger.debug")
     @patch("brainiak.utils.cache.log.logger.info")
     @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
-    def test_cleanup_fails(self, logger, info, debug, delete):
+    def test_cleanup_fails(self, logger, info, debug, delete, settings):
         purge("problematic_key")
         self.assertEqual(info.call_count, 1)
         info.assert_called_with("Cache: failed purging 1 key(s), matching the pattern: problematic_key")

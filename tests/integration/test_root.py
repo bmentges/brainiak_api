@@ -23,8 +23,9 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     def test_root_handler_allows_purge(self):
         self.assertIn("PURGE", RootHandler.SUPPORTED_METHODS)
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.logger")
-    def test_400(self, log):
+    def test_400(self, log, settings):
         response = self.fetch("/?best_aikido_move=ki_projection", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
@@ -106,8 +107,9 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertTrue(response.headers.get('Last-Modified'))
         self.assertTrue(response.headers['X-Cache'].startswith('MISS from localhost'))
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.settings", ENABLE_CACHE=False)
-    def test_purge_returns_405_when_cache_is_disabled(self, enable_cache):
+    def test_purge_returns_405_when_cache_is_disabled(self, enable_cache, settings):
         response = self.fetch("/", method='PURGE')
         self.assertEqual(response.code, 405)
         received = json.loads(response.body)

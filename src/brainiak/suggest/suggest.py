@@ -7,6 +7,7 @@ from brainiak.prefixes import uri_to_slug, safe_slug_to_prefix
 from brainiak.schema.get_class import get_cached_schema
 from brainiak.search_engine import run_search, run_analyze
 from brainiak.utils import resources
+from brainiak.utils.i18n import _
 from brainiak.utils.sparql import RDFS_LABEL, is_result_empty, add_language_support, \
     filter_values
 
@@ -15,8 +16,7 @@ def do_suggest(query_params, suggest_params):
     search_params = suggest_params["search"]
     range_result = _get_predicate_ranges(query_params, search_params)
     if is_result_empty(range_result):
-        message = u"Either the predicate {0} does not exists or it does not have" + \
-            " any rdfs:range defined in the triplestore"
+        message = _(u"Either the predicate {0} does not exists or it does not have any rdfs:range defined in the triplestore")
         message = message.format(search_params["target"])
         raise HTTPError(400, message)
 
@@ -155,7 +155,7 @@ def _validate_class_restriction(search_params, range_result):
         classes_not_in_range = list(set(search_params["classes"]).difference(classes))
         if classes_not_in_range:
             raise HTTPError(400,
-                            u"Classes {0} are not in the range of predicate '{1}'".format(classes_not_in_range, search_params["target"]))
+                            _(u"Classes {0} are not in the range of predicate '{1}'".format(classes_not_in_range, search_params["target"])))
         classes = search_params["classes"]
 
     return list(classes)
@@ -168,15 +168,15 @@ def _validate_graph_restriction(search_params, range_result):
         graphs_not_in_range = list(graphs_set.difference(graphs))
         if graphs_not_in_range:
             raise HTTPError(400,
-                            u"Classes in the range of predicate '{0}' are not in graphs {1}".format(search_params["target"], graphs_not_in_range))
+                            _(u"Classes in the range of predicate '{0}' are not in graphs {1}".format(search_params["target"], graphs_not_in_range)))
         graphs = graphs_set
 
     graphs = graphs.difference(set(settings.GRAPHS_WITHOUT_INSTANCES))
 
     if not graphs:
         raise HTTPError(400,
-                        u"Classes in the range of predicate '{0}' are in graphs without instances, such as: {1}".format(
-                            search_params["target"], settings.GRAPHS_WITHOUT_INSTANCES))
+                        _(u"Classes in the range of predicate '{0}' are in graphs without instances, such as: {1}".format(
+                            search_params["target"], settings.GRAPHS_WITHOUT_INSTANCES)))
     return list(graphs)
 
 
@@ -346,7 +346,7 @@ def _get_title_value(elasticsearch_fields, title_fields):
         title = elasticsearch_fields.get(field)
         if title:
             return (field, title)
-    raise RuntimeError("No title fields in search engine")
+    raise RuntimeError(_("No title fields in search engine"))
 
 
 def convert_index_name_to_graph_uri(index_name):

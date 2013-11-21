@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-21 16:11-0200\n"
+"POT-Creation-Date: 2013-11-21 17:23-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,12 +42,197 @@ msgstr ""
 msgid "Could not decode boolean using {0}"
 msgstr ""
 
+#: brainiak/utils/cache.py:89
+msgid "CacheError: First try returned {0}"
+msgstr ""
+
+#: brainiak/utils/cache.py:95
+msgid "CacheError: Second try returned {0}"
+msgstr ""
+
+#: brainiak/utils/cache.py:104
+msgid "Cache: key(s) to be deleted: {0}"
+msgstr ""
+
+#: brainiak/utils/cache.py:105
+msgid "{0} key(s), matching the pattern: {1}"
+msgstr ""
+
+#: brainiak/utils/cache.py:111
+msgid "Cache: purged with success {0}"
+msgstr ""
+
+#: brainiak/utils/cache.py:113
+msgid "Cache: {0}"
+msgstr ""
+
+#: brainiak/utils/cache.py:115
+msgid "Cache: failed purging {0}"
+msgstr ""
+
 #: brainiak/utils/params.py:176
 msgid "Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known"
 msgstr ""
 
+#: brainiak/suggest/suggest.py:19
+msgid ""
+"Either the predicate {0} does not exists or it does not have any rdfs:range "
+"defined in the triplestore"
+msgstr ""
+
+#: brainiak/suggest/suggest.py:158
+msgid "Classes {0} are not in the range of predicate '{1}'"
+msgstr ""
+
+#: brainiak/suggest/suggest.py:171
+msgid "Classes in the range of predicate '{0}' are not in graphs {1}"
+msgstr ""
+
+#: brainiak/suggest/suggest.py:178
+msgid ""
+"Classes in the range of predicate '{0}' are in graphs without instances, "
+"such as: {1}"
+msgstr ""
+
+#: brainiak/suggest/suggest.py:349
+msgid "No title fields in search engine"
+msgstr ""
+
+#: brainiak/schema/get_class.py:24
+msgid "The class definition for {0} was not found in graph {1}"
+msgstr ""
+
+#: brainiak/schema/get_class.py:133
+msgid "{0} for class {1}"
+msgstr ""
+
+#: brainiak/schema/get_class.py:152
+msgid "The property {0} is not defined properly"
+msgstr ""
+
+#: brainiak/schema/get_class.py:168
+msgid "The property {0} defines a non-integer owl:minQualifiedCardinality {1}"
+msgstr ""
+
+#: brainiak/schema/get_class.py:180
+msgid "The property {0} defines a non-integer owl:maxQualifiedCardinality {1}"
+msgstr ""
+
+#: brainiak/schema/get_class.py:337
+msgid "Range URI {0} not mapped to JSON type."
+msgstr ""
+
+#: brainiak/schema/get_class.py:397
+msgid "Predicates of type {0} are not supported yet"
+msgstr ""
+
+#: brainiak/schema/get_class.py:505
+msgid "The property {0} seems to be duplicated in class {1}"
+msgstr ""
+
+#: brainiak/handlers.py:61
+msgid "Argument {0:s} is not supported."
+msgstr ""
+
+#: brainiak/handlers.py:64
+msgid " The supported querystring arguments are: {0}."
+msgstr ""
+
+#: brainiak/handlers.py:67
+msgid " The supported body arguments are: {0}."
+msgstr ""
+
+#: brainiak/handlers.py:70
+msgid "Required parameter ({0:s}) was not given."
+msgstr ""
+
+#: brainiak/handlers.py:112
+msgid ""
+"Method get_cache_path should be overwritten for caching & purging purposes"
+msgstr ""
+
+#: brainiak/handlers.py:122
+msgid "Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"
+msgstr ""
+
+#: brainiak/handlers.py:142
+msgid "Access to backend service failed.  {0:s}."
+msgstr ""
+
+#: brainiak/handlers.py:150
+msgid ""
+"\n"
+"Response:\n"
+msgstr ""
+
+#: brainiak/handlers.py:156
+msgid "Ontology inconsistency: {0}\n"
+msgstr ""
+
+#: brainiak/handlers.py:171
+msgid ""
+"Unknown HTTP error [{0}]:\n"
+"  {1}\n"
+msgstr ""
+
+#: brainiak/handlers.py:174
+msgid "HTTP error: {0}\n"
+msgstr ""
+
+#: brainiak/handlers.py:177
+msgid "Uncaught exception: {0}\n"
+msgstr ""
+
+#: brainiak/handlers.py:295
+msgid "Context {0} not found"
+msgstr ""
+
+#: brainiak/handlers.py:385
+msgid "Class {0} doesn't exist in context {1}."
+msgstr ""
+
+#: brainiak/handlers.py:390 brainiak/handlers.py:492
+msgid "No JSON object could be decoded"
+msgstr ""
+
+#: brainiak/handlers.py:430
+msgid ""
+"Instances of class ({class_uri}) in graph ({graph_uri}){filter_message}, "
+"language=({lang}) and in page=({page}) were not found."
+msgstr ""
+
+#: brainiak/handlers.py:465 brainiak/handlers.py:544
+msgid "Instance ({0}) of class ({1}) in graph ({2}) was not found."
+msgstr ""
+
+#: brainiak/handlers.py:500
+msgid "Class {0} doesn't exist in graph {1}."
+msgstr ""
+
+#: brainiak/handlers.py:579
+msgid "JSON malformed. Received: {0}."
+msgstr ""
+
+#: brainiak/handlers.py:589
+msgid ""
+"Invalid json parameter passed to suggest.\n"
+" {0:s}"
+msgstr ""
+
+#: brainiak/handlers.py:600
+msgid "There were no search results."
+msgstr ""
+
 #: brainiak/handlers.py:648
 msgid "WORKING"
+msgstr ""
+
+#: brainiak/handlers.py:695
+msgid "The URL ({0}) is not recognized."
+msgstr ""
+
+#: brainiak/instance/create_instance.py:34
+msgid "Triplestore could not insert triples."
 msgstr ""
 
 #: brainiak/instance/edit_instance.py:21

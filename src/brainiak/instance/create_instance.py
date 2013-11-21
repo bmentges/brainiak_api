@@ -2,6 +2,7 @@
 from tornado.web import HTTPError
 from brainiak import triplestore
 from brainiak.schema.get_class import get_cached_schema
+from brainiak.utils.i18n import _
 from brainiak.utils.sparql import create_explicit_triples, create_instance_uri, create_implicit_triples, \
     extract_instance_id, join_triples, join_prefixes, is_insert_response_successful, InstanceError
 

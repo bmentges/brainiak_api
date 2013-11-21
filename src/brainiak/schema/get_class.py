@@ -51,7 +51,8 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
     class_url = build_class_url(query_params)
     href = assemble_url(class_url, {"class_prefix": query_params.get("class_prefix", "")})
 
-    instance_href = u"/_/_/_?instance_uri={_instance_uri}"
+    # {value} is used here for CMAaaS integration
+    instance_href = u"/_/_/_?instance_uri={value}"
 
     links = [
         {
@@ -73,7 +74,7 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
         {
             "href": instance_href,
             "method": "GET",
-            "rel": "instance"
+            "rel": "relatedInstance"
         }
     ]
     add_link(links, "collection", href.replace('_schema', ''))

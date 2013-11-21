@@ -226,8 +226,9 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         self.assertEqual(response.code, 200)
         self.assertItemsEqual(received_response['items'], expected_items)
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.logger")
-    def test_filter_with_no_results(self, log):
+    def test_filter_with_no_results(self, log, settings):
         response = self.fetch('/person/Gender/?o=Xubiru&lang=pt', method='GET')
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
@@ -242,8 +243,9 @@ class TestFilterInstanceResource(TornadoAsyncHTTPTestCase, URLTestCase):
         response = self.fetch('/person/Xubiru', method='GET')
         self.assertEqual(response.code, 404)
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.logger")
-    def test_filter_with_no_results_and_multiple_predicates(self, log):
+    def test_filter_with_no_results_and_multiple_predicates(self, log, settings):
         get_collection.filter_instances = lambda params: None
         response = self.fetch('/person/Gender/?o=object&p=rdfs:label&o1=object1&lang=pt', method='GET')
         self.assertEqual(response.code, 200)

@@ -1,0 +1,111 @@
+{
+    "mappings": [
+        {
+            "match": "/eureka/AssuntoEureka/.*$",
+            "pages": {
+                "edit": "eureka_AssuntoEureka_instance",
+                "add": "eureka_AssuntoEureka_instance"
+            }
+        },
+        {
+            "match": "/eureka/Disciplina/.*$",
+            "pages": {
+                "edit": "eureka_Disciplina_instance",
+                "add": "eureka_Disciplina_instance"
+            }
+        },
+        {
+            "match": "/eureka/EditoriaEureka/.*$",
+            "pages": {
+                "edit": "eureka_EditoriaEureka_instance",
+                "add": "eureka_EditoriaEureka_instance"
+            }
+        },
+        {
+            "match": "/eureka/Edicao/.*$",
+            "pages": {
+                "edit": "eureka_Edicao_instance",
+                "add": "eureka_Edicao_instance"
+            }
+        },
+        {
+            "match": "/eureka/Prova/.*$",
+            "pages": {
+                "edit": "eureka_Prova_instance",
+                "add": "eureka_Prova_instance"
+            }
+        }
+    ],
+    "customizations": {
+        "eureka_AssuntoEureka_instance": {
+            "form": [
+                "rdfs:label",
+                "base:descricao",
+                "base:slug_topico",
+                "eureka:Keywords",
+                {
+                    "key": "eureka:PertenceAEditoriaOuDisciplina",
+                    "type": "suggest-brainiak",
+                    "options": {
+                        "relItem": "relatedInstance",
+                        "relItems": "suggest"
+                    }
+                }
+            ]
+        },
+        "eureka_Disciplina_instance": {
+            "form": [
+                "rdfs:label",
+                "eureka:Folder_ID",
+                "eureka:URL"
+            ]
+        },
+        "eureka_EditoriaEureka_instance": {
+            "form": [
+                "rdfs:label",
+                "eureka:Folder_ID",
+                "eureka:URL"
+            ]
+        },
+        "eureka_Edicao_instance": {
+            "form": [
+                "rdfs:label",
+                "eureka:Ano",
+                {
+                    "key": "eureka:PertenceAoProcessoSeletivo",
+                    "type": "suggest-brainiak",
+                    "options": {
+                        "relItem": "relatedInstance",
+                        "relItems": "suggest"
+                    }
+                }
+
+            ]
+        },
+        "eureka_Prova_instance": {
+            "form": [
+                "rdfs:label",
+                "base:descricao",
+                "base:slug_topico",
+                "eureka:Keywords",
+                "eureka:Disclaimer",
+                {
+                    "key": "eureka:PertenceAEdicao",
+                    "type": "suggest-brainiak",
+                    "options": {
+                        "relItem": "relatedInstance",
+                        "relItems": "suggest"
+                    }
+                },
+                {
+                    "key": "eureka:PertenceADisciplina",
+                    "type": "suggest-brainiak",
+                    "options": {
+                        "relItem": "relatedInstance",
+                        "relItems": "suggest"
+                    }
+                }
+            ]
+        }
+    }
+}

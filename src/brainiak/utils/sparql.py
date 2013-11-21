@@ -10,7 +10,7 @@ from brainiak.log import get_logger
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
 from brainiak.type_mapper import MAP_RDF_EXPANDED_TYPE_TO_PYTHON
 from brainiak.utils.resources import LazyObject
-
+from brainiak.utils.i18n import _
 
 logger = LazyObject(get_logger)
 
@@ -503,7 +503,6 @@ def property_must_map_a_unique_value(class_object, predicate_uri):
 
 
 def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params):
-    _ = query_params.translate
     class_id = class_object["id"]
     predicate_object_tuples = unpack_tuples(instance_data)
 

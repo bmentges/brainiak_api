@@ -51,6 +51,8 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
     class_url = build_relative_class_url(query_params)
     href = assemble_url(class_url, {"class_prefix": query_params.get("class_prefix", "")})
 
+    instance_href = u"/_/_/_?instance_uri={_instance_uri}"
+
     links = [
         {
             'rel': "self",
@@ -67,6 +69,11 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
             "method": "POST",
             "rel": "create",
             "schema": {"$ref": "{+_base_url}"}
+        },
+        {
+            "href": instance_href,
+            "method": "GET",
+            "rel": "instance"
         }
     ]
     add_link(links, "collection", href.replace('_schema', ''))

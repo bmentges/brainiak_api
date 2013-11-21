@@ -36,7 +36,7 @@ from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
-from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
+from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url, build_class_url
 from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InstanceError
@@ -550,7 +550,8 @@ class InstanceHandler(BrainiakRequestHandler):
     def finalize(self, response):
         if isinstance(response, dict):
             self.write(response)
-            schema_url = build_schema_url_for_instance(self.query_params)
+            class_url = build_class_url(self.query_params)
+            schema_url = build_schema_url_for_instance(self.query_params, class_url)
             header_value = content_type_profile(schema_url)
             self.set_header("Content-Type", header_value)
         elif isinstance(response, int):  # status code

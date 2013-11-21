@@ -282,7 +282,8 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
 
     maxDiff = None
 
-    def test_create_explicit_triples_undefined_property(self):
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    def test_create_explicit_triples_undefined_property(self, mock_settings):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
             "@context": {"personpedia": "http://personpedia.com/"},
@@ -413,7 +414,8 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
         ]
         self.assertEqual(sorted(response), sorted(expected))
 
-    def test_create_explicit_triples_predicates_raises_exception_due_to_wrong_boolean_value(self):
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    def test_create_explicit_triples_predicates_raises_exception_due_to_wrong_boolean_value(self, mock_settings):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
             "@context": {"personpedia": "http://personpedia.com/"},
@@ -433,7 +435,8 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
         excepted_error_msg = [u'Incorrect value for property (http://personpedia.com/isAlive). A (http://www.w3.org/2001/XMLSchema#boolean) was expected, but (0) was given.']
         self.assertEqual(json.loads(str(exception.exception)), excepted_error_msg)
 
-    def test_create_explicit_triples_predicates_raises_exception_due_to_multiple_wrong_values(self):
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    def test_create_explicit_triples_predicates_raises_exception_due_to_multiple_wrong_values(self, settings_mock):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         instance_data = {
             "@context": {"personpedia": "http://personpedia.com/"},

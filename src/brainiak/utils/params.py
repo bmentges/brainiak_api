@@ -4,7 +4,6 @@ from urllib import urlencode
 from urlparse import unquote, parse_qs
 from contextlib import contextmanager
 
-from tornado import locale
 from tornado.web import HTTPError
 
 from brainiak import settings
@@ -319,8 +318,3 @@ class ParamDict(dict):
         for required_param in required_spec.required:
             if not required_param in arguments:
                 raise RequiredParamMissing(required_param)
-
-    def translate(self, word):
-        locale.load_gettext_translations(directory="locale", domain="brainiak")
-        user_locale = self.handler.get_browser_locale()
-        return user_locale.translate(word)

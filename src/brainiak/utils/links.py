@@ -176,6 +176,16 @@ def pagination_schema(root_url, extra_url_params='', method="GET"):
     return result
 
 
+def build_relative_class_url(query_params, include_query_string=False):
+    class_url = u"/{0}/{1}".format(
+        query_params.get('context_name', '_'),
+        query_params.get('class_name', '_'))
+    if include_query_string:
+        query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
+        class_url = assemble_url(class_url, query_string)
+    return class_url
+
+
 def build_class_url(query_params, include_query_string=False):
     class_url = u"{0}://{1}/{2}/{3}".format(
         query_params['request'].protocol,
@@ -194,25 +204,21 @@ def build_schema_url(query_params):
     return schema_url
 
 
-def build_schema_url_for_instance(query_params):
-    class_url = build_class_url(query_params)
+def build_schema_url_for_instance(query_params, class_url):
     query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"], query_params)
     schema_url = assemble_url(u'{0}/_schema'.format(class_url), query_string)
     return schema_url
 
 
-def crud_links(query_params, schema_url=None):
+def crud_links(query_params, class_url):
     """Build crud links."""
-    if schema_url is None:
-        schema_url = build_schema_url_for_instance(query_params)
-
-    class_url = build_class_url(query_params)
     querystring = query_params["request"].query
     if querystring:
         instance_url = u"{0}/{{_resource_id}}?instance_prefix={{_instance_prefix}}&{1}".format(class_url, querystring)
     else:
         instance_url = u"{0}/{{_resource_id}}".format(class_url)
 
+    schema_url = build_schema_url_for_instance(query_params, class_url)
     links = [
         {'rel': "delete", 'href': instance_url, 'method': "DELETE"},
         {'rel': "update", 'href': instance_url, 'method': "PUT", 'schema': {'$ref': schema_url}}

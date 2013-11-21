@@ -5,9 +5,9 @@ from email.utils import formatdate
 import redis
 import ujson
 
-from brainiak import settings
 from brainiak import log
-
+from brainiak import settings
+from brainiak.utils.i18n import _
 
 # # Root-related
 build_key_for_root_schema = lambda: u"_##json_schema"
@@ -86,13 +86,13 @@ def safe_redis(function):
         try:
             response = function(*params)
         except exceptions:
-            log.logger.error(u"CacheError: First try returned {0}".format(traceback.format_exc()))
+            log.logger.error(_(u"CacheError: First try returned {0}").format(traceback.format_exc()))
             try:
                 global redis_client
                 redis_client = connect()
                 response = function(*params)
             except exceptions:
-                log.logger.error(u"CacheError: Second try returned {0}".format(traceback.format_exc()))
+                log.logger.error(_(u"CacheError: Second try returned {0}").format(traceback.format_exc()))
                 response = None
         return response
 
@@ -101,18 +101,18 @@ def safe_redis(function):
 
 def purge(pattern):
     keys_with_pattern = keys(pattern) or []
-    log.logger.debug(u"Cache: key(s) to be deleted: {0}".format(keys_with_pattern))
-    log_details = u"{0} key(s), matching the pattern: {1}".format(len(keys_with_pattern), pattern)
+    log.logger.debug(_(u"Cache: key(s) to be deleted: {0}").format(keys_with_pattern))
+    log_details = _(u"{0} key(s), matching the pattern: {1}").format(len(keys_with_pattern), pattern)
     response = 1
     for key in keys_with_pattern:
         response *= delete(key)
 
     if response and keys_with_pattern:
-        log.logger.info(u"Cache: purged with success {0}".format(log_details))
+        log.logger.info(_(u"Cache: purged with success {0}").format(log_details))
     elif not keys_with_pattern:
-        log.logger.info(u"Cache: {0}".format(log_details))
+        log.logger.info(_(u"Cache: {0}").format(log_details))
     else:
-        log.logger.info(u"Cache: failed purging {0}".format(log_details))
+        log.logger.info(_(u"Cache: failed purging {0}").format(log_details))
 
 
 @safe_redis

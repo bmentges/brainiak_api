@@ -173,7 +173,7 @@ class ParamDict(dict):
         try:
             self.triplestore_config = parse_section(section=auth_client_id)
         except ConfigParserNoSectionError:
-            raise HTTPError(404, _(u"Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known".format(auth_client_id)))
+            raise HTTPError(404, _(u"Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known").format(auth_client_id))
 
     def __setitem__(self, key, value):
         """Process collateral effects in params that are related.

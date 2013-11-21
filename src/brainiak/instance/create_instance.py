@@ -31,7 +31,7 @@ def create_instance(query_params, instance_data, instance_uri=None):
 
     response = query_create_instances(query_params)
     if not is_insert_response_successful(response):
-        raise HTTPError(500, log_message="Triplestore could not insert triples.")
+        raise HTTPError(500, log_message=_("Triplestore could not insert triples."))
 
     instance_id = extract_instance_id(instance_uri)
     return (instance_uri, instance_id)

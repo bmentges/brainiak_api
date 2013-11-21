@@ -15,7 +15,6 @@ build_key_for_collection_of_contexts = lambda: u"_##collection"
 
 # # Class/collection-related
 build_key_for_class = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
-# # TODO:
 # # graph_uri@@class_uri##collection
 # # graph_uri@@class_uri##json_schema
 
@@ -36,9 +35,6 @@ exceptions = (CacheError, redis.connection.ConnectionError)
 
 def connect():
     return redis.StrictRedis(host=settings.REDIS_ENDPOINT, port=settings.REDIS_PORT, password=settings.REDIS_PASSWORD, db=0)
-
-
-redis_client = connect()
 
 
 def current_time():
@@ -136,6 +132,11 @@ def delete(keys):
 
 
 @safe_redis
+def flushall():
+    return redis_client.flushall()
+
+
+@safe_redis
 def keys(pattern):
     pattern = u"{0}*".format(pattern)
     return redis_client.keys(pattern)
@@ -177,3 +178,9 @@ def purge_by_path(path, recursive):
         purge(relative_path)
     else:
         delete(path)
+
+
+# Singleton
+redis_client = connect()
+# Wipeout all entries to avoid inconsistencies due to algorithmic changes between releases
+flushall()

@@ -741,7 +741,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         json_received = json.loads(response.body)
         received_rels = [link['rel'] for link in json_received['links']]
-        expected_rels = ['self', 'class', 'create', 'collection', 'delete', 'update', 'relatedInstance']
+        expected_rels = ['self', 'class', 'create', 'collection', 'delete', 'update', 'relatedInstance', 'suggest']
         self.assertListEqual(sorted(received_rels), sorted(expected_rels))
         # TODO: test the URLs of the links
 

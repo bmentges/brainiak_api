@@ -3,9 +3,10 @@
 from brainiak import triplestore
 from brainiak.log import get_logger
 from brainiak.prefixes import MemorizeContext
+from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND_XSD_TO_JSON_TYPE
 from brainiak.utils.cache import build_key_for_class, memoize
-from brainiak.utils.links import assemble_url, add_link, crud_links, build_class_url, build_relative_class_url
+from brainiak.utils.links import assemble_url, add_link, crud_links, build_relative_class_url
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InstanceError, bindings_to_dict
 
@@ -79,7 +80,14 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
             "href": instance_href,
             "method": "GET",
             "rel": "relatedInstance"
-        }
+        },
+        {
+            "href": "/_suggest",
+            "method": "POST",
+            "rel": "suggest",
+            "schema": SUGGEST_PARAM_SCHEMA
+        },
+
     ]
     add_link(links, "collection", href)
 

@@ -1,10 +1,28 @@
 {
     "mappings": [
         {
+            "match": "/eureka/ProcessoSeletivo",
+            "pages": {
+                "list": "eureka_ProcessoSeletivo_list"
+            }
+        },
+        {
+            "match": "/eureka/AssuntoEureka",
+            "pages": {
+                "list": "eureka_AssuntoEureka_list"
+            }
+        },
+        {
             "match": "/eureka/AssuntoEureka/.*$",
             "pages": {
                 "edit": "eureka_AssuntoEureka_instance",
                 "add": "eureka_AssuntoEureka_instance"
+            }
+        },
+        {
+            "match": "/eureka/Disciplina",
+            "pages": {
+                "list": "eureka_Disciplina_list"
             }
         },
         {
@@ -15,6 +33,12 @@
             }
         },
         {
+            "match": "/eureka/EditoriaEureka",
+            "pages": {
+                "list": "eureka_EditoriaEureka_list"
+            }
+        },
+        {
             "match": "/eureka/EditoriaEureka/.*$",
             "pages": {
                 "edit": "eureka_EditoriaEureka_instance",
@@ -22,10 +46,22 @@
             }
         },
         {
+            "match": "/eureka/Edicao",
+            "pages": {
+                "list": "eureka_Edicao_list"
+            }
+        },
+        {
             "match": "/eureka/Edicao/.*$",
             "pages": {
                 "edit": "eureka_Edicao_instance",
                 "add": "eureka_Edicao_instance"
+            }
+        },
+        {
+            "match": "/eureka/Prova",
+            "pages": {
+                "list": "eureka_Prova_list"
             }
         },
         {
@@ -37,6 +73,22 @@
         }
     ],
     "customizations": {
+        "eureka_ProcessoSeletivo_list": {
+            "columns": [
+                {
+                    "key": "title",
+                    "title": "Título do Processo Seletivo"
+                }
+            ]
+        },
+        "eureka_AssuntoEureka_list": {
+            "columns": [
+                {
+                    "key": "title",
+                    "title": "Título do Assunto"
+                }
+            ]
+        },
         "eureka_AssuntoEureka_instance": {
             "form": [
                 "rdfs:label",
@@ -53,11 +105,27 @@
                 }
             ]
         },
+        "eureka_Disciplina_list": {
+            "columns": [
+                {
+                    "key": "title",
+                    "title": "Título da Disciplina"
+                }
+            ]
+        },
         "eureka_Disciplina_instance": {
             "form": [
                 "rdfs:label",
                 "eureka:Folder_ID",
                 "eureka:URL"
+            ]
+        },
+        "eureka_EditoriaEureka_list": {
+            "columns": [
+                {
+                    "key": "title",
+                    "title": "Título da Editoria"
+                }
             ]
         },
         "eureka_EditoriaEureka_instance": {
@@ -67,7 +135,15 @@
                 "eureka:URL"
             ]
         },
-        "eureka_Edicao_instance": {
+         "eureka_Edicao_list": {
+            "columns": [
+                {
+                    "key": "title",
+                    "title": "Título da Edição"
+                }
+            ]
+        },
+       "eureka_Edicao_instance": {
             "form": [
                 "rdfs:label",
                 "eureka:Ano",
@@ -80,6 +156,14 @@
                     }
                 }
 
+            ]
+        },
+        "eureka_Prova_list": {
+            "columns": [
+                {
+                    "key": "title",
+                    "title": "Título da Prova"
+                }
             ]
         },
         "eureka_Prova_instance": {

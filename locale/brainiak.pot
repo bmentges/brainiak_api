@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-21 17:23-0200\n"
+"POT-Creation-Date: 2013-11-22 11:44-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,138 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: brainiak/utils/sparql.py:511
-msgid ""
-"Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was "
-"given."
-msgstr ""
-
-#: brainiak/utils/sparql.py:520
-msgid ""
-"Inexistent property ({0}) in the schema ({1}), used to create instance ({2})"
-msgstr ""
-
-#: brainiak/utils/sparql.py:550
-msgid ""
-"The property ({0}) defined in the schema ({1}) must map a unique value. The "
-"value provided ({2}) is already used by another instance."
-msgstr ""
-
-#: brainiak/utils/sparql.py:580
-msgid "Could not encode boolean using {0}"
-msgstr ""
-
-#: brainiak/utils/sparql.py:589
-msgid "Could not decode boolean using {0}"
-msgstr ""
-
-#: brainiak/utils/cache.py:89
-msgid "CacheError: First try returned {0}"
-msgstr ""
-
-#: brainiak/utils/cache.py:95
-msgid "CacheError: Second try returned {0}"
-msgstr ""
-
-#: brainiak/utils/cache.py:104
-msgid "Cache: key(s) to be deleted: {0}"
-msgstr ""
-
-#: brainiak/utils/cache.py:105
-msgid "{0} key(s), matching the pattern: {1}"
-msgstr ""
-
-#: brainiak/utils/cache.py:111
-msgid "Cache: purged with success {0}"
-msgstr ""
-
-#: brainiak/utils/cache.py:113
-msgid "Cache: {0}"
-msgstr ""
-
-#: brainiak/utils/cache.py:115
-msgid "Cache: failed purging {0}"
-msgstr ""
-
-#: brainiak/utils/params.py:176
-msgid "Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known"
-msgstr ""
-
-#: brainiak/suggest/suggest.py:19
-msgid ""
-"Either the predicate {0} does not exists or it does not have any rdfs:range "
-"defined in the triplestore"
-msgstr ""
-
-#: brainiak/suggest/suggest.py:158
-msgid "Classes {0} are not in the range of predicate '{1}'"
-msgstr ""
-
-#: brainiak/suggest/suggest.py:171
-msgid "Classes in the range of predicate '{0}' are not in graphs {1}"
-msgstr ""
-
-#: brainiak/suggest/suggest.py:178
-msgid ""
-"Classes in the range of predicate '{0}' are in graphs without instances, "
-"such as: {1}"
-msgstr ""
-
-#: brainiak/suggest/suggest.py:349
-msgid "No title fields in search engine"
-msgstr ""
-
-#: brainiak/schema/get_class.py:24
-msgid "The class definition for {0} was not found in graph {1}"
-msgstr ""
-
-#: brainiak/schema/get_class.py:133
-msgid "{0} for class {1}"
-msgstr ""
-
-#: brainiak/schema/get_class.py:152
-msgid "The property {0} is not defined properly"
-msgstr ""
-
-#: brainiak/schema/get_class.py:168
-msgid "The property {0} defines a non-integer owl:minQualifiedCardinality {1}"
-msgstr ""
-
-#: brainiak/schema/get_class.py:180
-msgid "The property {0} defines a non-integer owl:maxQualifiedCardinality {1}"
-msgstr ""
-
-#: brainiak/schema/get_class.py:337
-msgid "Range URI {0} not mapped to JSON type."
-msgstr ""
-
-#: brainiak/schema/get_class.py:397
-msgid "Predicates of type {0} are not supported yet"
-msgstr ""
-
-#: brainiak/schema/get_class.py:505
-msgid "The property {0} seems to be duplicated in class {1}"
-msgstr ""
-
 #: brainiak/handlers.py:61
+#, python-brace-format
 msgid "Argument {0:s} is not supported."
 msgstr ""
 
 #: brainiak/handlers.py:64
+#, python-brace-format
 msgid " The supported querystring arguments are: {0}."
 msgstr ""
 
 #: brainiak/handlers.py:67
+#, python-brace-format
 msgid " The supported body arguments are: {0}."
 msgstr ""
 
 #: brainiak/handlers.py:70
+#, python-brace-format
 msgid "Required parameter ({0:s}) was not given."
-msgstr ""
-
-#: brainiak/handlers.py:112
-msgid ""
-"Method get_cache_path should be overwritten for caching & purging purposes"
 msgstr ""
 
 #: brainiak/handlers.py:122
@@ -156,6 +42,7 @@ msgid "Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"
 msgstr ""
 
 #: brainiak/handlers.py:142
+#, python-brace-format
 msgid "Access to backend service failed.  {0:s}."
 msgstr ""
 
@@ -166,28 +53,34 @@ msgid ""
 msgstr ""
 
 #: brainiak/handlers.py:156
+#, python-brace-format
 msgid "Ontology inconsistency: {0}\n"
 msgstr ""
 
 #: brainiak/handlers.py:171
+#, python-brace-format
 msgid ""
 "Unknown HTTP error [{0}]:\n"
 "  {1}\n"
 msgstr ""
 
 #: brainiak/handlers.py:174
+#, python-brace-format
 msgid "HTTP error: {0}\n"
 msgstr ""
 
 #: brainiak/handlers.py:177
+#, python-brace-format
 msgid "Uncaught exception: {0}\n"
 msgstr ""
 
 #: brainiak/handlers.py:295
+#, python-brace-format
 msgid "Context {0} not found"
 msgstr ""
 
 #: brainiak/handlers.py:385
+#, python-brace-format
 msgid "Class {0} doesn't exist in context {1}."
 msgstr ""
 
@@ -196,38 +89,44 @@ msgid "No JSON object could be decoded"
 msgstr ""
 
 #: brainiak/handlers.py:430
+#, python-brace-format
 msgid ""
 "Instances of class ({class_uri}) in graph ({graph_uri}){filter_message}, "
 "language=({lang}) and in page=({page}) were not found."
 msgstr ""
 
 #: brainiak/handlers.py:465 brainiak/handlers.py:544
+#, python-brace-format
 msgid "Instance ({0}) of class ({1}) in graph ({2}) was not found."
 msgstr ""
 
 #: brainiak/handlers.py:500
+#, python-brace-format
 msgid "Class {0} doesn't exist in graph {1}."
 msgstr ""
 
-#: brainiak/handlers.py:579
+#: brainiak/handlers.py:580
+#, python-brace-format
 msgid "JSON malformed. Received: {0}."
 msgstr ""
 
-#: brainiak/handlers.py:589
+#: brainiak/handlers.py:590
+#, python-brace-format
 msgid ""
 "Invalid json parameter passed to suggest.\n"
 " {0:s}"
 msgstr ""
 
-#: brainiak/handlers.py:600
+#: brainiak/handlers.py:601
 msgid "There were no search results."
 msgstr ""
 
-#: brainiak/handlers.py:648
+#: brainiak/handlers.py:689
 msgid "WORKING"
 msgstr ""
 
-#: brainiak/handlers.py:695
+#: brainiak/handlers.py:696
+#, python-brace-format
 msgid "The URL ({0}) is not recognized."
 msgstr ""
 
@@ -235,7 +134,13 @@ msgstr ""
 msgid "Triplestore could not insert triples."
 msgstr ""
 
+#: brainiak/instance/delete_instance.py:14
+#, python-brace-format
+msgid "Cannot exclude instance because of the dependencies: {0}"
+msgstr ""
+
 #: brainiak/instance/edit_instance.py:21
+#, python-brace-format
 msgid "Parameter <{0:s}> is missing in order to update instance."
 msgstr ""
 
@@ -243,6 +148,140 @@ msgstr ""
 msgid "Triplestore could not update triples."
 msgstr ""
 
-#: brainiak/instance/delete_instance.py:14
-msgid "Cannot exclude instance because of the dependencies: {0}"
+#: brainiak/schema/get_class.py:25
+#, python-brace-format
+msgid "The class definition for {0} was not found in graph {1}"
+msgstr ""
+
+#: brainiak/schema/get_class.py:152
+#, python-brace-format
+msgid "{0} for class {1}"
+msgstr ""
+
+#: brainiak/schema/get_class.py:171
+#, python-brace-format
+msgid "The property {0} is not defined properly"
+msgstr ""
+
+#: brainiak/schema/get_class.py:187
+#, python-brace-format
+msgid "The property {0} defines a non-integer owl:minQualifiedCardinality {1}"
+msgstr ""
+
+#: brainiak/schema/get_class.py:199
+#, python-brace-format
+msgid "The property {0} defines a non-integer owl:maxQualifiedCardinality {1}"
+msgstr ""
+
+#: brainiak/schema/get_class.py:356
+#, python-brace-format
+msgid "Range URI {0} not mapped to JSON type."
+msgstr ""
+
+#: brainiak/schema/get_class.py:416
+#, python-brace-format
+msgid "Predicates of type {0} are not supported yet"
+msgstr ""
+
+#: brainiak/schema/get_class.py:524
+#, python-brace-format
+msgid "The property {0} seems to be duplicated in class {1}"
+msgstr ""
+
+#: brainiak/suggest/suggest.py:19
+#, python-brace-format
+msgid ""
+"Either the predicate {0} does not exists or it does not have any rdfs:range "
+"defined in the triplestore"
+msgstr ""
+
+#: brainiak/suggest/suggest.py:158
+#, python-brace-format
+msgid "Classes {0} are not in the range of predicate '{1}'"
+msgstr ""
+
+#: brainiak/suggest/suggest.py:171
+#, python-brace-format
+msgid "Classes in the range of predicate '{0}' are not in graphs {1}"
+msgstr ""
+
+#: brainiak/suggest/suggest.py:178
+#, python-brace-format
+msgid ""
+"Classes in the range of predicate '{0}' are in graphs without instances, "
+"such as: {1}"
+msgstr ""
+
+#: brainiak/suggest/suggest.py:349
+msgid "No title fields in search engine"
+msgstr ""
+
+#: brainiak/utils/cache.py:87
+#, python-brace-format
+msgid "CacheError: First try returned {0}"
+msgstr ""
+
+#: brainiak/utils/cache.py:93
+#, python-brace-format
+msgid "CacheError: Second try returned {0}"
+msgstr ""
+
+#: brainiak/utils/cache.py:102
+#, python-brace-format
+msgid "Cache: key(s) to be deleted: {0}"
+msgstr ""
+
+#: brainiak/utils/cache.py:103
+#, python-brace-format
+msgid "{0} key(s), matching the pattern: {1}"
+msgstr ""
+
+#: brainiak/utils/cache.py:109
+#, python-brace-format
+msgid "Cache: purged with success {0}"
+msgstr ""
+
+#: brainiak/utils/cache.py:111
+#, python-brace-format
+msgid "Cache: {0}"
+msgstr ""
+
+#: brainiak/utils/cache.py:113
+#, python-brace-format
+msgid "Cache: failed purging {0}"
+msgstr ""
+
+#: brainiak/utils/params.py:176
+#, python-brace-format
+msgid "Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known"
+msgstr ""
+
+#: brainiak/utils/sparql.py:511
+#, python-brace-format
+msgid ""
+"Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was "
+"given."
+msgstr ""
+
+#: brainiak/utils/sparql.py:520
+#, python-brace-format
+msgid ""
+"Inexistent property ({0}) in the schema ({1}), used to create instance ({2})"
+msgstr ""
+
+#: brainiak/utils/sparql.py:550
+#, python-brace-format
+msgid ""
+"The property ({0}) defined in the schema ({1}) must map a unique value. The "
+"value provided ({2}) is already used by another instance."
+msgstr ""
+
+#: brainiak/utils/sparql.py:580
+#, python-brace-format
+msgid "Could not encode boolean using {0}"
+msgstr ""
+
+#: brainiak/utils/sparql.py:589
+#, python-brace-format
+msgid "Could not decode boolean using {0}"
 msgstr ""

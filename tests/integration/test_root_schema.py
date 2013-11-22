@@ -51,5 +51,4 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         self.assertEqual(body, {'status': "cached"})
-        self.assertEqual(response.headers['Last-Modified'], 'Fri, 11 May 1984 20:00:00 -0300')
         self.assertTrue(response.headers['X-Cache'].startswith('HIT from localhost'))

@@ -37,7 +37,7 @@ from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize
 from brainiak.utils.i18n import _
-from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url
+from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url, build_class_url
 from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InstanceError
@@ -109,14 +109,14 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
         super(BrainiakRequestHandler, self).__init__(*args, **kwargs)
 
     def get_cache_path(self):
-        raise Exception(_(u"Method get_cache_path should be overwritten for caching & purging purposes"))
+        raise Exception(u"Method get_cache_path should be overwritten for caching & purging purposes")
 
     @greenlet_asynchronous
     def purge(self, **kargs):
         if settings.ENABLE_CACHE:
 
             path = self.get_cache_path()
-            recursive = int(self.request.headers.get('X-Cache-recursive', '0'))
+            recursive = int(self.request.headers.get('X-Cache-Recursive', '0'))
             cache.purge_by_path(path, recursive)
         else:
             raise HTTPError(405, log_message=_("Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"))
@@ -253,7 +253,7 @@ class RootHandler(BrainiakRequestHandler):
     SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
 
     def get_cache_path(self):
-        return cache.build_key_for_collection_of_contexts()
+        return cache.build_key_for_root()
 
     @greenlet_asynchronous
     def get(self):
@@ -551,7 +551,8 @@ class InstanceHandler(BrainiakRequestHandler):
     def finalize(self, response):
         if isinstance(response, dict):
             self.write(response)
-            schema_url = build_schema_url_for_instance(self.query_params)
+            class_url = build_class_url(self.query_params)
+            schema_url = build_schema_url_for_instance(self.query_params, class_url)
             header_value = content_type_profile(schema_url)
             self.set_header("Content-Type", header_value)
         elif isinstance(response, int):  # status code
@@ -645,7 +646,7 @@ class PrefixHandler(BrainiakRequestHandler):
 class HealthcheckHandler(BrainiakRequestHandler):
 
     def get(self):
-        self.write(_(u"WORKING"))
+        self.write("WORKING")
 
 
 class VersionHandler(BrainiakRequestHandler):
@@ -685,7 +686,7 @@ class StatusHandler(BrainiakRequestHandler):
         if output:
             response = "\n".join(output)
         else:
-            response = "WORKING"
+            response = _(u"WORKING")
         self.write(response)
 
 

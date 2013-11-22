@@ -113,10 +113,11 @@ def assemble_instance_json(query_params, query_result_dict):
 
     expand_object_properties = query_params.get("expand_object_properties") == "1"
     include_meta_properties = query_params.get("meta_properties") is None or query_params.get("meta_properties") == "1"
+    class_schema = query_params["class_schema"]
     items = build_items_dict(query_result_dict['results']['bindings'],
                              query_params["class_uri"],
                              expand_object_properties,
-                             query_params["class_schema"])
+                             class_schema)
 
     if include_meta_properties:
         class_url = build_class_url(query_params)
@@ -128,7 +129,8 @@ def assemble_instance_json(query_params, query_result_dict):
             "_instance_prefix": instance_prefix,
             "_resource_id": instance_id,
             "@id": instance_uri,
-            "@type": query_params["class_uri"]
+            "@type": query_params["class_uri"],
+            "_type_title": class_schema["title"]
         }
 
         check_and_clean_rdftype(instance['@type'], items)

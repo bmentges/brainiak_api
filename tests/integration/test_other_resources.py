@@ -98,8 +98,9 @@ class LifecheckTestCase(TornadoAsyncHTTPTestCase):
         handlers.event_bus.status = self.original_eb_status
         handlers.triplestore.status = self.original_ts_status
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.event_bus.logger")
-    def test_lifecheck_working(self, log):
+    def test_lifecheck_working(self, log, mock_lang):
         handlers.triplestore.status = lambda: "Virtuoso SUCCEED"
         handlers.event_bus.status = lambda: "ActiveMQ SUCCEED"
         response = self.fetch('/_status/', method='GET')

@@ -443,8 +443,10 @@ def _build_items(query_params, result, title_fields, class_fields):
         item_dict = {
             "@id": instance_uri,
             "title": title_value,
+            "rdfs:label": title_value,
             "@type": klass,
-            "type_title": class_schema["title"]
+            "type_title": class_schema["title"],
+            "_type_title": class_schema["title"]
         }
 
         instance_fields = get_instance_fields(item, class_schema)

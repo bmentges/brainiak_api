@@ -8,7 +8,7 @@ DATATYPE_PROPERTY = "http://www.w3.org/2002/07/owl#DatatypeProperty"
 
 _MAP_XSD_TO_JSON_TYPE = {
     "rdf:XMLLiteral": "string",
-    "rdfs:Literal": "string",
+    "rdf:Literal": "string",
     "xsd:string": "string",
     "xsd:anyURI": "string",
     "xsd:float": "number",
@@ -50,7 +50,7 @@ _MAP_JSON_TO_EXPAND_XSD_TYPE = {k: expand_uri(v) for k, v in _MAP_XSD_TO_JSON_TY
 
 MAP_RDF_TYPE_TO_PYTHON = {
     "rdf:XMLLiteral": unicode,
-    "rdfs:Literal": unicode,
+    "rdf:Literal": unicode,
     "xsd:string": unicode,
     "xsd:anyURI": unicode,
     "xsd:float": float,

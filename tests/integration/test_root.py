@@ -84,7 +84,6 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         self.assertEqual(body, {'status': "cached"})
-        self.assertEqual(response.headers['Last-Modified'], 'Fri, 11 May 1984 20:00:00 -0300')
         self.assertTrue(response.headers['X-Cache'].startswith('HIT from localhost'))
 
     @patch("brainiak.utils.cache.retrieve", return_value={"cache": False})
@@ -122,17 +121,17 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     def test_purge_returns_200_when_cache_is_enabled(self, enable_cache, purge, delete):
         response = self.fetch("/", method='PURGE')
         self.assertEqual(response.code, 200)
-        delete.assert_called_once_with("_##collection")
+        delete.assert_called_once_with("_##root")
         self.assertFalse(purge.called)
         self.assertFalse(response.body)
 
     @patch("brainiak.utils.cache.delete")
-    @patch("brainiak.utils.cache.purge")
+    @patch("brainiak.utils.cache.flushall")
     @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
-    def test_purge_returns_200_recursive(self, enable_cache, purge, delete):
+    def test_purge_returns_200_recursive(self, enable_cache, flushall, delete):
         response = self.fetch("/", method='PURGE', headers={'X-Cache-Recursive': '1'})
         self.assertEqual(response.code, 200)
-        purge.assert_called_once_with("*")
+        self.assertTrue(flushall.called)
         self.assertFalse(delete.called)
         self.assertFalse(response.body)
 

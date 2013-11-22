@@ -3,10 +3,11 @@
 from brainiak import triplestore
 from brainiak.log import get_logger
 from brainiak.prefixes import MemorizeContext
+from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.type_mapper import DATATYPE_PROPERTY, OBJECT_PROPERTY, _MAP_EXPAND_XSD_TO_JSON_TYPE
 from brainiak.utils.i18n import _
 from brainiak.utils.cache import build_key_for_class, memoize
-from brainiak.utils.links import assemble_url, add_link, self_url, crud_links, remove_last_slash
+from brainiak.utils.links import assemble_url, add_link, crud_links, build_relative_class_url
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.sparql import add_language_support, filter_values, get_one_value, get_super_properties, InstanceError, bindings_to_dict
 
@@ -49,9 +50,15 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
     effective_context.update(context.context)
 
     query_params.resource_url = query_params.base_url
-    base_url = remove_last_slash(query_params.base_url)
+    class_url = build_relative_class_url(query_params)
+    schema_url = class_url if class_url.endswith('_schema') else class_url + '/_schema'
+    href = assemble_url(class_url.replace('_schema', ''),
+                        {"class_prefix": query_params.get("class_prefix", "")})
 
-    href = assemble_url(base_url, {"class_prefix": query_params.get("class_prefix", "")})
+    href_class = assemble_url(schema_url, {"class_prefix": query_params.get("class_prefix", "")})
+
+    # {value} is used here for CMAaaS integration
+    instance_href = u"/_/_/_?instance_uri={value}"
 
     links = [
         {
@@ -61,19 +68,31 @@ def assemble_schema_dict(query_params, title, predicates, context, **kw):
         },
         {
             'rel': "class",
-            'href': self_url(query_params),
+            'href': href_class,
             'method': "GET"
         },
         {
-            "href": href.replace('_schema', ''),
+            "href": href,
             "method": "POST",
             "rel": "create",
             "schema": {"$ref": "{+_base_url}"}
-        }
-    ]
-    add_link(links, "collection", href.replace('_schema', ''))
+        },
+        {
+            "href": instance_href,
+            "method": "GET",
+            "rel": "relatedInstance"
+        },
+        {
+            "href": "/_suggest",
+            "method": "POST",
+            "rel": "suggest",
+            "schema": SUGGEST_PARAM_SCHEMA
+        },
 
-    action_links = crud_links(query_params)
+    ]
+    add_link(links, "collection", href)
+
+    action_links = crud_links(query_params, class_url)
     links.extend(action_links)
 
     schema = {

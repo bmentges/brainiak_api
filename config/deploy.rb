@@ -84,8 +84,16 @@ namespace :deploy do
         run_local "cp -rf docs/build/html src/docs"
     end
 
+    task :copy_locale do
+        run_local "cp -rf locale src/"
+    end
+
     task :clean_doc do
         run_local "rm -rf src/docs"
+    end
+
+    task :clean_locale do
+        run_local "rm -rf src/locale"
     end
 
     task :docs, :roles => :be do

@@ -16,7 +16,7 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.3.8"
+brainiak_version = "develop"
 mercury_version = "1.2.6"
 
 brainiak_endpoint = {
@@ -105,6 +105,12 @@ class BrainiakChecker(Checker):
         nose.assert_in(u'WORKING', response.text)
         sys.stdout.write("\ncheck_healthcheck - pass")
 
+    def check_status(self):
+        response = self.get("_status")
+        nose.assert_equal(response.status_code, 200)
+        nose.assert_in(u'FUNCIONANDO', response.text)
+        sys.stdout.write("\ncheck_status - pass")
+
     def check_virtuoso(self):
         response = self.get("_status/virtuoso")
         nose.assert_equal(response.status_code, 200)
@@ -174,7 +180,7 @@ class BrainiakChecker(Checker):
         nose.assert_in(es_response.status_code, [404])
 
         # Add instance
-        response = self.put("place/City/globoland", "new_city.json")
+        response = self.put("place/City/globoland", "new_city.json")    
         nose.assert_equal(response.status_code, 201)
 
         sys.stdout.write("\n-- try changing <check_instance_create> timeout if it fails\n")
@@ -226,7 +232,7 @@ class BrainiakChecker(Checker):
             nose.assert_true(len(body["items"]))
             first_item = body["items"][0]
             second_item = body["items"][1]
-            expected_keys = [u'title', u'type_title', u'instance_fields', u'class_fields', u'@id', u'@type']
+            expected_keys = [u'rdfs:label', u'title', u'type_title', u'instance_fields', u'_type_title', u'class_fields', u'@id', u'@type']
             nose.assert_equal(second_item.keys(), expected_keys)
             titles = [first_item["title"], second_item["title"]]
             index = titles.index("Flamengo")

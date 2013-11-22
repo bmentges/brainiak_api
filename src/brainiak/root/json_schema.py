@@ -6,7 +6,7 @@ from brainiak.utils.links import merge_schemas, pagination_schema
 def schema():
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
-        "title": "Root Schema that lists all contexts",
+        "title": "Contexts",
         "type": "object",
         "required": ["items"],
         "properties": {

@@ -6,7 +6,7 @@ def schema(query_params):
     context_name = query_params['context_name']
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
-        "title": "Context Schema that lists collections",
+        "title": context_name,
         "type": "object",
         "required": ["items"],
         "properties": {

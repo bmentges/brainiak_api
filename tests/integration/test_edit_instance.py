@@ -91,7 +91,6 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(modified_new_york.code, 200)
         self.assertEqual(modified_new_york.body, "")
 
-
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.logger")
     @patch("brainiak.instance.create_instance.get_cached_schema",

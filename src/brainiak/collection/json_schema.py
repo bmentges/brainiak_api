@@ -36,6 +36,7 @@ def schema(query_params):
                 "type": "array",
                 "items": {
                     "type": "object",
+                    "title": class_schema.get('title', ''),
                     "required": ["title", "@id", "resource_id", "instance_prefix"],
                     "properties": {
                         "title": {"type": "string"},

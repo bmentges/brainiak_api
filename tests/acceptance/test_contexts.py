@@ -4,7 +4,7 @@ from unittest import TestCase
 from brainiak.utils.client import fetch_all_pages, extract_keys
 
 
-API_ENDPOINT = "http://api.semantica.dev.globoi.com"
+API_ENDPOINT = "http://brainiak.semantica.dev.globoi.com"
 
 
 class AcceptListContexts(TestCase):

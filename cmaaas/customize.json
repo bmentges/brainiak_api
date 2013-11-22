@@ -7,6 +7,13 @@
             }
         },
         {
+            "match": "/eureka/ProcessoSeletivo/.*$",
+            "pages": {
+                "edit": "eureka_ProcessoSeletivo_instance",
+                "add": "eureka_ProcessoSeletivo_instance"
+            }
+        },
+       {
             "match": "/eureka/AssuntoEureka",
             "pages": {
                 "list": "eureka_AssuntoEureka_list"
@@ -77,21 +84,31 @@
             "columns": [
                 {
                     "key": "title",
-                    "title": "Título do Processo Seletivo"
+                    "title": "Nome do Processo Seletivo"
                 }
             ]
+        },
+        "eureka_ProcessoSeletivo_instance": {
+            "form": [
+                {
+                    "key": "rdfs:label",
+                    "title": "Nome do Processo Seletivo"
+                }]
         },
         "eureka_AssuntoEureka_list": {
             "columns": [
                 {
                     "key": "title",
-                    "title": "Título do Assunto"
+                    "title": "Nome do Assunto"
                 }
             ]
         },
         "eureka_AssuntoEureka_instance": {
             "form": [
-                "rdfs:label",
+                {
+                    "key": "rdfs:label",
+                    "title": "Nome do Assunto"
+                },
                 "base:descricao",
                 "base:slug_topico",
                 "eureka:Keywords",
@@ -109,13 +126,16 @@
             "columns": [
                 {
                     "key": "title",
-                    "title": "Título da Disciplina"
+                    "title": "Nome da Disciplina"
                 }
             ]
         },
         "eureka_Disciplina_instance": {
             "form": [
-                "rdfs:label",
+                {
+                    "key": "rdfs:label",
+                    "title": "Nome da Disciplina"
+                },
                 "eureka:Folder_ID",
                 "eureka:URL"
             ]
@@ -124,13 +144,16 @@
             "columns": [
                 {
                     "key": "title",
-                    "title": "Título da Editoria"
+                    "title": "Nome da Editoria"
                 }
             ]
         },
         "eureka_EditoriaEureka_instance": {
             "form": [
-                "rdfs:label",
+                {
+                    "key": "rdfs:label",
+                    "title": "Nome da Editoria"
+                },
                 "eureka:Folder_ID",
                 "eureka:URL"
             ]
@@ -139,13 +162,16 @@
             "columns": [
                 {
                     "key": "title",
-                    "title": "Título da Edição"
+                    "title": "Nome da Edição"
                 }
             ]
         },
        "eureka_Edicao_instance": {
             "form": [
-                "rdfs:label",
+                {
+                    "key": "rdfs:label",
+                    "title": "Nome da Edição"
+                },
                 "eureka:Ano",
                 {
                     "key": "eureka:PertenceAoProcessoSeletivo",
@@ -162,13 +188,16 @@
             "columns": [
                 {
                     "key": "title",
-                    "title": "Título da Prova"
+                    "title": "Nome da Prova"
                 }
             ]
         },
         "eureka_Prova_instance": {
             "form": [
-                "rdfs:label",
+                {
+                    "key": "rdfs:label",
+                    "title": "Nome da Prova"
+                },
                 "base:descricao",
                 "base:slug_topico",
                 "eureka:Keywords",

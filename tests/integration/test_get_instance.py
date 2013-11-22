@@ -1,9 +1,11 @@
 import json
 from mock import patch
+import ujson
 from brainiak import settings, server
 
 from brainiak.instance import get_instance
 from brainiak.settings import URI_PREFIX
+from brainiak.utils.cache import connect
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -237,3 +239,34 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         self.assertEqual(body[u'http://brmedia.com/related_to'], [{u"@id": u"dbpedia:Cricket", u"title": u"Cricket"}])
+
+
+class InstanceCauseSchemaToBeCachedTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+
+    allow_triplestore_connection = True
+    fixtures_by_graph = {"http://brmedia.com/": ["tests/sample/sports.n3"]}
+    maxDiff = None
+    redis_test_client = connect()
+
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_get_instance_generate_schema_cache_entry(self, mock_settings):
+        expected_redis_key = "http://brmedia.com/@@http://dbpedia.org/ontology/News##class"
+        # Clean cache
+        self.redis_test_client.delete([expected_redis_key])
+
+        class_response = self.fetch('/dbpedia/News/_schema?class_prefix=http://dbpedia.org/ontology/&graph_uri=http://brmedia.com/', method='GET')
+        self.assertEqual(class_response.code, 200)
+        cached_schema_by_direct_access_str = self.redis_test_client.get(expected_redis_key)
+        cached_schema_by_direct_access = ujson.loads(cached_schema_by_direct_access_str)
+        self.assertEqual(cached_schema_by_direct_access['meta']['cache'], 'MISS')
+
+        # Clean cache
+        self.redis_test_client.delete([expected_redis_key])
+
+        instance_response = self.fetch('/dbpedia/News/news_cricket?instance_prefix=http://brmedia.com/&graph_uri=http://brmedia.com/', method='GET')
+        self.assertEqual(instance_response.code, 200)
+        cached_schema_caused_by_get_instance_str = self.redis_test_client.get(expected_redis_key)
+        cached_schema_caused_by_get_instance = ujson.loads(cached_schema_caused_by_get_instance_str)
+
+        self.assertEqual(cached_schema_caused_by_get_instance['body'], cached_schema_by_direct_access['body'])
+        self.assertEqual(cached_schema_caused_by_get_instance['meta']['cache'], 'HIT')

@@ -180,7 +180,7 @@ class BrainiakChecker(Checker):
         nose.assert_in(es_response.status_code, [404])
 
         # Add instance
-        response = self.put("place/City/globoland", "new_city.json")    
+        response = self.put("place/City/globoland", "new_city.json")
         nose.assert_equal(response.status_code, 201)
 
         sys.stdout.write("\n-- try changing <check_instance_create> timeout if it fails\n")

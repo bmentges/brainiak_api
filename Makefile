@@ -40,6 +40,10 @@ acceptance: build_settings clean
 	@echo "Running acceptance tests..."
 	@nosetests -s  --tests=$(HOME_BRAINIAK)/tests/acceptance --with-xunit --with-spec --spec-color $(EXTRA_NOSE_PARAMS)
 
+acceptance_cma: build_settings clean
+	@echo "Running acceptance tests for the CMAaaS..."
+	@nosetests -s  --tests=$(HOME_BRAINIAK)/tests/acceptance/cma --with-xunit --with-spec --spec-color $(EXTRA_NOSE_PARAMS)
+
 pep8:
 	@echo "Checking source-code PEP8 compliance"
 	@-pep8 $(HOME_BRAINIAK)/src/brainiak --ignore=E501,E126,E127,E128

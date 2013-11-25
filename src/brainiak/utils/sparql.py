@@ -561,7 +561,6 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
         msg = template.format(property_, class_id, instance_uri)
         errors.append(msg)
 
-
     if errors:
         error_msg = json.dumps(errors)
         raise InstanceError(error_msg)

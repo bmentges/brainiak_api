@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-25 10:35-0200\n"
+"POT-Creation-Date: 2013-11-25 16:35-0200\n"
 "PO-Revision-Date: 2013-11-21 17:23-0200\n"
 "Last-Translator: Semantic Team <semantica@corp.globo.com>\n"
 "Language-Team: Semantic Team <semantica@corp.globo.com>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: brainiak/utils/sparql.py:511
+#: brainiak/utils/sparql.py:515
 msgid ""
 "Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was "
 "given."
@@ -25,14 +25,14 @@ msgstr ""
 "Valor incorreto para a propriedade ({1}). Um ({2}) era esperado, mas ({0}) "
 "foi fornecido."
 
-#: brainiak/utils/sparql.py:520
+#: brainiak/utils/sparql.py:524
 msgid ""
 "Inexistent property ({0}) in the schema ({1}), used to create instance ({2})"
 msgstr ""
 "Propriedade inexistente ({0}) na classe ({1}), usada para criar a instância "
 "({2})"
 
-#: brainiak/utils/sparql.py:550
+#: brainiak/utils/sparql.py:554
 msgid ""
 "The property ({0}) defined in the schema ({1}) must map a unique value. The "
 "value provided ({2}) is already used by another instance."
@@ -40,11 +40,21 @@ msgstr ""
 "A propriedade ({0}) definida na classe ({1}) deve referenciar um valor "
 "único. O valor fornecido ({2}) já está em uso por outra instância."
 
-#: brainiak/utils/sparql.py:580
+#: brainiak/utils/sparql.py:559
+msgid ""
+"The property ({0}) is obligatory according to the definition of the class "
+"({1}). A value must be provided for this field in order to create or edit "
+"({2})."
+msgstr ""
+"A propriedade ({0}) é obrigatória pela definição da classe "
+"({1}). Um valor deve ser preenchido para este campo na edição ou criação de  "
+"({2})."
+
+#: brainiak/utils/sparql.py:591
 msgid "Could not encode boolean using {0}"
 msgstr "Não foi possível codificar o valor booleano usando {0}"
 
-#: brainiak/utils/sparql.py:589
+#: brainiak/utils/sparql.py:600
 msgid "Could not decode boolean using {0}"
 msgstr "Não foi possível decodificar o valor booleano usando {0}"
 
@@ -275,8 +285,8 @@ msgid ""
 " Set expand_object_properties=0 if you don't care about this ontological "
 "inconsistency."
 msgstr ""
-" Configure expand_object_properties=0 se esta inconsistência ontológica "
-"não lhe causar desconforto."
+" Configure expand_object_properties=0 se esta inconsistência ontológica não "
+"lhe causar desconforto."
 
 #: brainiak/instance/get_instance.py:107
 msgid ""
@@ -286,7 +296,8 @@ msgstr ""
 
 #: brainiak/instance/get_instance.py:202
 msgid "The property {0} is unknown according to the schema definitions {1}"
-msgstr "A propriedade {0} é desconhecida de acordo com as definições de schema {1}""
+msgstr ""
+"A propriedade {0} é desconhecida de acordo com as definições de schema {1}"
 
 #: brainiak/instance/get_instance.py:208
 #, fuzzy

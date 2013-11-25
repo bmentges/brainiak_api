@@ -8,23 +8,44 @@ New Features
 ____________
 
  - Textual Search for instances (see :doc:`/services/search/search`).
-
- - Added X-Brainiak-Resource-Uri to response header when creeting instances, in order to refer to the URI created
-
- - Validating value uniqueness when property has the annotation property ``:tem_valor_unico``
+ - Add X-Brainiak-Resource-Uri to response header when creeting instances, in order to refer to the URI created
+ - Validate value uniqueness when property has the annotation property ``:tem_valor_unico``
+ - Internationalization of error messages
+ - Portuguese version of error messages, despite English (default)
 
 Fix
 ___
 
  - TODO: check all fixes from commit 3a350181e5fb8962de9ef6f10b2b644f42e2e67f (last commit checked) to now
-
- - Added ``rel='create'`` to class schema
-
  - Bugfix for absent ``Access-Control-Allow-Origin: *`` in error responses
-
  - When retrieving instances, blank nodes are ignored in the response
-
  - class_prefix was being rendered with an incorrect trailing ``:``. This char ``:`` is not part of the URL.
+
+Enhancements
+____________
+
+ - Use relative URLS in class schema (it was absulte before this)
+ - Add ``rel='create'`` to class schema
+ - Add ``rel='suggest'`` to class schema
+ - Add ``rel='create'`` to class schema
+ - Add ``rel='search'`` to instances`  collection
+ - Add *temporary*  duplicate ``title`` to collection JSON schema, for compliance with CMAaaS
+ - Add ``_type_title`` to each item in Suggest response
+ - Add X-Brainiak-Resource-Uri to header, in order to refer to the URI when a instance is created
+ - Rename ``rel='instance'`` to ``rel='relatedInstance'`` and change variable template, for compliance with CMAaaS
+ - Rename titles in JSON-Schemas for root, context and collection
+ - Remove header ``X-Brainiak-Cache-All`` (functionality is available using ``X-Brainiak-Cache-Recursive``)
+ - Validate input when adding or editting instances (uniqueness, type) - raise 400 otherwise
+ - Return multiple validation errors
+
+Developers notes
+________________
+
+ - Refactor caching keys
+ - Flush all cache when Brainiak is initialized (or restarted)
+ - Add custimize.py script, for uploading customizations to CMAaaS
+ - Use expanded URIs internally
+ - Nginx-related: comment out ``X-Scheme`` so that ``X-Forwarded-Proto`` works correctly to https
 
 
 Version 2.3.8 - 2013/10/04
@@ -39,6 +60,7 @@ ___
 
  - Fix in error messages when context_name, class_name, instance_id received '_',
   now error messages render the contents of class_uri. graph_uri and instance_uri.
+
 
 Version 2.3.7 - 2013/10/31
 --------------------------

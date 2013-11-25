@@ -3,7 +3,7 @@
 from unittest import TestCase
 from brainiak.utils.client import add_instance_with_url, del_instance, fetch_page
 
-API_ENDPOINT = 'http://localhost:5100'
+API_ENDPOINT = "http://brainiak.semantica.dev.globoi.com"
 
 
 class ManageInstance(TestCase):

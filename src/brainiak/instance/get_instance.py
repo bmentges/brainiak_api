@@ -7,7 +7,7 @@ from brainiak.type_mapper import MAP_RDF_EXPANDED_TYPE_TO_PYTHON
 from brainiak.utils.links import build_class_url, split_prefix_and_id_from_uri
 from brainiak.utils.resources import LazyObject
 from brainiak.utils.sparql import get_super_properties, is_result_empty, decode_boolean, get_predicate_datatype
-
+from brainiak.utils.i18n import _
 
 logger = LazyObject(get_logger)
 
@@ -48,8 +48,8 @@ def build_items_dict(bindings, class_uri, expand_object_properties, class_schema
                 if object_label:
                     value = {"@id": object_value, "title": object_label}
                 else:
-                    msg = u"The predicate {0} refers to an object {1} which doesn't have a label.".format(predicate_uri, object_value) + \
-                        " Set expand_object_properties=0 if you don't care about this ontological inconsistency."
+                    msg = _(u"The predicate {0} refers to an object {1} which doesn't have a label.").format(predicate_uri, object_value) + \
+                        _(" Set expand_object_properties=0 if you don't care about this ontological inconsistency.")
                     value = {"@id": object_value}
                     logger.debug(msg)
                     # raise Exception(msg)
@@ -104,7 +104,7 @@ def check_and_clean_rdftype(instance_type, items):
         rdftype = None
     if rdftype is not None:
         if instance_type != items[rdftype]:
-            msg = u"The type specified={0} is not the same informed from the triplestore={1}"
+            msg = _(u"The type specified={0} is not the same informed from the triplestore={1}")
             raise Exception(msg.format(instance_type, items[rdftype]))
         del items[rdftype]
 
@@ -199,13 +199,13 @@ def _convert_to_python(object_value, class_schema, predicate_uri):
 
         python_type = MAP_RDF_EXPANDED_TYPE_TO_PYTHON.get(schema_type)
         if python_type is None:
-            msg = u"The property {0} is unknown according to the schema definitions {1}".format(predicate_uri, class_schema)
+            msg = _(u"The property {0} is unknown according to the schema definitions {1}").format(predicate_uri, class_schema)
             logger.debug(msg)
             converted_value = object_value
         elif python_type == bool:
             converted_value = decode_boolean(object_value)
         else:
-            msg = u"The property {0} is mapped to a inconsistent value {1}".format(predicate_uri, object_value)
+            msg = _(u"The property {0} is mapped to a inconsistent value {1}").format(predicate_uri, object_value)
             try:
                 converted_value = python_type(object_value)
             except ValueError:

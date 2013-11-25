@@ -42,7 +42,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         body = json.loads(response.body)
         self.assertEqual(body["$schema"], u'http://json-schema.org/draft-04/schema#')
-        self.assertEqual(body["title"], u'Root Schema that lists all contexts')
+        self.assertEqual(body["title"], u'Contexts')
 
     @patch("brainiak.utils.cache.retrieve", return_value={"body": {"status": "cached"}, "meta": {"last_modified": "Fri, 11 May 1984 20:00:00 -0300"}})
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)

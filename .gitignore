@@ -26,6 +26,9 @@ pip-log.txt
 .coverage
 .tox
 nosetests.xml
+.nose-stopwatch-times
+.nose-stopwatch-times-unit
+.nose-stopwatch-times-integration
 
 # Mr Developer
 .mr.developer.cfg

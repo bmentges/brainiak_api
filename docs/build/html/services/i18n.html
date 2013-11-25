@@ -66,7 +66,7 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../releases.html">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-0-2013">Version 2.4.0 - 2013//</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-0-2013-11-28">Version 2.4.0 - 2013/11/28</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-3-8-2013-10-04">Version 2.3.8 - 2013/10/04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-3-7-2013-10-31">Version 2.3.7 - 2013/10/31</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-3-6-2013-10-28">Version 2.3.6 - 2013/10/28</a></li>
@@ -130,7 +130,10 @@
             <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
-<li><a class="reference internal" href="#">Internationalization</a></li>
+<li><a class="reference internal" href="#">Internationalization</a><ul>
+<li><a class="reference internal" href="#developers-notes">Developers&#8217; notes</a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -164,8 +167,30 @@
   
   <div class="section" id="internationalization">
 <h1>Internationalization<a class="headerlink" href="#internationalization" title="Permalink to this headline">¶</a></h1>
+<p>Brainiak supports the internationalization of:</p>
 <blockquote>
-<div>TODO: explain about the lang parameter and the json layout for multi-language text.</div></blockquote>
+<div><ol class="arabic simple">
+<li>Error messages, and</li>
+<li>Ontology &amp; instances string literals</li>
+</ol>
+</div></blockquote>
+<p>It is possible to define the default language of both by editing <tt class="docutils literal"><span class="pre">settings.py</span></tt>&#8216;s <tt class="docutils literal"><span class="pre">DEFAULT_LANG</span></tt> variable.</p>
+<p>Despite this, it is also possible to customize the language of (2) in most of Brainiak services, by adding <tt class="docutils literal"><span class="pre">lang=pt</span></tt> to the request querystring.</p>
+<div class="section" id="developers-notes">
+<h2>Developers&#8217; notes<a class="headerlink" href="#developers-notes" title="Permalink to this headline">¶</a></h2>
+<p>Brainiak error messages are translated using GETTEXT.</p>
+<p>The following steps must be followed in order to internationlize a phrase inside Brainiak source code:</p>
+<blockquote>
+<div><p>i. Wrap the string to be translated using _().
+E.g. if &#8220;some expression&#8221; must be translated, replace it by _(&#8220;some expression&#8221;)</p>
+<p>ii. Create or update Brainiak translation template:
+<tt class="docutils literal"><span class="pre">make</span> <span class="pre">translate_template</span></tt></p>
+<p>iii. Update Brainiak Portuguese dictionary based on translation template
+<tt class="docutils literal"><span class="pre">make</span> <span class="pre">portuguese_dictionary</span></tt></p>
+<p>iv. Compile Portuguese dictionary, so the machine can understand the translations
+<tt class="docutils literal"><span class="pre">make</span> <span class="pre">compile_portuguese</span></tt></p>
+</div></blockquote>
+</div>
 </div>
 
 

@@ -152,7 +152,7 @@ def schema():
                 "schema": SUGGEST_PARAM_SCHEMA
             },
             {
-                "href": "/{{context_id}}/{{collection_id}}",
+                "href": "/{context_id}/{collection_id}",
                 "method": "GET",
                 "rel": "collection",
                 "schema": {
@@ -165,7 +165,7 @@ def schema():
                 }
             },
             {
-                "href": "/{{context_id}}/{{collection_id}}/{{resource_id}}",
+                "href": "/{context_id}/{collection_id}/{resource_id}",
                 "method": "GET",
                 "rel": "instance",
                 "schema": {

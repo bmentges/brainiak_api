@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from splinter import Browser
 
+
 class CMALoginTestCase(TestCase):
 
     def setUp(self):

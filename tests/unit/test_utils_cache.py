@@ -75,8 +75,8 @@ class MemoizeTestCase(unittest.TestCase):
         expected = {
             'body': {"status": "Laundry done"},
             'meta': {
-                'last_modified': 'Fri, 11 May 1984 20:00:00 -0300',
-                'cache': 'MISS'
+                'cache': 'MISS',
+                'last_modified': 'Fri, 11 May 1984 20:00:00 -0300'
             }
         }
         self.assertEqual(answer, expected)
@@ -95,9 +95,7 @@ class MemoizeTestCase(unittest.TestCase):
         params = {'request': MockRequest(uri="/home")}
         answer = memoize(params, clean_up)
         self.assertEqual(answer['status'], "Dishes cleaned up")
-        self.assertEqual(answer["meta"]["cache"], "HIT")
         self.assertEqual(redis_get.call_count, 1)
-        self.assertEqual(redis_set.call_count, 1)
 
 
 class GeneralFunctionsTestCase(unittest.TestCase):

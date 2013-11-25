@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-25 10:35-0200\n"
+"POT-Creation-Date: 2013-11-25 16:37-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,28 +17,35 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: brainiak/utils/sparql.py:511
+#: brainiak/utils/sparql.py:515
 msgid ""
 "Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was "
 "given."
 msgstr ""
 
-#: brainiak/utils/sparql.py:520
+#: brainiak/utils/sparql.py:524
 msgid ""
 "Inexistent property ({0}) in the schema ({1}), used to create instance ({2})"
 msgstr ""
 
-#: brainiak/utils/sparql.py:550
+#: brainiak/utils/sparql.py:554
 msgid ""
 "The property ({0}) defined in the schema ({1}) must map a unique value. The "
 "value provided ({2}) is already used by another instance."
 msgstr ""
 
-#: brainiak/utils/sparql.py:580
+#: brainiak/utils/sparql.py:559
+msgid ""
+"The property ({0}) is obligatory according to the definition of the class "
+"({1}). A value must be provided for this field in order to create or edit "
+"({2})."
+msgstr ""
+
+#: brainiak/utils/sparql.py:591
 msgid "Could not encode boolean using {0}"
 msgstr ""
 
-#: brainiak/utils/sparql.py:589
+#: brainiak/utils/sparql.py:600
 msgid "Could not decode boolean using {0}"
 msgstr ""
 

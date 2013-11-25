@@ -299,6 +299,30 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
         expected_error_msg = [u"Inexistent property (http://personpedia.com/occupation) in the schema (http://personpedia.com/Person), used to create instance (http://personpedia.com/Person/OscarWilde)"]
         self.assertEqual(json.loads(str(exception.exception)), expected_error_msg)
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    def test_create_explicit_triples_without_obligatory_properties(self, mock_settings):
+        instance_uri = "http://personpedia.com/Person/OscarWilde"
+        instance_data = {
+        }
+        class_object = {
+            u'id': "http://personpedia.com/Person",
+            u'properties': {
+                u'http://personpedia/full_name': {
+                    'datatype': u'http://www.w3.org/2001/XMLSchema#string',
+                    'description': u'Formal or informal name of something or someone',
+                    'required': True,
+                    'title': u'Full name',
+                    'type': 'string'
+                }
+            }
+        }
+
+        with self.assertRaises(InstanceError) as exception:
+            create_explicit_triples(instance_uri, instance_data, class_object, None, None)
+        
+        expected_error_msg = [u'The property (http://personpedia/full_name) is obligatory according to the definition of the class (http://personpedia.com/Person). A value must be provided for this field in order to create or edit (http://personpedia.com/Person/OscarWilde).']
+        self.assertEqual(json.loads(str(exception.exception)), expected_error_msg)
+
     def test_create_explicit_triples_predicates_and_objects_are_full_uris(self):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
         graph_uri = "http://personpedia.com/"

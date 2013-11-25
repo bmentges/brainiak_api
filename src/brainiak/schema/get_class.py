@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from brainiak import triplestore
+from brainiak import triplestore, settings
 from brainiak.log import get_logger
 from brainiak.prefixes import MemorizeContext
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
@@ -264,7 +264,7 @@ WHERE {
     ?predicate rdfs:label ?title .
     ?predicate rdf:type ?type .
     OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
-    OPTIONAL { ?predicate base:tem_valor_unico ?unique_value } .
+    OPTIONAL { ?predicate %(uniqueness_property)s ?unique_value } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
     FILTER(langMatches(lang(?title), "%(lang)s") OR langMatches(lang(?title), "")) .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
@@ -311,7 +311,7 @@ WHERE {
     ?predicate rdfs:label ?title .
     ?predicate rdf:type ?type .
     OPTIONAL { ?predicate rdfs:subPropertyOf ?super_property } .
-    OPTIONAL { ?predicate base:tem_valor_unico ?unique_value } .
+    OPTIONAL { ?predicate %(uniqueness_property)s ?unique_value } .
     FILTER (?type in (owl:ObjectProperty, owl:DatatypeProperty)) .
     OPTIONAL { GRAPH ?range_graph {  ?range rdfs:label ?range_label . } } .
     OPTIONAL { ?predicate rdfs:comment ?predicate_comment }
@@ -320,11 +320,13 @@ WHERE {
 
 def _query_predicate_without_lang(query_params):
     query_params["filter_classes_clause"] = u"FILTER (?domain_class IN (<" + u">, <".join(query_params["superclasses"]) + u">))"
+    query_params["uniqueness_property"] = settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE
     query = QUERY_PREDICATE_WITHOUT_LANG % query_params
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 def query_superclasses(query_params):
+    query_params["uniqueness_property"] = settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE
     result_dict = _query_superclasses(query_params)
     superclasses = filter_values(result_dict, "class")
     return superclasses

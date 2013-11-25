@@ -51,3 +51,5 @@ def load_environment_variables(env):
 
 ENVIRONMENT = '<%= puppetmaster_env %>'
 load_environment_variables(ENVIRONMENT)
+
+ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE = "base:tem_valor_unico"

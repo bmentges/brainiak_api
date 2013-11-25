@@ -273,7 +273,10 @@ class PredicatesQueryTestCase(QueryTestCase):
 
     def test_query_predicate_multiple_classes(self):
         filter_ = "FILTER (?domain_class IN (<http://example.onto/Mammalia>, <http://example.onto/Canidae>))"
-        params = {"filter_classes_clause": filter_}
+        params = {
+            "filter_classes_clause": filter_,
+            "uniqueness_property": "rdfs:unique"
+        }
         query = QUERY_PREDICATE_WITHOUT_LANG % params
         computed = self.query(query)['results']['bindings']
         expected = [
@@ -306,7 +309,10 @@ class PredicatesQueryTestCase(QueryTestCase):
 
     def test_query_predicate_subproperty(self):
         filter_ = "FILTER (?domain_class IN (<http://example.onto/Yorkshire_Terrier>))"
-        params = {"filter_classes_clause": filter_}
+        params = {
+            "filter_classes_clause": filter_,
+            "uniqueness_property": "rdfs:unique"
+        }
         query = QUERY_PREDICATE_WITHOUT_LANG % params
         computed = self.query(query)['results']['bindings']
         expected = [
@@ -326,7 +332,11 @@ class PredicatesQueryTestCase(QueryTestCase):
 
     def test_query_predicate_with_lang_and_comment(self):
         filter_ = "FILTER (?domain_class IN (<http://example.onto/Bird>, <http://example.onto/Animal>))"
-        params = {"filter_classes_clause": filter_, "lang": "en"}
+        params = {
+            "filter_classes_clause": filter_,
+            "lang": "en",
+            "uniqueness_property": "rdfs:unique"
+        }
         query = QUERY_PREDICATE_WITH_LANG % params
         computed = self.query(query)['results']['bindings']
         expected = [
@@ -370,7 +380,10 @@ class PredicatesQueryTestCaseMultipleDomainRange(QueryTestCase):
 
     def test_query_predicate_multiple_ranges(self):
         filter_ = "FILTER (?domain_class IN (<http://example.onto/ResearchGroup>))"
-        params = {"filter_classes_clause": filter_}
+        params = {
+            "filter_classes_clause": filter_,
+            "uniqueness_property": "rdfs:unique"
+        }
         query = QUERY_PREDICATE_WITHOUT_LANG % params
         computed = self.query(query)['results']['bindings']
         expected = [
@@ -399,7 +412,10 @@ class PredicatesQueryTestCaseMultipleDomainRange(QueryTestCase):
 
     def test_query_predicate_multiple_domains(self):
         filter_ = "FILTER (?domain_class IN (<http://example.onto/City>))"
-        params = {"filter_classes_clause": filter_}
+        params = {
+            "filter_classes_clause": filter_,
+            "uniqueness_property": "rdfs:unique"
+        }
         query = QUERY_PREDICATE_WITHOUT_LANG % params
         computed = self.query(query)['results']['bindings']
         expected = [

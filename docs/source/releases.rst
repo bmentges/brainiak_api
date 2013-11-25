@@ -7,12 +7,12 @@ Version 2.4.0 - 2013/11/28
 New Features
 ____________
 
- - Textual Search for instances (see :doc:`/services/search/search`).
- - Add ``X-Brainiak-Resource-Uri`` to response header when creating instances, in order to refer to the URI created
+ - Add service for full text search of instances (see :doc:`/services/search/search`).
+ - Add ``X-Brainiak-Resource-Uri`` to response header when creating instances (URI of instance created)
  - Internationalization of error messages
  - Portuguese version of error messages, despite English (default)
  - Validate value uniqueness when property has the annotation property specified in ``settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE``
- - Validate input when adding or editting instances (uniqueness, type, required) - raise 400 otherwise
+ - Validate data when adding or editing instances (uniqueness, type, required). If the data isn't compatible to the schema, the response status code is 400 and the payload contains a list with all the inconsistencies.
 
 Fix
 ___
@@ -24,7 +24,7 @@ ___
 Enhancements
 ____________
 
- - Use relative URLS in class schema (it was absulte before this)
+ - Use relative URLS in class schema (it was absulte before this release)
  - Add ``rel='create'`` to class schema
  - Add ``rel='suggest'`` to class schema
  - Add ``rel='create'`` to class schema
@@ -35,15 +35,14 @@ ____________
  - Rename ``rel='instance'`` to ``rel='relatedInstance'`` and change variable template, for compliance with CMAaaS
  - Rename titles in JSON-Schemas for root, context and collection
  - Remove header ``X-Brainiak-Cache-All`` (functionality is available using ``X-Brainiak-Cache-Recursive``)
- - Return multiple validation errors
 
 Developers notes
 ________________
 
- - Refactor caching keys
- - Flush all cache when Brainiak is initialized (or restarted)
- - Add custimize.py script, for uploading customizations to CMAaaS
- - Use expanded URIs internally
+ - Caching keys refactoring
+ - When brainiak is initialized, all cache is flushed
+ - ``customize.py`` script allows uploading customizations to CMAaaS
+ - Only expanded URIs will be used internally from now on
  - Nginx-related: comment out ``X-Scheme`` so that ``X-Forwarded-Proto`` works correctly to https
 
 

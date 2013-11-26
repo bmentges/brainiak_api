@@ -110,7 +110,13 @@
                     "title": "Nome do Assunto"
                 },
                 "base:descricao",
-                "base:slug_topico",
+                {
+                    "key": "base:slug_topico",
+                    "type": "slug-brainiak",
+                    "options": {
+                        "slugSeeds": ["rdfs:label"]
+                    }
+                },
                 "eureka:Keywords",
                 {
                     "key": "eureka:PertenceAEditoriaOuDisciplina",
@@ -199,7 +205,13 @@
                     "title": "Nome da Prova"
                 },
                 "base:descricao",
-                "base:slug_topico",
+                {
+                    "key": "base:slug_topico",
+                    "type": "slug-brainiak",
+                    "options": {
+                        "slugSeeds": ["rdfs:label"]
+                    }
+                },
                 "eureka:Keywords",
                 "eureka:Disclaimer",
                 {

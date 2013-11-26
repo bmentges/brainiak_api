@@ -143,14 +143,14 @@ class BrainiakChecker(Checker):
         nose.assert_in(brainiak_version, response.text)
         sys.stdout.write("\ncheck_version - pass")
 
-    # def check_docs(self):
-    #     if environ == "local":
-    #         sys.stdout.write("\ncheck_docs - ignore")
-    #     else:
-    #         response = self.get("docs/")
-    #         nose.assert_equal(response.status_code, 200)
-    #         nose.assert_in("Brainiak API documentation!", response.text)
-    #         sys.stdout.write("\ncheck_docs - pass")
+    def check_docs(self):
+        if environ == "local":
+            sys.stdout.write("\ncheck_docs - ignore")
+        else:
+            response = self.get("docs/")
+            nose.assert_equal(response.status_code, 200)
+            nose.assert_in("Brainiak API documentation!", response.text)
+            sys.stdout.write("\ncheck_docs - pass")
 
     def check_instance_create(self):
         # Remove if instance exist

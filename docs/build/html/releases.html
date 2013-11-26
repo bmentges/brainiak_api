@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Releases &mdash; brainiak 2.3.7 documentation</title>
+    <title>Releases &mdash; brainiak 2.4.0 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '2.3.7',
+        VERSION:     '2.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.3.7 documentation" href="index.html" />
+    <link rel="top" title="brainiak 2.4.0 documentation" href="index.html" />
     <link rel="next" title="Concepts" href="concepts.html" />
     <link rel="prev" title="Brainiak API documentation!" href="index.html" />
 <meta charset='utf-8'>
@@ -52,7 +52,7 @@
       </button>
 
       <a class="brand" href="index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.3.7</b></span>
+      <span class="navbar-text pull-left"><b>2.4.0</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -65,7 +65,7 @@
   <ul class="dropdown-menu globaltoc"
     ><ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#version-2-4-0-2013">Version 2.4.0 - 2013//</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-4-0-2013-11-28">Version 2.4.0 - 2013/11/28</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-3-8-2013-10-04">Version 2.3.8 - 2013/10/04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-3-7-2013-10-31">Version 2.3.7 - 2013/10/31</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-3-6-2013-10-28">Version 2.3.6 - 2013/10/28</a></li>
@@ -130,9 +130,11 @@
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
 <li><a class="reference internal" href="#">Releases</a><ul>
-<li><a class="reference internal" href="#version-2-4-0-2013">Version 2.4.0 - 2013//</a><ul>
+<li><a class="reference internal" href="#version-2-4-0-2013-11-28">Version 2.4.0 - 2013/11/28</a><ul>
 <li><a class="reference internal" href="#new-features">New Features</a></li>
 <li><a class="reference internal" href="#fix">Fix</a></li>
+<li><a class="reference internal" href="#enhancements">Enhancements</a></li>
+<li><a class="reference internal" href="#developers-notes">Developers notes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#version-2-3-8-2013-10-04">Version 2.3.8 - 2013/10/04</a><ul>
@@ -183,19 +185,19 @@
 <li><a class="reference internal" href="#id16">New features</a></li>
 <li><a class="reference internal" href="#id17">Refactor</a></li>
 <li><a class="reference internal" href="#id18">Fixes</a></li>
-<li><a class="reference internal" href="#developers-notes">Developers&#8217; notes</a></li>
+<li><a class="reference internal" href="#id19">Developers&#8217; notes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a><ul>
-<li><a class="reference internal" href="#id19">New features</a></li>
-<li><a class="reference internal" href="#id20">Fixes</a></li>
+<li><a class="reference internal" href="#id20">New features</a></li>
+<li><a class="reference internal" href="#id21">Fixes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a><ul>
-<li><a class="reference internal" href="#id21">New features</a></li>
-<li><a class="reference internal" href="#id22">Refactor</a></li>
+<li><a class="reference internal" href="#id22">New features</a></li>
+<li><a class="reference internal" href="#id23">Refactor</a></li>
 <li><a class="reference internal" href="#documentation">Documentation</a></li>
-<li><a class="reference internal" href="#id23">Developers&#8217; notes</a></li>
+<li><a class="reference internal" href="#id24">Developers&#8217; notes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
@@ -235,15 +237,18 @@
   
   <div class="section" id="releases">
 <h1>Releases<a class="headerlink" href="#releases" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-2-4-0-2013">
-<h2>Version 2.4.0 - 2013//<a class="headerlink" href="#version-2-4-0-2013" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-2-4-0-2013-11-28">
+<h2>Version 2.4.0 - 2013/11/28<a class="headerlink" href="#version-2-4-0-2013-11-28" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="new-features">
 <h3>New Features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
-<li>Textual Search for instances (see <a class="reference internal" href="services/search/search.html"><em>Search</em></a>).</li>
-<li>Added X-Brainiak-Resource-Uri to response header when creeting instances, in order to refer to the URI created</li>
-<li>Validating value uniqueness when property has the annotation property <tt class="docutils literal"><span class="pre">:tem_valor_unico</span></tt></li>
+<li>Add service for full text search of instances (see <a class="reference internal" href="services/search/search.html"><em>Search</em></a>).</li>
+<li>Add <tt class="docutils literal"><span class="pre">X-Brainiak-Resource-Uri</span></tt> to response header when creating instances (URI of instance created)</li>
+<li>Internationalization of error messages</li>
+<li>Portuguese version of error messages, despite English (default)</li>
+<li>Validate value uniqueness when property has the annotation property specified in <tt class="docutils literal"><span class="pre">settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE</span></tt></li>
+<li>Validate data when adding or editing instances (uniqueness, type, required). If the data isn&#8217;t compatible to the schema, the response status code is 400 and the payload contains a list with all the inconsistencies.</li>
 </ul>
 </div></blockquote>
 </div>
@@ -251,11 +256,39 @@
 <h3>Fix<a class="headerlink" href="#fix" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
-<li>TODO: check all fixes from commit 3a350181e5fb8962de9ef6f10b2b644f42e2e67f (last commit checked) to now</li>
-<li>Added <tt class="docutils literal"><span class="pre">rel='create'</span></tt> to class schema</li>
 <li>Bugfix for absent <tt class="docutils literal"><span class="pre">Access-Control-Allow-Origin:</span> <span class="pre">*</span></tt> in error responses</li>
 <li>When retrieving instances, blank nodes are ignored in the response</li>
 <li>class_prefix was being rendered with an incorrect trailing <tt class="docutils literal"><span class="pre">:</span></tt>. This char <tt class="docutils literal"><span class="pre">:</span></tt> is not part of the URL.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="enhancements">
+<h3>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Use relative URLS in class schema (it was absulte before this release)</li>
+<li>Add <tt class="docutils literal"><span class="pre">rel='create'</span></tt> to class schema</li>
+<li>Add <tt class="docutils literal"><span class="pre">rel='suggest'</span></tt> to class schema</li>
+<li>Add <tt class="docutils literal"><span class="pre">rel='create'</span></tt> to class schema</li>
+<li>Add <tt class="docutils literal"><span class="pre">rel='search'</span></tt> to instances&#8217; collection</li>
+<li>Add <em>temporary</em>  duplicate <tt class="docutils literal"><span class="pre">title</span></tt> to collection JSON schema, for compliance with CMAaaS</li>
+<li>Add <tt class="docutils literal"><span class="pre">_type_title</span></tt> to each item in Suggest response</li>
+<li>Add X-Brainiak-Resource-Uri to header, in order to refer to the URI when a instance is created</li>
+<li>Rename <tt class="docutils literal"><span class="pre">rel='instance'</span></tt> to <tt class="docutils literal"><span class="pre">rel='relatedInstance'</span></tt> and change variable template, for compliance with CMAaaS</li>
+<li>Rename titles in JSON-Schemas for root, context and collection</li>
+<li>Remove header <tt class="docutils literal"><span class="pre">X-Brainiak-Cache-All</span></tt> (functionality is available using <tt class="docutils literal"><span class="pre">X-Brainiak-Cache-Recursive</span></tt>)</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="developers-notes">
+<h3>Developers notes<a class="headerlink" href="#developers-notes" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Caching keys refactoring</li>
+<li>When brainiak is initialized, all cache is flushed</li>
+<li><tt class="docutils literal"><span class="pre">customize.py</span></tt> script allows uploading customizations to CMAaaS</li>
+<li>Only expanded URIs will be used internally from now on</li>
+<li>Nginx-related: comment out <tt class="docutils literal"><span class="pre">X-Scheme</span></tt> so that <tt class="docutils literal"><span class="pre">X-Forwarded-Proto</span></tt> works correctly to https</li>
 </ul>
 </div></blockquote>
 </div>
@@ -488,8 +521,8 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="developers-notes">
-<h3>Developers&#8217; notes<a class="headerlink" href="#developers-notes" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id19">
+<h3>Developers&#8217; notes<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Add automate tests to check compliance to JSON-Schema Version 3</li>
@@ -501,8 +534,8 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 </div>
 <div class="section" id="version-2-1-0-2013-08-01">
 <h2>Version 2.1.0 - 2013/08/01<a class="headerlink" href="#version-2-1-0-2013-08-01" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id19">
-<h3>New features<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id20">
+<h3>New features<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>New parameters for optional URI expansion in responses: expand_uri, expand_uri_keys and expand_uri_values (see <a class="reference internal" href="services/instance/get_instance.html"><em>Get an Instance</em></a>).</li>
@@ -511,8 +544,8 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id20">
-<h3>Fixes<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id21">
+<h3>Fixes<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Instances filter with PO ignores literals&#8217; type</li>
@@ -522,8 +555,8 @@ The mapping of json types to semantic types is still simplified. A precise mappi
 </div>
 <div class="section" id="version-2-0-0-2013-07-18">
 <h2>Version 2.0.0 - 2013/07/18<a class="headerlink" href="#version-2-0-0-2013-07-18" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id21">
-<h3>New features<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id22">
+<h3>New features<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Instances list (filtering) resource supports multiple predicates and objects</li>
@@ -535,8 +568,8 @@ available on cached resources</li>
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id22">
-<h3>Refactor<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id23">
+<h3>Refactor<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>Instances list (filtering) resource now applies lang to objects (?o) when
@@ -580,8 +613,8 @@ literals are provided</li>
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id23">
-<h3>Developers&#8217; notes<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id24">
+<h3>Developers&#8217; notes<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li>SPARQL queries logging is now compatible to Globo.com DBA team&#8217;s expectations</li>

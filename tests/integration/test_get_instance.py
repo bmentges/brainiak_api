@@ -258,7 +258,7 @@ class InstanceCauseSchemaToBeCachedTestCase(TornadoAsyncHTTPTestCase, QueryTestC
         self.assertEqual(class_response.code, 200)
         cached_schema_by_direct_access_str = self.redis_test_client.get(expected_redis_key)
         cached_schema_by_direct_access = ujson.loads(cached_schema_by_direct_access_str)
-        self.assertEqual(cached_schema_by_direct_access['meta']['cache'], 'MISS')
+        last_modified = cached_schema_by_direct_access['meta']['last_modified']
 
         # Clean cache
         self.redis_test_client.delete([expected_redis_key])
@@ -269,4 +269,4 @@ class InstanceCauseSchemaToBeCachedTestCase(TornadoAsyncHTTPTestCase, QueryTestC
         cached_schema_caused_by_get_instance = ujson.loads(cached_schema_caused_by_get_instance_str)
 
         self.assertEqual(cached_schema_caused_by_get_instance['body'], cached_schema_by_direct_access['body'])
-        self.assertEqual(cached_schema_caused_by_get_instance['meta']['cache'], 'HIT')
+        self.assertEqual(last_modified, cached_schema_by_direct_access['meta']['last_modified'])

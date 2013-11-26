@@ -282,6 +282,27 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
 
     maxDiff = None
 
+    def test_find_undefined_obligatory_properties_empty(self):
+        class_object = {"properties": {}}
+        instance_data = {}
+        computed = find_undefined_obligatory_properties(class_object, instance_data)
+        expected = []
+        self.assertEqual(computed, expected)
+
+    def test_find_undefined_obligatory_properties_non_empty_but_defined_in_instance(self):
+        class_object = {"properties": {"height": {"required": True}}}
+        instance_data = {"height": 1.65}
+        computed = find_undefined_obligatory_properties(class_object, instance_data)
+        expected = []
+        self.assertEqual(computed, expected)
+
+    def test_find_undefined_obligatory_properties_not_defined_in_instance(self):
+        class_object = {"properties": {"height": {"required": True}}}
+        instance_data = {}
+        computed = find_undefined_obligatory_properties(class_object, instance_data)
+        expected = ["height"]
+        self.assertEqual(computed, expected)
+
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     def test_create_explicit_triples_undefined_property(self, mock_settings):
         instance_uri = "http://personpedia.com/Person/OscarWilde"
@@ -297,6 +318,30 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
         with self.assertRaises(InstanceError) as exception:
             create_explicit_triples(instance_uri, instance_data, class_object, None, None)
         expected_error_msg = [u"Inexistent property (http://personpedia.com/occupation) in the schema (http://personpedia.com/Person), used to create instance (http://personpedia.com/Person/OscarWilde)"]
+        self.assertEqual(json.loads(str(exception.exception)), expected_error_msg)
+
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    def test_create_explicit_triples_without_obligatory_properties(self, mock_settings):
+        instance_uri = "http://personpedia.com/Person/OscarWilde"
+        instance_data = {
+        }
+        class_object = {
+            u'id': "http://personpedia.com/Person",
+            u'properties': {
+                u'http://personpedia/full_name': {
+                    'datatype': u'http://www.w3.org/2001/XMLSchema#string',
+                    'description': u'Formal or informal name of something or someone',
+                    'required': True,
+                    'title': u'Full name',
+                    'type': 'string'
+                }
+            }
+        }
+
+        with self.assertRaises(InstanceError) as exception:
+            create_explicit_triples(instance_uri, instance_data, class_object, None, None)
+
+        expected_error_msg = [u'The property (http://personpedia/full_name) is obligatory according to the definition of the class (http://personpedia.com/Person). A value must be provided for this field in order to create or edit (http://personpedia.com/Person/OscarWilde).']
         self.assertEqual(json.loads(str(exception.exception)), expected_error_msg)
 
     def test_create_explicit_triples_predicates_and_objects_are_full_uris(self):

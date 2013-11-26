@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Suggest &mdash; brainiak 2.3.7 documentation</title>
+    <title>Suggest &mdash; brainiak 2.4.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2.3.7',
+        VERSION:     '2.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.3.7 documentation" href="../../index.html" />
+    <link rel="top" title="brainiak 2.4.0 documentation" href="../../index.html" />
     <link rel="up" title="Services" href="../../services.html" />
     <link rel="next" title="Overriding URIs" href="../parameters.html" />
     <link rel="prev" title="Search" href="../search/search.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.3.7</b></span>
+      <span class="navbar-text pull-left"><b>2.4.0</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -66,7 +66,7 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../releases.html">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-0-2013">Version 2.4.0 - 2013//</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-0-2013-11-28">Version 2.4.0 - 2013/11/28</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-8-2013-10-04">Version 2.3.8 - 2013/10/04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-7-2013-10-31">Version 2.3.7 - 2013/10/31</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-6-2013-10-28">Version 2.3.6 - 2013/10/28</a></li>
@@ -211,209 +211,229 @@ The  optional parameter <tt class="docutils literal"><span class="pre">fields</s
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;@context&quot;: {
         &quot;@language&quot;: &quot;pt&quot;
-    },
-    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/_suggest/&quot;,
-    &quot;_first_args&quot;: &quot;page=1&quot;,
-    &quot;_next_args&quot;: &quot;page=2&quot;,
+    }, 
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/_suggest/&quot;, 
+    &quot;_first_args&quot;: &quot;page=1&quot;, 
+    &quot;_next_args&quot;: &quot;page=2&quot;, 
     &quot;items&quot;: [
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/42672&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
+            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/42672&quot;, 
+            &quot;@type&quot;: &quot;esportes:Atleta&quot;, 
+            &quot;_type_title&quot;: &quot;Atleta&quot;, 
             &quot;instance_fields&quot;: [
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;, 
+                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;, 
                     &quot;required&quot;: false
-                },
+                }, 
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo - Ataque  / Brasil ( Ronaldo Lu\u00eds Naz\u00e1rio de Lima )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo - Ataque  / Brasil ( Ronaldo Lu\u00eds Naz\u00e1rio de Lima )&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;, 
+                    &quot;predicate_title&quot;: &quot;Label de busca&quot;, 
                     &quot;required&quot;: false
                 }
-            ],
-            &quot;title&quot;: &quot;Ronaldo&quot;,
+            ], 
+            &quot;rdfs:label&quot;: &quot;Ronaldo&quot;, 
+            &quot;title&quot;: &quot;Ronaldo&quot;, 
             &quot;type_title&quot;: &quot;Atleta&quot;
-        },
+        }, 
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/38291&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
+            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/38291&quot;, 
+            &quot;@type&quot;: &quot;esportes:Atleta&quot;, 
+            &quot;_type_title&quot;: &quot;Atleta&quot;, 
             &quot;instance_fields&quot;: [
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;, 
+                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;, 
                     &quot;required&quot;: false
-                },
+                }, 
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo - Gol  / Paysandu ( Willis Gomes Dias )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo - Gol  / Paysandu ( Willis Gomes Dias )&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;, 
+                    &quot;predicate_title&quot;: &quot;Label de busca&quot;, 
                     &quot;required&quot;: false
                 }
-            ],
-            &quot;title&quot;: &quot;Ronaldo&quot;,
+            ], 
+            &quot;rdfs:label&quot;: &quot;Ronaldo&quot;, 
+            &quot;title&quot;: &quot;Ronaldo&quot;, 
             &quot;type_title&quot;: &quot;Atleta&quot;
-        },
+        }, 
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/71640&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
+            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/71640&quot;, 
+            &quot;@type&quot;: &quot;esportes:Atleta&quot;, 
+            &quot;_type_title&quot;: &quot;Atleta&quot;, 
             &quot;instance_fields&quot;: [
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;, 
+                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;, 
                     &quot;required&quot;: false
-                },
+                }, 
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo - Ataque  / Joinville ( Ronaldo Henrique Silva )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo - Ataque  / Joinville ( Ronaldo Henrique Silva )&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;, 
+                    &quot;predicate_title&quot;: &quot;Label de busca&quot;, 
                     &quot;required&quot;: false
                 }
-            ],
-            &quot;title&quot;: &quot;Ronaldo&quot;,
+            ], 
+            &quot;rdfs:label&quot;: &quot;Ronaldo&quot;, 
+            &quot;title&quot;: &quot;Ronaldo&quot;, 
             &quot;type_title&quot;: &quot;Atleta&quot;
-        },
+        }, 
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/73565&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
+            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/73565&quot;, 
+            &quot;@type&quot;: &quot;esportes:Atleta&quot;, 
+            &quot;_type_title&quot;: &quot;Atleta&quot;, 
             &quot;instance_fields&quot;: [
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;, 
+                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;, 
                     &quot;required&quot;: false
-                },
+                }, 
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo - Lateral  / Horizonte-CE ( Ronaldo )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo - Lateral  / Horizonte-CE ( Ronaldo )&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;, 
+                    &quot;predicate_title&quot;: &quot;Label de busca&quot;, 
                     &quot;required&quot;: false
                 }
-            ],
-            &quot;title&quot;: &quot;Ronaldo&quot;,
+            ], 
+            &quot;rdfs:label&quot;: &quot;Ronaldo&quot;, 
+            &quot;title&quot;: &quot;Ronaldo&quot;, 
             &quot;type_title&quot;: &quot;Atleta&quot;
-        },
+        }, 
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/67972&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
+            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/67972&quot;, 
+            &quot;@type&quot;: &quot;esportes:Atleta&quot;, 
+            &quot;_type_title&quot;: &quot;Atleta&quot;, 
             &quot;instance_fields&quot;: [
                 {
-                    &quot;object_title&quot;: &quot;Cristiano Ronaldo&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
+                    &quot;object_title&quot;: &quot;Cristiano Ronaldo&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;, 
+                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;, 
                     &quot;required&quot;: false
-                },
+                }, 
                 {
-                    &quot;object_title&quot;: &quot;Cristiano Ronaldo - Ataque  / Real Madrid ( Cristiano Ronaldo dos Santos Aveiro )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
+                    &quot;object_title&quot;: &quot;Cristiano Ronaldo - Ataque  / Real Madrid ( Cristiano Ronaldo dos Santos Aveiro )&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;, 
+                    &quot;predicate_title&quot;: &quot;Label de busca&quot;, 
                     &quot;required&quot;: false
                 }
-            ],
-            &quot;title&quot;: &quot;Cristiano Ronaldo&quot;,
+            ], 
+            &quot;rdfs:label&quot;: &quot;Cristiano Ronaldo&quot;, 
+            &quot;title&quot;: &quot;Cristiano Ronaldo&quot;, 
             &quot;type_title&quot;: &quot;Atleta&quot;
-        },
+        }, 
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/37696&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
+            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/37696&quot;, 
+            &quot;@type&quot;: &quot;esportes:Atleta&quot;, 
+            &quot;_type_title&quot;: &quot;Atleta&quot;, 
             &quot;instance_fields&quot;: [
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo Angelim&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo Angelim&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;, 
+                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;, 
                     &quot;required&quot;: false
-                },
+                }, 
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo Angelim - Zaga  / Fortaleza ( Ronaldo Sim\u00f5es Angelim )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo Angelim - Zaga  / Fortaleza ( Ronaldo Sim\u00f5es Angelim )&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;, 
+                    &quot;predicate_title&quot;: &quot;Label de busca&quot;, 
                     &quot;required&quot;: false
                 }
-            ],
-            &quot;title&quot;: &quot;Ronaldo Angelim&quot;,
+            ], 
+            &quot;rdfs:label&quot;: &quot;Ronaldo Angelim&quot;, 
+            &quot;title&quot;: &quot;Ronaldo Angelim&quot;, 
             &quot;type_title&quot;: &quot;Atleta&quot;
-        },
+        }, 
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/38343&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
+            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/38343&quot;, 
+            &quot;@type&quot;: &quot;esportes:Atleta&quot;, 
+            &quot;_type_title&quot;: &quot;Atleta&quot;, 
             &quot;instance_fields&quot;: [
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo Alves&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo Alves&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;, 
+                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;, 
                     &quot;required&quot;: false
-                },
+                }, 
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo Alves - Zaga  / Ypiranga-RS ( Ronaldo Pereira Alves )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo Alves - Zaga  / Ypiranga-RS ( Ronaldo Pereira Alves )&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;, 
+                    &quot;predicate_title&quot;: &quot;Label de busca&quot;, 
                     &quot;required&quot;: false
                 }
-            ],
-            &quot;title&quot;: &quot;Ronaldo Alves&quot;,
+            ], 
+            &quot;rdfs:label&quot;: &quot;Ronaldo Alves&quot;, 
+            &quot;title&quot;: &quot;Ronaldo Alves&quot;, 
             &quot;type_title&quot;: &quot;Atleta&quot;
-        },
+        }, 
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/63419&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
+            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/63419&quot;, 
+            &quot;@type&quot;: &quot;esportes:Atleta&quot;, 
+            &quot;_type_title&quot;: &quot;Atleta&quot;, 
             &quot;instance_fields&quot;: [
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo Tres&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo Tres&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;, 
+                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;, 
                     &quot;required&quot;: false
-                },
+                }, 
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo Tres - Meio-campo  / Figueirense ( Ronaldo Tres )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo Tres - Meio-campo  / Figueirense ( Ronaldo Tres )&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;, 
+                    &quot;predicate_title&quot;: &quot;Label de busca&quot;, 
                     &quot;required&quot;: false
                 }
-            ],
-            &quot;title&quot;: &quot;Ronaldo Tres&quot;,
+            ], 
+            &quot;rdfs:label&quot;: &quot;Ronaldo Tres&quot;, 
+            &quot;title&quot;: &quot;Ronaldo Tres&quot;, 
             &quot;type_title&quot;: &quot;Atleta&quot;
-        },
+        }, 
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/69042&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
+            &quot;@id&quot;: &quot;http://semantica.globo.com/esportes/atleta/69042&quot;, 
+            &quot;@type&quot;: &quot;esportes:Atleta&quot;, 
+            &quot;_type_title&quot;: &quot;Atleta&quot;, 
             &quot;instance_fields&quot;: [
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo Concei\u00e7\u00e3o&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo Concei\u00e7\u00e3o&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;, 
+                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;, 
                     &quot;required&quot;: false
-                },
+                }, 
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo Concei\u00e7\u00e3o - Zaga  / S\u00e3o Jos\u00e9-RS ( Ronaldo Concei\u00e7\u00e3o Silveira )&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo Concei\u00e7\u00e3o - Zaga  / S\u00e3o Jos\u00e9-RS ( Ronaldo Concei\u00e7\u00e3o Silveira )&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;, 
+                    &quot;predicate_title&quot;: &quot;Label de busca&quot;, 
                     &quot;required&quot;: false
                 }
-            ],
-            &quot;title&quot;: &quot;Ronaldo Concei\u00e7\u00e3o&quot;,
+            ], 
+            &quot;rdfs:label&quot;: &quot;Ronaldo Concei\u00e7\u00e3o&quot;, 
+            &quot;title&quot;: &quot;Ronaldo Concei\u00e7\u00e3o&quot;, 
             &quot;type_title&quot;: &quot;Atleta&quot;
-        },
+        }, 
         {
-            &quot;@id&quot;: &quot;esportes:13c65fa4-2091-469d-acdd-3596688c83d2&quot;,
-            &quot;@type&quot;: &quot;esportes:Atleta&quot;,
+            &quot;@id&quot;: &quot;esportes:13c65fa4-2091-469d-acdd-3596688c83d2&quot;, 
+            &quot;@type&quot;: &quot;esportes:Atleta&quot;, 
+            &quot;_type_title&quot;: &quot;Atleta&quot;, 
             &quot;instance_fields&quot;: [
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo Jacar\u00e9&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;,
-                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo Jacar\u00e9&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:nome_popular_sde&quot;, 
+                    &quot;predicate_title&quot;: &quot;Nome Popular no SDE&quot;, 
                     &quot;required&quot;: false
-                },
+                }, 
                 {
-                    &quot;object_title&quot;: &quot;Ronaldo Jacar\u00e9 - MMA&quot;,
-                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;,
-                    &quot;predicate_title&quot;: &quot;Label de busca&quot;,
+                    &quot;object_title&quot;: &quot;Ronaldo Jacar\u00e9 - MMA&quot;, 
+                    &quot;predicate_id&quot;: &quot;esportes:composite&quot;, 
+                    &quot;predicate_title&quot;: &quot;Label de busca&quot;, 
                     &quot;required&quot;: false
                 }
-            ],
-            &quot;title&quot;: &quot;Ronaldo Jacar\u00e9&quot;,
+            ], 
+            &quot;rdfs:label&quot;: &quot;Ronaldo Jacar\u00e9&quot;, 
+            &quot;title&quot;: &quot;Ronaldo Jacar\u00e9&quot;, 
             &quot;type_title&quot;: &quot;Atleta&quot;
         }
     ]

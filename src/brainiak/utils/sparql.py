@@ -502,6 +502,10 @@ def property_must_map_a_unique_value(class_object, predicate_uri):
     return class_object['properties'][predicate_uri].get("unique_value", False)
 
 
+def find_undefined_obligatory_properties(class_object, instance_data):
+    return [property_key for property_key, property_data in class_object['properties'].items() if (property_data.get("required") and not instance_data.get(property_key))]
+
+
 def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params):
     class_id = class_object["id"]
     predicate_object_tuples = unpack_tuples(instance_data)
@@ -550,6 +554,12 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
                         template = _(u"The property ({0}) defined in the schema ({1}) must map a unique value. The value provided ({2}) is already used by another instance.")
                         msg = template.format(predicate_uri, class_id, object_value)
                         errors.append(msg)
+
+    undefined_obligatory_properties = find_undefined_obligatory_properties(class_object, instance_data)
+    template = _(u"The property ({0}) is obligatory according to the definition of the class ({1}). A value must be provided for this field in order to create or edit ({2}).")
+    for property_ in undefined_obligatory_properties:
+        msg = template.format(property_, class_id, instance_uri)
+        errors.append(msg)
 
     if errors:
         error_msg = json.dumps(errors)

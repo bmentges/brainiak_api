@@ -270,9 +270,10 @@ class BuildItemsDictTestCase(unittest.TestCase):
         }
         self.assertEqual(computed, expected)
 
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.instance.get_instance.logger.debug")
     @patch("brainiak.instance.get_instance.logger")
-    def test_assemble_instance_json_with_an_object_which_does_not_have_label(self, mlogger, mdebug):
+    def test_assemble_instance_json_with_an_object_which_does_not_have_label(self, mlogger, mdebug, msettings):
         bindings = [
             {
                 u'predicate': {u'type': u'uri', u'value': u'http://brmedia.com/related_to'},

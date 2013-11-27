@@ -1,24 +1,15 @@
 from time import sleep
-from unittest import TestCase
 
-from splinter import Browser
+from helpers import do_login, SplinterTestCase
 
 
-class CMALoginTestCase(TestCase):
+class CMALoginTestCase(SplinterTestCase):
 
-    def setUp(self):
-        self.browser = Browser()
+    def test_wrong_login(self):
+        do_login(self.browser, user="user", password="password")
+        self.assertTrue(self.browser.is_element_present_by_css("div.error"))
 
-    def do_login(self):
-        with self.browser as browser:
-            browser.visit('http://admin.backstage.dev.globoi.com')
-            sleep(2)
-
-            browser.fill('username', 'icaro.medeiros')
-            browser.fill('password', 'pass')
-
-            button = browser.find_by_name('button')
-            button.click()
-
-    def test_login(self):
-        self.do_login()
+    def test_successful_login_goes_to_dashboard(self):
+        do_login(self.browser)
+        sleep(3)
+        self.assertTrue(self.browser.is_element_present_by_xpath("//h2[.='Eureka - Assunto Eureka']"))

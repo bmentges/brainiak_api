@@ -9,4 +9,4 @@ pinocchio==0.3.1
 ESTester==1.1.0
 splinter==0.5.4
 
--e git://github.com/globocom/pluct.git#egg=pluct
+-e git://github.com/globocom/pluct.git@rodsenra#egg=pluct

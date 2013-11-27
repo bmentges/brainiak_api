@@ -3,22 +3,22 @@ from unittest import TestCase
 
 from splinter import Browser
 
+from helpers import do_login
+
 
 class CMALoginTestCase(TestCase):
 
     def setUp(self):
         self.browser = Browser()
 
-    def do_login(self):
-        with self.browser as browser:
-            browser.visit('http://admin.backstage.dev.globoi.com')
-            sleep(2)
+    def tearDown(self):
+        self.browser.quit()
 
-            browser.fill('username', 'icaro.medeiros')
-            browser.fill('password', 'pass')
+    def test_wrong_login(self):
+        do_login(self.browser, "user", "password")
+        self.assertTrue(self.browser.is_element_present_by_css("div .error"))
 
-            button = browser.find_by_name('button')
-            button.click()
-
-    def test_login(self):
-        self.do_login()
+    def test_successful_login_goes_to_dashboard(self):
+        do_login(self.browser, "icaro.medeiros", "pass") # please change using your password while we dont have a test user
+        sleep(3)
+        self.assertTrue(self.browser.is_element_present_by_css("div .dashboard"))

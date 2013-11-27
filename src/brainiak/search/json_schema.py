@@ -20,7 +20,7 @@ def schema():
 
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
-        "title": "Search Schema that lists instances that satisfy search criteria",
+        "title": "",
         "type": "object",
         "required": ["items", "_class_prefix", "@id"],
         "properties": {

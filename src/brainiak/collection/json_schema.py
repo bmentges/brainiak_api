@@ -82,8 +82,11 @@ def schema(query_params):
                 "schema": {"$ref": schema_ref}
             },
             {
-                "href": "/_search?graph_uri={0}&class_uri={1}&pattern={{pattern}}".format(query_params['graph_uri'],
-                                                                      query_params['class_uri']),
+                "href": "/{0}/{1}/_search?graph_uri={2}&class_uri={3}&pattern={{pattern}}".format(
+                        context_name,
+                        class_name,
+                        query_params['graph_uri'],
+                        query_params['class_uri']),
                 "method": "GET",
                 "rel": "search",
                 "schema": SEARCH_PARAM_SCHEMA

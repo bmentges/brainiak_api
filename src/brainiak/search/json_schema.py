@@ -16,7 +16,7 @@ SEARCH_PARAM_SCHEMA = {
 def schema():
     schema_ref = u"/{_context_name}/{_class_name}/_schema?class_prefix={_class_prefix}"
     href = u"/{_context_name}/{_class_name}/?class_prefix={_class_prefix}"
-    link = u"/_/_/_?instance_uri={id}"
+    link = u"/{_context_name}/{_class_name}/_?instance_uri={id}"
 
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",

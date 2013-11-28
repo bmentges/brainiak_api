@@ -81,15 +81,16 @@ def get_routes():
         URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
         URLSpec(r'/_status/cache/?', CacheStatusHandler),
         URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
-        # Json-schemas for LISTING resources
+
         URLSpec(r'/_schema_list/?', RootJsonSchemaHandler),
-        URLSpec(r'/_search/_schema_list/?', SearchJsonSchemaHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_search/_schema_list/?', SearchJsonSchemaHandler),
         URLSpec(r'/_suggest/_schema_list/?', SuggestJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/_schema_list/?', ContextJsonSchemaHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema_list/?', CollectionJsonSchemaHandler),
+
         # TEXTUAL search
         URLSpec(r'/_suggest/?', SuggestHandler),
-        URLSpec(r'/_search/?', SearchHandler),
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_search/?', SearchHandler),
         # resources that represents CONCEPTS
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', ClassHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),
@@ -610,17 +611,20 @@ class SuggestHandler(BrainiakRequestHandler):
 
 class SearchJsonSchemaHandler(BrainiakRequestHandler):
 
-    def get(self):
-        self.finalize(search_schema())
+    def get(self, context_name, class_name):
+        self.finalize(search_schema(context_name, class_name))
 
 
 class SearchHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
-    def get(self):
+    def get(self, context_name, class_name):
         valid_params = SEARCH_PARAMS + PAGING_PARAMS
         with safe_params(valid_params):
-            self.query_params = ParamDict(self, **valid_params)
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          **valid_params)
             self.query_params.validate_required(self, valid_params)
 
         response = do_search(self.query_params)

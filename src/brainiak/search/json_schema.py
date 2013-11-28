@@ -13,10 +13,11 @@ SEARCH_PARAM_SCHEMA = {
 }
 
 
-def schema():
-    schema_ref = u"/{_context_name}/{_class_name}/_schema?class_prefix={_class_prefix}"
-    href = u"/{_context_name}/{_class_name}/?class_prefix={_class_prefix}"
-    link = u"/{_context_name}/{_class_name}/_?instance_uri={id}"
+def schema(context_name, class_name):
+    schema_ref = u"/{0}/{1}/_schema?class_prefix={{_class_prefix}}".format(context_name, class_name)
+    href = u"/{0}/{1}/?class_prefix={{_class_prefix}}".format(context_name, class_name)
+    link = u"/{0}/{1}/_?instance_uri={{id}}".format(context_name, class_name)
+    search_url = "/{0}/{1}/_search?graph_uri={{_graph_uri}}&class_uri={{_class_uri}}&pattern={{pattern}}"
 
     base = {
         "$schema": "http://json-schema.org/draft-04/schema#",
@@ -71,7 +72,7 @@ def schema():
                 "rel": "class"
             },
             {
-                "href": u"/{_context_name}",
+                "href": u"/{0}".format(context_name),
                 "method": "GET",
                 "rel": "context"
             },
@@ -82,18 +83,18 @@ def schema():
                 "schema": {"$ref": schema_ref}
             },
             {
-                "href": "/_search?graph_uri={_graph_uri}&class_uri={_class_uri}&pattern={pattern}",
+                "href": search_url.format(context_name, class_name),
                 "method": "GET",
                 "rel": "search",
                 "schema": SEARCH_PARAM_SCHEMA
             },
             {
-                "href": u"/{_context_name}/{_class_name}?class_prefix={_class_prefix}",
+                "href": href,
                 "method": "GET",
                 "rel": "list"
             },
             {
-                "href": u"/{_context_name}/{_class_name}?class_prefix={_class_prefix}",
+                "href": href,
                 "method": "GET",
                 "rel": "collection"
             }
@@ -101,7 +102,7 @@ def schema():
         ]
     }
 
-    base_pagination_url = u'/_search'
+    base_pagination_url = u'/{0}/{1}/_search'.format(context_name, class_name)
     extra_url_params = '&graph_uri={_graph_uri}&class_uri={_class_uri}'
     pagination_dict = pagination_schema(base_pagination_url, extra_url_params)
     merge_schemas(base, pagination_dict)

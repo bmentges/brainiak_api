@@ -9,7 +9,7 @@ set :syslog_host,                 'syslog.tcp.glog.qa02.globoi.com'
 set :elasticsearch_host,          'esearch.qa02.globoi.com'
 
 # Ports
-set :redis_port,                  20015
+set :redis_port,                  20019
 
 # Variables
 set :puppetmaster_env,            'qa2'

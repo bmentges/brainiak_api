@@ -35,7 +35,7 @@ from brainiak.search.json_schema import schema as search_schema
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
-from brainiak.utils.cache import memoize
+from brainiak.utils.cache import memoize, build_instance_key
 from brainiak.utils.i18n import _
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url, build_class_url
 from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
@@ -450,20 +450,24 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
-        optional_params = INSTANCE_PARAMS
+        optional_params = INSTANCE_PARAMS + CACHE_PARAMS
         with safe_params(optional_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,
                                           class_name=class_name,
                                           instance_id=instance_id,
                                           **optional_params)
-        del context_name
-        del class_name
-        del instance_id
 
-        response = get_instance(self.query_params)
+        response = memoize(self.query_params,
+                           get_instance,
+                           key=build_instance_key,
+                           function_arguments=self.query_params)
+
+        response_meta = response['meta']
+        response = response['body']
+
         if response is None:
-            error_message = _(u"Instance ({0}) of class ({1}) in graph ({2}) was not found.").format(
+            error_message = u"Instance ({0}) of class ({1}) in graph ({2}) was not found.".format(
                 self.query_params['instance_uri'],
                 self.query_params['class_uri'],
                 self.query_params['graph_uri'])
@@ -472,6 +476,7 @@ class InstanceHandler(BrainiakRequestHandler):
         if self.query_params["expand_uri"] == "0":
             response = normalize_all_uris_recursively(response, mode=SHORTEN)
 
+        self.add_cache_headers(response_meta)
         self.finalize(response)
 
     @greenlet_asynchronous

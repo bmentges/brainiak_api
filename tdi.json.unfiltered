@@ -22,12 +22,6 @@
           "location": "nfs",
           "user": "brainiak",
           "perm": "rw"
-      },
-      "/mnt/projetos/dbpasswd/brainiak": {
-          "type": "directory",
-          "location": "nfs",
-          "user": "root",
-          "perm": "ro"
       }
     }
   }

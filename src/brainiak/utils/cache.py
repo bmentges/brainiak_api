@@ -13,6 +13,11 @@ from brainiak.utils.i18n import _
 build_key_for_root_schema = lambda: u"_##json_schema"
 build_key_for_root = lambda: u"_##root"
 
+# graph_uri@@class_uri@@instance_uri##instance
+build_instance_key = lambda query_params: u"{0}@@{1}@@{2}##instance".format(query_params["graph_uri"],
+                                                                          query_params["class_uri"],
+                                                                          query_params["instance_uri"])
+
 # # Class/collection-related
 build_key_for_class = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
 # # graph_uri@@class_uri##collection

@@ -211,15 +211,20 @@ namespace :utils do
 
     # Remove todos os version.txt locais
     task :clean_version do
-        puts "Limpando todos os version.txt locais:"
-        version_files = `find . -type f -name version.txt | cut -c3-`
-        version_files = version_files.split "\n"
+        submodules = `git submodule status | awk '{print $2}'`
+        raiz = `pwd`
+        raiz = raiz.chomp
 
-        version_files.each do |version_file|
-            version_file = version_file.chomp
-            puts "Limpando: \"#{version_file}\""
-            run_local "rm -f #{version_file}"
+        submodules = submodules.split "\n"
+
+        submodules.each do |submodulo|
+            submodulo = submodulo.chomp
+            submodulo_dir = "#{raiz}/#{submodulo}"
+            puts "Removendo version.txt do submodulo: \"#{submodulo}\""
+            run_local "rm -f #{submodulo_dir}/version.txt"
         end
+        puts "Removendo version.txt da raiz do repository..."
+        run_local "rm -rf #{repository}/version.txt"
     end
 
     # Depois do ln -s para current o restart estava lendo ainda o código do

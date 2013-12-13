@@ -1,13 +1,11 @@
 desc "SSH para os servidores do projeto"
 
-def ssh_connect(target_role,ssh_user=user)
-
-    if stage.eql?(:staging) or stage.eql?(:prod)
-        ssh_user = 'watcher'
-    end
+def ssh_connect(target_role)
 
     if not ENV['usuario'].nil?
         ssh_user = "#{ENV['usuario']}"
+    else
+        ssh_user = "#{ENV['USER']}"
     end
 
     if not roles.include?(target_role)

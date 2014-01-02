@@ -120,7 +120,7 @@ def purge(pattern):
 
 @safe_redis
 def create(key, value):
-    return redis_client.set(key, value)
+    return redis_client.setex(key, 86400, value)
 
 
 @safe_redis

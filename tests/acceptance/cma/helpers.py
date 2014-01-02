@@ -27,6 +27,7 @@ def do_login(browser, user=ADMIN_USER, password=ADMIN_PASSWORD):
 
 browser = None
 
+
 class SplinterTestCase(TestCase):
 
     @classmethod

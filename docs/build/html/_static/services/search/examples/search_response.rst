@@ -13,8 +13,6 @@
                 "title": "Brasil"
             }
         ],
-        "_class_name": "Pais",
-        "_context_name": "semantica.globo.com",
         "_base_url": "http://brainiak.semantica.dev.globoi.com/_search/",
         "_class_prefix": "http://semantica.globo.com/base/",
         "_graph_uri": "http://semantica.globo.com/",

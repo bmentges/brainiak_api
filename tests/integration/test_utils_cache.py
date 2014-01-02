@@ -3,8 +3,7 @@ import unittest
 
 from mock import patch
 
-from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, retrieve
-from brainiak.utils.i18n import _
+from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, retrieve, redis_client
 from tests.mocks import MockRequest
 
 
@@ -26,6 +25,8 @@ class CacheTestCase(unittest.TestCase):
     def test_create(self):
         response = create("new_key", "some value")
         self.assertTrue(response)
+        ttl = redis_client.ttl("new_key")
+        self.assertGreater(ttl, 80000)
 
     def test_retrieve_inexistent(self):
         response = retrieve("inexistent_key")

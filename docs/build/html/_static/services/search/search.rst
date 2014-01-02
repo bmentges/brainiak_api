@@ -29,7 +29,7 @@ The mandatory parameters are:
 
   $ curl -s -X GET 'http://brainiak.semantica.dev.globoi.com/_search?graph_uri=glb&class_uri=base:Pais&pattern=unido'
 
-.. program-output:: curl -s -X GET 'http://brainiak.semantica.dev.globoi.com/_search?graph_uri=glb&class_uri=base:Pais&pattern=unido'  | python -mjson.tool
+.. program-output:: curl -s -X GET 'http://brainiak.semantica.dev.globoi.com/glb/Pais/_search?graph_uri=glb&class_uri=base:Pais&pattern=unido' | python -mjson.tool
   :shell:
 
 
@@ -42,7 +42,7 @@ If the search is successfull, a response JSON is returned, showing the matched i
 
 .. code-block:: bash
 
-  $ curl -s -X GET 'http://brainiak.semantica.dev.globoi.com/_search?graph_uri=glb&class_uri=base:Pais&pattern=brasil'
+  $ curl -s -X GET 'http://brainiak.semantica.dev.globoi.com/glb/Pais/_search?graph_uri=glb&class_uri=base:Pais&pattern=brasil'
 
 If there are no matches found, the ``"items"`` dict will be empty.
 

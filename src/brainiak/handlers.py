@@ -513,7 +513,7 @@ class InstanceHandler(BrainiakRequestHandler):
                 self.set_header("X-Brainiak-Resource-URI", instance_uri)
             else:
                 edit_instance(self.query_params, instance_data)
-                #update_if_present(build_instance_key(self.query_params), json.dumps(instance_data))
+                update_if_present(build_instance_key(self.query_params), instance_data)
                 status = 200
         except InstanceError as ex:
             raise HTTPError(400, log_message=unicode(ex))

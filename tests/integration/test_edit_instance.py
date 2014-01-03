@@ -126,6 +126,28 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(modified_new_york.code, 200)
         self.assertEqual(modified_new_york.body, "")
 
+    #@patch("brainiak.handlers.logger")
+    #@patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    #def test_edit_cached_instance_and_update_cache(self, mock_cache, mock_log):
+    #    # Retrieve instance to populate cache
+    #    actual_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york', method='GET')
+    #    self.assertEqual(actual_new_york.code, 200)
+    #    actual_new_york_dict = json.loads(actual_new_york.body)
+    #    self.assertTrue(actual_new_york.headers['X-Cache'].startswith('MISS from localhost'))
+    #
+    #    # Add an attribute
+    #    actual_new_york_dict["rdfs:label"] = "Up-to-date label"
+    #    modified_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york',
+    #                                   method='PUT',
+    #                                   body=json.dumps(actual_new_york_dict))
+    #    self.assertEqual(modified_new_york.code, 200)
+    #
+    #    updated_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york', method='GET')
+    #    self.assertEqual(actual_new_york.code, 200)
+    #    updated_new_york_dict = json.loads(updated_new_york.body)
+    #    self.assertEqual(updated_new_york_dict['rdfs:label'], "Up-to-date label")
+    #    self.assertTrue(updated_new_york.headers['X-Cache'].startswith('HIT'))
+
 
 class EditInstanceQueriesTestCase(QueryTestCase):
 

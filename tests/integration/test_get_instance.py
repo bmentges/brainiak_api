@@ -81,7 +81,6 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertIn(u'/person/Gender/Female', body['@id'])
         self.assertTrue(response.headers['X-Cache'].startswith('HIT'))
 
-
     def test_get_instance_200_with_expanded_uris(self):
         response = self.fetch('/person/Gender/Female?expand_uri=1', method='GET')
         body = json.loads(response.body)

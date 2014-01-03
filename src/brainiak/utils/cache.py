@@ -187,6 +187,10 @@ def status():
     return msg % params
 
 
+def purge_all_instances():
+    purge("*##instance")
+
+
 def purge_by_path(path, recursive):
     purge_all = recursive and (path == build_key_for_root())
     if purge_all:
@@ -194,6 +198,7 @@ def purge_by_path(path, recursive):
     elif recursive:
         relative_path = path.rsplit("##")[0]
         purge(relative_path)
+        purge_all_instances()
     else:
         delete(path)
 

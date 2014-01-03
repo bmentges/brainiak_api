@@ -63,30 +63,38 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         response = self.fetch('/person/Gender/Anysexual', method='GET')
         self.assertEqual(response.code, 404)
 
-    def test_get_instance_200(self):
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_get_instance_200(self, mock_cache):
         response = self.fetch('/person/Gender/Female?lang=pt', method='GET')
         body = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertIn(u'/person/Gender/Female', body['@id'])
         self.assertEqual(body['@type'], u'person:Gender')
-        self.assertEqual(body['rdf:type'], u'person:Gender')
         self.assertEqual(body['upper:name'], u'Feminino')
+        self.assertTrue(response.headers['X-Cache'].startswith('MISS from localhost'))
+
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    def test_get_instance_200_now_cached(self, mock_cache):
+        response = self.fetch('/person/Gender/Female?lang=pt', method='GET')
+        body = json.loads(response.body)
+        self.assertEqual(response.code, 200)
+        self.assertIn(u'/person/Gender/Female', body['@id'])
+        self.assertTrue(response.headers['X-Cache'].startswith('HIT'))
 
     def test_get_instance_200_with_expanded_uris(self):
         response = self.fetch('/person/Gender/Female?expand_uri=1', method='GET')
         body = json.loads(response.body)
         self.assertEqual(response.code, 200)
 
-        self.assertEqual(body[u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'], URI_PREFIX + u'person/Gender')
+        self.assertEqual(body[u'@type'], URI_PREFIX + u'person/Gender')
         self.assertEqual(body[URI_PREFIX + u'upper/name'], u'Feminino')
 
     def test_get_instance_200_with_expanded_both(self):
         response = self.fetch('/person/Gender/Female?expand_uri=1', method='GET')
         body = json.loads(response.body)
         self.assertEqual(response.code, 200)
-        self.assertEqual(body[u'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'], URI_PREFIX + u'person/Gender')
+        self.assertEqual(body[u'@type'], URI_PREFIX + u'person/Gender')
         self.assertEqual(body[URI_PREFIX + u'upper/name'], u'Feminino')
-        self.assertEqual(body['@type'], URI_PREFIX + u'person/Gender')
 
     def test_get_instance_returns_schema_in_content_type(self):
         response = self.fetch('/person/Gender/Female', method='GET')
@@ -97,17 +105,16 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     def test_get_instance_with_compressed_instance_prefix_200(self):
         instance_prefix = "http://test.com/other_prefix/"
-        response = self.fetch('/person/Gender/Test?instance_prefix={0}&class_uri=http://test.com/person/Gender&lang=en'.format(instance_prefix),
+        response = self.fetch('/person/Gender/Test?instance_prefix={0}&class_uri=http://test.com/person/Gender&graph_uri={1}&lang=en'.format(instance_prefix, self.graph_uri),
                               method='GET')
         body = json.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertIn(instance_prefix + u'Test', body['@id'])
         self.assertEqual(body['@type'], u'http://test.com/person/Gender')
-        self.assertEqual(body['rdf:type'], u'http://test.com/person/Gender')
-        self.assertEqual(body['rdfs:label'], u'Teste')
+        self.assertEqual(body['_type_title'], u'Gender')
 
 
-class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+class InstancePropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     allow_triplestore_connection = True
     fixtures = ["tests/sample/gender.n3", "tests/sample/animalia.n3"]

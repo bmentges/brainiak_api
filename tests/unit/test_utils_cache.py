@@ -201,19 +201,22 @@ class CacheUtilsTestCase(unittest.TestCase):
         self.assertTrue(mock_delete.called)
         mock_delete.assert_called_with(u"_##json_schema")
 
+    @patch("brainiak.utils.cache.purge_all_instances")
     @patch("brainiak.utils.cache.delete")
     @patch("brainiak.utils.cache.flushall")
-    def test_purge_by_path_all(self, mock_flushall, mock_delete):
+    def test_purge_by_path_all(self, mock_flushall, mock_delete, mock_purge_all):
         purge_by_path(u"_##root", True)
         self.assertFalse(mock_delete.called)
         self.assertTrue(mock_flushall.called)
 
+    @patch("brainiak.utils.cache.purge_all_instances")
     @patch("brainiak.utils.cache.delete")
     @patch("brainiak.utils.cache.purge")
-    def test_purge_by_path_recursive(self, mock_purge, mock_delete):
+    def test_purge_by_path_recursive(self, mock_purge, mock_delete, mock_purge_all):
         purge_by_path(u"graph@@class##type", True)
         self.assertFalse(mock_delete.called)
         self.assertTrue(mock_purge.called)
+        self.assertTrue(mock_purge_all.called)
         mock_purge.assert_called_with(u"graph@@class")
 
     @patch("brainiak.utils.cache.delete")

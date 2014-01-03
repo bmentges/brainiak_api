@@ -15,14 +15,31 @@ CREDENTIALS = {
         "client_secret": "okFR7CifaCSkwFDQDLxm8Q==",
         "repos": "http://repos.backstage.qa01.globoi.com/admin/customization_mappings/brainiak.backstage.qa01.globoi.com",
         "accounts": "http://accounts.backstage.qa01.globoi.com/token"
+    },
+    "stg": {
+        "client_id": "g0SfWM9PJFzbKPV8kYiufA==",
+        "client_secret": "abKIB/YENYqvVvij3r7G/Q==",
+        "repos": "http://repos.backstage.globoi.com/admin/customization_mappings/brainiak.backstage.globoi.com",
+        "accounts": "http://accounts.backstage.globoi.com/token"
+    },
+    "prod": {
+        "client_id": "g0SfWM9PJFzbKPV8kYiufA==",
+        "client_secret": "abKIB/YENYqvVvij3r7G/Q==",
+        "repos": "http://repos.backstage.globoi.com/admin/customization_mappings/brainiak.backstage.globoi.com",
+        "accounts": "http://accounts.backstage.globoi.com/token"
     }
+}
+
+proxies = {
+    "stg": {"http": "http://gateway.backstage.globoi.com"}  #"http://proxy.staging.globoi.com:3128"}
 }
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Customize all forms in accounts/repos')
-    parser.add_argument("env", help="Use one of the following: dev, qa1")
+    parser.add_argument("env", help="Use one of the following: dev, qa1, stg, prod")
     args = parser.parse_args()
-    if args.env not in ('dev', 'qa1'):
+    environment = args.env
+    if not environment in CREDENTIALS:
         print("Invalid paramenter {0}. Use --help to see valid options.".format(args.env))
         sys.exit(0)
 
@@ -30,6 +47,9 @@ if __name__ == "__main__":
     client = Client(token_endpoint=config['accounts'],
                     client_id=config['client_id'],
                     client_secret=config['client_secret'])
+
+    if environment in proxies:
+        client.proxies = proxies[environment]
 
     print("Valid client, authorization OK")
 

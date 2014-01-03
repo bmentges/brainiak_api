@@ -3,7 +3,7 @@ import unittest
 
 from mock import patch
 
-from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, retrieve, redis_client
+from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, retrieve, redis_client, update_if_present
 from tests.mocks import MockRequest
 
 
@@ -43,6 +43,23 @@ class CacheTestCase(unittest.TestCase):
     def test_keys(self):
         response = keys("key_xubiru")
         self.assertEqual(sorted(response), ["key_xubiru", "key_xubiru2"])
+
+    def test_update_if_present_when_it_is_not_present(self):
+        response = update_if_present("inexistent_key", "unused_value")
+        self.assertIsNone(response)
+
+    def test_update_if_present_when_it_is_present(self):
+        response = create("to_update_key", '{"key": "old value"}')
+        self.assertTrue(response)
+
+        response = retrieve("to_update_key")
+        self.assertEqual(response, {"key": "old value"})
+
+        response = update_if_present("to_update_key", '{"key": "up-to-date value"}')
+        self.assertTrue(response)
+
+        response = retrieve("to_update_key")
+        self.assertEqual(response, {"key": "up-to-date value"})
 
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     def test_memoize_cache_enabled_and_hit(self, settings):

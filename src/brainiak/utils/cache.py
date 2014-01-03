@@ -9,6 +9,9 @@ from brainiak import log
 from brainiak import settings
 from brainiak.utils.i18n import _
 
+
+TIME_TO_LIVE_IN_SECS = 86400
+
 # # Root-related
 build_key_for_root_schema = lambda: u"_##json_schema"
 build_key_for_root = lambda: u"_##root"
@@ -119,8 +122,18 @@ def purge(pattern):
 
 
 @safe_redis
+def update_if_present(key, value):
+    response = redis_client.get(key)
+    if response:
+        result = redis_client.setex(key, TIME_TO_LIVE_IN_SECS, value)
+    else:
+        result = None
+    return result
+
+
+@safe_redis
 def create(key, value):
-    return redis_client.setex(key, 86400, value)
+    return redis_client.setex(key, TIME_TO_LIVE_IN_SECS, value)
 
 
 @safe_redis

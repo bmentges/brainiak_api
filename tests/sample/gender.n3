@@ -4,6 +4,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 person:Gender a owl:Class .
+person:Gender rdfs:label "Gênero"@pt .
+person:Gender rdfs:label "Gender"@en .
 
 gender:Male rdf:type person:Gender ;
             rdfs:label "Male"@en ;

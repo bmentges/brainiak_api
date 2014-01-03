@@ -5,7 +5,7 @@ from tornado.testing import AsyncTestCase, AsyncHTTPTestCase
 from brainiak import server, greenlet_tornado
 
 
-TIMEOUT = 30
+TIMEOUT = 3000
 
 
 class TornadoAsyncTestCase(AsyncTestCase):

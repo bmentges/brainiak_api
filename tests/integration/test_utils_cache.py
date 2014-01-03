@@ -59,7 +59,7 @@ class CacheTestCase(unittest.TestCase):
         self.assertTrue(response)
 
         response = retrieve("to_update_key")
-        self.assertEqual(response, {"key": "up-to-date value"})
+        self.assertEqual(response["body"], u'{"key": "up-to-date value"}')
 
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     def test_memoize_cache_enabled_and_hit(self, settings):

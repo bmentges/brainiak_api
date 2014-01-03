@@ -16,10 +16,12 @@ TIME_TO_LIVE_IN_SECS = 86400
 build_key_for_root_schema = lambda: u"_##json_schema"
 build_key_for_root = lambda: u"_##root"
 
+# _@@_/_@@instance_uri##instance
+build_instance_key = lambda query_params: u"_@@_/_@@{0}##instance".format(query_params["instance_uri"])
 # graph_uri@@class_uri@@instance_uri##instance
-build_instance_key = lambda query_params: u"{0}@@{1}@@{2}##instance".format(query_params["graph_uri"],
-                                                                          query_params["class_uri"],
-                                                                          query_params["instance_uri"])
+#build_instance_key = lambda query_params: u"{0}@@{1}@@{2}##instance".format(query_params["graph_uri"],
+#                                                                          query_params["class_uri"],
+#                                                                          query_params["instance_uri"])
 
 # # Class/collection-related
 build_key_for_class = lambda query_params: u"{0}@@{1}##class".format(query_params["graph_uri"], query_params["class_uri"])
@@ -125,7 +127,7 @@ def purge(pattern):
 def update_if_present(key, value):
     response = redis_client.get(key)
     if response:
-        result = redis_client.setex(key, TIME_TO_LIVE_IN_SECS, value)
+        result = redis_client.setex(key, TIME_TO_LIVE_IN_SECS, ujson.dumps(_fresh_retrieve(lambda: value, None)))
     else:
         result = None
     return result

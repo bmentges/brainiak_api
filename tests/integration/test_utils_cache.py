@@ -3,7 +3,7 @@ import unittest
 
 from mock import patch
 
-from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, retrieve, redis_client, update_if_present
+from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, purge_all_instances, retrieve, redis_client, update_if_present
 from tests.mocks import MockRequest
 
 
@@ -145,3 +145,36 @@ class PurgeTestCase(unittest.TestCase):
         info.assert_called_with("Cache: failed purging 1 key(s), matching the pattern: problematic_key")
         self.assertEqual(debug.call_count, 1)
         debug.assert_called_with("Cache: key(s) to be deleted: ['problematic_key']")
+
+
+class PurgeAllInstancesTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.assertTrue(ping())  # assert Redis is up
+        create("non_default_key", {})
+        create("_@@_@@inst_a##instance", {})
+        create("_@@_@@inst_b##instance", {})
+        create("_##json_schema", {})
+        create("_##root", {})
+        create("some_graph@@some_instance##class", {})
+
+    def tearDown(self):
+        delete("non_default_key")
+        delete("_@@_@@inst_a##instance")
+        delete("_@@_@@inst_b##instance")
+        delete("_##json_schema")
+        delete("_##root")
+        delete("some_graph@@some_instance##class")
+
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    @patch("brainiak.utils.cache.log.logger.debug")
+    @patch("brainiak.utils.cache.log.logger.info")
+    @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
+    def test_purge_all_instances(self, logger, info, debug, settings):
+        purge_all_instances()
+        self.assertEqual(retrieve("non_default_key"), {})
+        self.assertEqual(retrieve("_@@_@@inst_a##instance"), None)
+        self.assertEqual(retrieve("_@@_@@inst_b##instance"), None)
+        self.assertEqual(retrieve("_##json_schema"), {})
+        self.assertEqual(retrieve("_##root"), {})
+        self.assertEqual(retrieve("some_graph@@some_instance##class"), {})

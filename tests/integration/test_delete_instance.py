@@ -104,7 +104,7 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
         response = self.fetch(
                     '/anygraph/Species/Platypus?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                     method="DELETE")
-        mock_delete.assert_called_with(u"_@@_/_@@http://tatipedia.org/Platypus##instance")
+        mock_delete.assert_called_with(u"_@@_@@http://tatipedia.org/Platypus##instance")
         self.assertEqual(response.code, 204)
 
     @patch("brainiak.handlers.logger")

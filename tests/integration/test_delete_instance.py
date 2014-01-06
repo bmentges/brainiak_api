@@ -97,12 +97,14 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
         })
         self.assertFalse(delete_instance(params))
 
+    @patch("brainiak.handlers.cache.delete")
     @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")
-    def test_handler_204(self, log, mocked_notify_bus):
+    def test_handler_204(self, logger, mocked_notify_bus, mock_delete):
         response = self.fetch(
                     '/anygraph/Species/Platypus?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                     method="DELETE")
+        mock_delete.assert_called_with(u"_@@_/_@@http://tatipedia.org/Platypus##instance")
         self.assertEqual(response.code, 204)
 
     @patch("brainiak.handlers.logger")

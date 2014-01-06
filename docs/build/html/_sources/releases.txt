@@ -1,8 +1,22 @@
 Releases
 ========
 
+Version 2.4.1 - 2014/01/06
+--------------------------
+
+New Features
+____________
+
+ - Support for caching instances.
+ - Any recursive purge will expire all instances in the cache for the time being.
+
+Fix
+___
+
+ - The cache key for any instance follows the pattern  _@@_/_@@<instance_uri>##instance
+
 Version 2.4.0 - 2013/11/28
-----------------------
+--------------------------
 
 New Features
 ____________

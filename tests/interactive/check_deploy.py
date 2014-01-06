@@ -16,7 +16,7 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "develop"
+brainiak_version = "2.4.1"
 mercury_version = "undefined"
 
 brainiak_endpoint = {

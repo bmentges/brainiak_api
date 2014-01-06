@@ -4,7 +4,7 @@ import unittest
 import redis
 from mock import patch
 
-from brainiak.utils.cache import build_key_for_class, CacheError, connect, memoize, ping, purge_by_path, safe_redis, status
+from brainiak.utils.cache import build_key_for_class, CacheError, connect, memoize, ping, purge_by_path, safe_redis, status, build_instance_key
 from tests.mocks import MockRequest
 
 
@@ -191,6 +191,16 @@ class CacheUtilsTestCase(unittest.TestCase):
         }
         computed = build_key_for_class(params)
         expected = "graph@@Class##class"
+        self.assertEqual(computed, expected)
+
+    def test_build_key_for_instance(self):
+        params = {
+            "graph_uri": "graph",
+            "class_uri": "Class",
+            "instance_uri": "instance",
+        }
+        computed = build_instance_key(params)
+        expected = "_@@_@@instance##instance"
         self.assertEqual(computed, expected)
 
     @patch("brainiak.utils.cache.delete")

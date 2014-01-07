@@ -74,7 +74,7 @@ def memoize(params, function, function_arguments=None, key=False):
     if settings.ENABLE_CACHE:
         key = key or params['request'].uri
         cached_json = retrieve(key)
-        if (cached_json is None) or (params.get('purge') == '1'):
+        if (cached_json is None):
             fresh_json = _fresh_retrieve(function, function_arguments)
             create(key, ujson.dumps(fresh_json))
             fresh_json['meta']['cache'] = 'MISS'

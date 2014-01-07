@@ -547,6 +547,9 @@ class InstanceHandler(BrainiakRequestHandler):
             response = 204
             if settings.NOTIFY_BUS:
                 self._notify_bus(action="DELETE")
+                cache_key = build_instance_key(self.query_params)
+                cache.delete(cache_key)
+            build_instance_key(self.query_params)
         else:
             msg = _(u"Instance ({0}) of class ({1}) in graph ({2}) was not found.")
             error_message = msg.format(self.query_params["instance_uri"],

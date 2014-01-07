@@ -4,7 +4,7 @@ from brainiak import settings
 from brainiak.utils import params
 from brainiak.prefixes import ROOT_CONTEXT, SHORTEN
 from brainiak.settings import URI_PREFIX
-from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, CACHE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals, RequiredParamMissing
+from brainiak.utils.params import ParamDict, InvalidParam, DefaultParamsDict, LIST_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, RequiredParamsDict, optionals, RequiredParamMissing
 from tests.mocks import MockHandler
 
 
@@ -349,9 +349,3 @@ class PublicAPITestCase(TestCase):
         params = ParamDict(handler, lang='en', expand_uri='1')
         computed = params.format_url_params(exclude_keys=['lang'])
         self.assertEqual(computed, 'expand_uri=1')
-
-
-class SpecificParamsDictTestCase(TestCase):
-
-    def test_cache_params_definitions(self):
-        self.assertEqual(CACHE_PARAMS.get("purge"), "0")

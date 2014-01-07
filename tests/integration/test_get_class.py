@@ -694,16 +694,6 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         delete('http://example.onto/@@http://example.onto/Place##class')
         delete('http://semantica.globo.com/person/@@http://semantica.globo.com/person/Gender##class')
 
-    @patch("brainiak.utils.cache.retrieve", return_value={"cache": "to be purged"})
-    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
-    def test_200_with_cache_but_with_purge(self, enable_cache, retrieve):
-        response = self.fetch("/person/Gender/_schema?purge=1", method='GET')
-        self.assertEqual(response.code, 200)
-        body = json.loads(response.body)
-        self.assertIn("properties", body.keys())
-        self.assertTrue(response.headers.get('Last-Modified'))
-        self.assertTrue(response.headers['X-Cache'].startswith('MISS from localhost'))
-
     @patch("brainiak.utils.cache.retrieve", return_value={"body": {"i am": "cached"}, "meta": {"cache": "HIT", "last_modified": "123"}})
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     def test_200_with_cache(self, enable_cache, retrieve):
@@ -799,7 +789,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_with_invalid_params(self, log, settings):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
-        self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, graph_uri, lang, purge."]}')
+        self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, graph_uri, lang."]}')
 
     @patch("brainiak.handlers.logger")
     def test_schema_handler_class_undefined(self, log):

@@ -57,8 +57,6 @@ DEFAULT_PARAMS = optionals('lang', 'graph_uri', 'expand_uri')
 
 NON_ARGUMENT_PARAMS = ('context_name', 'class_name', 'instance_id')
 
-CACHE_PARAMS = DefaultParamsDict(purge="0")
-
 PAGING_PARAMS = DefaultParamsDict(page=settings.DEFAULT_PAGE,
                                   per_page=settings.DEFAULT_PER_PAGE,
                                   do_item_count="0")
@@ -89,7 +87,6 @@ VALID_PARAMS = [
     'instance_id', 'instance_prefix', 'instance_uri',
     'page', 'per_page',
     'sort_by', 'sort_order', 'sort_include_empty',
-    'purge',
     'do_item_count',
     'direct_instances_only',
     'expand_object_properties',

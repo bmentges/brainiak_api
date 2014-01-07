@@ -38,7 +38,7 @@ from brainiak.utils import cache
 from brainiak.utils.cache import memoize, build_instance_key, update_if_present
 from brainiak.utils.i18n import _
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url, build_class_url
-from brainiak.utils.params import CACHE_PARAMS, CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
+from brainiak.utils.params import CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InstanceError
 
@@ -62,6 +62,10 @@ def safe_params(valid_params=None, body_params=None):
         if valid_params is not None:
             params_msg = ", ".join(sorted(set(valid_params.keys() + DEFAULT_PARAMS.keys())))
             msg += _(u" The supported querystring arguments are: {0}.").format(params_msg)
+        else:
+            params_msg = ", ".join(sorted(DEFAULT_PARAMS.keys()))
+            msg += _(u" The supported querystring arguments are: {0}.").format(params_msg)
+
         if body_params is not None:
             body_msg = ", ".join(body_params)
             msg += _(u" The supported body arguments are: {0}.").format(body_msg)
@@ -236,9 +240,8 @@ class RootJsonSchemaHandler(BrainiakRequestHandler):
         return cache.build_key_for_root_schema()
 
     def get(self):
-        valid_params = CACHE_PARAMS
-        with safe_params(valid_params):
-            self.query_params = ParamDict(self, **valid_params)
+        with safe_params():
+            self.query_params = ParamDict(self)
 
         response = memoize(
             self.query_params,
@@ -258,7 +261,7 @@ class RootHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self):
-        valid_params = PAGING_PARAMS + CACHE_PARAMS
+        valid_params = PAGING_PARAMS
         with safe_params(valid_params):
             self.query_params = ParamDict(self, **valid_params)
         response = memoize(self.query_params,
@@ -316,13 +319,10 @@ class ClassHandler(BrainiakRequestHandler):
     def get(self, context_name, class_name):
         self.request.query = unquote(self.request.query)
 
-        #valid_params = CACHE_PARAMS
-        valid_params = CACHE_PARAMS
-        with safe_params(valid_params):
+        with safe_params():
             self.query_params = ParamDict(self,
                                           context_name=context_name,
-                                          class_name=class_name,
-                                          **valid_params)
+                                          class_name=class_name)
         del context_name
         del class_name
 
@@ -453,7 +453,7 @@ class InstanceHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def purge(self, context_name, class_name, instance_id):
         if settings.ENABLE_CACHE:
-            optional_params = INSTANCE_PARAMS + CACHE_PARAMS
+            optional_params = INSTANCE_PARAMS
             with safe_params(optional_params):
                 self.query_params = ParamDict(self,
                                               context_name=context_name,
@@ -467,7 +467,7 @@ class InstanceHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):
-        optional_params = INSTANCE_PARAMS + CACHE_PARAMS
+        optional_params = INSTANCE_PARAMS
         with safe_params(optional_params):
             self.query_params = ParamDict(self,
                                           context_name=context_name,

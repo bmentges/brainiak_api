@@ -98,6 +98,15 @@ Otherwise, to purge only (c) and (d), the command bellow should be run:
   $ curl -i -X PURGE --header "X-Cache-Recursive: 1" http://brainiak.semantica.dev.globoi.com/person/Person
 
 
+Purge Instance
+--------------
+
+There is support to PURGE a specific instance given its full path.
+
+.. code-block:: bash
+
+  $ curl -i -X PURGE  http://brainiak.semantica.dev.globoi.com/person/Person/IsaacNewton
+
 
 Purge all
 ---------

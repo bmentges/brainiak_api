@@ -445,8 +445,25 @@ class CollectionHandler(BrainiakRequestHandler):
 
 class InstanceHandler(BrainiakRequestHandler):
 
+    SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
+
     def __init__(self, *args, **kwargs):
         super(InstanceHandler, self).__init__(*args, **kwargs)
+
+    @greenlet_asynchronous
+    def purge(self, context_name, class_name, instance_id):
+        if settings.ENABLE_CACHE:
+            optional_params = INSTANCE_PARAMS + CACHE_PARAMS
+            with safe_params(optional_params):
+                self.query_params = ParamDict(self,
+                                              context_name=context_name,
+                                              class_name=class_name,
+                                              instance_id=instance_id,
+                                              **optional_params)
+            path = build_instance_key(self.query_params)
+            cache.purge_by_path(path, False)
+        else:
+            raise HTTPError(405, log_message=_("Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"))
 
     @greenlet_asynchronous
     def get(self, context_name, class_name, instance_id):

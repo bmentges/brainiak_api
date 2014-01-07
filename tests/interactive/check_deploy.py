@@ -16,7 +16,7 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.4.0"
+brainiak_version = "2.4.1"
 mercury_version = "1.2.6"
 
 brainiak_endpoint = {
@@ -194,6 +194,7 @@ class BrainiakChecker(Checker):
         # Check if instance was written in Solr
         solr_response = requests.get(solr_url, proxies=self.proxies)
         nose.assert_equal(solr_response.status_code, 200)
+        sys.stdout.write("-- make sure ActiveMQ isn't overloaded, if you get an error related to numFound='0'\n",)
         nose.assert_in('numFound="1"', solr_response.text)
         nose.assert_in('<str name="label">Globoland: is the best</str>', solr_response.text)
 
@@ -212,6 +213,7 @@ class BrainiakChecker(Checker):
         sys.stdout.write("\ncheck_instance_delete - pass")
 
     def check_suggest_sports_user_case(self):
+        sys.stdout.write("\n-- run brainiak_sync for esportes graph, if <check_suggest_sports_user_case> breaks")
         if environ == "local":
             sys.stdout.write("\ncheck_suggest_sports_user_case - ignore")
         else:

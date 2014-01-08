@@ -1,4 +1,4 @@
-role :be,                         'cittavld895.globoi.com'
+role :be,                         'cittavld895.globoi.com', 'cittavld896.globoi.com'
 role :filer,                      'filer.qa.globoi.com'
 
 # Hosts

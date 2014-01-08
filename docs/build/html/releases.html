@@ -251,6 +251,7 @@
 <div><ul class="simple">
 <li>Support for caching instances.</li>
 <li>Any recursive purge will expire all instances in the cache for the time being.</li>
+<li>Support for purging a specific instance (see <a class="reference internal" href="services/cache.html"><em>Caching</em></a>)</li>
 </ul>
 </div></blockquote>
 </div>
@@ -258,7 +259,10 @@
 <h3>Fix<a class="headerlink" href="#fix" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
+<li>Removing unused param <cite>purge</cite></li>
 <li>The cache key for any instance follows the pattern  _&#64;&#64;_/_&#64;&#64;&lt;instance_uri&gt;##instance</li>
+<li>When updating an instance via PUT, the cached version was updated although it lacked the meta_properties.
+Now, when updating the cache, the full properties are updated in the cached instance.</li>
 </ul>
 </div></blockquote>
 </div>

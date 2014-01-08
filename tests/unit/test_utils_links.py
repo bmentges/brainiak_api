@@ -1,4 +1,6 @@
+from UserDict import UserDict
 import unittest
+from mock import Mock
 from brainiak.utils.links import *
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockHandler, MockRequest
@@ -233,7 +235,7 @@ class LinksTestCase(URLTestCase):
         request = MockRequest(uri="/relative_url")
         request.host = "some.host"
         request.protocol = "http"
-        computed = self_url({"request": request})
+        computed = self_url(Mock(request=request))
         expected = 'http://some.host/relative_url'
         self.assertEqual(computed, expected)
 
@@ -298,12 +300,11 @@ class BuildClassUrlTestCase(unittest.TestCase):
             protocol = "https"
             host = "dot.net"
 
-        query_params = {
-            "request": MockRequest(),
-            "context_name": "place",
-            "class_name": "City"
+        query_params = UserDict(
+            context_name="place",
+            class_name="City")
+        query_params.request = MockRequest()
 
-        }
         computed = build_class_url(query_params)
         expected = "https://dot.net/place/City"
         self.assertEqual(computed, expected)
@@ -315,12 +316,11 @@ class BuildClassUrlTestCase(unittest.TestCase):
             host = "dot.net"
             query = "?instance_uri=ignore_me&class_prefix=include_me"
 
-        query_params = {
-            "request": MockRequest(),
-            "context_name": "place",
-            "class_name": "City"
+        query_params = UserDict(
+            context_name="place",
+            class_name="City")
+        query_params.request = MockRequest()
 
-        }
         computed = build_class_url(query_params, include_query_string=True)
         expected = "https://dot.net/place/City?class_prefix=include_me"
         self.assertEqual(computed, expected)
@@ -332,12 +332,11 @@ class BuildClassUrlTestCase(unittest.TestCase):
             host = "dot.net"
             query = "?instance_uri=ignore_me&class_prefix=include_me"
 
-        query_params = {
-            "request": MockRequest(),
-            "context_name": "place",
-            "class_name": "City"
+        query_params = UserDict(
+            context_name="place",
+            class_name="City")
+        query_params.request = MockRequest()
 
-        }
         class_url = build_class_url(query_params)
         computed = build_schema_url_for_instance(query_params, class_url)
         expected = "https://dot.net/place/City/_schema?class_prefix=include_me"
@@ -350,12 +349,12 @@ class BuildClassUrlTestCase(unittest.TestCase):
             host = "dot.net"
             query = "?instance_uri=ignore_me"
 
-        query_params = {
-            "request": MockRequest(),
-            "context_name": "place",
-            "class_name": "_",
-            "class_uri": "place:City"
-        }
+        query_params = UserDict(
+            context_name="place",
+            class_uri="place:City",
+            class_name="_")
+        query_params.request = MockRequest()
+
         class_url = build_class_url(query_params)
         computed = build_schema_url_for_instance(query_params, class_url)
         expected = "https://dot.net/place/_/_schema?class_uri=place:City"
@@ -368,13 +367,13 @@ class BuildClassUrlTestCase(unittest.TestCase):
             host = "dot.net"
             query = "?instance_uri=ignore_me"
 
-        query_params = {
-            "request": MockRequest(),
-            "context_name": "_",
-            "graph_uri": "place",
-            "class_name": "_",
-            "class_uri": "place:City"
-        }
+        query_params = UserDict(
+            context_name="_",
+            graph_uri="place",
+            class_uri="place:City",
+            class_name="_")
+        query_params.request = MockRequest()
+
         class_url = build_class_url(query_params)
         computed = build_schema_url_for_instance(query_params, class_url)
         expected = "https://dot.net/_/_/_schema?graph_uri=place&class_uri=place:City"

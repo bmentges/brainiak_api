@@ -1,10 +1,13 @@
 import logging
 import unittest
+import json
 
 from mock import patch
 
+from brainiak import server
 from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, purge_all_instances, retrieve, redis_client, update_if_present
 from tests.mocks import MockRequest
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
 class CacheTestCase(unittest.TestCase):
@@ -178,3 +181,70 @@ class PurgeAllInstancesTestCase(unittest.TestCase):
         self.assertEqual(retrieve("_##json_schema"), {})
         self.assertEqual(retrieve("_##root"), {})
         self.assertEqual(retrieve("some_graph@@some_instance##class"), {})
+
+
+
+class FullCyclePurgeTestCase(TornadoAsyncHTTPTestCase):
+
+    dummy_city_1 = {"http://semantica.globo.com/upper/name": "Dummy city 1"}
+    dummy_city_2 = {"http://semantica.globo.com/upper/name": "Dummy city 2"}
+
+    def get_app(self):
+        return server.Application()
+
+    def createInstance(self, relative_url, data_dict):
+        payload = json.dumps(data_dict)
+        return self.fetch(relative_url, method="PUT", body=payload)
+
+    def deleteInstance(self, relative_url):
+        return self.fetch(relative_url, method='DELETE')
+
+    def cacheInstances(self):
+        response = self.fetch('/place/City/dummyCity1')
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.headers['X-Cache'].startswith('MISS'))
+        response = self.fetch('/place/City/dummyCity2')
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.headers['X-Cache'].startswith('MISS'))
+
+    def setUp(self):
+        super(FullCyclePurgeTestCase, self).setUp()
+        response = self.createInstance('/place/City/dummyCity1', self.dummy_city_1)
+        self.assertEqual(response.code, 201)
+        response = self.createInstance('/place/City/dummyCity2', self.dummy_city_2)
+        self.assertEqual(response.code, 201)
+
+    def tearDown(self):
+        response = self.deleteInstance('/place/City/dummyCity1')
+        self.assertEqual(response.code, 204)
+        response = self.deleteInstance('/place/City/dummyCity2')
+        self.assertEqual(response.code, 204)
+        super(FullCyclePurgeTestCase, self).tearDown()
+
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
+    @patch("brainiak.handlers.logger")
+    def test_purge_dummy1_but_keep_dummy2(self, mock_log, mock_cache, mock_cache2):
+        self.cacheInstances()
+
+        # Check that both instances are retrived from cache
+        response = self.fetch('/place/City/dummyCity1')
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.headers['X-Cache'].startswith('HIT'))
+        response = self.fetch('/place/City/dummyCity2')
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.headers['X-Cache'].startswith('HIT'))
+
+        # Purge just instance 1
+        response = self.fetch('/place/City/dummyCity1', method='PURGE')
+        self.assertEqual(response.code, 200)
+
+        # Validate that instance 1 is fresh and 2 is still cached
+        response = self.fetch('/place/City/dummyCity1')
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.headers['X-Cache'].startswith('MISS'))
+        response = self.fetch('/place/City/dummyCity2')
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.headers['X-Cache'].startswith('HIT'))
+
+

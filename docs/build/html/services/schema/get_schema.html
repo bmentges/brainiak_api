@@ -189,163 +189,26 @@
             &quot;rel&quot;: &quot;self&quot;
         }, 
         {
-            &quot;href&quot;: &quot;/place/City/_schema?class_prefix=http://semantica.globo.com/place/&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;, 
             &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;class&quot;
         }, 
         {
-            &quot;href&quot;: &quot;/place/City?class_prefix=http://semantica.globo.com/place/&quot;, 
-            &quot;method&quot;: &quot;POST&quot;, 
-            &quot;rel&quot;: &quot;create&quot;, 
-            &quot;schema&quot;: {
-                &quot;$ref&quot;: &quot;{+_base_url}&quot;
-            }
-        }, 
-        {
-            &quot;href&quot;: &quot;/_/_/_?instance_uri={value}&quot;, 
-            &quot;method&quot;: &quot;GET&quot;, 
-            &quot;rel&quot;: &quot;relatedInstance&quot;
-        }, 
-        {
-            &quot;href&quot;: &quot;/_suggest&quot;, 
-            &quot;method&quot;: &quot;POST&quot;, 
-            &quot;rel&quot;: &quot;suggest&quot;, 
-            &quot;schema&quot;: {
-                &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;, 
-                &quot;additionalProperties&quot;: false, 
-                &quot;description&quot;: &quot;Describe the parameters given to the suggest primitive&quot;, 
-                &quot;properties&quot;: {
-                    &quot;response&quot;: {
-                        &quot;additionalProperties&quot;: false, 
-                        &quot;properties&quot;: {
-                            &quot;class_fields&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;classes&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;additionalProperties&quot;: false, 
-                                    &quot;properties&quot;: {
-                                        &quot;@type&quot;: {
-                                            &quot;format&quot;: &quot;uri&quot;, 
-                                            &quot;type&quot;: &quot;string&quot;
-                                        }, 
-                                        &quot;instance_fields&quot;: {
-                                            &quot;items&quot;: {
-                                                &quot;format&quot;: &quot;uri&quot;, 
-                                                &quot;type&quot;: &quot;string&quot;
-                                            }, 
-                                            &quot;minItems&quot;: 1, 
-                                            &quot;type&quot;: &quot;array&quot;, 
-                                            &quot;uniqueItems&quot;: true
-                                        }
-                                    }, 
-                                    &quot;required&quot;: [
-                                        &quot;@type&quot;, 
-                                        &quot;instance_fields&quot;
-                                    ], 
-                                    &quot;type&quot;: &quot;object&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;instance_fields&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;meta_fields&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;required_fields&quot;: {
-                                &quot;type&quot;: &quot;boolean&quot;
-                            }
-                        }, 
-                        &quot;type&quot;: &quot;object&quot;
-                    }, 
-                    &quot;search&quot;: {
-                        &quot;additionalProperties&quot;: false, 
-                        &quot;properties&quot;: {
-                            &quot;classes&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;fields&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;graphs&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;pattern&quot;: {
-                                &quot;type&quot;: &quot;string&quot;
-                            }, 
-                            &quot;target&quot;: {
-                                &quot;format&quot;: &quot;uri&quot;, 
-                                &quot;type&quot;: &quot;string&quot;
-                            }
-                        }, 
-                        &quot;required&quot;: [
-                            &quot;pattern&quot;, 
-                            &quot;target&quot;
-                        ], 
-                        &quot;type&quot;: &quot;object&quot;
-                    }
-                }, 
-                &quot;required&quot;: [
-                    &quot;search&quot;
-                ], 
-                &quot;type&quot;: &quot;object&quot;
-            }
-        }, 
-        {
-            &quot;href&quot;: &quot;/place/City?class_prefix=http://semantica.globo.com/place/&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http://semantica.globo.com/place/&quot;, 
             &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;collection&quot;
         }, 
         {
-            &quot;href&quot;: &quot;/place/City/{_resource_id}&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/{_resource_id}&quot;, 
             &quot;method&quot;: &quot;DELETE&quot;, 
             &quot;rel&quot;: &quot;delete&quot;
         }, 
         {
-            &quot;href&quot;: &quot;/place/City/{_resource_id}&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/{_resource_id}&quot;, 
             &quot;method&quot;: &quot;PUT&quot;, 
             &quot;rel&quot;: &quot;update&quot;, 
             &quot;schema&quot;: {
-                &quot;$ref&quot;: &quot;/place/City/_schema&quot;
+                &quot;$ref&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;
             }
         }
     ], 
@@ -354,14 +217,14 @@
             &quot;class&quot;: &quot;place:Place&quot;, 
             &quot;datatype&quot;: &quot;xsd:integer&quot;, 
             &quot;description&quot;: &quot;ID para uso da API do Geonames.&quot;, 
-            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;graph&quot;: &quot;place:&quot;, 
             &quot;title&quot;: &quot;ID no Geoname&quot;, 
             &quot;type&quot;: &quot;integer&quot;
         }, 
         &quot;place:hasSubRegion&quot;: {
             &quot;class&quot;: &quot;place:Place&quot;, 
             &quot;description&quot;: &quot;Um lugar pode ser subdividido em regi\u00f5es.&quot;, 
-            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;graph&quot;: &quot;place:&quot;, 
             &quot;items&quot;: {
                 &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
@@ -369,7 +232,7 @@
             &quot;range&quot;: {
                 &quot;@id&quot;: &quot;place:Region&quot;, 
                 &quot;format&quot;: &quot;uri&quot;, 
-                &quot;graph&quot;: &quot;place&quot;, 
+                &quot;graph&quot;: &quot;place:&quot;, 
                 &quot;title&quot;: &quot;Regi\u00e3o&quot;, 
                 &quot;type&quot;: &quot;string&quot;
             }, 
@@ -380,7 +243,7 @@
             &quot;class&quot;: &quot;place:Place&quot;, 
             &quot;datatype&quot;: &quot;xsd:float&quot;, 
             &quot;description&quot;: &quot;Coordenada de latitude de acordo com WGS84.&quot;, 
-            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;graph&quot;: &quot;place:&quot;, 
             &quot;title&quot;: &quot;Latitude&quot;, 
             &quot;type&quot;: &quot;number&quot;
         }, 
@@ -388,7 +251,7 @@
             &quot;class&quot;: &quot;place:Place&quot;, 
             &quot;datatype&quot;: &quot;xsd:float&quot;, 
             &quot;description&quot;: &quot;Coordenada de longitude de acordo com WGS84.&quot;, 
-            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;graph&quot;: &quot;place:&quot;, 
             &quot;title&quot;: &quot;Longitude&quot;, 
             &quot;type&quot;: &quot;number&quot;
         }, 
@@ -396,11 +259,11 @@
             &quot;class&quot;: &quot;place:City&quot;, 
             &quot;description&quot;: &quot;Cidade est\u00e1 no estado.&quot;, 
             &quot;format&quot;: &quot;uri&quot;, 
-            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;graph&quot;: &quot;place:&quot;, 
             &quot;range&quot;: {
                 &quot;@id&quot;: &quot;place:State&quot;, 
                 &quot;format&quot;: &quot;uri&quot;, 
-                &quot;graph&quot;: &quot;place&quot;, 
+                &quot;graph&quot;: &quot;place:&quot;, 
                 &quot;title&quot;: &quot;Estado&quot;, 
                 &quot;type&quot;: &quot;string&quot;
             }, 
@@ -411,7 +274,7 @@
             &quot;class&quot;: &quot;upper:Entity&quot;, 
             &quot;datatype&quot;: &quot;xsd:string&quot;, 
             &quot;description&quot;: &quot;Descri\u00e7\u00e3o textual da entidade.&quot;, 
-            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;graph&quot;: &quot;upper:&quot;, 
             &quot;title&quot;: &quot;Descri\u00e7\u00e3o&quot;, 
             &quot;type&quot;: &quot;string&quot;
         }, 
@@ -419,7 +282,7 @@
             &quot;class&quot;: &quot;upper:Substance&quot;, 
             &quot;datatype&quot;: &quot;xsd:string&quot;, 
             &quot;description&quot;: &quot;Nome completo de Agente ou Objeto.&quot;, 
-            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;graph&quot;: &quot;upper:&quot;, 
             &quot;title&quot;: &quot;Nome Completo&quot;, 
             &quot;type&quot;: &quot;string&quot;
         }, 
@@ -427,7 +290,7 @@
             &quot;class&quot;: &quot;upper:Entity&quot;, 
             &quot;datatype&quot;: &quot;xsd:string&quot;, 
             &quot;description&quot;: &quot;Nomes populares de uma inst\u00e2ncia. Exemplo: nomes pelo quais uma pessoa \u00e9 conhecida (e.g. Ronaldinho, Zico, Lula). N\u00e3o confundir com nome completo, uma outra propriedade com valor \u00fanico e formal.&quot;, 
-            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;graph&quot;: &quot;upper:&quot;, 
             &quot;required&quot;: true, 
             &quot;title&quot;: &quot;Nome&quot;, 
             &quot;type&quot;: &quot;string&quot;
@@ -435,7 +298,7 @@
         &quot;upper:sociallyRelatedWith&quot;: {
             &quot;class&quot;: &quot;upper:Substance&quot;, 
             &quot;description&quot;: &quot;Rela\u00e7\u00e3o social abstrata entre qualquer combina\u00e7\u00e3o de (Agente, Objeto) tomados dois-a-dois.&quot;, 
-            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;graph&quot;: &quot;upper:&quot;, 
             &quot;items&quot;: {
                 &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
@@ -443,7 +306,7 @@
             &quot;range&quot;: {
                 &quot;@id&quot;: &quot;upper:Substance&quot;, 
                 &quot;format&quot;: &quot;uri&quot;, 
-                &quot;graph&quot;: &quot;upper&quot;, 
+                &quot;graph&quot;: &quot;upper:&quot;, 
                 &quot;title&quot;: &quot;Subst\u00e2ncia&quot;, 
                 &quot;type&quot;: &quot;string&quot;
             }, 
@@ -505,163 +368,26 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;rel&quot;: &quot;self&quot;
         }, 
         {
-            &quot;href&quot;: &quot;/place/Country/_schema?class_prefix=http://semantica.globo.com/place/&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/_schema&quot;, 
             &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;class&quot;
         }, 
         {
-            &quot;href&quot;: &quot;/place/Country?class_prefix=http://semantica.globo.com/place/&quot;, 
-            &quot;method&quot;: &quot;POST&quot;, 
-            &quot;rel&quot;: &quot;create&quot;, 
-            &quot;schema&quot;: {
-                &quot;$ref&quot;: &quot;{+_base_url}&quot;
-            }
-        }, 
-        {
-            &quot;href&quot;: &quot;/_/_/_?instance_uri={value}&quot;, 
-            &quot;method&quot;: &quot;GET&quot;, 
-            &quot;rel&quot;: &quot;relatedInstance&quot;
-        }, 
-        {
-            &quot;href&quot;: &quot;/_suggest&quot;, 
-            &quot;method&quot;: &quot;POST&quot;, 
-            &quot;rel&quot;: &quot;suggest&quot;, 
-            &quot;schema&quot;: {
-                &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;, 
-                &quot;additionalProperties&quot;: false, 
-                &quot;description&quot;: &quot;Describe the parameters given to the suggest primitive&quot;, 
-                &quot;properties&quot;: {
-                    &quot;response&quot;: {
-                        &quot;additionalProperties&quot;: false, 
-                        &quot;properties&quot;: {
-                            &quot;class_fields&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;classes&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;additionalProperties&quot;: false, 
-                                    &quot;properties&quot;: {
-                                        &quot;@type&quot;: {
-                                            &quot;format&quot;: &quot;uri&quot;, 
-                                            &quot;type&quot;: &quot;string&quot;
-                                        }, 
-                                        &quot;instance_fields&quot;: {
-                                            &quot;items&quot;: {
-                                                &quot;format&quot;: &quot;uri&quot;, 
-                                                &quot;type&quot;: &quot;string&quot;
-                                            }, 
-                                            &quot;minItems&quot;: 1, 
-                                            &quot;type&quot;: &quot;array&quot;, 
-                                            &quot;uniqueItems&quot;: true
-                                        }
-                                    }, 
-                                    &quot;required&quot;: [
-                                        &quot;@type&quot;, 
-                                        &quot;instance_fields&quot;
-                                    ], 
-                                    &quot;type&quot;: &quot;object&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;instance_fields&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;meta_fields&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;required_fields&quot;: {
-                                &quot;type&quot;: &quot;boolean&quot;
-                            }
-                        }, 
-                        &quot;type&quot;: &quot;object&quot;
-                    }, 
-                    &quot;search&quot;: {
-                        &quot;additionalProperties&quot;: false, 
-                        &quot;properties&quot;: {
-                            &quot;classes&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;fields&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;graphs&quot;: {
-                                &quot;items&quot;: {
-                                    &quot;format&quot;: &quot;uri&quot;, 
-                                    &quot;type&quot;: &quot;string&quot;
-                                }, 
-                                &quot;minItems&quot;: 1, 
-                                &quot;type&quot;: &quot;array&quot;, 
-                                &quot;uniqueItems&quot;: true
-                            }, 
-                            &quot;pattern&quot;: {
-                                &quot;type&quot;: &quot;string&quot;
-                            }, 
-                            &quot;target&quot;: {
-                                &quot;format&quot;: &quot;uri&quot;, 
-                                &quot;type&quot;: &quot;string&quot;
-                            }
-                        }, 
-                        &quot;required&quot;: [
-                            &quot;pattern&quot;, 
-                            &quot;target&quot;
-                        ], 
-                        &quot;type&quot;: &quot;object&quot;
-                    }
-                }, 
-                &quot;required&quot;: [
-                    &quot;search&quot;
-                ], 
-                &quot;type&quot;: &quot;object&quot;
-            }
-        }, 
-        {
-            &quot;href&quot;: &quot;/place/Country?class_prefix=http://semantica.globo.com/place/&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/?class_prefix=http://semantica.globo.com/place/&quot;, 
             &quot;method&quot;: &quot;GET&quot;, 
             &quot;rel&quot;: &quot;collection&quot;
         }, 
         {
-            &quot;href&quot;: &quot;/place/Country/{_resource_id}&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/{_resource_id}&quot;, 
             &quot;method&quot;: &quot;DELETE&quot;, 
             &quot;rel&quot;: &quot;delete&quot;
         }, 
         {
-            &quot;href&quot;: &quot;/place/Country/{_resource_id}&quot;, 
+            &quot;href&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/{_resource_id}&quot;, 
             &quot;method&quot;: &quot;PUT&quot;, 
             &quot;rel&quot;: &quot;update&quot;, 
             &quot;schema&quot;: {
-                &quot;$ref&quot;: &quot;/place/Country/_schema&quot;
+                &quot;$ref&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/_schema&quot;
             }
         }
     ], 
@@ -670,14 +396,14 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;class&quot;: &quot;place:Place&quot;, 
             &quot;datatype&quot;: &quot;xsd:integer&quot;, 
             &quot;description&quot;: &quot;ID para uso da API do Geonames.&quot;, 
-            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;graph&quot;: &quot;place:&quot;, 
             &quot;title&quot;: &quot;ID no Geoname&quot;, 
             &quot;type&quot;: &quot;integer&quot;
         }, 
         &quot;place:hasSubRegion&quot;: {
             &quot;class&quot;: &quot;place:Place&quot;, 
             &quot;description&quot;: &quot;Um lugar pode ser subdividido em regi\u00f5es.&quot;, 
-            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;graph&quot;: &quot;place:&quot;, 
             &quot;items&quot;: {
                 &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
@@ -685,7 +411,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;range&quot;: {
                 &quot;@id&quot;: &quot;place:Region&quot;, 
                 &quot;format&quot;: &quot;uri&quot;, 
-                &quot;graph&quot;: &quot;place&quot;, 
+                &quot;graph&quot;: &quot;place:&quot;, 
                 &quot;title&quot;: &quot;Regi\u00e3o&quot;, 
                 &quot;type&quot;: &quot;string&quot;
             }, 
@@ -696,7 +422,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;class&quot;: &quot;place:Place&quot;, 
             &quot;datatype&quot;: &quot;xsd:float&quot;, 
             &quot;description&quot;: &quot;Coordenada de latitude de acordo com WGS84.&quot;, 
-            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;graph&quot;: &quot;place:&quot;, 
             &quot;title&quot;: &quot;Latitude&quot;, 
             &quot;type&quot;: &quot;number&quot;
         }, 
@@ -704,14 +430,14 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;class&quot;: &quot;place:Place&quot;, 
             &quot;datatype&quot;: &quot;xsd:float&quot;, 
             &quot;description&quot;: &quot;Coordenada de longitude de acordo com WGS84.&quot;, 
-            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;graph&quot;: &quot;place:&quot;, 
             &quot;title&quot;: &quot;Longitude&quot;, 
             &quot;type&quot;: &quot;number&quot;
         }, 
         &quot;place:partOfContinent&quot;: {
             &quot;class&quot;: &quot;place:Country&quot;, 
             &quot;description&quot;: &quot;Pa\u00eds est\u00e1 no contiente.&quot;, 
-            &quot;graph&quot;: &quot;place&quot;, 
+            &quot;graph&quot;: &quot;place:&quot;, 
             &quot;items&quot;: {
                 &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
@@ -719,7 +445,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;range&quot;: {
                 &quot;@id&quot;: &quot;place:Continent&quot;, 
                 &quot;format&quot;: &quot;uri&quot;, 
-                &quot;graph&quot;: &quot;place&quot;, 
+                &quot;graph&quot;: &quot;place:&quot;, 
                 &quot;title&quot;: &quot;Continente&quot;, 
                 &quot;type&quot;: &quot;string&quot;
             }, 
@@ -730,7 +456,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;class&quot;: &quot;upper:Entity&quot;, 
             &quot;datatype&quot;: &quot;xsd:string&quot;, 
             &quot;description&quot;: &quot;Descri\u00e7\u00e3o textual da entidade.&quot;, 
-            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;graph&quot;: &quot;upper:&quot;, 
             &quot;title&quot;: &quot;Descri\u00e7\u00e3o&quot;, 
             &quot;type&quot;: &quot;string&quot;
         }, 
@@ -738,7 +464,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;class&quot;: &quot;upper:Substance&quot;, 
             &quot;datatype&quot;: &quot;xsd:string&quot;, 
             &quot;description&quot;: &quot;Nome completo de Agente ou Objeto.&quot;, 
-            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;graph&quot;: &quot;upper:&quot;, 
             &quot;title&quot;: &quot;Nome Completo&quot;, 
             &quot;type&quot;: &quot;string&quot;
         }, 
@@ -746,7 +472,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;class&quot;: &quot;upper:Entity&quot;, 
             &quot;datatype&quot;: &quot;xsd:string&quot;, 
             &quot;description&quot;: &quot;Nomes populares de uma inst\u00e2ncia. Exemplo: nomes pelo quais uma pessoa \u00e9 conhecida (e.g. Ronaldinho, Zico, Lula). N\u00e3o confundir com nome completo, uma outra propriedade com valor \u00fanico e formal.&quot;, 
-            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;graph&quot;: &quot;upper:&quot;, 
             &quot;required&quot;: true, 
             &quot;title&quot;: &quot;Nome&quot;, 
             &quot;type&quot;: &quot;string&quot;
@@ -754,7 +480,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
         &quot;upper:sociallyRelatedWith&quot;: {
             &quot;class&quot;: &quot;upper:Substance&quot;, 
             &quot;description&quot;: &quot;Rela\u00e7\u00e3o social abstrata entre qualquer combina\u00e7\u00e3o de (Agente, Objeto) tomados dois-a-dois.&quot;, 
-            &quot;graph&quot;: &quot;upper&quot;, 
+            &quot;graph&quot;: &quot;upper:&quot;, 
             &quot;items&quot;: {
                 &quot;format&quot;: &quot;uri&quot;, 
                 &quot;type&quot;: &quot;string&quot;
@@ -762,7 +488,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
             &quot;range&quot;: {
                 &quot;@id&quot;: &quot;upper:Substance&quot;, 
                 &quot;format&quot;: &quot;uri&quot;, 
-                &quot;graph&quot;: &quot;upper&quot;, 
+                &quot;graph&quot;: &quot;upper:&quot;, 
                 &quot;title&quot;: &quot;Subst\u00e2ncia&quot;, 
                 &quot;type&quot;: &quot;string&quot;
             }, 

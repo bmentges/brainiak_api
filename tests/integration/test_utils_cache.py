@@ -189,35 +189,35 @@ class FullCyclePurgeTestCase(TornadoAsyncHTTPTestCase):
     dummy_city_1 = {"http://semantica.globo.com/upper/name": "Dummy city 1"}
     dummy_city_2 = {"http://semantica.globo.com/upper/name": "Dummy city 2"}
 
+    DUMMY_CITY_1_URL_SUFFIX = '/place/City/dummyCity1'
+    DUMMY_CITY_2_URL_SUFFIX = '/place/City/dummyCity2'
+
     def get_app(self):
         return server.Application()
 
-    def createInstance(self, relative_url, data_dict):
+    def createInstance(self, url_suffix, data_dict):
         payload = json.dumps(data_dict)
-        return self.fetch(relative_url, method="PUT", body=payload)
+        return self.fetch(url_suffix, method="PUT", body=payload)
 
-    def deleteInstance(self, relative_url):
-        return self.fetch(relative_url, method='DELETE')
+    def deleteInstance(self, url_suffix):
+        return self.fetch(url_suffix, method='DELETE')
 
-    def cacheInstances(self):
-        response = self.fetch('/place/City/dummyCity1')
-        self.assertEqual(response.code, 200)
-        self.assertTrue(response.headers['X-Cache'].startswith('MISS'))
-        response = self.fetch('/place/City/dummyCity2')
+    def cacheInstance(self, url_suffix):
+        response = self.fetch(url_suffix)
         self.assertEqual(response.code, 200)
         self.assertTrue(response.headers['X-Cache'].startswith('MISS'))
 
     def setUp(self):
         super(FullCyclePurgeTestCase, self).setUp()
-        response = self.createInstance('/place/City/dummyCity1', self.dummy_city_1)
+        response = self.createInstance(self.DUMMY_CITY_1_URL_SUFFIX, self.dummy_city_1)
         self.assertEqual(response.code, 201)
-        response = self.createInstance('/place/City/dummyCity2', self.dummy_city_2)
+        response = self.createInstance(self.DUMMY_CITY_2_URL_SUFFIX, self.dummy_city_2)
         self.assertEqual(response.code, 201)
 
     def tearDown(self):
-        response = self.deleteInstance('/place/City/dummyCity1')
+        response = self.deleteInstance(self.DUMMY_CITY_1_URL_SUFFIX)
         self.assertEqual(response.code, 204)
-        response = self.deleteInstance('/place/City/dummyCity2')
+        response = self.deleteInstance(self.DUMMY_CITY_2_URL_SUFFIX)
         self.assertEqual(response.code, 204)
         super(FullCyclePurgeTestCase, self).tearDown()
 
@@ -225,25 +225,26 @@ class FullCyclePurgeTestCase(TornadoAsyncHTTPTestCase):
     @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
     @patch("brainiak.handlers.logger")
     def test_purge_dummy1_but_keep_dummy2(self, mock_log, mock_cache, mock_cache2):
-        self.cacheInstances()
+        self.cacheInstance(self.DUMMY_CITY_1_URL_SUFFIX)
+        self.cacheInstance(self.DUMMY_CITY_2_URL_SUFFIX)
 
         # Check that both instances are retrived from cache
-        response = self.fetch('/place/City/dummyCity1')
+        response = self.fetch(self.DUMMY_CITY_1_URL_SUFFIX)
         self.assertEqual(response.code, 200)
         self.assertTrue(response.headers['X-Cache'].startswith('HIT'))
-        response = self.fetch('/place/City/dummyCity2')
+        response = self.fetch(self.DUMMY_CITY_2_URL_SUFFIX)
         self.assertEqual(response.code, 200)
         self.assertTrue(response.headers['X-Cache'].startswith('HIT'))
 
         # Purge just instance 1
-        response = self.fetch('/place/City/dummyCity1', method='PURGE')
+        response = self.fetch(self.DUMMY_CITY_1_URL_SUFFIX, method='PURGE')
         self.assertEqual(response.code, 200)
 
         # Validate that instance 1 is fresh and 2 is still cached
-        response = self.fetch('/place/City/dummyCity1')
+        response = self.fetch(self.DUMMY_CITY_1_URL_SUFFIX)
         self.assertEqual(response.code, 200)
         self.assertTrue(response.headers['X-Cache'].startswith('MISS'))
-        response = self.fetch('/place/City/dummyCity2')
+        response = self.fetch(self.DUMMY_CITY_2_URL_SUFFIX)
         self.assertEqual(response.code, 200)
         self.assertTrue(response.headers['X-Cache'].startswith('HIT'))
 

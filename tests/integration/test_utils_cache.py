@@ -263,6 +263,7 @@ class FullCycleTestCase(BaseCyclePurgeTestCase):
     dummy_city_2 = {"http://semantica.globo.com/upper/name": "Dummy city 2"}
 
     DUMMY_CITY_1_URL_SUFFIX = '/place/City/dummyCity1'
+    DUMMY_CITY_1_URL_SUFFIX_WITH_INSTANCE_URI = '/_/_/_?instance_uri=http://semantica.globo.com/place/City/dummyCity1'
     DUMMY_CITY_2_URL_SUFFIX = '/place/City/dummyCity2'
 
     def setUp(self):
@@ -297,3 +298,14 @@ class FullCycleTestCase(BaseCyclePurgeTestCase):
         # Validate that instance 1 is fresh and 2 is still cached
         self.checkInstanceIsNotCached(self.DUMMY_CITY_1_URL_SUFFIX)
         self.checkInstanceIsCached(self.DUMMY_CITY_2_URL_SUFFIX)
+
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
+    @patch("brainiak.handlers.logger")
+    def test_retrieve_same_instance_given_different_parameters(self, mock_log, mock_cache, mock_cache2):
+        response1 = self.fetch(self.DUMMY_CITY_1_URL_SUFFIX + '?meta_properties=0')
+        response2 = self.fetch(self.DUMMY_CITY_1_URL_SUFFIX_WITH_INSTANCE_URI + '&meta_properties=0')
+        self.assertEqual(response1.code, 200)
+        self.assertEqual(response2.code, 200)
+        self.assertEqual(response1.body, response2.body)
+

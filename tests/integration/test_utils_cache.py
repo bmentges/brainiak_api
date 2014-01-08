@@ -156,7 +156,7 @@ class PurgeAllInstancesTestCase(unittest.TestCase):
         self.assertTrue(ping())  # assert Redis is up
         create("non_default_key", {})
         create("_@@_@@inst_a##instance", {})
-        create("_@@_@@inst_b##instance", {})
+        create("_@@_@@inst_b@@a=1&b=2##instance", {})
         create("_##json_schema", {})
         create("_##root", {})
         create("some_graph@@some_instance##class", {})
@@ -164,7 +164,7 @@ class PurgeAllInstancesTestCase(unittest.TestCase):
     def tearDown(self):
         delete("non_default_key")
         delete("_@@_@@inst_a##instance")
-        delete("_@@_@@inst_b##instance")
+        delete("_@@_@@inst_b@@a=1&b=2##instance")
         delete("_##json_schema")
         delete("_##root")
         delete("some_graph@@some_instance##class")
@@ -177,7 +177,7 @@ class PurgeAllInstancesTestCase(unittest.TestCase):
         purge_all_instances()
         self.assertEqual(retrieve("non_default_key"), {})
         self.assertEqual(retrieve("_@@_@@inst_a##instance"), None)
-        self.assertEqual(retrieve("_@@_@@inst_b##instance"), None)
+        self.assertEqual(retrieve("_@@_@@inst_b@@a=1&b=2##instance"), None)
         self.assertEqual(retrieve("_##json_schema"), {})
         self.assertEqual(retrieve("_##root"), {})
         self.assertEqual(retrieve("some_graph@@some_instance##class"), {})

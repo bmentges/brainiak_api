@@ -227,15 +227,6 @@ class ParamsTestCase(TestCase):
         handler = MockHandler(querystring="class_prefix=http://someprefix/")
         params = ParamDict(handler, context_name='dbpedia', class_name='Actor', class_prefix=None)
         self.assertEquals(params["class_prefix"], "http://someprefix/")
-
-    def test_class_uri_from_context_and_class_with_class_prefix(self):
-        handler = MockHandler(querystring="class_prefix=http://someprefix/")
-        params = ParamDict(handler, context_name='dbpedia', class_name='Actor', class_prefix=None)
-        self.assertEquals(params["class_uri"], "http://someprefix/Actor")
-
-    def test_class_uri_from_context_and_class_with_class_prefix(self):
-        handler = MockHandler(querystring="class_prefix=http://someprefix/")
-        params = ParamDict(handler, context_name='dbpedia', class_name='Actor', class_prefix=None)
         self.assertEquals(params["class_uri"], "http://someprefix/Actor")
 
     def test_context_name_affects_class_prefix_and_graph_uri(self):
@@ -273,6 +264,18 @@ class ParamsTestCase(TestCase):
         self.assertEquals(pd["class_uri"], "http://somedomain/someGraphName/someClassName")
         self.assertEquals(pd["class_name"], "someClassName")
         self.assertEquals(pd["class_prefix"], "http://somedomain/someGraphName/")
+
+    def test_to_string_with_just_default_params(self):
+        url_params = {}
+        handler = MockHandler(**url_params)
+        pd = ParamDict(handler, **url_params)
+        self.assertEquals(pd.to_string(), "expand_uri=0&lang=pt")
+
+    def test_to_string_witn_non_default_params(self):
+        url_params = dict(page="1", sort_by="rdfs:label", per_page="10")
+        handler = MockHandler(**url_params)
+        pd = ParamDict(handler, **url_params)
+        self.assertEquals(pd.to_string(), "expand_uri=0&lang=pt&page=1&per_page=10&sort_by=rdfs:label")
 
 
 class ExpandUriTestCase(TestCase):

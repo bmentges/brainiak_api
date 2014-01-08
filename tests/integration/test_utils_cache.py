@@ -184,13 +184,8 @@ class PurgeAllInstancesTestCase(unittest.TestCase):
 
 
 
-class FullCyclePurgeTestCase(TornadoAsyncHTTPTestCase):
+class BaseCyclePurgeTestCase(TornadoAsyncHTTPTestCase):
 
-    dummy_city_1 = {"http://semantica.globo.com/upper/name": "Dummy city 1"}
-    dummy_city_2 = {"http://semantica.globo.com/upper/name": "Dummy city 2"}
-
-    DUMMY_CITY_1_URL_SUFFIX = '/place/City/dummyCity1'
-    DUMMY_CITY_2_URL_SUFFIX = '/place/City/dummyCity2'
 
     def get_app(self):
         return server.Application()
@@ -206,6 +201,21 @@ class FullCyclePurgeTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch(url_suffix)
         self.assertEqual(response.code, 200)
         self.assertTrue(response.headers['X-Cache'].startswith('MISS'))
+
+    def setUp(self):
+        super(BaseCyclePurgeTestCase, self).setUp()
+
+    def tearDown(self):
+        super(BaseCyclePurgeTestCase, self).tearDown()
+
+
+class FullCyclePurgeTestCase(BaseCyclePurgeTestCase):
+
+    dummy_city_1 = {"http://semantica.globo.com/upper/name": "Dummy city 1"}
+    dummy_city_2 = {"http://semantica.globo.com/upper/name": "Dummy city 2"}
+
+    DUMMY_CITY_1_URL_SUFFIX = '/place/City/dummyCity1'
+    DUMMY_CITY_2_URL_SUFFIX = '/place/City/dummyCity2'
 
     def setUp(self):
         super(FullCyclePurgeTestCase, self).setUp()

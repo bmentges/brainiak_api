@@ -308,4 +308,3 @@ class FullCycleTestCase(BaseCyclePurgeTestCase):
         self.assertEqual(response1.code, 200)
         self.assertEqual(response2.code, 200)
         self.assertEqual(response1.body, response2.body)
-

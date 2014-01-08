@@ -2,7 +2,7 @@ import logging
 import unittest
 
 import redis
-from mock import patch
+from mock import patch, Mock
 
 from brainiak.utils.cache import build_key_for_class, CacheError, connect, memoize, ping, purge_by_path, safe_redis, status, build_instance_key
 from tests.mocks import MockRequest
@@ -69,7 +69,7 @@ class MemoizeTestCase(unittest.TestCase):
         def clean_up():
             return {"status": "Laundry done"}
 
-        params = {'request': MockRequest(uri="/home")}
+        params = Mock(request=MockRequest(uri="/home"))
         answer = memoize(params, clean_up)
 
         expected = {
@@ -92,7 +92,7 @@ class MemoizeTestCase(unittest.TestCase):
         def clean_up():
             return {"status": "Laundry done"}
 
-        params = {'request': MockRequest(uri="/home")}
+        params = Mock(request=MockRequest(uri="/home"))
         answer = memoize(params, clean_up)
         self.assertEqual(answer['status'], "Dishes cleaned up")
         self.assertEqual(redis_get.call_count, 1)

@@ -16,8 +16,9 @@ TIME_TO_LIVE_IN_SECS = 86400
 build_key_for_root_schema = lambda: u"_##json_schema"
 build_key_for_root = lambda: u"_##root"
 
-# _@@_/_@@instance_uri##instance
-build_instance_key = lambda query_params: u"_@@_@@{0}##instance".format(query_params["instance_uri"])
+# _@@_/_@@instance_uri@@params##instance
+def build_instance_key(query_params):
+    return u"_@@_@@{0}##instance".format(query_params["instance_uri"])
 # graph_uri@@class_uri@@instance_uri##instance
 #build_instance_key = lambda query_params: u"{0}@@{1}@@{2}##instance".format(query_params["graph_uri"],
 #                                                                          query_params["class_uri"],

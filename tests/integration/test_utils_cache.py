@@ -2,7 +2,7 @@ import logging
 import unittest
 import json
 
-from mock import patch
+from mock import patch, Mock
 
 from brainiak import server
 from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, purge_all_instances, retrieve, redis_client, update_if_present
@@ -70,7 +70,7 @@ class CacheTestCase(unittest.TestCase):
         def clean_up():
             return {"status": "Laundry done"}
 
-        params = {'request': MockRequest(uri="/home")}
+        params = Mock(request=MockRequest(uri="/home"))
         answer = memoize(params, clean_up)
         self.assertEqual(answer['status'], "Dishes cleaned up")
         self.assertEqual(answer['meta']['cache'], "HIT")

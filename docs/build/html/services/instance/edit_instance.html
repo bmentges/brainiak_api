@@ -273,7 +273,7 @@ As <strong>class_prefix</strong> was defined, the class URI will be: <a class="r
 is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;errors&quot;: [
-        &quot;HTTP error: 400\nO argumento invalid_param n\u00e3o \u00e9 suportado. Os argumentos de querystring suportados s\u00e3o: class_prefix, class_uri, expand_object_properties, expand_uri, graph_uri, instance_prefix, instance_uri, lang, meta_properties, purge.&quot;
+        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, expand_object_properties, expand_uri, graph_uri, graph_uri, instance_prefix, instance_uri, lang, meta_properties.&quot;
     ]
 }
 </pre></div>
@@ -291,7 +291,7 @@ is 400 and the body contains a JSON containing valid and invalid parameters.</p>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;errors&quot;: [
-        &quot;HTTP error: 404\nA classe http://semantica.globo.com/place/InexistentClass n\u00e3o existe no grafo http://semantica.globo.com/place/.&quot;
+        &quot;HTTP error: 404\nClass InexistentClass doesn&#39;t exist in context place.&quot;
     ]
 }
 </pre></div>

@@ -125,7 +125,7 @@ def pagination_items(query_params, total_items=None):
     """Add attributes and values related to pagination to a listing page.
     See also https://coderwall.com/p/lkcaag?i=1&p=1&q=sort%3Aupvotes+desc&t[]=algorithm&t[]=algorithms
     """
-    query_string = query_params["request"].query
+    query_string = query_params.request.query
     page = int(query_params["page"]) + 1  # Params class subtracts 1 from given param
     per_page = int(query_params["per_page"])
 
@@ -181,19 +181,19 @@ def build_relative_class_url(query_params, include_query_string=False):
         query_params.get('context_name', '_'),
         query_params.get('class_name', '_'))
     if include_query_string:
-        query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
+        query_string = filter_query_string_by_key_prefix(query_params.request.query, ["class", "graph"])
         class_url = assemble_url(class_url, query_string)
     return class_url
 
 
 def build_class_url(query_params, include_query_string=False):
     class_url = u"{0}://{1}/{2}/{3}".format(
-        query_params['request'].protocol,
-        query_params['request'].host,
+        query_params.request.protocol,
+        query_params.request.host,
         query_params.get('context_name', ''),
         query_params.get('class_name', ''))
     if include_query_string:
-        query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"])
+        query_string = filter_query_string_by_key_prefix(query_params.request.query, ["class", "graph"])
         class_url = assemble_url(class_url, query_string)
     return class_url
 
@@ -205,14 +205,14 @@ def build_schema_url(query_params):
 
 
 def build_schema_url_for_instance(query_params, class_url):
-    query_string = filter_query_string_by_key_prefix(query_params["request"].query, ["class", "graph"], query_params)
+    query_string = filter_query_string_by_key_prefix(query_params.request.query, ["class", "graph"], query_params)
     schema_url = assemble_url(u'{0}/_schema'.format(class_url), query_string)
     return schema_url
 
 
 def crud_links(query_params, class_url):
     """Build crud links."""
-    querystring = query_params["request"].query
+    querystring = query_params.request.query
     if querystring:
         instance_url = u"{0}/{{_resource_id}}?instance_prefix={{_instance_prefix}}&{1}".format(class_url, querystring)
     else:
@@ -228,9 +228,9 @@ def crud_links(query_params, class_url):
 
 def self_url(query_params):
     """Produce the url for the self link"""
-    protocol = query_params['request'].protocol
-    host = query_params['request'].host
-    url = query_params['request'].uri
+    protocol = query_params.request.protocol
+    host = query_params.request.host
+    url = query_params.request.uri
     if not host in url:
         url = u"{0}://{1}{2}".format(protocol, host, url)
     return url

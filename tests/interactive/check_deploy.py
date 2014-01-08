@@ -222,7 +222,7 @@ class BrainiakChecker(Checker):
             response_json = response.json()
             nose.assert_equal(response_json["@id"], u'g1:EventoMusicalAtomico')
             expected_item_keys = [u'base:url_do_permalink', u'resource_id', u'title', u'class_prefix', u'instance_prefix', u'@id']
-            nose.assert_equal(sorted(response_json["items"][0].keys()),  sorted(expected_item_keys))
+            nose.assert_equal(sorted(response_json["items"][0].keys()), sorted(expected_item_keys))
             sys.stdout.write("\ncheck_sitemaps_user_case - pass")
 
     def check_agregador_user_case(self):

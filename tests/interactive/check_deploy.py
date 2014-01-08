@@ -214,23 +214,29 @@ class BrainiakChecker(Checker):
         sys.stdout.write("\ncheck_instance_delete - pass")
 
     def check_sitemaps_user_case(self):
-        response = self.get("_/EventoMusicalAtomico?per_page=50000&p=base%3Aurl_do_permalink&graph_uri=http%3A%2F%2Fsemantica.globo.com%2FG1%2F&class_prefix=http%3A%2F%2Fsemantica.globo.com%2FG1%2F")
-        nose.assert_equal(response.status_code, 200)
-        response_json = response.json()
-        nose.assert_equal(response_json["@id"], u'g1:EventoMusicalAtomico')
-        expected_item_keys = [u'base:url_do_permalink', u'resource_id', u'title', u'class_prefix', u'instance_prefix', u'@id']
-        nose.assert_equal(sorted(response_json["items"][0].keys()),  sorted(expected_item_keys))
-        sys.stdout.write("\ncheck_sitemaps_user_case - pass")
+        if environ == "local":
+            sys.stdout.write("\ncheck_sitemaps_user_case - ignore")
+        else:
+            response = self.get("_/EventoMusicalAtomico?per_page=50000&p=base%3Aurl_do_permalink&graph_uri=http%3A%2F%2Fsemantica.globo.com%2FG1%2F&class_prefix=http%3A%2F%2Fsemantica.globo.com%2FG1%2F")
+            nose.assert_equal(response.status_code, 200)
+            response_json = response.json()
+            nose.assert_equal(response_json["@id"], u'g1:EventoMusicalAtomico')
+            expected_item_keys = [u'base:url_do_permalink', u'resource_id', u'title', u'class_prefix', u'instance_prefix', u'@id']
+            nose.assert_equal(sorted(response_json["items"][0].keys()),  sorted(expected_item_keys))
+            sys.stdout.write("\ncheck_sitemaps_user_case - pass")
 
     def check_agregador_user_case(self):
-        response = self.get("g1/Materia/?p1=base:status_de_publicacao&o1=P&p2=g1:editoria_id&o2=268&sort_by=base:data_da_primeira_publicacao&sort_order=desc&p3=base:permalink")
-        nose.assert_equal(response.status_code, 200)
-        response_json = response.json()
-        nose.assert_equal(response_json["@id"], u'g1:Materia')
-        nose.assert_true(response_json["items"])
-        expected_item_keys = [u'@id', u'base:data_da_primeira_publicacao', u'base:permalink', u'class_prefix', u'instance_prefix', u'resource_id', u'title']
-        nose.assert_equal(sorted(response_json["items"][0].keys()), expected_item_keys)
-        sys.stdout.write("\ncheck_agregador_user_case - pass")
+        if environ == "local":
+            sys.stdout.write("\ncheck_agregador_user_case - ignore")
+        else:
+            response = self.get("g1/Materia/?p1=base:status_de_publicacao&o1=P&p2=g1:editoria_id&o2=268&sort_by=base:data_da_primeira_publicacao&sort_order=desc&p3=base:permalink")
+            nose.assert_equal(response.status_code, 200)
+            response_json = response.json()
+            nose.assert_equal(response_json["@id"], u'g1:Materia')
+            nose.assert_true(response_json["items"])
+            expected_item_keys = [u'@id', u'base:data_da_primeira_publicacao', u'base:permalink', u'class_prefix', u'instance_prefix', u'resource_id', u'title']
+            nose.assert_equal(sorted(response_json["items"][0].keys()), expected_item_keys)
+            sys.stdout.write("\ncheck_agregador_user_case - pass")
 
     def check_suggest_sports_user_case(self):
         sys.stdout.write("\n-- run brainiak_sync for esportes graph, if <check_suggest_sports_user_case> breaks")

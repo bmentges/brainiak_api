@@ -117,6 +117,9 @@ class ParamDict(dict):
         # preserve the order below, defaults are overriden first
         request = self.request = handler.request
 
+        # auxiliary dictionary to propagate parameters across functions
+        self._aux_parameters = {}
+
         self.triplestore_config = None
         self._set_triplestore_config(request)
 
@@ -322,3 +325,9 @@ class ParamDict(dict):
         for required_param in required_spec.required:
             if not required_param in arguments:
                 raise RequiredParamMissing(required_param)
+
+    def set_aux_param(self, key, value):
+        self._aux_parameters[key] = value
+
+    def get_aux_param(self, key):
+        return self._aux_parameters[key]

@@ -117,6 +117,9 @@ class ParamDict(dict):
         # preserve the order below, defaults are overriden first
         request = self.request = handler.request
 
+        # auxiliary dictionary to propagate parameters across functions
+        self._aux_parameters = {}
+
         self.triplestore_config = None
         self._set_triplestore_config(request)
 
@@ -296,7 +299,9 @@ class ParamDict(dict):
 
     def to_string(self):
         "Return all parameters as param_name=param_value separated by &"
-        return "&".join(["{0}={1}".format(k, v) for k, v in sorted(self.items())])
+        excluded_keys = ('class_name', 'class_prefix', 'context_name', 'instance_prefix', 'instance_id', 'graph_uri', 'class_uri')
+        result = u"&".join([u"{0}={1}".format(k, v) for k, v in sorted(self.items()) if (k not in excluded_keys) and (v is not None)])
+        return result
 
     def format_url_params(self, exclude_keys=None, **kw):
         if exclude_keys is None:
@@ -320,3 +325,9 @@ class ParamDict(dict):
         for required_param in required_spec.required:
             if not required_param in arguments:
                 raise RequiredParamMissing(required_param)
+
+    def set_aux_param(self, key, value):
+        self._aux_parameters[key] = value
+
+    def get_aux_param(self, key):
+        return self._aux_parameters[key]

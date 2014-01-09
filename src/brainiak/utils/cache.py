@@ -145,9 +145,12 @@ def create(key, value):
 
 @safe_redis
 def retrieve(key):
-    response = redis_client.get(key)
-    if response:
-        response = ujson.loads(response)
+    try:
+        response = redis_client.get(key)
+        if response:
+            response = ujson.loads(response)
+    except:
+        import pdb; pdb.set_trace()
     return response
 
 
@@ -192,6 +195,12 @@ def status():
             msg = success_msg
 
     return msg % params
+
+
+def purge_an_instance(instance_uri):
+    pattern = u"_@@_@@{0}@@*##instance".format(instance_uri)
+    log.logger.debug(_(u"CacheDebug: Deleting cache keys related to pattern {0}".format(pattern)))
+    purge(pattern)
 
 
 def purge_all_instances():

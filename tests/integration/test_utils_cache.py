@@ -6,7 +6,7 @@ from mock import patch, Mock
 
 from brainiak import server
 from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, purge_all_instances, \
-    retrieve, redis_client, update_if_present
+    purge_an_instance, retrieve, redis_client, update_if_present
 
 from tests.mocks import MockRequest
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
@@ -184,6 +184,33 @@ class PurgeAllInstancesTestCase(unittest.TestCase):
         self.assertEqual(retrieve("_##json_schema"), {})
         self.assertEqual(retrieve("_##root"), {})
         self.assertEqual(retrieve("some_graph@@some_instance##class"), {})
+
+
+class PurgeAnInstanceTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.assertTrue(ping())  # assert Redis is up
+        create(u"_@@_@@http://Charles@@xubiru##instance", {})
+        create(u"_@@_@@http://NinaFox@@class_uri=http://dog&instance_uri=http://NinaFox##instance", "something")
+        create(u"_@@_@@http://NinaFox@@xubiru=##instance##instance", "something")
+        create(u"_@@_@@http://NinaFox@@abc##instance", "something")
+
+    def tearDown(self):
+        delete(u"_@@_@@http://Charles@@xubiru##instance")
+        delete(u"_@@_@@http://NinaFox@@class_uri=http://dog&instance_uri=http://NinaFox##instance")
+        delete(u"_@@_@@http://NinaFox@@xubiru=##instance##instance")
+        delete(u"_@@_@@http://NinaFox@@abc##instance")
+
+    @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
+    @patch("brainiak.utils.cache.log.logger.debug")
+    @patch("brainiak.utils.cache.log.logger.info")
+    @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
+    def test_purge_an_instance(self, logger, info, debug, settings):
+        purge_an_instance("http://NinaFox")
+        self.assertEqual(retrieve(u"_@@_@@http://Charles@@xubiru##instance"), {})
+        self.assertEqual(retrieve(u"_@@_@@http://NinaFox@@class_uri=http://dog##instance"), None)
+        self.assertEqual(retrieve(u"_@@_@@http://NinaFox@@a=1&b=2##instance"), None)
+        self.assertEqual(retrieve(u"_@@_@@http://NinaFox@@abc##instance"), None)
 
 
 class BaseCyclePurgeTestCase(TornadoAsyncHTTPTestCase):

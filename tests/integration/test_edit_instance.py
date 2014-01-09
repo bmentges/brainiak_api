@@ -146,7 +146,7 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(actual_new_york.code, 200)
         updated_new_york_dict = json.loads(updated_new_york.body)
         self.assertEqual(updated_new_york_dict['rdfs:label'], "Up-to-date label")
-        self.assertTrue(updated_new_york.headers['X-Cache'].startswith('HIT'))
+        self.assertTrue(updated_new_york.headers['X-Cache'].startswith('MISS'))
 
 
 class EditInstanceQueriesTestCase(QueryTestCase):

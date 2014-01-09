@@ -43,11 +43,22 @@ class TestVirtuosoStatusResource(TornadoAsyncHTTPTestCase):
 
 class TestCacheStatusResource(TornadoAsyncHTTPTestCase):
 
-    def test_cache_status_in_non_prod(self):
+    @patch("brainiak.handlers.cache.keys", return_value=["a key", "another key"])
+    def test_cache_status_in_non_prod_with_cache(self, mock_keys):
         response = self.fetch('/_status/cache', method='GET')
         self.assertEqual(response.code, 200)
         expected = 'Redis connection authenticated [:j\xdf\x97\xf8:\xcfdS\xd4\xa6\xa4\xb1\x07\x0f7T] | SUCCEED | localhost:6379'
-        self.assertEqual(response.body, expected)
+        self.assertIn(expected, response.body)
+        self.assertIn("<br>Cached keys:<br>", response.body)
+        self.assertIn("<br>a key<br>another key", response.body)
+
+    @patch("brainiak.handlers.cache.keys", return_value=[])
+    def test_cache_status_in_non_prod_without_cache(self, mock_keys):
+        response = self.fetch('/_status/cache', method='GET')
+        self.assertEqual(response.code, 200)
+        expected = 'Redis connection authenticated [:j\xdf\x97\xf8:\xcfdS\xd4\xa6\xa4\xb1\x07\x0f7T] | SUCCEED | localhost:6379'
+        self.assertIn(expected, response.body)
+        self.assertIn("<br>There are no cached keys", response.body)
 
 
 def raise_exception():

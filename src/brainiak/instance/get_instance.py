@@ -156,10 +156,7 @@ FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")
 
 
 def query_all_properties_and_objects(query_params):
-    template_vars = {}
-    template_vars.update(query_params)
-
-    template_vars["ruleset"] = settings.DEFAULT_RULESET_URI
+    template_vars = dict(ruleset=settings.DEFAULT_RULESET_URI, **query_params)
     expand_object_properties = query_params.get("expand_object_properties") == "1"
     if expand_object_properties:
         template_vars["object_label_variable"] = "?object_label"
@@ -184,10 +181,7 @@ FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")
 
 
 def query_all_properties_and_objects_by_instance_uri(query_params):
-    template_vars = {}
-    template_vars.update(query_params)
-
-    query_params["ruleset"] = settings.DEFAULT_RULESET_URI
+    template_vars = dict(ruleset=settings.DEFAULT_RULESET_URI, **query_params)
     expand_object_properties = query_params.get("expand_object_properties") == "1"
     if expand_object_properties:
         template_vars["object_label_variable"] = "?object_label"

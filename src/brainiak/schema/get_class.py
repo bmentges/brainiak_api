@@ -143,7 +143,7 @@ def query_class_schema(query_params):
 def get_predicates_and_cardinalities(context, query_params, superclasses):
     query_result = query_cardinalities(query_params)
 
-    bindings = query_predicates(query_params)
+    bindings = query_predicates(query_params, superclasses)
     predicate_dict = bindings_to_dict('predicate', bindings)
 
     try:
@@ -230,11 +230,11 @@ def query_cardinalities(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-def query_predicates(query_params):
-    response = _query_predicate_with_lang(query_params)
+def query_predicates(query_params, superclasses):
+    response = _query_predicate_with_lang(query_params, superclasses)
 
     if not response['results']['bindings']:
-        response = _query_predicate_without_lang(query_params)
+        response = _query_predicate_without_lang(query_params, superclasses)
 
     return response
 
@@ -278,11 +278,11 @@ WHERE {
 }"""
 
 
-def _query_predicate_with_lang(query_params):
-    template_vars = {}
-    template_vars.update(query_params)
-    template_vars["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(template_vars["superclasses"]) + ">))"
-
+def _query_predicate_with_lang(query_params, superclasses):
+    filter_expression = "FILTER (?domain_class IN (<" + ">, <".join(superclasses) + ">))"
+    template_vars = dict(filter_classes_clause=filter_expression,
+                         uniqueness_property=query_params.get_aux_param('uniqueness_property'),
+                         **query_params)
     query = QUERY_PREDICATE_WITH_LANG % template_vars
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
@@ -320,20 +320,19 @@ WHERE {
 }"""
 
 
-def _query_predicate_without_lang(query_params):
-    template_vars = {}
-    template_vars.update(query_params)
-    template_vars["filter_classes_clause"] = u"FILTER (?domain_class IN (<" + u">, <".join(template_vars["superclasses"]) + u">))"
-    template_vars["uniqueness_property"] = settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE
+def _query_predicate_without_lang(query_params, superclasses):
+    filter_expression = u"FILTER (?domain_class IN (<" + u">, <".join(superclasses) + u">))"
+    template_vars = dict(filter_classes_clause=filter_expression,
+                         uniqueness_property=settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE,
+                         **query_params)
     query = QUERY_PREDICATE_WITHOUT_LANG % template_vars
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 def query_superclasses(query_params):
-    template_vars = {}
-    template_vars.update(query_params)
-    template_vars["uniqueness_property"] = settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE
-    result_dict = _query_superclasses(template_vars)
+    uniqueness_property = settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE
+    query_params.set_aux_param('uniqueness_property', uniqueness_property)
+    result_dict = _query_superclasses(query_params)
     superclasses = filter_values(result_dict, "class")
     return superclasses
 

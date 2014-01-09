@@ -143,7 +143,7 @@ class AssembleTestCase(unittest.TestCase):
             param_dict.update({'meta_properties': meta_properties})
         handler = MockHandler(uri=instance_uri, **param_dict)
         self.query_params = ParamDict(handler, **param_dict)
-        self.query_params["class_schema"] = {"title": "class label"}
+        self.class_schema = {"title": "class label"}
         self.query_result_dict = {'results': {'bindings': []}}
 
     def assertResults(self, computed):
@@ -152,22 +152,22 @@ class AssembleTestCase(unittest.TestCase):
 
     def test_assemble_instance_json_links(self):
         self.prepare_params()
-        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict)
+        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, self.class_schema)
         self.assertResults(computed)
 
     def test_assemble_instance_json_links_with_context(self):
         self.prepare_params()
-        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict)
+        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, self.class_schema)
         self.assertResults(computed)
 
     def test_assemble_instance_json_links_with_context_expanding_uri(self):
         self.prepare_params(instance_uri="http://mock.test.com/schema/klass/instance")
-        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict)
+        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, self.class_schema)
         self.assertEqual(computed["@type"], "http://schema.org/klass")
 
     def test_assemble_instance_json_with_no_meta_properties(self):
         self.prepare_params(meta_properties="0")
-        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict)
+        computed = get_instance.assemble_instance_json(self.query_params, self.query_result_dict, self.class_schema)
         expected = {}  # because build_items is empty
         self.assertEqual(computed, expected)
 

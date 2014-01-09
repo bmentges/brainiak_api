@@ -28,9 +28,10 @@ def get_instance(query_params):
     if is_result_empty(query_result_dict):
         return None
     else:
-        query_params["class_schema"] = get_class.get_cached_schema(query_params)
+        class_schema = get_class.get_cached_schema(query_params)
         return assemble_instance_json(query_params,
-                                      query_result_dict)
+                                      query_result_dict,
+                                      class_schema)
 
 
 def build_items_dict(bindings, class_uri, expand_object_properties, class_schema):
@@ -109,11 +110,10 @@ def check_and_clean_rdftype(instance_type, items):
         del items[rdftype]
 
 
-def assemble_instance_json(query_params, query_result_dict):
+def assemble_instance_json(query_params, query_result_dict, class_schema):
 
     expand_object_properties = query_params.get("expand_object_properties") == "1"
     include_meta_properties = query_params.get("meta_properties") is None or query_params.get("meta_properties") == "1"
-    class_schema = query_params["class_schema"]
     items = build_items_dict(query_result_dict['results']['bindings'],
                              query_params["class_uri"],
                              expand_object_properties,
@@ -156,15 +156,15 @@ FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")
 
 
 def query_all_properties_and_objects(query_params):
-    query_params["ruleset"] = settings.DEFAULT_RULESET_URI
+    template_vars = dict(ruleset=settings.DEFAULT_RULESET_URI, **query_params)
     expand_object_properties = query_params.get("expand_object_properties") == "1"
     if expand_object_properties:
-        query_params["object_label_variable"] = "?object_label"
-        query_params["object_label_optional_clause"] = "OPTIONAL { ?object rdfs:label ?object_label } ."
+        template_vars["object_label_variable"] = "?object_label"
+        template_vars["object_label_optional_clause"] = "OPTIONAL { ?object rdfs:label ?object_label } ."
     else:
-        query_params["object_label_variable"] = ""
-        query_params["object_label_optional_clause"] = ""
-    query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % query_params
+        template_vars["object_label_variable"] = ""
+        template_vars["object_label_optional_clause"] = ""
+    query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE % template_vars
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
@@ -181,15 +181,15 @@ FILTER((langMatches(lang(?object), "%(lang)s") OR langMatches(lang(?object), "")
 
 
 def query_all_properties_and_objects_by_instance_uri(query_params):
-    query_params["ruleset"] = settings.DEFAULT_RULESET_URI
+    template_vars = dict(ruleset=settings.DEFAULT_RULESET_URI, **query_params)
     expand_object_properties = query_params.get("expand_object_properties") == "1"
     if expand_object_properties:
-        query_params["object_label_variable"] = "?object_label"
-        query_params["object_label_optional_clause"] = "OPTIONAL { ?object rdfs:label ?object_label } ."
+        template_vars["object_label_variable"] = "?object_label"
+        template_vars["object_label_optional_clause"] = "OPTIONAL { ?object rdfs:label ?object_label } ."
     else:
-        query_params["object_label_variable"] = ""
-        query_params["object_label_optional_clause"] = ""
-    query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE_BY_URI % query_params
+        template_vars["object_label_variable"] = ""
+        template_vars["object_label_optional_clause"] = ""
+    query = QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE_BY_URI % template_vars
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 

@@ -312,8 +312,17 @@ class ClassHandler(BrainiakRequestHandler):
     def __init__(self, *args, **kwargs):
         super(ClassHandler, self).__init__(*args, **kwargs)
 
-    def get_cache_path(self):
-        return cache.build_key_for_class(self.query_params)
+    @greenlet_asynchronous
+    def purge(self, context_name, class_name):
+        if settings.ENABLE_CACHE:
+            with safe_params():
+                self.query_params = ParamDict(self,
+                                              context_name=context_name,
+                                              class_name=class_name)
+            path = cache.build_key_for_class(self.query_params)
+            cache.purge_by_path(path, False)
+        else:
+            raise HTTPError(405, log_message=_("Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"))
 
     @greenlet_asynchronous
     def get(self, context_name, class_name):
@@ -538,7 +547,8 @@ class InstanceHandler(BrainiakRequestHandler):
 
         self.query_params["expand_object_properties"] = "1"
         instance_data = get_instance(self.query_params)
-        update_if_present(build_instance_key(self.query_params), instance_data)
+        instance_cache_key = build_instance_key(self.query_params)
+        update_if_present(instance_cache_key, instance_data)
 
         if instance_data and settings.NOTIFY_BUS:
             self.query_params["instance_uri"] = instance_data["@id"]

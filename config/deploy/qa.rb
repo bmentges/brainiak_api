@@ -4,7 +4,7 @@ role :filer,                      'filer.qa.globoi.com'
 # Hosts
 set :barramento_backstage_host,   'barramento.backstage.qa.globoi.com'
 set :redis_host,                  'redis.brainiak.globoi.com'
-set :syslog_host,                 'syslog.tcp.glog.qa.globoi.com'
+set :syslog_host,                 'syslog.tcp.glog.qa01.globoi.com'
 set :filer_host,                  'riofd07a'
 set :elasticsearch_host,          'esearch.qa.globoi.com'
 

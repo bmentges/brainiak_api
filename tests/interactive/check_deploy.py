@@ -108,6 +108,7 @@ class BrainiakChecker(Checker):
     def check_status(self):
         response = self.get("_status")
         nose.assert_equal(response.status_code, 200)
+        sys.stdout.write("\n-- if <check_status> breaks, check if Brainiak log doesn't contain (OSError) - Stale NFS file handle: 'locale' ")
         nose.assert_in(u'FUNCIONANDO', response.text)
         sys.stdout.write("\ncheck_status - pass")
 

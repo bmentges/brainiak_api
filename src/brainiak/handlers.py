@@ -576,6 +576,7 @@ class InstanceHandler(BrainiakRequestHandler):
             if settings.NOTIFY_BUS:
                 self._notify_bus(action="DELETE")
                 cache_key = build_instance_key(self.query_params)
+                # TODO: delete all copies of the cached instance
                 cache.delete(cache_key)
             build_instance_key(self.query_params)
         else:
@@ -705,7 +706,15 @@ class VirtuosoStatusHandler(BrainiakRequestHandler):
 class CacheStatusHandler(BrainiakRequestHandler):
 
     def get(self):
-        self.write(cache.status())
+        response = cache.status()
+        cache_keys = cache.keys("")
+        if cache_keys:
+            response += "<br>Cached keys:<br>"
+            response += "<br>".join(cache_keys)
+        else:
+            response += "<br>There are no cached keys"
+
+        self.write(response)
 
 
 class EventBusStatusHandler(BrainiakRequestHandler):

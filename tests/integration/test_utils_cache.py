@@ -1,10 +1,16 @@
 import logging
 import unittest
+import json
 
-from mock import patch
+from mock import patch, Mock
 
-from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, purge_all_instances, retrieve, redis_client, update_if_present
+from brainiak import server
+from brainiak.utils.cache import create, delete, keys, memoize, ping, purge, purge_all_instances, \
+    retrieve, redis_client, update_if_present
+
 from tests.mocks import MockRequest
+from tests.tornado_cases import TornadoAsyncHTTPTestCase
+from tests.sparql import QueryTestCase
 
 
 class CacheTestCase(unittest.TestCase):
@@ -67,7 +73,7 @@ class CacheTestCase(unittest.TestCase):
         def clean_up():
             return {"status": "Laundry done"}
 
-        params = {'request': MockRequest(uri="/home")}
+        params = Mock(request=MockRequest(uri="/home"))
         answer = memoize(params, clean_up)
         self.assertEqual(answer['status'], "Dishes cleaned up")
         self.assertEqual(answer['meta']['cache'], "HIT")
@@ -153,7 +159,7 @@ class PurgeAllInstancesTestCase(unittest.TestCase):
         self.assertTrue(ping())  # assert Redis is up
         create("non_default_key", {})
         create("_@@_@@inst_a##instance", {})
-        create("_@@_@@inst_b##instance", {})
+        create("_@@_@@inst_b@@a=1&b=2##instance", {})
         create("_##json_schema", {})
         create("_##root", {})
         create("some_graph@@some_instance##class", {})
@@ -161,7 +167,7 @@ class PurgeAllInstancesTestCase(unittest.TestCase):
     def tearDown(self):
         delete("non_default_key")
         delete("_@@_@@inst_a##instance")
-        delete("_@@_@@inst_b##instance")
+        delete("_@@_@@inst_b@@a=1&b=2##instance")
         delete("_##json_schema")
         delete("_##root")
         delete("some_graph@@some_instance##class")
@@ -174,7 +180,131 @@ class PurgeAllInstancesTestCase(unittest.TestCase):
         purge_all_instances()
         self.assertEqual(retrieve("non_default_key"), {})
         self.assertEqual(retrieve("_@@_@@inst_a##instance"), None)
-        self.assertEqual(retrieve("_@@_@@inst_b##instance"), None)
+        self.assertEqual(retrieve("_@@_@@inst_b@@a=1&b=2##instance"), None)
         self.assertEqual(retrieve("_##json_schema"), {})
         self.assertEqual(retrieve("_##root"), {})
         self.assertEqual(retrieve("some_graph@@some_instance##class"), {})
+
+
+class BaseCyclePurgeTestCase(TornadoAsyncHTTPTestCase):
+
+    def get_app(self):
+        return server.Application()
+
+    def createInstance(self, url_suffix, data_dict):
+        payload = json.dumps(data_dict)
+        return self.fetch(url_suffix, method="PUT", body=payload)
+
+    def deleteInstance(self, url_suffix):
+        return self.fetch(url_suffix, method='DELETE')
+
+    def checkInstanceIsCached(self, url_suffix):
+        response = self.fetch(url_suffix)
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.headers['X-Cache'].startswith('HIT'))
+
+    def checkInstanceIsNotCached(self, url_suffix):
+        response = self.fetch(url_suffix)
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.headers['X-Cache'].startswith('MISS'))
+
+    def purgeCache(self, url_suffix):
+        patcher = patch("brainiak.handlers.settings", ENABLE_CACHE=True)
+        patcher.start()
+        response = self.fetch(url_suffix, method='PURGE')
+        self.assertEqual(response.code, 200)
+        patcher.stop()
+
+    def setUp(self):
+        super(BaseCyclePurgeTestCase, self).setUp()
+
+    def tearDown(self):
+        super(BaseCyclePurgeTestCase, self).tearDown()
+
+
+class FullCyclePurgeSchemaTestCase(BaseCyclePurgeTestCase, QueryTestCase):
+
+    allow_triplestore_connection = True
+    fixtures = ["tests/sample/animalia.n3"]
+    graph_uri = "http://example.onto/"
+
+    HUMAN_SCHEMA_URL_SUFFIX = "/any/Human/_schema?graph_uri=http://example.onto/&class_prefix=http://example.onto/"
+    CAT_SCHEMA_URL_SUFFIX = "/any/Cat/_schema?graph_uri=http://example.onto/&class_prefix=http://example.onto/"
+
+    def setUp(self):
+        super(FullCyclePurgeSchemaTestCase, self).setUp()
+        self.purgeCache(self.HUMAN_SCHEMA_URL_SUFFIX)
+        self.purgeCache(self.CAT_SCHEMA_URL_SUFFIX)
+
+    def tearDown(self):
+        self.purgeCache(self.HUMAN_SCHEMA_URL_SUFFIX)
+        self.purgeCache(self.CAT_SCHEMA_URL_SUFFIX)
+        super(FullCyclePurgeSchemaTestCase, self).tearDown()
+
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    @patch("brainiak.handlers.logger")
+    def test_purge_one_schema_keep_another(self, mock_log, mock_cache, mock_cache2):
+        self.checkInstanceIsNotCached(self.HUMAN_SCHEMA_URL_SUFFIX)
+        self.checkInstanceIsNotCached(self.CAT_SCHEMA_URL_SUFFIX)
+
+        self.checkInstanceIsCached(self.HUMAN_SCHEMA_URL_SUFFIX)
+        self.checkInstanceIsCached(self.CAT_SCHEMA_URL_SUFFIX)
+
+        self.purgeCache(self.HUMAN_SCHEMA_URL_SUFFIX)
+
+        self.checkInstanceIsNotCached(self.HUMAN_SCHEMA_URL_SUFFIX)
+        self.checkInstanceIsCached(self.CAT_SCHEMA_URL_SUFFIX)
+
+
+class FullCycleTestCase(BaseCyclePurgeTestCase):
+
+    dummy_city_1 = {"http://semantica.globo.com/upper/name": "Dummy city 1"}
+    dummy_city_2 = {"http://semantica.globo.com/upper/name": "Dummy city 2"}
+
+    DUMMY_CITY_1_URL_SUFFIX = '/place/City/dummyCity1'
+    DUMMY_CITY_1_URL_SUFFIX_WITH_INSTANCE_URI = '/_/_/_?instance_uri=http://semantica.globo.com/place/City/dummyCity1'
+    DUMMY_CITY_2_URL_SUFFIX = '/place/City/dummyCity2'
+
+    def setUp(self):
+        super(FullCycleTestCase, self).setUp()
+        response = self.createInstance(self.DUMMY_CITY_1_URL_SUFFIX, self.dummy_city_1)
+        self.assertEqual(response.code, 201)
+        response = self.createInstance(self.DUMMY_CITY_2_URL_SUFFIX, self.dummy_city_2)
+        self.assertEqual(response.code, 201)
+
+    def tearDown(self):
+        response = self.deleteInstance(self.DUMMY_CITY_1_URL_SUFFIX)
+        self.assertEqual(response.code, 204)
+        response = self.deleteInstance(self.DUMMY_CITY_2_URL_SUFFIX)
+        self.assertEqual(response.code, 204)
+        super(FullCycleTestCase, self).tearDown()
+
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    @patch("brainiak.handlers.logger")
+    def test_purge_dummy1_but_keep_dummy2(self, mock_log, mock_cache, mock_cache2):
+        self.checkInstanceIsNotCached(self.DUMMY_CITY_1_URL_SUFFIX)
+        self.checkInstanceIsNotCached(self.DUMMY_CITY_2_URL_SUFFIX)
+
+        # Check that both instances are retrived from cache
+        self.checkInstanceIsCached(self.DUMMY_CITY_1_URL_SUFFIX)
+        self.checkInstanceIsCached(self.DUMMY_CITY_2_URL_SUFFIX)
+
+        # Purge just instance 1
+        response = self.fetch(self.DUMMY_CITY_1_URL_SUFFIX, method='PURGE')
+        self.assertEqual(response.code, 200)
+
+        # Validate that instance 1 is fresh and 2 is still cached
+        self.checkInstanceIsNotCached(self.DUMMY_CITY_1_URL_SUFFIX)
+        self.checkInstanceIsCached(self.DUMMY_CITY_2_URL_SUFFIX)
+
+    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
+    @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
+    @patch("brainiak.handlers.logger")
+    def test_retrieve_same_instance_given_different_parameters(self, mock_log, mock_cache, mock_cache2):
+        response1 = self.fetch(self.DUMMY_CITY_1_URL_SUFFIX + '?meta_properties=0')
+        response2 = self.fetch(self.DUMMY_CITY_1_URL_SUFFIX_WITH_INSTANCE_URI + '&meta_properties=0')
+        self.assertEqual(response1.code, 200)
+        self.assertEqual(response2.code, 200)
+        self.assertEqual(response1.body, response2.body)

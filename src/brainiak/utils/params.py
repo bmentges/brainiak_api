@@ -115,7 +115,7 @@ class ParamDict(dict):
         dict.__init__(self)
         self.handler = handler
         # preserve the order below, defaults are overriden first
-        request = self["request"] = handler.request
+        request = self.request = handler.request
 
         self.triplestore_config = None
         self._set_triplestore_config(request)
@@ -161,7 +161,7 @@ class ParamDict(dict):
         self._post_override()
 
     def _make_arguments_dict(self, handler):
-        query_string = unquote(self["request"].query)
+        query_string = unquote(self.request.query)
         query_dict = parse_qs(query_string, keep_blank_values=True)
         return {key: handler.get_argument(key) for key in query_dict}
 
@@ -293,6 +293,12 @@ class ParamDict(dict):
 
         if "sort_order" in self.arguments:
             self["sort_order"] = self["sort_order"].upper()
+
+    def to_string(self):
+        "Return all parameters as param_name=param_value separated by &"
+        excluded_keys = ('class_name', 'class_prefix', 'context_name', 'instance_prefix', 'instance_id', 'graph_uri', 'class_uri')
+        result = "&".join(["{0}={1}".format(k, v) for k, v in sorted(self.items()) if k not in excluded_keys])
+        return result
 
     def format_url_params(self, exclude_keys=None, **kw):
         if exclude_keys is None:

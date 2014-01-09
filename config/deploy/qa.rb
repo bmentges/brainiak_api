@@ -11,9 +11,6 @@ set :elasticsearch_host,          'esearch.qa.globoi.com'
 # Ports
 set :redis_port,                  20019
 
-# URLs
-set :virtuoso_url,                "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"
-
 # Variables
 set :puppetmaster_env,            'qa'
 set :redis_password,              '4fdfa56255f21ccf01b3d78f999caea3'

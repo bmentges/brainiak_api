@@ -194,6 +194,12 @@ def status():
     return msg % params
 
 
+def purge_an_instance(instance_uri):
+    pattern = u"_@@_@@{0}@@*##instance".format(instance_uri)
+    log.logger.debug(_(u"CacheDebug: Delete cache keys related to pattern {0}".format(pattern)))
+    purge(pattern)
+
+
 def purge_all_instances():
     purge("*##instance")
 

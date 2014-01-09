@@ -19,4 +19,5 @@ set :redis_password,              '4fdfa56255f21ccf01b3d78f999caea3'
 set :dbpasswd_dir,                "/mnt/projetos/dbpasswd/#{projeto}"
 
 # Files
+log_filepath,                     '/opt/logs/brainiak/gunicorn-be/gunicorn-be.log'
 set :triplestore_config_filepath, "#{dbpasswd_dir}/triplestore.ini"

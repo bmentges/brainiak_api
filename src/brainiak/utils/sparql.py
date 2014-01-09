@@ -1,7 +1,7 @@
 # coding: utf-8
 import re
 import uuid
-from datetime import datetime
+import dateutil.parser
 
 import ujson as json
 
@@ -349,30 +349,10 @@ def is_instance(value, _type):
     if python_type:
         return isinstance(value, python_type)
     elif XSD_DATETIME in [_type, _type]:
-        # Based on "DateTime Data Type" definition, available at:
-        # http://www.w3schools.com/schema/schema_dtypes_date.asp
-        pattern = "%Y-%m-%dT%H:%M:%S"
-        pattern_size = 19
-        timezone = False
-
-        if value.endswith("Z"):  # UTC Time
-            datetime_ = value[:-1]
-        elif len(value) > pattern_size:  # Contains timezone (+HH:MM or -HH:MM)
-            datetime_ = value[:-6]
-            timezone = value[-5:]
-        else:  # Default pattern, without timezone
-            datetime_ = value
-
         try:
-            datetime.strptime(datetime_, pattern)
-        except ValueError:
+            dateutil.parser.parse(value)
+        except:
             return False
-
-        if timezone:
-            try:
-                datetime.strptime(timezone, "%H:%M")
-            except ValueError:
-                return False
     else:
         msg = u"Could not validate input due to unknown property type: <{0}>".format(_type)
         logger.info(msg)

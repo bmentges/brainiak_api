@@ -66,7 +66,7 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../releases.html">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-1-2014-01-06">Version 2.4.1 - 2014/01/06</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-1-to-be-released">Version 2.4.1 - TO BE RELEASED</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-0-2013-11-28">Version 2.4.0 - 2013/11/28</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-8-2013-10-04">Version 2.3.8 - 2013/10/04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-7-2013-10-31">Version 2.3.7 - 2013/10/31</a></li>
@@ -218,25 +218,26 @@ this property and/or object values. For example:</p>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;@context&quot;: {
         &quot;@language&quot;: &quot;pt&quot;
-    }, 
-    &quot;@id&quot;: &quot;place:City&quot;, 
-    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City&quot;, 
-    &quot;_class_prefix&quot;: &quot;place:&quot;, 
-    &quot;_first_args&quot;: &quot;p2=place:latitude&amp;per_page=1&amp;p1=place:longitude&amp;page=1&amp;o=base:UF_RJ&quot;, 
-    &quot;_next_args&quot;: &quot;p2=place:latitude&amp;per_page=1&amp;p1=place:longitude&amp;page=2&amp;o=base:UF_RJ&quot;, 
-    &quot;_schema_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;, 
+    },
+    &quot;@id&quot;: &quot;place:City&quot;,
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City&quot;,
+    &quot;_class_prefix&quot;: &quot;place&quot;,
+    &quot;_first_args&quot;: &quot;p2=place:latitude&amp;per_page=1&amp;p1=place:longitude&amp;page=1&amp;o=base:UF_RJ&quot;,
+    &quot;_next_args&quot;: &quot;p2=place:latitude&amp;per_page=1&amp;p1=place:longitude&amp;page=2&amp;o=base:UF_RJ&quot;,
+    &quot;_schema_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;,
     &quot;items&quot;: [
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/7a124ed1-5aab-4264-9470-8f1cdb4bf990&quot;, 
-            &quot;class_prefix&quot;: &quot;place:&quot;, 
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/City/&quot;, 
-            &quot;p&quot;: &quot;place:partOfState&quot;, 
-            &quot;place:latitude&quot;: &quot;-22.9583&quot;, 
-            &quot;place:longitude&quot;: &quot;-43.4071&quot;, 
-            &quot;resource_id&quot;: &quot;7a124ed1-5aab-4264-9470-8f1cdb4bf990&quot;, 
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/7a124ed1-5aab-4264-9470-8f1cdb4bf990&quot;,
+            &quot;class_prefix&quot;: &quot;place&quot;,
+            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/City/&quot;,
+            &quot;p&quot;: &quot;place:partOfState&quot;,
+            &quot;place:latitude&quot;: &quot;-22.9583&quot;,
+            &quot;place:longitude&quot;: &quot;-43.4071&quot;,
+            &quot;resource_id&quot;: &quot;7a124ed1-5aab-4264-9470-8f1cdb4bf990&quot;,
             &quot;title&quot;: &quot;Globoland&quot;
         }
-    ]
+    ],
+    &quot;pattern&quot;: &quot;&quot;
 }
 </pre></div>
 </div>
@@ -259,50 +260,51 @@ By default, the first page containing 10 items is returned (<tt class="docutils 
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;@context&quot;: {
         &quot;@language&quot;: &quot;pt&quot;
-    }, 
-    &quot;@id&quot;: &quot;place:Continent&quot;, 
-    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Continent&quot;, 
-    &quot;_class_prefix&quot;: &quot;place:&quot;, 
-    &quot;_first_args&quot;: &quot;per_page=10&amp;page=1&quot;, 
-    &quot;_next_args&quot;: &quot;per_page=10&amp;page=2&quot;, 
-    &quot;_schema_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Continent/_schema&quot;, 
+    },
+    &quot;@id&quot;: &quot;place:Continent&quot;,
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Continent&quot;,
+    &quot;_class_prefix&quot;: &quot;place&quot;,
+    &quot;_first_args&quot;: &quot;per_page=10&amp;page=1&quot;,
+    &quot;_next_args&quot;: &quot;per_page=10&amp;page=2&quot;,
+    &quot;_schema_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Continent/_schema&quot;,
     &quot;items&quot;: [
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Africa&quot;, 
-            &quot;class_prefix&quot;: &quot;place:&quot;, 
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;, 
-            &quot;resource_id&quot;: &quot;Africa&quot;, 
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Africa&quot;,
+            &quot;class_prefix&quot;: &quot;place&quot;,
+            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
+            &quot;resource_id&quot;: &quot;Africa&quot;,
             &quot;title&quot;: &quot;\u00c1frica&quot;
-        }, 
+        },
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Europe&quot;, 
-            &quot;class_prefix&quot;: &quot;place:&quot;, 
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;, 
-            &quot;resource_id&quot;: &quot;Europe&quot;, 
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Europe&quot;,
+            &quot;class_prefix&quot;: &quot;place&quot;,
+            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
+            &quot;resource_id&quot;: &quot;Europe&quot;,
             &quot;title&quot;: &quot;Europa&quot;
-        }, 
+        },
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/America&quot;, 
-            &quot;class_prefix&quot;: &quot;place:&quot;, 
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;, 
-            &quot;resource_id&quot;: &quot;America&quot;, 
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/America&quot;,
+            &quot;class_prefix&quot;: &quot;place&quot;,
+            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
+            &quot;resource_id&quot;: &quot;America&quot;,
             &quot;title&quot;: &quot;Am\u00e9rica&quot;
-        }, 
+        },
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Antarctica&quot;, 
-            &quot;class_prefix&quot;: &quot;place:&quot;, 
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;, 
-            &quot;resource_id&quot;: &quot;Antarctica&quot;, 
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Antarctica&quot;,
+            &quot;class_prefix&quot;: &quot;place&quot;,
+            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
+            &quot;resource_id&quot;: &quot;Antarctica&quot;,
             &quot;title&quot;: &quot;Oceania&quot;
-        }, 
+        },
         {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Asia&quot;, 
-            &quot;class_prefix&quot;: &quot;place:&quot;, 
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;, 
-            &quot;resource_id&quot;: &quot;Asia&quot;, 
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Asia&quot;,
+            &quot;class_prefix&quot;: &quot;place&quot;,
+            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
+            &quot;resource_id&quot;: &quot;Asia&quot;,
             &quot;title&quot;: &quot;\u00c1sia&quot;
         }
-    ]
+    ],
+    &quot;pattern&quot;: &quot;&quot;
 }
 </pre></div>
 </div>
@@ -317,7 +319,7 @@ By default, the first page containing 10 items is returned (<tt class="docutils 
 A JSON containing both the wrong parameters and the accepted ones is returned.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
     &quot;errors&quot;: [
-        &quot;HTTP error: 400\nArgument invalid_param is not supported. The supported querystring arguments are: class_prefix, class_uri, direct_instances_only, do_item_count, expand_uri, graph_uri, graph_uri, lang, page, per_page, sort_by, sort_include_empty, sort_order.&quot;
+        &quot;HTTP error: 400\nO argumento invalid_param n\u00e3o \u00e9 suportado. Os argumentos de querystring suportados s\u00e3o: class_prefix, class_uri, direct_instances_only, do_item_count, expand_uri, graph_uri, lang, page, per_page, sort_by, sort_include_empty, sort_order.&quot;
     ]
 }
 </pre></div>

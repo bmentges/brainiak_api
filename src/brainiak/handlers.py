@@ -545,10 +545,10 @@ class InstanceHandler(BrainiakRequestHandler):
         except SchemaNotFound as ex:
             raise HTTPError(404, log_message=unicode(ex))
 
-        #self.query_params["expand_object_properties"] = "1"
+        cache.purge_an_instance(self.query_params['instance_uri'])
+
+        self.query_params["expand_object_properties"] = "1"
         instance_data = get_instance(self.query_params)
-        instance_cache_key = build_instance_key(self.query_params)
-        update_if_present(instance_cache_key, instance_data)
 
         if instance_data and settings.NOTIFY_BUS:
             self.query_params["instance_uri"] = instance_data["@id"]
@@ -574,9 +574,7 @@ class InstanceHandler(BrainiakRequestHandler):
             response = 204
             if settings.NOTIFY_BUS:
                 self._notify_bus(action="DELETE")
-                cache_key = build_instance_key(self.query_params)
-                cache.delete(cache_key)
-            build_instance_key(self.query_params)
+            cache.purge_an_instance(self.query_params['instance_uri'])
         else:
             msg = _(u"Instance ({0}) of class ({1}) in graph ({2}) was not found.")
             error_message = msg.format(self.query_params["instance_uri"],
@@ -704,7 +702,15 @@ class VirtuosoStatusHandler(BrainiakRequestHandler):
 class CacheStatusHandler(BrainiakRequestHandler):
 
     def get(self):
-        self.write(cache.status())
+        response = cache.status()
+        cache_keys = cache.keys("")
+        if cache_keys:
+            response += "<br>Cached keys:<br>"
+            response += "<br>".join(cache_keys)
+        else:
+            response += "<br>There are no cached keys"
+
+        self.write(response)
 
 
 class EventBusStatusHandler(BrainiakRequestHandler):

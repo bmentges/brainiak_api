@@ -130,9 +130,10 @@ def build_class_schema_query(params):
     - rdfs:label
     - rdfs:comment (optional)
     """
-    (params, language_tag) = add_language_support(params, "title")
-    (params, language_tag) = add_language_support(params, "comment")
-    return QUERY_CLASS_SCHEMA % params
+    template_params = dict(**params)
+    (params, language_tag) = add_language_support(template_params, "title")
+    (params, language_tag) = add_language_support(template_params, "comment")
+    return QUERY_CLASS_SCHEMA % template_params
 
 
 def query_class_schema(query_params):

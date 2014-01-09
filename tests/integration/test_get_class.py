@@ -34,7 +34,8 @@ class ClassSchemaQueryTestCase(QueryTestCase):
         triplestore.query_sparql = self.original_query_sparql
 
     def test_query_superclasses(self):
-        params = Params({"class_uri": "http://example.onto/City"})
+        handler = MockHandler()
+        params = ParamDict(handler, class_uri="http://example.onto/City")
 
         expected_bindings = [{u'class': {u'type': u'uri', u'value': u'http://example.onto/City'}},
                              {u'class': {u'type': u'uri', u'value': u'http://example.onto/Place'}}]
@@ -43,7 +44,8 @@ class ClassSchemaQueryTestCase(QueryTestCase):
         self.assertEqual(response["results"]["bindings"], expected_bindings)
 
     def test_query_superclasses_result(self):
-        params = Params({"class_uri": "http://example.onto/City"})
+        handler = MockHandler()
+        params = ParamDict(handler, class_uri="http://example.onto/City")
 
         expected_list = [u'http://example.onto/City',
                          u'http://example.onto/Place']
@@ -651,14 +653,14 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         }
 
         schema.query_cardinalities = lambda query: fake_response_cardinalities
-        schema.query_predicates = lambda query: fake_response_predicates
+        schema.query_predicates = lambda query, superclass: fake_response_predicates
 
         context = prefixes.MemorizeContext(normalize_uri=SHORTEN)
-        params = {"class_uri": "http://test/person/gender",
-                  "class_schema": None,
-                  "superclasses": ["http://test/person/Gender"]}
+        handler = MockHandler()
+        params = ParamDict(handler, class_uri="http://test/person/gender")
 
-        response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(context, params)
+        response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(
+            context, params, superclasses=["http://test/person/Gender"])
         expected_predicates_and_cardinalities = {
             'http://test/person/gender': {
                 'description': u'G\xeanero.',

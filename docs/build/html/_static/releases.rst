@@ -1,7 +1,7 @@
 Releases
 ========
 
-Version 2.4.1 - 2014/01/06
+Version 2.4.1 - TO BE RELEASED
 --------------------------
 
 New Features
@@ -9,15 +9,25 @@ ____________
 
  - Support for caching instances.
  - Any recursive purge will expire all instances in the cache for the time being.
- - Support for purging a specific instance (see :doc:`/services/cache`)
+ - Support for purging a specific instance (see :doc:`/services/cache`).
 
 
-Fix
-___
- - Removing unused param `purge`
- - The cache key for any instance follows the pattern  _@@_/_@@<instance_uri>##instance
- - When updating an instance via PUT, the cached version was updated although it lacked the meta_properties.
+Fixes
+_____
+
+ - Removing unused param `purge`.
+ - Fixed purging schemas (different GET params cached in different keys).
+ - The cache key for any instance follows the pattern  ``_@@_/_@@<instance_uri>##instance``
+ - When updating an instance via PUT, the cached version was updated although it lacked the ``meta_properties``.
    Now, when updating the cache, the full properties are updated in the cached instance.
+ - Fixed problem in ``/_search`` JSON Schema (see :doc:`/services/search/search`).
+
+
+Developers notes
+________________
+
+ - Acceptance test to validate CMA using splinter.
+
 
 Version 2.4.0 - 2013/11/28
 --------------------------

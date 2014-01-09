@@ -145,12 +145,9 @@ def create(key, value):
 
 @safe_redis
 def retrieve(key):
-    try:
-        response = redis_client.get(key)
-        if response:
-            response = ujson.loads(response)
-    except:
-        import pdb; pdb.set_trace()
+    response = redis_client.get(key)
+    if response:
+        response = ujson.loads(response)
     return response
 
 

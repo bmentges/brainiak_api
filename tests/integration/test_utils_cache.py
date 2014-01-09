@@ -203,10 +203,10 @@ class PurgeAnInstanceTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.utils.cache.log.logger.debug")
-    @patch("brainiak.utils.cache.log.logger.info")
     @patch("brainiak.utils.cache.log", logger=logging.getLogger("xubiru"))
-    def test_purge_an_instance(self, logger, info, debug, settings):
+    def test_purge_an_instance(self, logger, debug_mock, settings):
         purge_an_instance("http://NinaFox")
+        self.assertTrue('CacheDebug: Delete cache keys related to pattern' in str(debug_mock.call_args_list))
         self.assertEqual(retrieve(u"_@@_@@http://Charles@@xubiru##instance"), {})
         self.assertEqual(retrieve(u"_@@_@@http://NinaFox@@class_uri=http://dog##instance"), None)
         self.assertEqual(retrieve(u"_@@_@@http://NinaFox@@a=1&b=2##instance"), None)

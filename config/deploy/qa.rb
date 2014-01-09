@@ -2,15 +2,14 @@ role :be,                         'cittavld895.globoi.com', 'cittavld896.globoi.
 role :filer,                      'filer.qa.globoi.com'
 
 # Hosts
-set :virtuoso_host,               'qa.virtuoso.globoi.com'
 set :barramento_backstage_host,   'barramento.backstage.qa.globoi.com'
-set :redis_host,                  'redis.api.semantica.qa.globoi.com'
+set :redis_host,                  'redis.brainiak.globoi.com'
 set :syslog_host,                 'syslog.tcp.glog.qa.globoi.com'
 set :filer_host,                  'riofd07a'
 set :elasticsearch_host,          'esearch.qa.globoi.com'
 
 # Ports
-set :virtuoso_port,               8890
+set :redis_port,                  20019
 
 # URLs
 set :virtuoso_url,                "http://#{virtuoso_host}:#{virtuoso_port}/sparql-auth"

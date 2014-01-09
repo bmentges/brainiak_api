@@ -545,7 +545,7 @@ class InstanceHandler(BrainiakRequestHandler):
         except SchemaNotFound as ex:
             raise HTTPError(404, log_message=unicode(ex))
 
-        self.query_params["expand_object_properties"] = "1"
+        #self.query_params["expand_object_properties"] = "1"
         instance_data = get_instance(self.query_params)
         instance_cache_key = build_instance_key(self.query_params)
         update_if_present(instance_cache_key, instance_data)

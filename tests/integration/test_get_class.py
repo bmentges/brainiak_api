@@ -34,7 +34,8 @@ class ClassSchemaQueryTestCase(QueryTestCase):
         triplestore.query_sparql = self.original_query_sparql
 
     def test_query_superclasses(self):
-        params = Params({"class_uri": "http://example.onto/City"})
+        handler = MockHandler()
+        params = ParamDict(handler, class_uri="http://example.onto/City")
 
         expected_bindings = [{u'class': {u'type': u'uri', u'value': u'http://example.onto/City'}},
                              {u'class': {u'type': u'uri', u'value': u'http://example.onto/Place'}}]
@@ -43,7 +44,8 @@ class ClassSchemaQueryTestCase(QueryTestCase):
         self.assertEqual(response["results"]["bindings"], expected_bindings)
 
     def test_query_superclasses_result(self):
-        params = Params({"class_uri": "http://example.onto/City"})
+        handler = MockHandler()
+        params = ParamDict(handler, class_uri="http://example.onto/City")
 
         expected_list = [u'http://example.onto/City',
                          u'http://example.onto/Place']
@@ -651,14 +653,14 @@ class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):
         }
 
         schema.query_cardinalities = lambda query: fake_response_cardinalities
-        schema.query_predicates = lambda query: fake_response_predicates
+        schema.query_predicates = lambda query, superclass: fake_response_predicates
 
         context = prefixes.MemorizeContext(normalize_uri=SHORTEN)
-        params = {"class_uri": "http://test/person/gender",
-                  "class_schema": None,
-                  "superclasses": ["http://test/person/Gender"]}
+        handler = MockHandler()
+        params = ParamDict(handler, class_uri="http://test/person/gender")
 
-        response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(context, params)
+        response_predicates_and_cardinalities = schema.get_predicates_and_cardinalities(
+            context, params, superclasses=["http://test/person/Gender"])
         expected_predicates_and_cardinalities = {
             'http://test/person/gender': {
                 'description': u'G\xeanero.',
@@ -693,16 +695,6 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         TornadoAsyncHTTPTestCase.tearDown(self)
         delete('http://example.onto/@@http://example.onto/Place##class')
         delete('http://semantica.globo.com/person/@@http://semantica.globo.com/person/Gender##class')
-
-    @patch("brainiak.utils.cache.retrieve", return_value={"cache": "to be purged"})
-    @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
-    def test_200_with_cache_but_with_purge(self, enable_cache, retrieve):
-        response = self.fetch("/person/Gender/_schema?purge=1", method='GET')
-        self.assertEqual(response.code, 200)
-        body = json.loads(response.body)
-        self.assertIn("properties", body.keys())
-        self.assertTrue(response.headers.get('Last-Modified'))
-        self.assertTrue(response.headers['X-Cache'].startswith('MISS from localhost'))
 
     @patch("brainiak.utils.cache.retrieve", return_value={"body": {"i am": "cached"}, "meta": {"cache": "HIT", "last_modified": "123"}})
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
@@ -799,7 +791,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
     def test_schema_handler_with_invalid_params(self, log, settings):
         response = self.fetch('/person/Gender/_schema?hello=world')
         self.assertEqual(response.code, 400)
-        self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, graph_uri, lang, purge."]}')
+        self.assertEqual(response.body, '{"errors": ["HTTP error: 400\\nArgument hello is not supported. The supported querystring arguments are: expand_uri, graph_uri, lang."]}')
 
     @patch("brainiak.handlers.logger")
     def test_schema_handler_class_undefined(self, log):

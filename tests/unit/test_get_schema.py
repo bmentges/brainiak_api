@@ -364,24 +364,24 @@ class AuxiliaryFunctionsTestCase2(unittest.TestCase):
     def test_query_predicates_successful_with_lang(self):
         result_dict = {"results": {"bindings": [1]}}
 
-        schema._query_predicate_with_lang = lambda params: result_dict
+        schema._query_predicate_with_lang = lambda params, superclasses: result_dict
 
-        response = schema.query_predicates({"class_uri": "class_uri", "lang": ""})
+        response = schema.query_predicates({"class_uri": "class_uri", "lang": ""}, superclasses=[])
         self.assertEqual(response, result_dict)
 
     def test_query_predicates_successful_without_lang(self):
         response_text = {"results": {"bindings": []}}
         response_without_lang_text = {"results": {"bindings": [1]}}
 
-        schema._query_predicate_with_lang = lambda params: response_text
-        schema._query_predicate_without_lang = lambda params: response_without_lang_text
+        schema._query_predicate_with_lang = lambda params, superclasses: response_text
+        schema._query_predicate_without_lang = lambda params, superclasses: response_without_lang_text
 
         params = {
             "class_uri": "class_uri",
             "graph_uri": "graph_uri",
             "lang": ""
         }
-        response = schema.query_predicates(params)
+        response = schema.query_predicates(params, superclasses=[])
         self.assertEqual(response, response_without_lang_text)
 
     def test_convert_bindings_dict_single_datatypeproperty(self):

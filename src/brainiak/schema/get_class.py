@@ -35,8 +35,8 @@ def get_schema(query_params):
     class_schema = query_class_schema(query_params)
     if not class_schema["results"]["bindings"]:
         return
-    query_params["superclasses"] = query_superclasses(query_params)
-    predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params)
+    superclasses = query_superclasses(query_params)
+    predicates_and_cardinalities = get_predicates_and_cardinalities(context, query_params, superclasses)
     response_dict = assemble_schema_dict(query_params,
                                          get_one_value(class_schema, "title"),
                                          predicates_and_cardinalities,
@@ -130,9 +130,10 @@ def build_class_schema_query(params):
     - rdfs:label
     - rdfs:comment (optional)
     """
-    (params, language_tag) = add_language_support(params, "title")
-    (params, language_tag) = add_language_support(params, "comment")
-    return QUERY_CLASS_SCHEMA % params
+    template_params = dict(**params)
+    (params, language_tag) = add_language_support(template_params, "title")
+    (params, language_tag) = add_language_support(template_params, "comment")
+    return QUERY_CLASS_SCHEMA % template_params
 
 
 def query_class_schema(query_params):
@@ -140,10 +141,10 @@ def query_class_schema(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-def get_predicates_and_cardinalities(context, query_params):
+def get_predicates_and_cardinalities(context, query_params, superclasses):
     query_result = query_cardinalities(query_params)
 
-    bindings = query_predicates(query_params)
+    bindings = query_predicates(query_params, superclasses)
     predicate_dict = bindings_to_dict('predicate', bindings)
 
     try:
@@ -155,7 +156,7 @@ def get_predicates_and_cardinalities(context, query_params):
     return convert_bindings_dict(context,
                                  bindings['results']['bindings'],
                                  cardinalities,
-                                 query_params['superclasses'])
+                                 superclasses)
 
 
 def _extract_cardinalities(bindings, predicate_dict):
@@ -230,11 +231,11 @@ def query_cardinalities(query_params):
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
-def query_predicates(query_params):
-    response = _query_predicate_with_lang(query_params)
+def query_predicates(query_params, superclasses):
+    response = _query_predicate_with_lang(query_params, superclasses)
 
     if not response['results']['bindings']:
-        response = _query_predicate_without_lang(query_params)
+        response = _query_predicate_without_lang(query_params, superclasses)
 
     return response
 
@@ -278,10 +279,12 @@ WHERE {
 }"""
 
 
-def _query_predicate_with_lang(query_params):
-    query_params["filter_classes_clause"] = "FILTER (?domain_class IN (<" + ">, <".join(query_params["superclasses"]) + ">))"
-
-    query = QUERY_PREDICATE_WITH_LANG % query_params
+def _query_predicate_with_lang(query_params, superclasses):
+    filter_expression = "FILTER (?domain_class IN (<" + ">, <".join(superclasses) + ">))"
+    template_vars = dict(filter_classes_clause=filter_expression,
+                         uniqueness_property=query_params.get_aux_param('uniqueness_property'),
+                         **query_params)
+    query = QUERY_PREDICATE_WITH_LANG % template_vars
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
@@ -318,15 +321,18 @@ WHERE {
 }"""
 
 
-def _query_predicate_without_lang(query_params):
-    query_params["filter_classes_clause"] = u"FILTER (?domain_class IN (<" + u">, <".join(query_params["superclasses"]) + u">))"
-    query_params["uniqueness_property"] = settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE
-    query = QUERY_PREDICATE_WITHOUT_LANG % query_params
+def _query_predicate_without_lang(query_params, superclasses):
+    filter_expression = u"FILTER (?domain_class IN (<" + u">, <".join(superclasses) + u">))"
+    template_vars = dict(filter_classes_clause=filter_expression,
+                         uniqueness_property=settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE,
+                         **query_params)
+    query = QUERY_PREDICATE_WITHOUT_LANG % template_vars
     return triplestore.query_sparql(query, query_params.triplestore_config)
 
 
 def query_superclasses(query_params):
-    query_params["uniqueness_property"] = settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE
+    uniqueness_property = settings.ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE
+    query_params.set_aux_param('uniqueness_property', uniqueness_property)
     result_dict = _query_superclasses(query_params)
     superclasses = filter_values(result_dict, "class")
     return superclasses

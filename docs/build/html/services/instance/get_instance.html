@@ -66,7 +66,7 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../releases.html">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-1-to-be-released">Version 2.4.1 - TO BE RELEASED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-1">Version 2.4.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-0-2013-11-28">Version 2.4.0 - 2013/11/28</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-8-2013-10-04">Version 2.3.8 - 2013/10/04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-7-2013-10-31">Version 2.3.7 - 2013/10/31</a></li>
@@ -215,9 +215,16 @@ It is only supported while retrieving instances and class definition.</p>
 <p><strong>Status 200</strong></p>
 <p>If the instance exists, the response body is a JSON with all instance information and links to related actions.</p>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;errors&quot;: [
-        &quot;HTTP error: 500\nException:\nTraceback (most recent call last):\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/web.py\&quot;, line 1115, in _stack_context_handle_exception\n    raise_exc_info((type, value, traceback))\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/stack_context.py\&quot;, line 302, in wrapped\n    ret = fn(*args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/greenlet_tornado.py\&quot;, line 77, in callback\n    gr.switch(response)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/greenlet_tornado.py\&quot;, line 104, in greenlet_base_func\n    wrapped_method(self, *args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/handlers.py\&quot;, line 490, in get\n    function_arguments=self.query_params)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/utils/cache.py\&quot;, line 83, in memoize\n    fresh_json = _fresh_retrieve(function, function_arguments)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/utils/cache.py\&quot;, line 65, in _fresh_retrieve\n    body = function(params)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/instance/get_instance.py\&quot;, line 31, in get_instance\n    class_schema = get_class.get_cached_schema(query_params)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/schema/get_class.py\&quot;, line 23, in get_cached_schema\n    class_object = memoize(query_params, get_schema, query_params, key=schema_key)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/utils/cache.py\&quot;, line 83, in memoize\n    fresh_json = _fresh_retrieve(function, function_arguments)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/utils/cache.py\&quot;, line 65, in _fresh_retrieve\n    body = function(params)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/schema/get_class.py\&quot;, line 38, in get_schema\n    superclasses = query_superclasses(query_params)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/schema/get_class.py\&quot;, line 337, in query_superclasses\n    result_dict = _query_superclasses(template_vars)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/schema/get_class.py\&quot;, line 353, in _query_superclasses\n    return triplestore.query_sparql(query, query_params.triplestore_config)\n\nAttributeError: &#39;dict&#39; object has no attribute &#39;triplestore_config&#39;\n&quot;
-    ]
+    &quot;@id&quot;: &quot;http://semantica.globo.com/place/Country/Brazil&quot;,
+    &quot;@type&quot;: &quot;place:Country&quot;,
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Country/Brazil/&quot;,
+    &quot;_instance_prefix&quot;: &quot;http://semantica.globo.com/place/Country/&quot;,
+    &quot;_resource_id&quot;: &quot;Brazil&quot;,
+    &quot;_type_title&quot;: &quot;Pa\u00eds&quot;,
+    &quot;place:geonameId&quot;: 76,
+    &quot;upper:description&quot;: &quot;Representa o pa\u00eds Brasil.&quot;,
+    &quot;upper:fullName&quot;: &quot;Rep\u00fablica Federativa do Brasil&quot;,
+    &quot;upper:name&quot;: &quot;Brasil&quot;
 }
 </pre></div>
 </div>

@@ -122,6 +122,27 @@ namespace :deploy do
         run_local 'rm docs.tar.gz'
     end
 
+    task :filer_sync do
+        # Check if current_release is seen in all servers and current link has been updated.
+
+        filer_current = capture "readlink -snf /mnt/projetos/deploy-be/brainiak/app/current", :roles => :filer
+        elaspsed_time = 0
+
+        servers = find_servers(:roles => :be)
+        servers.each do |s|
+            server_current = capture "readlink -snf /mnt/projetos/deploy-be/brainiak/app/current", :hosts => s
+            puts "[#{s}]:"
+            puts "  Server current link: #{server_current}"
+            puts "  Filer current link:  #{filer_current}"
+            while not server_current.eql?(filer_current)
+                sleep 1
+                elaspsed_time += 1
+                server_current = capture "readlink -snf /mnt/projetos/deploy-be/brainiak/app/current", :hosts => s
+            end
+        end
+        puts "Total elapsed sync time: #{elaspsed_time.to_s}"
+    end
+
     task :restart, :roles => :be do
         monit.stop if not stage.to_s.eql?('prod')
         utils.askpass("brainiak")

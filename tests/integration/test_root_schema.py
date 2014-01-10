@@ -26,7 +26,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch("/_schema_list/?invalid_param=xubiru", method='GET')
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
-        self.assertIn(u'Argument invalid_param is not supported. The supported ', body["errors"][0])
+        self.assertIn(u'Argument invalid_param is not supported.', body["errors"][0])
 
     @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.memoize", return_value={"body": {'items': []}, "meta": {"cache": "", "last_modified": ""}})

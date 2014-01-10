@@ -98,7 +98,7 @@ namespace :utils do
         set :"#{username}_params", ''
 
         unless is_deploy_host?
-            if stage.to_s =~ /^(dev|qa1|qa2)/
+            if stage.to_s =~ /^(dev|qa|qa1|qa2)/
                 unless no_autologin_users_list.include?(username)
                     set :"#{username}_pass", username
                     puts "Setting password automatically for user '#{username}'..."

@@ -1,8 +1,8 @@
 Releases
 ========
 
-Version 2.4.1 - TO BE RELEASED
---------------------------
+Version 2.4.1
+-------------
 
 New Features
 ____________

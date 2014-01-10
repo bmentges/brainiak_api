@@ -66,7 +66,7 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../releases.html">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-1-to-be-released">Version 2.4.1 - TO BE RELEASED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-1">Version 2.4.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-0-2013-11-28">Version 2.4.0 - 2013/11/28</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-8-2013-10-04">Version 2.3.8 - 2013/10/04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-3-7-2013-10-31">Version 2.3.7 - 2013/10/31</a></li>
@@ -174,15 +174,15 @@
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X POST -T <span class="s2">&quot;new_york_city.json&quot;</span> http://brainiak.semantica.dev.globoi.com/place/City
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 500 Internal Server Error
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 400 Bad Request
 Server: nginx
-Date: Thu, 09 Jan 2014 17:11:53 GMT
+Date: Fri, 10 Jan 2014 12:11:15 GMT
 Content-Type: application/json; charset=UTF-8
-Content-Length: 1565
+Content-Length: 359
 Connection: keep-alive
 Access-Control-Allow-Origin: *
 
-{&quot;errors&quot;: [&quot;HTTP error: 500\nException:\nTraceback (most recent call last):\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/web.py\&quot;, line 1115, in _stack_context_handle_exception\n    raise_exc_info((type, value, traceback))\n\n  File \&quot;/opt/brainiak/virtualenv/lib/python2.7/site-packages/tornado/stack_context.py\&quot;, line 302, in wrapped\n    ret = fn(*args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/greenlet_tornado.py\&quot;, line 77, in callback\n    gr.switch(response)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/greenlet_tornado.py\&quot;, line 104, in greenlet_base_func\n    wrapped_method(self, *args, **kwargs)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/handlers.py\&quot;, line 391, in post\n    schema = schema_resource.get_schema(self.query_params)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/schema/get_class.py\&quot;, line 38, in get_schema\n    superclasses = query_superclasses(query_params)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/schema/get_class.py\&quot;, line 337, in query_superclasses\n    result_dict = _query_superclasses(template_vars)\n\n  File \&quot;/mnt/projetos/deploy-be/brainiak/app/releases/20140109130830/brainiak/schema/get_class.py\&quot;, line 353, in _query_superclasses\n    return triplestore.query_sparql(query, query_params.triplestore_config)\n\nAttributeError: &#39;dict&#39; object has no attribute &#39;triplestore_config&#39;\n&quot;]}
+{&quot;errors&quot;: [&quot;Valor incorreto para a propriedade (http://semantica.globo.com/place/latitude). Um (http://www.w3.org/2001/XMLSchema#float) era esperado, mas (-22.958314) foi fornecido.&quot;, &quot;Valor incorreto para a propriedade (http://semantica.globo.com/place/longitude). Um (http://www.w3.org/2001/XMLSchema#float) era esperado, mas (-43.407133) foi fornecido.&quot;]}
 </pre></div>
 </div>
 <div class="admonition warning">

@@ -100,11 +100,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     def test_200_with_cache_but_with_purge(self, enable_cache, retrieve):
         response = self.fetch("/?purge=1", method='GET')
-        self.assertEqual(response.code, 200)
-        body = json.loads(response.body)
-        self.assertIn("items", body.keys())
-        self.assertTrue(response.headers.get('Last-Modified'))
-        self.assertTrue(response.headers['X-Cache'].startswith('MISS from localhost'))
+        self.assertEqual(response.code, 400)
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.settings", ENABLE_CACHE=False)
@@ -136,7 +132,7 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         self.assertFalse(response.body)
 
 
-class QueryTestCase(QueryTestCase):
+class QueryGraphTestCase(QueryTestCase):
     allow_triplestore_connection = True
     graph_uri = "http://whatever.com"
     fixtures = ["tests/sample/instances.n3"]

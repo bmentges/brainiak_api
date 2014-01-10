@@ -1026,6 +1026,12 @@ class SparqlfyTestCase(unittest.TestCase):
         response = is_instance(value, _type)
         self.assertFalse(response)
 
+    def test_is_instance_datetime_with_miliseconds(self):
+        value = "2014-01-09T18:20:25.848436"
+        _type = "http://www.w3.org/2001/XMLSchema#dateTime"
+        response = is_instance(value, _type)
+        self.assertTrue(response)
+
     def test_is_instance_with_invalid_offset(self):
         value = "abc"
         _type = "http://www.w3.org/2001/XMLSchema#dateTime"

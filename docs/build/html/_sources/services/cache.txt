@@ -51,7 +51,17 @@ From the second time on, ``X-Cache`` will contain ``HIT`` and ``Last-Modified`` 
 Purge
 -----
 
-To cleanup cache, the ``PURGE`` method should be used:
+To cleanup cache, the ``PURGE`` method should be used.
+Note that for purging purposes, query string parameters are ignored.
+That means that the same instance could have been cached with different parameters,
+but when purging the instance all versions should be removed from the cache disregarding the parameters that they were cached with.
+
+
+For the time being, we support purging: just the root, a particular instance, the whole cache.
+
+
+Purge Root
+----------
 
 Example:
 
@@ -62,11 +72,20 @@ Example:
 .. program-output:: curl -i -s -X PURGE http://brainiak.semantica.dev.globoi.com/
   :shell:
 
-Note that for purging purposes, query string parameters are ignored.
+
+Purge Instance
+--------------
+
+There is support to PURGE a specific instance given its full path.
+
+.. code-block:: bash
+
+  $ curl -i -X PURGE  http://brainiak.semantica.dev.globoi.com/person/Person/IsaacNewton
 
 
-Recursive purge
----------------
+
+Purge all (Recursive purge)
+---------------------------
 
 It is also possible to cleanup recursively, calling ``PURGE`` with the header ``X-Cache-Recursive`` set to ``1``:
 
@@ -99,14 +118,4 @@ Otherwise, to purge only (c) and (d), the command bellow should be run:
 
 
 
-Purge all
----------
-
-It is possible to exclude all cache by calling ``PURGE`` at the root of the API using the header ``X-Cache-Recursive`` set to ``1``.
-
-Be careful.
-
-.. code-block:: bash
-
-  $ curl -i -X PURGE --header "X-Cache-Recursive: 1" http://brainiak.semantica.dev.globoi.com/
 

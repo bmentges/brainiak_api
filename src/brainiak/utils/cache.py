@@ -16,8 +16,13 @@ TIME_TO_LIVE_IN_SECS = 86400
 build_key_for_root_schema = lambda: u"_##json_schema"
 build_key_for_root = lambda: u"_##root"
 
-# _@@_/_@@instance_uri##instance
-build_instance_key = lambda query_params: u"_@@_/_@@{0}##instance".format(query_params["instance_uri"])
+# _@@_/_@@instance_uri@@params##instance
+
+
+def build_instance_key(query_params):
+    return u"_@@_@@{0}@@{1}##instance".format(query_params["instance_uri"], query_params.to_string())
+
+
 # graph_uri@@class_uri@@instance_uri##instance
 #build_instance_key = lambda query_params: u"{0}@@{1}@@{2}##instance".format(query_params["graph_uri"],
 #                                                                          query_params["class_uri"],
@@ -72,9 +77,9 @@ def _fresh_retrieve(function, params):
 
 def memoize(params, function, function_arguments=None, key=False):
     if settings.ENABLE_CACHE:
-        key = key or params['request'].uri
+        key = key or params.request.uri
         cached_json = retrieve(key)
-        if (cached_json is None) or (params.get('purge') == '1'):
+        if (cached_json is None):
             fresh_json = _fresh_retrieve(function, function_arguments)
             create(key, ujson.dumps(fresh_json))
             fresh_json['meta']['cache'] = 'MISS'
@@ -176,7 +181,7 @@ def status():
 
     try:
         response = ping()
-    except exceptions as e:
+    except exceptions:
         params["error"] = traceback.format_exc()
         msg = failure_msg
     else:
@@ -187,6 +192,12 @@ def status():
             msg = success_msg
 
     return msg % params
+
+
+def purge_an_instance(instance_uri):
+    pattern = u"_@@_@@{0}@@*##instance".format(instance_uri)
+    log.logger.debug(_(u"CacheDebug: Delete cache keys related to pattern {0}".format(pattern)))
+    purge(pattern)
 
 
 def purge_all_instances():

@@ -2,10 +2,11 @@ import logging
 import unittest
 
 import redis
-from mock import patch
+from mock import patch, Mock
 
-from brainiak.utils.cache import build_key_for_class, CacheError, connect, memoize, ping, purge_by_path, safe_redis, status
-from tests.mocks import MockRequest
+from brainiak.utils.cache import build_key_for_class, CacheError, connect, memoize, ping, purge_by_path, safe_redis, status, build_instance_key
+from brainiak.utils.params import ParamDict
+from tests.mocks import MockRequest, MockHandler
 
 
 def raise_exception():
@@ -69,7 +70,7 @@ class MemoizeTestCase(unittest.TestCase):
         def clean_up():
             return {"status": "Laundry done"}
 
-        params = {'request': MockRequest(uri="/home")}
+        params = Mock(request=MockRequest(uri="/home"))
         answer = memoize(params, clean_up)
 
         expected = {
@@ -92,7 +93,7 @@ class MemoizeTestCase(unittest.TestCase):
         def clean_up():
             return {"status": "Laundry done"}
 
-        params = {'request': MockRequest(uri="/home")}
+        params = Mock(request=MockRequest(uri="/home"))
         answer = memoize(params, clean_up)
         self.assertEqual(answer['status'], "Dishes cleaned up")
         self.assertEqual(redis_get.call_count, 1)
@@ -191,6 +192,14 @@ class CacheUtilsTestCase(unittest.TestCase):
         }
         computed = build_key_for_class(params)
         expected = "graph@@Class##class"
+        self.assertEqual(computed, expected)
+
+    def test_build_key_for_instance(self):
+        url_params = dict(graph_uri="graph", class_uri="Class", instance_uri="instance")
+        handler = MockHandler(**url_params)
+        params = ParamDict(handler, **url_params)
+        computed = build_instance_key(params)
+        expected = "_@@_@@instance@@expand_uri=0&instance_uri=instance&lang=pt##instance"
         self.assertEqual(computed, expected)
 
     @patch("brainiak.utils.cache.delete")

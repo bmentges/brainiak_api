@@ -133,7 +133,7 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         actual_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york', method='GET')
         self.assertEqual(actual_new_york.code, 200)
         actual_new_york_dict = json.loads(actual_new_york.body)
-        self.assertTrue(actual_new_york.headers['X-Cache'].startswith('MISS from localhost'))
+        self.assertTrue(actual_new_york.headers['X-Cache'].startswith('MISS'))
 
         # Add an attribute
         actual_new_york_dict["rdfs:label"] = "Up-to-date label"
@@ -146,7 +146,7 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(actual_new_york.code, 200)
         updated_new_york_dict = json.loads(updated_new_york.body)
         self.assertEqual(updated_new_york_dict['rdfs:label'], "Up-to-date label")
-        self.assertTrue(updated_new_york.headers['X-Cache'].startswith('HIT'))
+        self.assertTrue(updated_new_york.headers['X-Cache'].startswith('MISS'))
 
 
 class EditInstanceQueriesTestCase(QueryTestCase):

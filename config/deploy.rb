@@ -131,14 +131,16 @@ namespace :deploy do
         servers = find_servers(:roles => :be)
         servers.each do |s|
             server_current = capture "readlink -snf /mnt/projetos/deploy-be/brainiak/app/current", :hosts => s
-            puts "[#{s}]: #{server_current} x #{filer_current}"
+            puts "[#{s}]:"
+            puts "  Server current link: #{server_current}"
+            puts "  Filer current link:  #{filer_current}"
             while not server_current.eql?(filer_current)
                 sleep 1
                 elaspsed_time += 1
                 server_current = capture "readlink -snf /mnt/projetos/deploy-be/brainiak/app/current", :hosts => s
             end
         end
-        puts "Total elaspsed sync time: #{elaspsed_time.to_s}"
+        puts "Total elapsed sync time: #{elaspsed_time.to_s}"
     end
 
     task :restart, :roles => :be do

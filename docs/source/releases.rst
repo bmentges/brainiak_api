@@ -1,6 +1,22 @@
 Releases
 ========
 
+
+Version 2.4.2
+-------------
+
+New Features
+____________
+
+ - More detailed /_status/cache information
+
+Fixes
+_____
+
+ - Root resource was not cached including URL parameters, as a side effect pagination would not work for the root resource.
+   Now the root is cached with all the URL parameters that were given.
+
+
 Version 2.4.1
 -------------
 

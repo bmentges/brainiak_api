@@ -256,8 +256,16 @@ class RootHandler(BrainiakRequestHandler):
 
     SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
 
-    def get_cache_path(self):
-        return cache.build_key_for_root()
+    @greenlet_asynchronous
+    def purge(self):
+        if settings.ENABLE_CACHE:
+            valid_params = PAGING_PARAMS
+            with safe_params(valid_params):
+                self.query_params = ParamDict(self, **valid_params)
+            recursive = int(self.request.headers.get('X-Cache-Recursive', '0'))
+            cache.purge_root(recursive)
+        else:
+            raise HTTPError(405, log_message=_("Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"))
 
     @greenlet_asynchronous
     def get(self):
@@ -267,7 +275,7 @@ class RootHandler(BrainiakRequestHandler):
         response = memoize(self.query_params,
                            list_all_contexts,
                            function_arguments=self.query_params,
-                           key=self.get_cache_path())
+                           key=cache.build_key_for_root(self.query_params))
         self.add_cache_headers(response['meta'])
         self.finalize(response['body'])
 

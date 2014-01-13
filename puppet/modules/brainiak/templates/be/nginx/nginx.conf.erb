@@ -76,7 +76,7 @@ http {
 
         listen *:<%=scope.lookupvar('brainiak::params::nginx_bind_port')%>;
 
-        server_name <%=scope.lookupvar('brainiak::params::projeto_host')%> <%=scope.lookupvar('brainiak::params::projeto_backstage_host')%> <%=scope.lookupvar('brainiak::params::projeto_backstage_old_host')%><%-if $::zone == 'qa' -%> brainiak.semantica.globoi.com<%-end%>;
+        server_name <%=scope.lookupvar('brainiak::params::projeto_host')%> <%=scope.lookupvar('brainiak::params::projeto_backstage_host')%> <%=scope.lookupvar('brainiak::params::projeto_backstage_old_host')%><%-if zone == 'qa' -%> brainiak.semantica.globoi.com<%-end%>;
 
         # Doc
         location /docs {

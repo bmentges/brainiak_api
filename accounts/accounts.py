@@ -85,7 +85,10 @@ def try_and_pull(environ):
         "(1) commit the just pulled files to git before making any further changes, or\n" \
         "(2) git reset (checkout --) local files and overwrite permissions at Accounts API pushing them."
         files_differ = were_local_files_modified(msg)
+
     print(u"Files successfuly pulled from <{0}>.".format(environ))
+    if not files_differ:
+        print(u"Local and remote permissions files were the same.")
 
 
 def pull(environ, clients=["G1 CDA"]):
@@ -152,16 +155,14 @@ def push(environ, clients=["G1 CDA"]):
             app_id = filename.split("_")[-1].split(".json")[-2]
 
             for role in app_roles:
+                
                 role_id = role["id"]
-                new_permissions = []
 
                 for permission in role["permissions"]:
                     permission_id = permission.pop("_id")
-                    permission_url = permission["target"]
 
                 url = "{0}roles/{2}".format(host, app_id, role_id)
                 headers = {"Content-Type": "application/json"}
-                role["permissions"] = new_permissions
                 response = requests.put(url, data=json.dumps(role), headers=headers)
 
 
@@ -177,6 +178,8 @@ def try_and_push(environ):
             msg = u"Permissions at Accounts API are equal to your local ones."
             print(msg)
         push(environ, "*")
+    push(environ, "*")
+
 
 if __name__ == "__main__":
     command, environ = parse_options()

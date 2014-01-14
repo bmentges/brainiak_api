@@ -35,7 +35,7 @@ from brainiak.search.json_schema import schema as search_schema
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
-from brainiak.utils.cache import memoize, build_instance_key, update_if_present
+from brainiak.utils.cache import memoize, build_instance_key
 from brainiak.utils.i18n import _
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url, build_class_url
 from brainiak.utils.params import CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
@@ -193,7 +193,8 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             instance_data = kwargs["instance_data"]
             clean_instance_data = clean_up_reserved_attributes(instance_data)
             kwargs["instance_data"] = clean_instance_data
-
+        # self.query is going to be introduced by descendants classes
+        # the *_uri parameters are either explicit passed to ParamDict or derived from the given arguments
         notify_bus(instance=self.query_params["instance_uri"],
                    klass=self.query_params["class_uri"],
                    graph=self.query_params["graph_uri"],

@@ -5,7 +5,6 @@ import time
 from unittest import TestCase
 
 from mock import patch, Mock
-from tornado.httpclient import HTTPResponse, HTTPRequest
 
 from brainiak import search_engine
 from tests.mocks import MockResponse

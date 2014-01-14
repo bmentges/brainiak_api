@@ -1,8 +1,6 @@
 import logging
 import unittest
 
-from mock import patch
-
 from brainiak import settings
 
 

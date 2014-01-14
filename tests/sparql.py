@@ -147,12 +147,12 @@ def remove_ttl_from_virtuoso_dir(ttl):
 
 def enable_inference_at_graph(graph_uri):
     cmd = ISQL_INFERENCE % {"graph_uri": graph_uri}
-    virtuoso_response = run_isql(cmd)
+    return run_isql(cmd)
 
 
 def disable_inference_at_graph(graph_uri):
     cmd = ISQL_REMOVE_INFERENCE % {"graph_uri": graph_uri}
-    virtuoso_response = run_isql(cmd)
+    return run_isql(cmd)
 
 
 class QueryTestCase(SimpleTestCase):

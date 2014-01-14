@@ -16,7 +16,7 @@ from brainiak.schema.get_class import build_class_schema_query, \
     QUERY_PREDICATE_WITH_LANG, QUERY_SUPERCLASS, SchemaNotFound
 from brainiak.utils.params import ParamDict
 from brainiak.utils.cache import delete, retrieve
-from tests.mocks import MockHandler, MockRequest, Params
+from tests.mocks import MockHandler, MockRequest
 from tests.sparql import QueryTestCase
 from tests.tornado_cases import TornadoAsyncTestCase, TornadoAsyncHTTPTestCase
 
@@ -838,6 +838,7 @@ class TestClassResource(TornadoAsyncHTTPTestCase):
         }
         with self.assertRaises(SchemaNotFound) as exception:
             schema = get_cached_schema(query_params)
+            del schema
             self.assertEqual(
                 "SchemaNotFound: The class definition for http://example.onto/Place was not found in graph http://example.onto/",
                 str(exception.exception)

@@ -1,5 +1,4 @@
 import unittest
-from tornado.web import HTTPError
 from mock import patch
 
 from brainiak import triplestore

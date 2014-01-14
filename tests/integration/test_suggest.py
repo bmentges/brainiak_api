@@ -18,7 +18,6 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 class SuggestIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
     graph_uri = "http://example.onto/"
 
@@ -479,12 +478,3 @@ class SuggestIntegrationElasticSearchDevQueryTestCase(ElasticSearchQueryTestCase
         query = _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields, pattern)
         response = self.search(query)
         self.assertTrue(response["hits"]["total"])
-
-
-
-
-# class StagingQueryTestCase(QueryTestCase):
-#     # ElasticSearch 0.19.11, customized with UATU
-#     host = "http://esearch.globoi.com/"
-#     proxies = {"http": "http://proxy.staging.globoi.com:3128"}
-#     analyzer = "globo_analyzer"

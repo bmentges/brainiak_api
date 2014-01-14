@@ -294,7 +294,6 @@ class CachingRootTestCase(BaseCyclePurgeTestCase, QueryTestCase):
 
 class PurgeSchemaTestCase(BaseCyclePurgeTestCase, QueryTestCase):
 
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
     graph_uri = "http://example.onto/"
 
@@ -336,18 +335,22 @@ class CachingInstanceTestCase(BaseCyclePurgeTestCase):
     DUMMY_CITY_1_URL_SUFFIX_WITH_INSTANCE_URI = '/_/_/_?instance_uri=http://semantica.globo.com/place/City/dummyCity1'
     DUMMY_CITY_2_URL_SUFFIX = '/place/City/dummyCity2'
 
+    def deleteDummies(self):
+        response = self.deleteInstance(self.DUMMY_CITY_1_URL_SUFFIX)
+        self.assertIn(response.code, (204, 404))
+        response = self.deleteInstance(self.DUMMY_CITY_2_URL_SUFFIX)
+        self.assertIn(response.code, (204, 404))
+
     def setUp(self):
         super(CachingInstanceTestCase, self).setUp()
+        self.deleteDummies()
         response = self.createInstance(self.DUMMY_CITY_1_URL_SUFFIX, self.dummy_city_1)
         self.assertEqual(response.code, 201)
         response = self.createInstance(self.DUMMY_CITY_2_URL_SUFFIX, self.dummy_city_2)
         self.assertEqual(response.code, 201)
 
     def tearDown(self):
-        response = self.deleteInstance(self.DUMMY_CITY_1_URL_SUFFIX)
-        self.assertEqual(response.code, 204)
-        response = self.deleteInstance(self.DUMMY_CITY_2_URL_SUFFIX)
-        self.assertEqual(response.code, 204)
+        self.deleteDummies()
         super(CachingInstanceTestCase, self).tearDown()
 
     @patch("brainiak.handlers.settings", ENABLE_CACHE=True)

@@ -14,11 +14,14 @@ TIME_TO_LIVE_IN_SECS = 86400
 
 # # Root-related
 build_key_for_root_schema = lambda: u"_##json_schema"
-build_key_for_root = lambda: u"_##root"
+
+
+# @@params##root
+def build_key_for_root(query_params):
+    return u"@@{0}##root".format(query_params.to_string())
+
 
 # _@@_/_@@instance_uri@@params##instance
-
-
 def build_instance_key(query_params):
     return u"_@@_@@{0}@@{1}##instance".format(query_params["instance_uri"], query_params.to_string())
 
@@ -228,8 +231,15 @@ def purge_all_instances():
     purge("*##instance")
 
 
+def purge_root(recursive=False):
+    if recursive:
+        flushall()
+    else:
+        purge("*##root")
+
+
 def purge_by_path(path, recursive):
-    purge_all = recursive and (path == build_key_for_root())
+    purge_all = recursive and ('##root' in path)
     if purge_all:
         flushall()
     elif recursive:

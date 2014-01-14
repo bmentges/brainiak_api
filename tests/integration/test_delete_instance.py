@@ -36,7 +36,6 @@ class DeleteNonExistentTestCase(TornadoAsyncHTTPTestCase):
 
 class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
 
-    allow_triplestore_connection = True
     graph_uri = "http://somegraph.org/"
     fixtures = ["tests/sample/instances.n3"]
 

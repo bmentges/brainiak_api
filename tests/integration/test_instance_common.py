@@ -5,7 +5,6 @@ from brainiak.instance import common
 class InstanceCommonTestCase(QueryTestCase):
 
     maxDiff = None
-    allow_triplestore_connection = True
     fixtures_by_graph = {
         'http://any.graph/': ['tests/sample/instances.n3'],
         'http://empty.graph/': [],

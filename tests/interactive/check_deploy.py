@@ -24,6 +24,7 @@ brainiak_endpoint = {
     "dev": "http://brainiak.semantica.dev.globoi.com/",
     "qa01": "http://brainiak.semantica.qa01.globoi.com/",
     "qa02": "http://brainiak.semantica.qa02.globoi.com/",
+    "qa": "http://brainiak.semantica.qa.globoi.com/",
     "stg": "http://brainiak.semantica.globoi.com/",
     "prod": "http://brainiak.semantica.globoi.com/"
 }
@@ -34,6 +35,7 @@ mercury_endpoint = {
     "dev": "http://cittavld44.globoi.com:8036/",
     "qa01": "http://cittavld45.globoi.com:8036/",
     "qa02": "http://api-semantica-be01.vb.qa02.globoi.com:8036/",
+    "qa": "http://cittavld507.globoi.com:8036",
     "stg": "http://riovlb160.globoi.com:8036/",
     "prod": "http://riomp40lb14.globoi.com:8036/"
 }
@@ -43,6 +45,7 @@ elastic_search_endpoint = {
     "local": "http://localhost:9200/",
     "qa01": "http://esearch.qa01.globoi.com/",
     "qa02": "http://esearch.qa02.globoi.com/",
+    "qa": "http://esearch.qa.globoi.com/",
     "stg": "http://esearch.globoi.com/",
     "prod": "http://esearch.globoi.com/"
 }
@@ -52,12 +55,14 @@ solr_endpoint = {
     "local": "http://localhost:8984/",
     "qa01": "http://master.solr.semantica.qa01.globoi.com/",
     "qa02": "http://master.solr.semantica.qa02.globoi.com/",
+    "qa": "http://master.solr.semantica.qa.globoi.com/",
     "stg": "http://master.solr.semantica.globoi.com/",
     "prod": "http://master.solr.semantica.globoi.com/"
 }
 
 proxies = {
-    "stg": {"http": "http://proxy.staging.globoi.com:3128"}
+    "stg": {"http": "http://proxy.staging.globoi.com:3128"},
+    "qa": {"http": "http://proxy.qa.globoi.com:3128"}
 }
 #curl -i -X GET --proxy1.0 proxy.staging.globoi.com:3128 http://api.semantica.globoi.com/_status/check_activemq
 

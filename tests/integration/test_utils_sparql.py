@@ -2,12 +2,12 @@ from tests.sparql import QueryTestCase
 from brainiak.utils.sparql import QUERY_VALUE_EXISTS, is_result_true
 
 
-class ValidateValueUniquenessTestCase(QueryTestCase):
+class ValidateUniquenessTestCase(QueryTestCase):
 
-    allow_triplestore_connection = True
-    fixtures = ["tests/sample/animalia.n3"]
-    graph_uri = "http://example.onto/"
-
+    graph_uri = "http://example_alternative.onto/"
+    fixtures_by_graph = {
+        graph_uri: ["tests/sample/animalia.n3"]
+    }
     maxDiff = None
 
     def test_query(self):

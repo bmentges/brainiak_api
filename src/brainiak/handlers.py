@@ -35,7 +35,7 @@ from brainiak.search.json_schema import schema as search_schema
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
-from brainiak.utils.cache import memoize, build_instance_key, update_if_present
+from brainiak.utils.cache import memoize, build_instance_key
 from brainiak.utils.i18n import _
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url, build_class_url
 from brainiak.utils.params import CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
@@ -702,7 +702,7 @@ class VirtuosoStatusHandler(BrainiakRequestHandler):
 class CacheStatusHandler(BrainiakRequestHandler):
 
     def get(self):
-        response = cache.status()
+        response = cache.status_message()
         cache_keys = cache.keys("")
         if cache_keys:
             response += "<br>Cached keys:<br>"

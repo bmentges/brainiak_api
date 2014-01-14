@@ -4,7 +4,8 @@ import unittest
 import redis
 from mock import patch, Mock
 
-from brainiak.utils.cache import build_key_for_class, CacheError, connect, memoize, ping, purge_by_path, safe_redis, status, build_instance_key
+from brainiak.utils.cache import build_key_for_class, CacheError, connect, memoize, ping, \
+    purge_by_path, safe_redis, status_message, build_instance_key, get_usage_message
 from brainiak.utils.params import ParamDict
 from tests.mocks import MockRequest, MockHandler
 
@@ -111,27 +112,80 @@ class GeneralFunctionsTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.cache.ping", return_value=True)
     def test_status_success(self, ping):
-        response = status()
-        expected = 'Redis connection authenticated [:\xf3\xf9\x8c]A\xd7\xc9\x92\xa6\xfbcy\x9fp\x0f+] | SUCCEED | localhost:6379'
+        response = status_message()
+        expected = 'Redis connection authenticated [:\xf3\xf9\x8c]A\xd7\xc9\x92\xa6\xfbcy\x9fp\x0f+] | SUCCEED | localhost:6379 | <br>Usage:'
         self.assertEqual(response, expected)
 
     @patch("brainiak.utils.cache.ping", return_value=False)
     def test_status_fail(self, ping):
-        response = status()
+        response = status_message()
         expected = 'Redis connection authenticated [:\xf3\xf9\x8c]A\xd7\xc9\x92\xa6\xfbcy\x9fp\x0f+] | FAILED | localhost:6379 | Ping failed'
         self.assertEqual(response, expected)
 
     @patch("brainiak.utils.cache.ping", side_effect=raise_exception)
     def test_status_exception(self, ping):
-        response = status()
+        response = status_message()
         expected = "Redis connection authenticated [:\xf3\xf9\x8c]A\xd7\xc9\x92\xa6\xfbcy\x9fp\x0f+] | FAILED | localhost:6379 | Traceback (most recent call last)"
         self.assertIn(expected, response)
 
     @patch("brainiak.utils.cache.ping", side_effect=raise_connection_exception)
     def test_status_exception_connection(self, ping):
-        response = status()
+        response = status_message()
         expected = "Redis connection authenticated [:\xf3\xf9\x8c]A\xd7\xc9\x92\xa6\xfbcy\x9fp\x0f+] | FAILED | localhost:6379 | Traceback (most recent call last)"
         self.assertIn(expected, response)
+
+    STANDARD_INFO_KEYS = {
+        "redis_version": "xubiru",
+        "process_id": "1.2.3",
+        "role": "master",
+        "used_memory_human": "666MB",
+        "used_memory_peak_human": "667MB"
+    }
+
+    def test_status_message_no_keys_no_cache_hit(self):
+        def _side_effect(*args, **kwargs):
+            no_argument = {"keyspace_hits": "0", "keyspace_misses": "0"}
+            no_argument.update(self.STANDARD_INFO_KEYS)
+            return {} if args else no_argument
+            #with_argument = {"db0": {"keys": 0}}
+
+        with patch("brainiak.utils.cache.redis_client.info", side_effect=_side_effect):
+            expected_in_status_msg = "Number of keys: 0 | Hit ratio: 0"
+            usage_message = get_usage_message()
+            self.assertIn(expected_in_status_msg, usage_message)
+
+    def test_status_message_no_keys_cache_hit_once(self):
+        def _side_effect(*args, **kwargs):
+            no_argument = {"keyspace_hits": "1", "keyspace_misses": "2"}
+            no_argument.update(self.STANDARD_INFO_KEYS)
+            return {} if args else no_argument
+
+        with patch("brainiak.utils.cache.redis_client.info", side_effect=_side_effect):
+            expected_in_status_msg = "Number of keys: 0 | Hit ratio: 0.5"
+            usage_message = get_usage_message()
+            self.assertIn(expected_in_status_msg, usage_message)
+
+    def test_status_message_five_keys_no_cache_hit(self):
+        def _side_effect(*args, **kwargs):
+            no_argument = {"keyspace_hits": "0", "keyspace_misses": "0"}
+            no_argument.update(self.STANDARD_INFO_KEYS)
+            return {"db0": {"keys": 5}} if args else no_argument
+
+        with patch("brainiak.utils.cache.redis_client.info", side_effect=_side_effect):
+            expected_in_status_msg = "Number of keys: 5 | Hit ratio: 0"
+            usage_message = get_usage_message()
+            self.assertIn(expected_in_status_msg, usage_message)
+
+    def test_status_message_five_keys_cache_hit_once(self):
+        def _side_effect(*args, **kwargs):
+            no_argument = {"keyspace_hits": "1", "keyspace_misses": "10"}
+            no_argument.update(self.STANDARD_INFO_KEYS)
+            return {"db0": {"keys": 5}} if args else no_argument
+
+        with patch("brainiak.utils.cache.redis_client.info", side_effect=_side_effect):
+            expected_in_status_msg = "Number of keys: 5 | Hit ratio: 0.1"
+            usage_message = get_usage_message()
+            self.assertIn(expected_in_status_msg, usage_message)
 
 
 class SafeRedisTestCase(unittest.TestCase):
@@ -230,7 +284,7 @@ class CacheUtilsTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.cache.delete")
     @patch("brainiak.utils.cache.purge")
-    def test_purge_by_path_recursive(self, mock_purge, mock_delete):
+    def test_purge_by_path_not_recursive(self, mock_purge, mock_delete):
         purge_by_path(u"graph@@class##type", False)
         self.assertFalse(mock_purge.called)
         self.assertTrue(mock_delete.called)

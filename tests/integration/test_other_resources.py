@@ -135,7 +135,7 @@ class LifecheckTestCase(TornadoAsyncHTTPTestCase):
         self.assertEqual(response.body, "ActiveMQ FAILED")
 
     @patch("brainiak.event_bus.logger")
-    def test_lifecheck_failed_due_to_activemq(self, log):
+    def test_lifecheck_failed_virtuoso_failed_due_to_activemq(self, log):
         handlers.triplestore.status = lambda: "Virtuoso FAILED"
         handlers.event_bus.status = lambda: "ActiveMQ FAILED"
         response = self.fetch('/_status/', method='GET')

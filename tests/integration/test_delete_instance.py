@@ -103,7 +103,6 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
         response = self.fetch(
                     '/anygraph/Species/Platypus?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                     method="DELETE")
-        instance_key = u'_@@_@@http://tatipedia.org/Platypus@@expand_uri=0&instance_uri=http://tatipedia.org/Platypus&lang=pt##instance'
         mock_delete.assert_called_with(u'http://tatipedia.org/Platypus')
         self.assertEqual(response.code, 204)
 

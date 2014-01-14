@@ -1,5 +1,4 @@
 from unittest import TestCase
-from mock import patch
 from brainiak.utils.config_parser import ConfigParserNoSectionError, parse_section
 
 

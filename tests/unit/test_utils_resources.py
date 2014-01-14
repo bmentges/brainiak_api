@@ -27,12 +27,6 @@ class TestCaseListInstanceResource(TestCase):
         decorate_with_resource_id(target)
         self.assertEqual(expected_result, target)
 
-    def test_decorate_with_resource_id_successfully(self):
-        expected_result = [{u"@id": u"http://a/b/", u"resource_id": u"b"}]
-        target = [{u"@id": u"http://a/b/"}]
-        decorate_with_resource_id(target)
-        self.assertEqual(expected_result, target)
-
     def test_decorate_with_missing_resource_id(self):
         target = [{u"id": u"http://a/b"}]
         self.assertRaises(TypeError, decorate_with_resource_id, target)

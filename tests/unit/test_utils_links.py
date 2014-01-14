@@ -118,7 +118,7 @@ class LinksTestCase(URLTestCase):
         expected = 1
         self.assertEqual(computed, expected)
 
-    def test_get_last_page_exact_division(self):
+    def test_get_last_page_exact_division_again(self):
         total_items = 12
         per_page = 4
         computed = get_last_page(total_items, per_page)

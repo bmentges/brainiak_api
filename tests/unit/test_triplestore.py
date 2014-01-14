@@ -6,7 +6,6 @@ from tornado.web import HTTPError
 
 from brainiak import triplestore
 import SPARQLWrapper
-from brainiak.utils.params import ParamDict
 from tests.mocks import triplestore_config
 
 
@@ -100,10 +99,6 @@ class TriplestoreTestCase(unittest.TestCase):
     @patch('brainiak.triplestore.run_query', side_effect=HTTPError(401))
     def test_query_sparql_with_http_error_401(self, run_query):
         self.assertRaises(HTTPError, triplestore.query_sparql, "", {})
-
-    @patch('brainiak.triplestore.run_query', side_effect=HTTPError(500))
-    def test_query_sparql_with_http_error_500(self, run_query):
-        self.assertRaises(HTTPError, triplestore.query_sparql)
 
     @patch('brainiak.triplestore.run_query', side_effect=HTTPError(500))
     def test_query_sparql_with_http_error_500(self, run_query):

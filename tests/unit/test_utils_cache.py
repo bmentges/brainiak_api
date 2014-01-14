@@ -284,11 +284,7 @@ class CacheUtilsTestCase(unittest.TestCase):
 
     @patch("brainiak.utils.cache.delete")
     @patch("brainiak.utils.cache.purge")
-<<<<<<< HEAD
     def test_purge_by_path_recursive_purge_by_path_false(self, mock_purge, mock_delete):
-=======
-    def test_purge_by_path_not_recursive(self, mock_purge, mock_delete):
->>>>>>> a1d0e095cf224292ecf28e8ef4bbe0921b40d784
         purge_by_path(u"graph@@class##type", False)
         self.assertFalse(mock_purge.called)
         self.assertTrue(mock_delete.called)

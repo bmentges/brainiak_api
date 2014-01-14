@@ -1,8 +1,25 @@
 Releases
 ========
 
-Version 2.4.1
--------------
+
+Version 2.4.2 - 2013/01/15
+--------------------------
+
+New Features
+____________
+
+ - More detailed information for /_status/cache, showinf Redis statistics
+
+Fixes
+_____
+
+ - Root resource was not cached including URL parameters, as a side effect pagination would not work for the root resource.
+   Now the root is cached with all the URL parameters that were given.
+ - Test suite was cleaned up from tests shadowed by homonymous tests.
+
+
+Version 2.4.1 - 2013/01/10
+--------------------------
 
 New Features
 ____________

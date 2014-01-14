@@ -166,21 +166,45 @@ def keys(pattern):
     pattern = u"{0}*".format(pattern)
     return redis_client.keys(pattern)
 
-
+@safe_redis
 def ping():
     return redis_client.ping()
 
 
-def status():
+@safe_redis
+def info():
+    return redis_client.info()
+
+
+def get_usage_message():
+    msg_template = "Version: %(redis_version)s | PID: %(process_id)s | Role: %(role)s<br>" + \
+        "Memory used: %(used_memory_human)s | Peak: %(used_memory_peak_human)s<br>" + \
+        "Number of keys: %(number_of_keys)s | Hit ratio: %(hit_ratio)s"
+
+    redis_info = redis_client.info()
+
+    if int(redis_info["keyspace_hits"]) == 0 and int(redis_info["keyspace_misses"]) == 0:
+        redis_info["hit_ratio"] = "0"
+    else:
+        redis_info["hit_ratio"] = float(redis_info["keyspace_hits"]) / float(redis_info["keyspace_misses"])
+
+    keyspace = redis_client.info("keyspace")
+    redis_info["number_of_keys"] = keyspace["db0"]["keys"] if keyspace and "db0" in keyspace else 0
+
+    return msg_template % redis_info
+
+
+def status_message():
     params = {
         "password": md5.new(str(settings.REDIS_PASSWORD)).digest(),  # do not cast to unicode
         "endpoint": "{0}:{1}".format(settings.REDIS_ENDPOINT, settings.REDIS_PORT),
     }
     failure_msg = "Redis connection authenticated [:%(password)s] | FAILED | %(endpoint)s | %(error)s"
-    success_msg = "Redis connection authenticated [:%(password)s] | SUCCEED | %(endpoint)s"
+    success_msg = "Redis connection authenticated [:%(password)s] | SUCCEED | %(endpoint)s <br><br>Usage <br>%(usage)s<br>"
 
     try:
         response = ping()
+        params["usage"] = get_usage_message()
     except exceptions:
         params["error"] = traceback.format_exc()
         msg = failure_msg

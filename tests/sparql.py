@@ -165,7 +165,6 @@ class QueryTestCase(SimpleTestCase):
     - emulate a SPARQL Endpoint using RDFlib in-memory graph (faster)
     """
 
-    allow_triplestore_connection = False
     allow_inference = True
     fixtures = []
     fixtures_by_graph = {}
@@ -204,12 +203,8 @@ class QueryTestCase(SimpleTestCase):
         self.remove_inference_options()
         self._drop_graph_from_triplestore(self.graph_uri)
 
-        if self.allow_triplestore_connection:
-            setup = self._setup_triplestore
-            load = self._load_fixture_to_triplestore
-        else:
-            setup = self._setup_mocked_triplestore
-            load = self._load_fixture_to_memory
+        setup = self._setup_triplestore
+        load = self._load_fixture_to_triplestore
 
         if not self.fixtures_by_graph:
             setup()
@@ -236,8 +231,7 @@ class QueryTestCase(SimpleTestCase):
         self._restore_triplestore()
         self.remove_inference_options()
         if not self.fixtures_by_graph:
-            if self.allow_triplestore_connection:
-                self._drop_graph_from_triplestore(self.graph_uri)
+            self._drop_graph_from_triplestore(self.graph_uri)
         else:
             for graph in self.fixtures_by_graph.keys():
                 self._drop_graph_from_triplestore(graph)

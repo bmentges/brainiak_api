@@ -264,7 +264,6 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         "http://brmedia.com/entertainment": ["tests/sample/entertainment.n3"]
     }
     maxDiff = None
-    allow_triplestore_connection = True
 
     def test_news_filtered_by_sports_graph(self):
         response = self.fetch('/dbpedia/News/?graph_uri=http://brmedia.com/sports', method='GET')
@@ -312,7 +311,6 @@ class MultipleGraphsResource(TornadoAsyncHTTPTestCase, QueryTestCase):
 class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/instances.n3"]
     graph_uri = "http://tatipedia.org/"
 
@@ -493,7 +491,6 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
 
 
 class FilterInstancesQueryTestCase(QueryTestCase):
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/instances.n3"]
     graph_uri = "http://tatipedia.org/"
 
@@ -941,7 +938,6 @@ class GetCollectionDirectObjectTestCase(TornadoAsyncHTTPTestCase, QueryTestCase)
         "http://example.onto/": ["tests/sample/animalia.n3"]
     }
     maxDiff = None
-    allow_triplestore_connection = True
 
     @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://example.onto/ruleset")
     def test_get_collection_includes_indirect_instances(self, settings):

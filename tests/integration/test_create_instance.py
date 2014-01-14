@@ -12,7 +12,6 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     maxDiff = None
 
     # the variables below have special meaning for QueryTestCase
-    allow_triplestore_connection = True
     graph_uri = 'http://example.onto/'
     fixtures = ["tests/sample/animalia.n3"]
 

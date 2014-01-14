@@ -13,7 +13,6 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/schemas.n3"]
     graph_uri = "http://example.onto/"
 

@@ -711,7 +711,7 @@ class VirtuosoStatusHandler(BrainiakRequestHandler):
 class CacheStatusHandler(BrainiakRequestHandler):
 
     def get(self):
-        response = cache.status()
+        response = cache.status_message()
         cache_keys = cache.keys("")
         if cache_keys:
             response += "<br>Cached keys:<br>"

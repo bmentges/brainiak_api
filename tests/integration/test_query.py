@@ -28,7 +28,6 @@ DUMMY_QUERY = "SELECT * FROM <http://example.onto/> WHERE {?s ?p ?o}"
 
 
 class DummyQueryTestCase(QueryTestCase):
-    allow_triplestore_connection = True
     graph_uri = "http://example.onto/"
     fixtures = ["tests/sample/demo.n3"]
 
@@ -52,7 +51,6 @@ WHERE {
 
 
 class SubpropertyEntailmentQueryTestCase(QueryTestCase):
-    allow_triplestore_connection = True
     graph_uri = "http://tatipedia.org/"
     fixtures = ["tests/sample/subproperty.n3"]
 
@@ -122,7 +120,6 @@ WHERE {
 
 
 class GraphQueryTestCase(QueryTestCase):
-    allow_triplestore_connection = True
     graph_uri = "http://xubirupedia.org/"
     fixtures = ["tests/sample/subproperty.n3"]
 

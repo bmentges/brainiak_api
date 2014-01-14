@@ -478,3 +478,15 @@ class SuggestIntegrationElasticSearchDevQueryTestCase(ElasticSearchQueryTestCase
         query = _build_body_query_compatible_with_uatu_and_es_19_in_envs(query_params, tokens, classes, search_fields, response_fields, pattern)
         response = self.search(query)
         self.assertTrue(response["hits"]["total"])
+<<<<<<< HEAD
+=======
+
+
+
+
+# class StagingQueryTestCase(QueryTestCase):
+#     # ElasticSearch 0.19.11, customized with UATU
+#     host = "http://esearch.globoi.com/"
+#     proxies = {"http": "http://proxy.staging.globoi.com:3128"}
+#     analyzer = "globo_analyzer"
+>>>>>>> 1b83fc547729fe9d184b8fe622223e68ef02ca67

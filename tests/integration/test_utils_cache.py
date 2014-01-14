@@ -335,7 +335,6 @@ class CachingInstanceTestCase(BaseCyclePurgeTestCase):
     DUMMY_CITY_1_URL_SUFFIX_WITH_INSTANCE_URI = '/_/_/_?instance_uri=http://semantica.globo.com/place/City/dummyCity1'
     DUMMY_CITY_2_URL_SUFFIX = '/place/City/dummyCity2'
 
-<<<<<<< HEAD
     def deleteDummies(self):
         response = self.deleteInstance(self.DUMMY_CITY_1_URL_SUFFIX)
         self.assertIn(response.code, (204, 404))
@@ -345,24 +344,13 @@ class CachingInstanceTestCase(BaseCyclePurgeTestCase):
     def setUp(self):
         super(CachingInstanceTestCase, self).setUp()
         self.deleteDummies()
-=======
-    def setUp(self):
-        super(CachingInstanceTestCase, self).setUp()
->>>>>>> 1b83fc547729fe9d184b8fe622223e68ef02ca67
         response = self.createInstance(self.DUMMY_CITY_1_URL_SUFFIX, self.dummy_city_1)
         self.assertEqual(response.code, 201)
         response = self.createInstance(self.DUMMY_CITY_2_URL_SUFFIX, self.dummy_city_2)
         self.assertEqual(response.code, 201)
 
     def tearDown(self):
-<<<<<<< HEAD
         self.deleteDummies()
-=======
-        response = self.deleteInstance(self.DUMMY_CITY_1_URL_SUFFIX)
-        self.assertEqual(response.code, 204)
-        response = self.deleteInstance(self.DUMMY_CITY_2_URL_SUFFIX)
-        self.assertEqual(response.code, 204)
->>>>>>> 1b83fc547729fe9d184b8fe622223e68ef02ca67
         super(CachingInstanceTestCase, self).tearDown()
 
     @patch("brainiak.handlers.settings", ENABLE_CACHE=True)

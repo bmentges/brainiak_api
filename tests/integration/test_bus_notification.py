@@ -20,7 +20,6 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
     # The class variables below are handled by QueryTestCase
-    allow_triplestore_connection = True
     graph_uri = "http://somegraph.org/"
     fixtures = ["tests/sample/instances.n3"]
 

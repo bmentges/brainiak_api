@@ -193,7 +193,8 @@ class BrainiakRequestHandler(CorsMixin, RequestHandler):
             instance_data = kwargs["instance_data"]
             clean_instance_data = clean_up_reserved_attributes(instance_data)
             kwargs["instance_data"] = clean_instance_data
-
+        # self.query is going to be introduced by descendants classes
+        # the *_uri parameters are either explicit passed to ParamDict or derived from the given arguments
         notify_bus(instance=self.query_params["instance_uri"],
                    klass=self.query_params["class_uri"],
                    graph=self.query_params["graph_uri"],
@@ -256,8 +257,16 @@ class RootHandler(BrainiakRequestHandler):
 
     SUPPORTED_METHODS = list(BrainiakRequestHandler.SUPPORTED_METHODS) + ["PURGE"]
 
-    def get_cache_path(self):
-        return cache.build_key_for_root()
+    @greenlet_asynchronous
+    def purge(self):
+        if settings.ENABLE_CACHE:
+            valid_params = PAGING_PARAMS
+            with safe_params(valid_params):
+                self.query_params = ParamDict(self, **valid_params)
+            recursive = int(self.request.headers.get('X-Cache-Recursive', '0'))
+            cache.purge_root(recursive)
+        else:
+            raise HTTPError(405, log_message=_("Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"))
 
     @greenlet_asynchronous
     def get(self):
@@ -267,7 +276,7 @@ class RootHandler(BrainiakRequestHandler):
         response = memoize(self.query_params,
                            list_all_contexts,
                            function_arguments=self.query_params,
-                           key=self.get_cache_path())
+                           key=cache.build_key_for_root(self.query_params))
         self.add_cache_headers(response['meta'])
         self.finalize(response['body'])
 

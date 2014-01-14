@@ -47,7 +47,6 @@ class TestInstanceResource(TornadoAsyncHTTPTestCase):
 
 class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/gender.n3", "tests/sample/animalia.n3"]
     graph_uri = "http://test.com/"
 
@@ -116,7 +115,6 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
 class InstancePropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/gender.n3", "tests/sample/animalia.n3"]
     graph_uri = "http://test.com/"
 
@@ -140,7 +138,6 @@ class InstancePropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
 class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
-    allow_triplestore_connection = True
     fixtures_by_graph = {
         "http://brmedia.com/": ["tests/sample/sports.n3"]
     }
@@ -250,7 +247,6 @@ class InstanceWithExpandedPropertiesTestCase(TornadoAsyncHTTPTestCase, QueryTest
 
 class InstanceCauseSchemaToBeCachedTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
-    allow_triplestore_connection = True
     fixtures_by_graph = {"http://brmedia.com/": ["tests/sample/sports.n3"]}
     maxDiff = None
     redis_test_client = connect()

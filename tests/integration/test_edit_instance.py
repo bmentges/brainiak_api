@@ -13,7 +13,6 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
     # The class variables below are handled by QueryTestCase
-    allow_triplestore_connection = True
     graph_uri = "http://somegraph.org/"
     fixtures = ["tests/sample/instances.n3"]
 
@@ -152,7 +151,6 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 class EditInstanceQueriesTestCase(QueryTestCase):
 
     maxDiff = None
-    allow_triplestore_connection = True
     fixtures_by_graph = {
         'http://any.graph/': ['tests/sample/instances.n3'],
         'http://empty.graph/': [],

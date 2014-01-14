@@ -1,7 +1,5 @@
 import unittest
 
-from mock import patch
-
 from brainiak.utils import i18n
 
 

@@ -6,8 +6,6 @@ from tornado.web import HTTPError
 
 from brainiak.utils.sparql import InstanceError
 from brainiak.instance import edit_instance
-from brainiak.utils.params import ParamDict
-from tests.mocks import MockHandler, mock_schema
 
 
 class ErrorTestCase(unittest.TestCase):

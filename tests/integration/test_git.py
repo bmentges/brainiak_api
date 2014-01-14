@@ -1,5 +1,5 @@
 import unittest
-from brainiak.utils import git
+#from brainiak.utils import git
 
 
 # class GitTestCase(unittest.TestCase):

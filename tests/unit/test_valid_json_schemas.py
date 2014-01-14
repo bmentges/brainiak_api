@@ -32,8 +32,6 @@ class ResultHandlerTestCase(unittest.TestCase):
         self.validate_draft4(schema)
 
     def test_valid_json_schema_for_search(self):
-        handler = MockHandler()
-        query_params = ParamDict(handler, context_name='glb')
         schema = search_json_schema.schema(context_name='ctx', class_name='klass')
         self.validate_draft4(schema)
 

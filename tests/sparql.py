@@ -184,7 +184,6 @@ class QueryTestCase(SimpleTestCase):
         GRAPH_URI = value
 
     def _setup_mocked_triplestore(self):
-        open("/tmp/debug.txt", "a").write('\nMocking up}')
         Wrapper.SPARQLWrapper.query = mocked_query
         Wrapper.QueryResult.convert = mocked_convert
         Wrapper.SPARQLWrapper.query = mocked_virtuoso_query
@@ -224,7 +223,6 @@ class QueryTestCase(SimpleTestCase):
         run_isql(isql_down)
 
     def _restore_triplestore(self):
-        open("/tmp/debug.txt", "a").write('\nMocking down}')
         Wrapper.SPARQLWrapper = self.originalSPARQLWrapper
         Wrapper.QueryResult = self.originalQueryResult
         Wrapper.QueryResult.convert = self.originalQueryResultConvert

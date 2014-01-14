@@ -23,7 +23,6 @@ from tests.tornado_cases import TornadoAsyncTestCase, TornadoAsyncHTTPTestCase
 
 class ClassSchemaQueryTestCase(QueryTestCase):
 
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/schemas.n3"]
 
     def setUp(self):
@@ -107,7 +106,6 @@ class ClassSchemaQueryTestCase(QueryTestCase):
 
 class SuperClassQueryTestCase(QueryTestCase):
 
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
     graph_uri = "http://example.onto/"
 
@@ -126,7 +124,6 @@ class SuperClassQueryTestCase(QueryTestCase):
 
 class CardinalitiesQueryTestCase(QueryTestCase):
 
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
     graph_uri = "http://example.onto/"
 
@@ -269,7 +266,6 @@ class CardinalitiesQueryTestCase(QueryTestCase):
 class PredicatesQueryTestCase(QueryTestCase):
 
     maxDiff = None
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
     graph_uri = "http://example.onto/"
 
@@ -376,7 +372,6 @@ class PredicatesQueryTestCase(QueryTestCase):
 class PredicatesQueryTestCaseMultipleDomainRange(QueryTestCase):
 
     maxDiff = None
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/place_and_university.n3"]
     graph_uri = "http://example.onto/"
 
@@ -488,7 +483,6 @@ class GetSchemaTestCase(TornadoAsyncTestCase):
 
 class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     maxDiff = None
-    allow_triplestore_connection = True
     fixtures = ["tests/sample/animalia.n3"]
     graph_uri = "http://example.onto/"
 
@@ -857,7 +851,6 @@ class InheritedPredicateRedifinitionTestCase(TornadoAsyncHTTPTestCase, QueryTest
         "http://extra.onto/": ["tests/sample/animalia_extension.n3"],
     }
     maxDiff = None
-    allow_triplestore_connection = True
 
     def test_property_redefined_in_subclass(self):
         response = self.fetch('/_/_/_schema?graph_uri=http://extra.onto/&class_uri=http://example.onto/Golden')

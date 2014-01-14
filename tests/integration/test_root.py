@@ -111,14 +111,12 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
         expected = {u'errors': [u"HTTP error: 405\nCache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"]}
         self.assertEqual(received, expected)
 
-    @patch("brainiak.utils.cache.delete")
     @patch("brainiak.utils.cache.purge")
     @patch("brainiak.handlers.settings", ENABLE_CACHE=True)
-    def test_purge_returns_200_when_cache_is_enabled(self, enable_cache, purge, delete):
+    def test_purge_returns_200_when_cache_is_enabled(self, enable_cache, purge):
         response = self.fetch("/", method='PURGE')
         self.assertEqual(response.code, 200)
-        delete.assert_called_once_with("_##root")
-        self.assertFalse(purge.called)
+        self.assertTrue(purge.called)
         self.assertFalse(response.body)
 
     @patch("brainiak.utils.cache.delete")
@@ -133,7 +131,6 @@ class ListAllContextsTestCase(TornadoAsyncHTTPTestCase):
 
 
 class QueryGraphTestCase(QueryTestCase):
-    allow_triplestore_connection = True
     graph_uri = "http://whatever.com"
     fixtures = ["tests/sample/instances.n3"]
 

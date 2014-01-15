@@ -169,6 +169,7 @@ def keys(pattern):
     pattern = u"{0}*".format(pattern)
     return redis_client.keys(pattern)
 
+
 @safe_redis
 def ping():
     return redis_client.ping()
@@ -187,9 +188,10 @@ def get_usage_message():
     redis_info = redis_client.info()
 
     if int(redis_info["keyspace_hits"]) == 0 and int(redis_info["keyspace_misses"]) == 0:
-        redis_info["hit_ratio"] = "0"
+        redis_info["hit_ratio"] = "No hits"
     else:
-        redis_info["hit_ratio"] = float(redis_info["keyspace_hits"]) / float(redis_info["keyspace_misses"])
+        redis_info["hit_ratio"] = float(redis_info["keyspace_hits"]) / \
+            (float(redis_info["keyspace_misses"]) + float(redis_info["keyspace_hits"]))
 
     keyspace = redis_client.info("keyspace")
     redis_info["number_of_keys"] = keyspace["db0"]["keys"] if keyspace and "db0" in keyspace else 0

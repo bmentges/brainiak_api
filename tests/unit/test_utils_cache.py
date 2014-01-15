@@ -150,7 +150,7 @@ class GeneralFunctionsTestCase(unittest.TestCase):
             #with_argument = {"db0": {"keys": 0}}
 
         with patch("brainiak.utils.cache.redis_client.info", side_effect=_side_effect):
-            expected_in_status_msg = "Number of keys: 0 | Hit ratio: 0"
+            expected_in_status_msg = "Number of keys: 0 | Hit ratio: No hits"
             usage_message = get_usage_message()
             self.assertIn(expected_in_status_msg, usage_message)
 
@@ -161,7 +161,7 @@ class GeneralFunctionsTestCase(unittest.TestCase):
             return {} if args else no_argument
 
         with patch("brainiak.utils.cache.redis_client.info", side_effect=_side_effect):
-            expected_in_status_msg = "Number of keys: 0 | Hit ratio: 0.5"
+            expected_in_status_msg = "Number of keys: 0 | Hit ratio: 0.3"
             usage_message = get_usage_message()
             self.assertIn(expected_in_status_msg, usage_message)
 
@@ -172,13 +172,13 @@ class GeneralFunctionsTestCase(unittest.TestCase):
             return {"db0": {"keys": 5}} if args else no_argument
 
         with patch("brainiak.utils.cache.redis_client.info", side_effect=_side_effect):
-            expected_in_status_msg = "Number of keys: 5 | Hit ratio: 0"
+            expected_in_status_msg = "Number of keys: 5 | Hit ratio: No hits"
             usage_message = get_usage_message()
             self.assertIn(expected_in_status_msg, usage_message)
 
     def test_status_message_five_keys_cache_hit_once(self):
         def _side_effect(*args, **kwargs):
-            no_argument = {"keyspace_hits": "1", "keyspace_misses": "10"}
+            no_argument = {"keyspace_hits": "1", "keyspace_misses": "9"}
             no_argument.update(self.STANDARD_INFO_KEYS)
             return {"db0": {"keys": 5}} if args else no_argument
 

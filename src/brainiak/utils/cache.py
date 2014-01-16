@@ -10,7 +10,7 @@ from brainiak import settings
 from brainiak.utils.i18n import _
 
 
-TIME_TO_LIVE_IN_SECS = 86400
+TIME_TO_LIVE_IN_SECS = 24 * 60 * 60
 
 # # Root-related
 build_key_for_root_schema = lambda: u"_##json_schema"

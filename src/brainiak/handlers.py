@@ -397,7 +397,10 @@ class CollectionHandler(BrainiakRequestHandler):
         del context_name
         del class_name
 
-        schema = schema_resource.get_schema(self.query_params)
+        try:
+            schema = schema_resource.get_cached_schema(self.query_params)
+        except SchemaNotFound:
+            schema = None
         if schema is None:
             class_uri = self.query_params["class_uri"]
             graph_uri = self.query_params["graph_uri"]
@@ -536,7 +539,10 @@ class InstanceHandler(BrainiakRequestHandler):
 
         try:
             if not instance_exists(self.query_params):
-                schema = schema_resource.get_schema(self.query_params)
+                try:
+                    schema = schema_resource.get_cached_schema(self.query_params)
+                except SchemaNotFound:
+                    schema = None
                 if schema is None:
                     msg = _(u"Class {0} doesn't exist in graph {1}.")
                     raise HTTPError(404, log_message=msg.format(self.query_params["class_uri"],

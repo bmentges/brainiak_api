@@ -200,7 +200,8 @@ def build_class_url(query_params, include_query_string=False):
 
 def build_schema_url(query_params):
     base_url = remove_last_slash(query_params.base_url)
-    schema_url = assemble_url(u'{0}/_schema_list'.format(base_url))
+    query_string = filter_query_string_by_key_prefix(query_params.request.query, ["class", "graph"], query_params)
+    schema_url = assemble_url(u'{0}/_schema_list'.format(base_url), query_string)
     return schema_url
 
 

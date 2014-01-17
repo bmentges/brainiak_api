@@ -17,12 +17,28 @@ class SetContentTypeProfileTestCase(unittest.TestCase):
 
 class TestBuildSchema(unittest.TestCase):
 
-    def test_build_schema(self):
+    def test_build_schema_url(self):
         params = {'page': 1, 'per_page': 2}
         handler = MockHandler(uri="http://any.uri")
         query_params = ParamDict(handler, **params)
         computed = build_schema_url(query_params)
         expected = 'http://any.uri/_schema_list'
+        self.assertEqual(expected, computed)
+
+    def test_build_schema_url_with_querystring(self):
+        params = {
+            'page': 1,
+            'per_page': 2,
+            'class_prefix': 'http://any.uri/prefix',
+            'class_uri': 'http://any.uri/prefix/Class',
+            'class_name': 'Class',
+            'context_name': 'graph',
+            'graph_uri': 'http://any.uri/graph'
+        }
+        handler = MockHandler(uri="http://any.uri/graph/Class", querystring="class_prefix=class_prefix")
+        query_params = ParamDict(handler, **params)
+        computed = build_schema_url(query_params)
+        expected = 'http://any.uri/graph/Class/_schema_list?class_prefix=class_prefix'
         self.assertEqual(expected, computed)
 
     def test_self_url(self):

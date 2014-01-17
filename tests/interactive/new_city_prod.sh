@@ -1,1 +1,1 @@
-curl -i -X POST -T "new_city.json" http://api.semantica.globoi.com/place/City
+curl -i -X POST -T "new_city.json" http://brainiak.semantica.globoi.com/place/City

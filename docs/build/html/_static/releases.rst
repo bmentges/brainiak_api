@@ -2,13 +2,28 @@ Releases
 ========
 
 
+Version 2.4.3 - 2013/01/17
+--------------------------
+
+New Features
+____________
+
+ - Using cached schema in PUT/POST operations on instances.
+
+Fixes
+_____
+
+ - Fixed missing querystring parameters when building schema (``/_schema_list``) URL for a collection of instances.
+ - Fixing hit ratio calculation in Redis usage statistics ``_status/cache``
+
+
 Version 2.4.2 - 2013/01/15
 --------------------------
 
 New Features
 ____________
 
- - More detailed information for /_status/cache, showinf Redis statistics
+ - More detailed information for ``/_status/cache``, showing Redis usage statistics
 
 Fixes
 _____

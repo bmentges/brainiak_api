@@ -9,6 +9,7 @@ DATATYPE_PROPERTY = "http://www.w3.org/2002/07/owl#DatatypeProperty"
 _MAP_XSD_TO_JSON_TYPE = {
     "rdf:XMLLiteral": "string",
     "rdf:Literal": "string",
+    "rdfs:Literal": "string",
     "xsd:string": "string",
     "xsd:anyURI": "string",
     "xsd:float": "number",

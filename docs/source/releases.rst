@@ -1,6 +1,15 @@
 Releases
 ========
 
+Version XXX - TO BE RELEASED
+----------------------------
+
+Fixes
+_____
+
+
+- Fixed type mapping to include ``rdfs:Literal`` to ``string``.
+
 
 Version 2.4.3 - 2013/01/17
 --------------------------

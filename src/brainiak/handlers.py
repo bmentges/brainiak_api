@@ -249,6 +249,9 @@ class RootJsonSchemaHandler(BrainiakRequestHandler):
             root_schema,
             key=self.get_cache_path()
         )
+        if response is None:
+            raise HTTPError(404, log_message=_("Failed to retrieve json-schema"))
+
         self.add_cache_headers(response['meta'])
         self.finalize(response['body'])
 
@@ -277,6 +280,9 @@ class RootHandler(BrainiakRequestHandler):
                            list_all_contexts,
                            function_arguments=self.query_params,
                            key=cache.build_key_for_root(self.query_params))
+        if response is None:
+            raise HTTPError(404, log_message=_("Failed to retrieve list of graphs"))
+
         self.add_cache_headers(response['meta'])
         self.finalize(response['body'])
 
@@ -501,15 +507,15 @@ class InstanceHandler(BrainiakRequestHandler):
                            key=build_instance_key(self.query_params),
                            function_arguments=self.query_params)
 
-        response_meta = response['meta']
-        response = response['body']
-
         if response is None:
             error_message = u"Instance ({0}) of class ({1}) in graph ({2}) was not found.".format(
                 self.query_params['instance_uri'],
                 self.query_params['class_uri'],
                 self.query_params['graph_uri'])
             raise HTTPError(404, log_message=error_message)
+
+        response_meta = response['meta']
+        response = response['body']
 
         if self.query_params["expand_uri"] == "0":
             response = normalize_all_uris_recursively(response, mode=SHORTEN)

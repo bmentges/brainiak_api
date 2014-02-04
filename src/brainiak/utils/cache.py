@@ -69,6 +69,9 @@ def _fresh_retrieve(function, params):
     else:
         body = function()
 
+    if body is None:
+        return None
+
     fresh_json = {
         "body": body,
         "meta": {
@@ -84,15 +87,20 @@ def memoize(params, function, function_arguments=None, key=False):
         cached_json = retrieve(key)
         if (cached_json is None):
             fresh_json = _fresh_retrieve(function, function_arguments)
-            create(key, ujson.dumps(fresh_json))
-            fresh_json['meta']['cache'] = 'MISS'
-            return fresh_json
+            if fresh_json is not None:
+                value = ujson.dumps(fresh_json)
+                create(key, value)
+                fresh_json['meta']['cache'] = 'MISS'
+                return fresh_json
+            else:
+                return None
         else:
             cached_json['meta']['cache'] = 'HIT'
             return cached_json
     else:
         json_object = _fresh_retrieve(function, function_arguments)
-        json_object['meta']['cache'] = 'MISS'
+        if json_object is not None:
+            json_object['meta']['cache'] = 'MISS'
         return json_object
 
 
@@ -135,7 +143,11 @@ def purge(pattern):
 def update_if_present(key, value):
     response = redis_client.get(key)
     if response:
-        result = redis_client.setex(key, TIME_TO_LIVE_IN_SECS, ujson.dumps(_fresh_retrieve(lambda: value, None)))
+        value = ujson.dumps(_fresh_retrieve(lambda: value, None))
+        if value is not None:
+            result = redis_client.setex(key, TIME_TO_LIVE_IN_SECS, value)
+        else:
+            result = None
     else:
         result = None
     return result
@@ -143,7 +155,8 @@ def update_if_present(key, value):
 
 @safe_redis
 def create(key, value):
-    return redis_client.setex(key, TIME_TO_LIVE_IN_SECS, value)
+    if value is not None:
+        return redis_client.setex(key, TIME_TO_LIVE_IN_SECS, value)
 
 
 @safe_redis

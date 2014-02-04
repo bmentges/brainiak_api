@@ -115,8 +115,8 @@ class BrainiakChecker(Checker):
         self._print_ok()
 
     def check_agregador_user_case(self):
-        if environ == "local":
-            sys.stdout.write("\nChecking agregador user case - IGNORED (local)\n")
+        if environ == "local" or environ == "qa01":
+            sys.stdout.write("\nChecking agregador user case - IGNORED ({0})\n".format(environ))
         else:
             sys.stdout.write("\nChecking agregador user case\n")
             response = self.get("g1/Materia/?p1=base:status_de_publicacao&o1=P&p2=g1:editoria_id&o2=268&sort_by=base:data_da_primeira_publicacao&sort_order=desc&p3=base:permalink")
@@ -250,7 +250,7 @@ class BrainiakChecker(Checker):
             sys.stdout.write("\ncheck_suggest_sports_user_case - ignore (local)\n")
         else:
             sys.stdout.write("\nChecking suggest sports user case\n")
-            sys.stdout.write("\n-- run brainiak_sync for esportes graph, if <check_suggest_sports_user_case> breaks")
+            sys.stdout.write("\n-- run brainiak_sync for esportes/Equipe class, if <check_suggest_sports_user_case> breaks")
             PARAMS = {
                 "search": {
                     "pattern": "flamengo",

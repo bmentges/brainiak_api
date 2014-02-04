@@ -16,7 +16,7 @@ import time
 import nose.tools as nose
 import requests
 
-brainiak_version = "2.4.3"
+brainiak_version = "2.4.4"
 mercury_version = "1.2.6"
 
 brainiak_endpoint = {
@@ -97,6 +97,9 @@ class Checker(object):
         url = "{0}{1}".format(self.endpoint, relative_url)
         return requests.post(url, proxies=self.proxies, data=payload)
 
+    def _print_ok(self):
+        sys.stdout.write("... OK \n")
+
 
 class BrainiakChecker(Checker):
 
@@ -104,61 +107,46 @@ class BrainiakChecker(Checker):
         Checker.__init__(self, environ)
         self.endpoint = brainiak_endpoint.get(environ)
 
-    def check_healthcheck(self):
-        response = self.get("healthcheck/")
-        nose.assert_equal(response.status_code, 200)
-        nose.assert_in(u'WORKING', response.text)
-        sys.stdout.write("\ncheck_healthcheck - pass")
-
-    def check_status(self):
-        response = self.get("_status")
-        nose.assert_equal(response.status_code, 200)
-        sys.stdout.write("\n-- if <check_status> breaks, check if Brainiak log doesn't contain (OSError) - Stale NFS file handle: 'locale' ")
-        nose.assert_in(u'FUNCIONANDO', response.text)
-        sys.stdout.write("\ncheck_status - pass")
-
-    def check_virtuoso(self):
-        response = self.get("_status/virtuoso")
-        nose.assert_equal(response.status_code, 200)
-        nose.assert_in("SUCCEED", response.text)
-        sys.stdout.write("\ncheck_virtuoso - pass")
-
     def check_activemq(self):
+        sys.stdout.write("\nChecking ActiveMQ\n")
         response = self.get("_status/activemq")
         nose.assert_equal(response.status_code, 200)
         nose.assert_in("SUCCEED", response.text)
-        sys.stdout.write("\ncheck_activemq - pass")
+        self._print_ok()
 
-    def check_redis(self):
-        response = self.get("_status/cache")
-        nose.assert_equal(response.status_code, 200)
-        nose.assert_in("SUCCEED", response.text)
-        sys.stdout.write("\ncheck_redis - pass")
-
-    def check_root(self):
-        response = self.get("?per_page=100")
-        nose.assert_equal(response.status_code, 200)
-        body = json.loads(response.text)
-        expected_piece = {"resource_id": "upper", "@id": "http://semantica.globo.com/upper/", "title": "upper"}
-        nose.assert_in(expected_piece, body["items"])
-        sys.stdout.write("\ncheck_root - pass")
-
-    def check_version(self):
-        response = self.get("_version")
-        nose.assert_equal(response.status_code, 200)
-        nose.assert_in(brainiak_version, response.text)
-        sys.stdout.write("\ncheck_version - pass")
+    #def check_agregador_user_case(self):
+    #    if environ == "local":
+    #        sys.stdout.write("\nChecking agregador user case - IGNORED (local)\n")
+    #    else:
+    #        sys.stdout.write("\nChecking agregador user case\n")
+    #        response = self.get("g1/Materia/?p1=base:status_de_publicacao&o1=P&p2=g1:editoria_id&o2=268&sort_by=base:data_da_primeira_publicacao&sort_order=desc&p3=base:permalink")
+    #        nose.assert_equal(response.status_code, 200)
+    #        response_json = response.json()
+    #        nose.assert_equal(response_json["@id"], u'g1:Materia')
+    #        nose.assert_true(response_json["items"])
+    #        expected_item_keys = [u'@id', u'base:data_da_primeira_publicacao', u'base:permalink', u'class_prefix', u'instance_prefix', u'resource_id', u'title']
+    #        nose.assert_equal(sorted(response_json["items"][0].keys()), expected_item_keys)
+    #        self._print_ok()
 
     def check_docs(self):
         if environ == "local":
-            sys.stdout.write("\ncheck_docs - ignore")
+            sys.stdout.write("\nChecking docs - ignore (local)\n")
         else:
+            sys.stdout.write("\nChecking documentation\n")
             response = self.get("docs/")
             nose.assert_equal(response.status_code, 200)
             nose.assert_in("Brainiak API documentation!", response.text)
-            sys.stdout.write("\ncheck_docs - pass")
+            self._print_ok()
+
+    def check_healthcheck(self):
+        sys.stdout.write("\nChecking healthcheck\n")
+        response = self.get("healthcheck/")
+        nose.assert_equal(response.status_code, 200)
+        nose.assert_in(u'WORKING', response.text)
+        self._print_ok()
 
     def check_instance_create(self):
+        sys.stdout.write("\nChecking instance creation\n")
         # Remove if instance exist
         self.put("place/City/globoland", "new_city.json")
         self.delete("place/City/globoland")
@@ -209,46 +197,60 @@ class BrainiakChecker(Checker):
         es_response = requests.get(es_url, proxies=self.proxies)
         nose.assert_equal(response_after.status_code, 200)
 
-        sys.stdout.write("\ncheck_instance_create - pass")
+        self._print_ok()
 
     def check_instance_delete(self):
+        sys.stdout.write("\nChecking instance deletion\n")
         self.put("place/City/globoland", "new_city.json")
         response = self.delete("place/City/globoland")
         nose.assert_equal(response.status_code, 204)
         response_after = self.get("place/City/globoland")
         nose.assert_equal(response_after.status_code, 404)
-        sys.stdout.write("\ncheck_instance_delete - pass")
+        self._print_ok()
+
+    def check_redis(self):
+        sys.stdout.write("\nChecking Redis\n")
+        response = self.get("_status/cache")
+        nose.assert_equal(response.status_code, 200)
+        nose.assert_in("SUCCEED", response.text)
+        self._print_ok()
+
+    def check_root(self):
+        sys.stdout.write("\nChecking Root\n")
+        response = self.get("?per_page=100")
+        nose.assert_equal(response.status_code, 200)
+        body = json.loads(response.text)
+        expected_piece = {"resource_id": "upper", "@id": "http://semantica.globo.com/upper/", "title": "upper"}
+        nose.assert_in(expected_piece, body["items"])
+        self._print_ok()
 
     def check_sitemaps_user_case(self):
         if environ == "local":
-            sys.stdout.write("\ncheck_sitemaps_user_case - ignore")
+            sys.stdout.write("\ncheck_sitemaps_user_case - ignore (local)\n")
         else:
+            sys.stdout.write("\nChecking sitemaps user case\n")
             response = self.get("_/EventoMusicalAtomico?per_page=50000&p=base%3Aurl_do_permalink&graph_uri=http%3A%2F%2Fsemantica.globo.com%2FG1%2F&class_prefix=http%3A%2F%2Fsemantica.globo.com%2FG1%2F")
             nose.assert_equal(response.status_code, 200)
             response_json = response.json()
             nose.assert_equal(response_json["@id"], u'g1:EventoMusicalAtomico')
             expected_item_keys = [u'base:url_do_permalink', u'resource_id', u'title', u'class_prefix', u'instance_prefix', u'@id']
             nose.assert_equal(sorted(response_json["items"][0].keys()), sorted(expected_item_keys))
-            sys.stdout.write("\ncheck_sitemaps_user_case - pass")
+            self._print_ok()
 
-    def check_agregador_user_case(self):
-        if environ == "local":
-            sys.stdout.write("\ncheck_agregador_user_case - ignore")
-        else:
-            response = self.get("g1/Materia/?p1=base:status_de_publicacao&o1=P&p2=g1:editoria_id&o2=268&sort_by=base:data_da_primeira_publicacao&sort_order=desc&p3=base:permalink")
-            nose.assert_equal(response.status_code, 200)
-            response_json = response.json()
-            nose.assert_equal(response_json["@id"], u'g1:Materia')
-            nose.assert_true(response_json["items"])
-            expected_item_keys = [u'@id', u'base:data_da_primeira_publicacao', u'base:permalink', u'class_prefix', u'instance_prefix', u'resource_id', u'title']
-            nose.assert_equal(sorted(response_json["items"][0].keys()), expected_item_keys)
-            sys.stdout.write("\ncheck_agregador_user_case - pass")
+    def check_status(self):
+        sys.stdout.write("\nChecking status\n")
+        response = self.get("_status")
+        nose.assert_equal(response.status_code, 200)
+        sys.stdout.write("\n-- if <check_status> breaks, check if Brainiak log doesn't contain (OSError) - Stale NFS file handle: 'locale' \n")
+        nose.assert_in(u'FUNCIONANDO', response.text)
+        self._print_ok()
 
     def check_suggest_sports_user_case(self):
-        sys.stdout.write("\n-- run brainiak_sync for esportes graph, if <check_suggest_sports_user_case> breaks")
         if environ == "local":
-            sys.stdout.write("\ncheck_suggest_sports_user_case - ignore")
+            sys.stdout.write("\ncheck_suggest_sports_user_case - ignore (local)\n")
         else:
+            sys.stdout.write("\nChecking suggest sports user case\n")
+            sys.stdout.write("\n-- run brainiak_sync for esportes graph, if <check_suggest_sports_user_case> breaks")
             PARAMS = {
                 "search": {
                     "pattern": "flamengo",
@@ -312,7 +314,21 @@ class BrainiakChecker(Checker):
             nose.assert_equal(sorted(flamengo_team["instance_fields"]), sorted(expected_instance_fields))
             nose.assert_true("base:thumbnail" in flamengo_team["class_fields"])
 
-        sys.stdout.write("\ncheck_suggest_sports_user_case - pass")
+        self._print_ok()
+
+    def check_version(self):
+        sys.stdout.write("\nChecking /_version\n")
+        response = self.get("_version")
+        nose.assert_equal(response.status_code, 200)
+        nose.assert_in(brainiak_version, response.text)
+        self._print_ok()
+
+    def check_virtuoso(self):
+        sys.stdout.write("\nChecking Virtuoso Connection\n")
+        response = self.get("_status/virtuoso")
+        nose.assert_equal(response.status_code, 200)
+        nose.assert_in("SUCCEED", response.text)
+        self._print_ok()
 
 
 class MercuryChecker(Checker):
@@ -323,23 +339,26 @@ class MercuryChecker(Checker):
         self.endpoint = mercury_endpoint.get(environ)
 
     def check_version(self):
+        sys.stdout.write("\nChecking Mercury version\n")
         response = self.get("version/")
         nose.assert_equal(response.status_code, 200)
         nose.assert_in(mercury_version, response.text)
-        sys.stdout.write("\ncheck_version - pass")
+        self._print_ok()
 
     def check_healthcheck(self):
+        sys.stdout.write("\nChecking healthcheck\n")
         response = self.get("healthcheck/")
         nose.assert_equal(response.status_code, 200)
         nose.assert_in(u'WORKING', response.text)
-        sys.stdout.write("\ncheck_healthcheck - pass")
+        self._print_ok()
 
     def check_status(self):
+        sys.stdout.write("\nChecking status\n")
         response = self.get("status/")
         nose.assert_equal(response.status_code, 200)
         expected_piece = "Mercury is connected to event bus? YES"
         nose.assert_in(expected_piece, response.text)
-        sys.stdout.write("\ncheck_status - pass")
+        self._print_ok()
 
 
 if __name__ == "__main__":

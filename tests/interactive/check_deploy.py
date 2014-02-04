@@ -114,19 +114,19 @@ class BrainiakChecker(Checker):
         nose.assert_in("SUCCEED", response.text)
         self._print_ok()
 
-    #def check_agregador_user_case(self):
-    #    if environ == "local":
-    #        sys.stdout.write("\nChecking agregador user case - IGNORED (local)\n")
-    #    else:
-    #        sys.stdout.write("\nChecking agregador user case\n")
-    #        response = self.get("g1/Materia/?p1=base:status_de_publicacao&o1=P&p2=g1:editoria_id&o2=268&sort_by=base:data_da_primeira_publicacao&sort_order=desc&p3=base:permalink")
-    #        nose.assert_equal(response.status_code, 200)
-    #        response_json = response.json()
-    #        nose.assert_equal(response_json["@id"], u'g1:Materia')
-    #        nose.assert_true(response_json["items"])
-    #        expected_item_keys = [u'@id', u'base:data_da_primeira_publicacao', u'base:permalink', u'class_prefix', u'instance_prefix', u'resource_id', u'title']
-    #        nose.assert_equal(sorted(response_json["items"][0].keys()), expected_item_keys)
-    #        self._print_ok()
+    def check_agregador_user_case(self):
+        if environ == "local":
+            sys.stdout.write("\nChecking agregador user case - IGNORED (local)\n")
+        else:
+            sys.stdout.write("\nChecking agregador user case\n")
+            response = self.get("g1/Materia/?p1=base:status_de_publicacao&o1=P&p2=g1:editoria_id&o2=268&sort_by=base:data_da_primeira_publicacao&sort_order=desc&p3=base:permalink")
+            nose.assert_equal(response.status_code, 200)
+            response_json = response.json()
+            nose.assert_equal(response_json["@id"], u'g1:Materia')
+            nose.assert_true(response_json["items"])
+            expected_item_keys = [u'@id', u'base:data_da_primeira_publicacao', u'base:permalink', u'class_prefix', u'instance_prefix', u'resource_id', u'title']
+            nose.assert_equal(sorted(response_json["items"][0].keys()), expected_item_keys)
+            self._print_ok()
 
     def check_docs(self):
         if environ == "local":
@@ -178,7 +178,7 @@ class BrainiakChecker(Checker):
         response = self.put("place/City/globoland", "new_city.json")
         nose.assert_equal(response.status_code, 201)
 
-        sys.stdout.write("\n-- try changing <check_instance_create> timeout if it fails\n")
+        sys.stdout.write("-- try changing <check_instance_create> timeout if it fails\n")
         time.sleep(3)
 
         # Check if instance was written in Virtuoso

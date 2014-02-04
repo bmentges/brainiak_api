@@ -21,7 +21,7 @@ class SchemaNotFound(Exception):
 def get_cached_schema(query_params, include_meta=False):
     schema_key = build_key_for_class(query_params)
     class_object = memoize(query_params, get_schema, query_params, key=schema_key)
-    if not class_object["body"]:
+    if class_object is None or not class_object["body"]:
         msg = _(u"The class definition for {0} was not found in graph {1}")
         raise SchemaNotFound(msg.format(query_params['class_uri'], query_params['graph_uri']))
     if include_meta:

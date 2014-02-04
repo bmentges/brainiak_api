@@ -1,8 +1,17 @@
 Releases
 ========
 
+Version 2.4.4 - 2014/02/04
+----------------------------
 
-Version 2.4.3 - 2013/01/17
+Fixes
+_____
+
+- Fixed caching mechanism to not include invalid instances (e.g. ``{body: None}``) in cache.
+- Fixed type mapping to include ``rdfs:Literal`` to ``string``.
+
+
+Version 2.4.3 - 2014/01/17
 --------------------------
 
 New Features
@@ -17,7 +26,7 @@ _____
  - Fixing hit ratio calculation in Redis usage statistics ``_status/cache``
 
 
-Version 2.4.2 - 2013/01/15
+Version 2.4.2 - 2014/01/15
 --------------------------
 
 New Features
@@ -33,7 +42,7 @@ _____
  - Test suite was cleaned up from tests shadowed by homonymous tests.
 
 
-Version 2.4.1 - 2013/01/10
+Version 2.4.1 - 2014/01/10
 --------------------------
 
 New Features

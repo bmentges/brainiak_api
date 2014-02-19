@@ -267,5 +267,3 @@ def purge_by_path(path, recursive):
 
 # Singleton
 redis_client = connect()
-# Wipeout all entries to avoid inconsistencies due to algorithmic changes between releases
-flushall()

@@ -33,7 +33,6 @@ Accounts overview
 """
 import glob
 import json
-import subprocess
 import os
 import sys
 
@@ -58,7 +57,8 @@ BRAINIAK_CLIENTS = [
     u"G1 CDA",
     u"G1 CMA",
     u"GloboEsporte CDA",
-    u"GloboEsporte CMA"
+    u"GloboEsporte CMA",
+    u"Home Globo.com",
 ]
 
 
@@ -66,11 +66,6 @@ PROXIES = {
     "stg": {"http": "http://proxy.staging.globoi.com:3128"},
     "qa": {"http": "http://proxy.qa.globoi.com:3128"}
 }
-
-
-# def run(cmd):
-#     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#     return process.stdout.read()
 
 
 def save_app_roles(environ, app_name, app_id, roles_text):
@@ -86,25 +81,10 @@ def save_app_roles(environ, app_name, app_id, roles_text):
     outfile.close()
 
 
-# def try_and_pull(environ):
-#     msg = u"Your local file(s) changed.\nCheck if this is on purpose and commit them to GIT and to Accounts API before any further steps."
-#     files_differ = were_local_files_modified(msg)
-#     if not files_differ:
-#         response = pull(environ, "*")
-#         msg = u"Files at Accounts API are different from the local ones.\nMake sure you:\n" \
-#         "(1) commit the just pulled files to git before making any further changes, or\n" \
-#         "(2) git reset (checkout --) local files and overwrite permissions at Accounts API pushing them."
-#         files_differ = were_local_files_modified(msg)
-
-#     print(u"Files successfuly pulled from <{0}>.".format(environ))
-#     if not files_differ:
-#         print(u"Local and remote permissions files were the same.")
-
-
-def pull(environ, clients=["G1 CDA"]):
+def pull(environ, clients):
     host = HOSTS[environ]
     proxies = PROXIES.get(environ, {})
-    url = "{0}/apps/".format(host)
+    url = "{0}apps/".format(host)
     response = requests.get(url, proxies=proxies)
     response_json = response.json()
 
@@ -148,15 +128,7 @@ def parse_options():
     return command, environ
 
 
-# def were_local_files_modified(msg):
-#     response = run("git status data")
-#     if "modified" in response:
-#         print(msg)
-#         return True
-#     return False
-
-
-def push(environ, clients=["G1 CDA"]):
+def push(environ, clients):
     host = HOSTS[environ]
     proxies = PROXIES.get(environ, {})
     roles_filenames = glob.glob("data/{0}/*.json".format(environ))
@@ -167,7 +139,7 @@ def push(environ, clients=["G1 CDA"]):
             app_id = filename.split("_")[-1].split(".json")[-2]
 
             for role in app_roles:
-                
+
                 role_id = role["id"]
 
                 for permission in role["permissions"]:
@@ -176,20 +148,6 @@ def push(environ, clients=["G1 CDA"]):
                 url = "{0}roles/{2}".format(host, app_id, role_id)
                 headers = {"Content-Type": "application/json"}
                 response = requests.put(url, data=json.dumps(role), headers=headers, proxies=proxies)
-
-
-# def try_and_push(environ):
-#     msg = u"Your permission file(s) changed locally.\nCommit them to GIT before pushing to Accounts API."
-#     files_differ = were_local_files_modified(msg)
-#     if files_differ:
-#         exit()
-#     else:
-#         response = pull(environ, "*")
-#         files_differ = were_local_files_modified("")
-#         if not files_differ:
-#             msg = u"Permissions at Accounts API are equal to your local ones."
-#             print(msg)
-#     push(environ, "*")
 
 
 if __name__ == "__main__":

@@ -12,7 +12,6 @@ FROM <%(graph_uri)s>
 }
 """
 
-
 ANNOTATIONS_PARAMS = LIST_PARAMS + RequiredParamsDict(annotation="")
 
 def query_annotation(query_params):

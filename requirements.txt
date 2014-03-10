@@ -1,4 +1,3 @@
 Fabric==1.6.0
 
 -r puppet/modules/brainiak/files/requirements.txt
-

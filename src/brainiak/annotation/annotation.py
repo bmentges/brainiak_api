@@ -1,30 +1,25 @@
-from tornado.httpclient import HTTPError
-
-from brainiak.greenlet_tornado import greenlet_asynchronous
-from brainiak.handlers import BrainiakRequestHandler, schema_resource
-from brainiak.prefixes import normalize_all_uris_recursively, SHORTEN
+from brainiak import triplestore
+from brainiak.utils.params import LIST_PARAMS, RequiredParamsDict
 
 
-class AnnotationHandler(BrainiakRequestHandler):
-    SUPPORTED_METHODS = list("GET")
+QUERY_ANNOTATION = u"""
+SELECT COUNT(?class) AS ?total_items
+FROM <%(graph_uri)s>
+{
+    ?class a owl:Class ;
+           rdfs:label ?label .
+    %(lang_filter_label)s
+}
+"""
 
-    @greenlet_asynchronous
-    def get(self, context_name, class_name):
-        # self.request.query = unquote(self.request.query)
-        #
-        # with safe_params():
-        #     self.query_params = ParamDict(self,
-        #                                   context_name=context_name,
-        #                                   class_name=class_name)
-        # del context_name
-        # del class_name
-        #
-        try:
-            response = schema_resource.get_cached_schema(self.query_params, include_meta=True)
-        except schema_resource.SchemaNotFound, e:
-            raise HTTPError(404, log_message=e.message)
 
-        if self.query_params['expand_uri'] == "0":
-            response = normalize_all_uris_recursively(response, mode=SHORTEN)
-        self.add_cache_headers(response['meta'])
-        self.finalize(response['body'])
+ANNOTATIONS_PARAMS = LIST_PARAMS + RequiredParamsDict(annotation="")
+
+def query_annotation(query_params):
+    # query = QUERY_ANNOTATION % query_params
+    # return triplestore.query_sparql(query,
+    #                                 query_params.triplestore_config)
+    pass
+
+def get_content_with_annotation(query_params):
+    return {}

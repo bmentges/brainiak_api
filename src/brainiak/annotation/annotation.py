@@ -17,7 +17,7 @@ SELECT ?uri ?permalink FROM <{graph_uri}> WHERE {{
      base:status_de_publicacao "P";
      base:data_da_primeira_publicacao ?data_da_primeira_publicacao;
      base:permalink ?permalink;
-     ?p <{annotation}>.
+     ?p <{uri}>.
 }}ORDER BY {sort_order}(?data_da_primeira_publicacao)
 limit {per_page}"""
 

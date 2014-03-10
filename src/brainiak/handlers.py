@@ -760,7 +760,7 @@ from brainiak.utils.params import LIST_PARAMS, RequiredParamsDict
 
 class AnnotationHandler(BrainiakRequestHandler):
 
-    ANNOTATIONS_PARAMS = LIST_PARAMS + RequiredParamsDict(annotation="")
+    ANNOTATIONS_PARAMS = LIST_PARAMS + RequiredParamsDict(object_uri="")
 
     SUPPORTED_METHODS = ["GET"]
 
@@ -768,10 +768,10 @@ class AnnotationHandler(BrainiakRequestHandler):
     def get(self, context_name, class_name):
         self.request.query = unquote(self.request.query)
 
-        with safe_params():
-            self.query_params = ParamDict(self,
-                                          context_name=context_name,
-                                          class_name=class_name)
+        valid_params = self.ANNOTATIONS_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, **valid_params)
+
         del context_name
         del class_name
 

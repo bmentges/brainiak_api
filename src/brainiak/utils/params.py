@@ -91,7 +91,8 @@ VALID_PARAMS = [
     'direct_instances_only',
     'expand_object_properties',
     'meta_properties',
-    'pattern'
+    'pattern',
+    'object_uri'
 ]
 
 VALID_PATTERNS = (

@@ -26,7 +26,7 @@ ANNOTATIONS_PARAMS = LIST_PARAMS + RequiredParamsDict(annotation="")
 
 
 def query_annotation(query_params):
-    query = QUERY_ANNOTATION.format(query_params)
+    query = QUERY_ANNOTATION.format(**query_params)
     return triplestore.query_sparql(query,
                                     query_params.triplestore_config)
 

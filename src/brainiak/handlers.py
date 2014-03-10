@@ -756,8 +756,11 @@ class UnmatchedHandler(BrainiakRequestHandler):
 
 # annotation api
 from brainiak.annotation.annotation import get_content_with_annotation
+from brainiak.utils.params import LIST_PARAMS, RequiredParamsDict
 
 class AnnotationHandler(BrainiakRequestHandler):
+
+    ANNOTATIONS_PARAMS = LIST_PARAMS + RequiredParamsDict(annotation="")
 
     SUPPORTED_METHODS = ["GET"]
 

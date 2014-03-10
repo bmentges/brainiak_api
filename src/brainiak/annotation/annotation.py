@@ -1,5 +1,4 @@
 from brainiak import triplestore
-from brainiak.utils.params import LIST_PARAMS, RequiredParamsDict
 from brainiak.utils.sparql import compress_keys_and_values
 
 # QUERY_ANNOTATION = u"""
@@ -22,7 +21,6 @@ SELECT ?uri ?permalink FROM <{graph_uri}> WHERE {{
 }}ORDER BY {sort_order}(?data_da_primeira_publicacao)
 limit {per_page}"""
 
-ANNOTATIONS_PARAMS = LIST_PARAMS + RequiredParamsDict(annotation="")
 
 
 def query_annotation(query_params):

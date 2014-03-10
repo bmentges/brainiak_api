@@ -43,7 +43,7 @@ from brainiak.utils.resources import check_messages_when_port_is_mentioned, Lazy
 from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InstanceError
 
 # Annotation API
-from annotation_api.handlers import AnnotationHandler
+from brainiak.annotation import AnnotationHandler
 
 logger = LazyObject(get_logger)
 

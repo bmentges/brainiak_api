@@ -42,6 +42,8 @@ from brainiak.utils.params import CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InstanceError
 
+# Annotation API
+from annotation_api.handlers import AnnotationHandler
 
 logger = LazyObject(get_logger)
 
@@ -95,6 +97,10 @@ def get_routes():
         # TEXTUAL search
         URLSpec(r'/_suggest/?', SuggestHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_search/?', SearchHandler),
+
+        # Annotation API
+        URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_annotation/?', AnnotationHandler),
+
         # resources that represents CONCEPTS
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_schema/?', ClassHandler),
         URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/?', CollectionHandler),

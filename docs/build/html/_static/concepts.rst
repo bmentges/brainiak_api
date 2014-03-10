@@ -11,3 +11,4 @@ Prior to use the API is advisable to master the following concepts:
    concepts/rest_verbs.rst
    concepts/hypermedia.rst
    concepts/modeling.rst
+   concepts/annotation.rst

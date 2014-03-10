@@ -94,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../concepts/rest_verbs.html">Using HTTP methods in a RESTful way</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/hypermedia.html">Hypermedia Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../concepts/modeling.html">Modeling and Ontology Engineering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/annotation.html">Semantic Annotation</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../services.html">Services</a><ul class="current">
@@ -187,7 +188,7 @@ To check if cache is enabled for some resource, run:</p>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 204 No Content
 Server: nginx
-Date: Tue, 04 Feb 2014 13:46:43 GMT
+Date: Fri, 07 Mar 2014 14:51:51 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 0
 Connection: keep-alive
@@ -217,13 +218,13 @@ Access-Control-Allow-Headers: Content-Type, Authorization
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Tue, 04 Feb 2014 13:46:45 GMT
+Date: Fri, 07 Mar 2014 14:51:53 GMT
 Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
 Content-Length: 1002
 Connection: keep-alive
 X-Cache: MISS from brainiak.semantica.dev.globoi.com
-Last-Modified: Tue, 04 Feb 2014 11:46:45 -0200
-Etag: &quot;e4a29223562079386bb1ec2695cea9587a61bff9&quot;
+Last-Modified: Fri, 07 Mar 2014 11:51:53 -0300
+Etag: &quot;7739d645a75b6199ee3caccb389c89910f118fea&quot;
 Access-Control-Allow-Origin: *
 </pre></div>
 </div>
@@ -233,13 +234,13 @@ Access-Control-Allow-Origin: *
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Tue, 04 Feb 2014 13:46:46 GMT
+Date: Fri, 07 Mar 2014 14:51:54 GMT
 Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
 Content-Length: 1002
 Connection: keep-alive
 X-Cache: HIT from brainiak.semantica.dev.globoi.com
-Last-Modified: Tue, 04 Feb 2014 11:46:45 -0200
-Etag: &quot;555e4a29e333755c57c50c8f8a4ebd7c70232ea7&quot;
+Last-Modified: Fri, 07 Mar 2014 11:51:53 -0300
+Etag: &quot;e20c9294a78ac8872e479320ca2023d081ea418b&quot;
 Access-Control-Allow-Origin: *
 </pre></div>
 </div>
@@ -260,7 +261,7 @@ but when purging the instance all versions should be removed from the cache disr
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Tue, 04 Feb 2014 13:46:47 GMT
+Date: Fri, 07 Mar 2014 14:51:54 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 0
 Connection: keep-alive

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Ubiquitous Language &mdash; brainiak 2.4.4 documentation</title>
+    <title>Semantic Annotation &mdash; brainiak 2.4.4 documentation</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,8 +32,8 @@
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="brainiak 2.4.4 documentation" href="../index.html" />
     <link rel="up" title="Concepts" href="../concepts.html" />
-    <link rel="next" title="Using HTTP methods in a RESTful way" href="rest_verbs.html" />
-    <link rel="prev" title="Concepts" href="../concepts.html" />
+    <link rel="next" title="Services" href="../services.html" />
+    <link rel="prev" title="Modeling and Ontology Engineering" href="modeling.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -90,11 +90,11 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../concepts.html">Concepts</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">Ubiquitous Language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resources.html">Ubiquitous Language</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rest_verbs.html">Using HTTP methods in a RESTful way</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hypermedia.html">Hypermedia Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modeling.html">Modeling and Ontology Engineering</a></li>
-<li class="toctree-l2"><a class="reference internal" href="annotation.html">Semantic Annotation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Semantic Annotation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../services.html">Services</a><ul>
@@ -135,27 +135,21 @@
             <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
-<li><a class="reference internal" href="#">Ubiquitous Language</a><ul>
-<li><a class="reference internal" href="#context">Context</a></li>
-<li><a class="reference internal" href="#class">Class</a></li>
-<li><a class="reference internal" href="#collection">Collection</a></li>
-<li><a class="reference internal" href="#instance">Instance</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">Semantic Annotation</a></li>
 </ul>
 </ul>
 </li>
           
           
             
-  <li><a href="../concepts.html"
-         title="previous chapter">&laquo; Concepts</a></li>
-  <li><a href="rest_verbs.html"
-         title="next chapter">Using HTTP methods in a RESTful way &raquo;</a></li>
+  <li><a href="modeling.html"
+         title="previous chapter">&laquo; Modeling and Ontology Engineering</a></li>
+  <li><a href="../services.html"
+         title="next chapter">Services &raquo;</a></li>
           
           
             <li>
-  <a href="../_sources/concepts/resources.txt"
+  <a href="../_sources/concepts/annotation.txt"
      rel="nofollow">Source</a></li>
           
         </ul>
@@ -173,61 +167,9 @@
   </div>
 
   
-  <div class="section" id="ubiquitous-language">
-<h1>Ubiquitous Language<a class="headerlink" href="#ubiquitous-language" title="Permalink to this headline">¶</a></h1>
-<p>Here we explain the main concepts of the API, i.e. this is
-our <a class="reference external" href="http://martinfowler.com/bliki/UbiquitousLanguage.html">ubiquitous language</a>.</p>
-<div class="section" id="context">
-<span id="concept-context"></span><h2>Context<a class="headerlink" href="#context" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">Context</span></tt> is an isolated data space, defined by some unique <tt class="docutils literal"><span class="pre">context_id</span></tt>.
-This <tt class="docutils literal"><span class="pre">context_id</span></tt> will be used as a namespace.
-Each context can hold classes and instance definitions.
-A context can be used to represent, for example, some product or some app being developed.</p>
-<p>Inside the triplestore, the context is materialized as <a class="reference external" href="http://www.w3.org/TR/rdf-sparql-query/#GraphPattern">a graph</a>.
-This graph is represented internally by an <a class="reference external" href="http://www.ietf.org/rfc/rfc3986.txt">URI</a>.
-This URI is composed by adding a configurable (server-wide) URI_PREFIX to the <tt class="docutils literal"><span class="pre">context_id</span></tt>
-For example, inside Globo.com, the Brainiak server is configured with URI_PREFIX=&#8221;<a class="reference external" href="http://semantica.globo.com/">http://semantica.globo.com/</a>&#8221;.
-Thus, the graph URI implicitly associated with context &#8220;app1&#8221; would be: &#8220;<a class="reference external" href="http://semantica.globo.com/app1/">http://semantica.globo.com/app1/</a>&#8221;.
-The default prefix can be overridden if necessary using the parameter <tt class="docutils literal"><span class="pre">graph_uri</span></tt>, see more details in <a class="reference internal" href="../services/parameters.html#parametrization"><em>Overriding URIs</em></a>.</p>
-</div>
-<div class="section" id="class">
-<span id="concept-schema"></span><h2>Class<a class="headerlink" href="#class" title="Permalink to this headline">¶</a></h2>
-<p>Usually database models work with a clear distinction between instances (data) and classes (metadata).
-We also make this distinction on the API interface.</p>
-<p>A <em>Class</em> is a priviledged instance that defines the structure of the data (non-class instances) being stored.
-To avoid confusion, we avoid referring to classes calling them <em>instances</em>, a term we reserve for <em>non-class</em> instances.
-Although we prefer <tt class="docutils literal"><span class="pre">class</span></tt>, sometimes we use the term <tt class="docutils literal"><span class="pre">schema</span></tt> as a synonym.
-<tt class="docutils literal"><span class="pre">Class</span></tt> is preferable to <tt class="docutils literal"><span class="pre">schema</span></tt> in order to avoid the confusion with the listings schemas rendered in json-schema format.</p>
-<p>Classes are defined in the RDF/OWL Model, given its high expressivity and flexibility.
-Therefore, it will be possible to represent classes in different database models or even translations between them in a common language.</p>
-<p>Likewise, we expect a class to be easily written, by using the <a class="reference external" href="http://en.wikipedia.org/wiki/Turtle_(syntax)">Turtle</a>
-format, the most compact serialization for ontologies developed in the RDF/OWL model.</p>
-<div class="highlight-n3"><div class="highlight"><pre><span class="nc">:City </span><span class="o">a </span><span class="na">owl:Class </span>;
-      <span class="o">rdfs:subClassOf </span><span class="na">:Place </span>.
-</pre></div>
-</div>
-<p>The class is associated with a <tt class="docutils literal"><span class="pre">class_id</span></tt> that is unique in the particular <tt class="docutils literal"><span class="pre">context</span></tt> where it was declared.
-Therefore, the class definition belongs to a graph in the triplestore, where it is identified by an URI.
-By convention, the class URI is composed by the context&#8217;s graph URI and the class_id.
-For example, consider the class for <tt class="docutils literal"><span class="pre">Person</span></tt> declared in the context <tt class="docutils literal"><span class="pre">person</span></tt> whose graph_uri is <tt class="docutils literal"><span class="pre">http://semantica.globo.com/person</span></tt>.
-The default URI for this class would be generated as <tt class="docutils literal"><span class="pre">http://semantica.globo.com/person/Person</span></tt>.
-The class&#8217; URI can be overriden if necessary using the parameter <tt class="docutils literal"><span class="pre">class_uri</span></tt>, see more details in <a class="reference internal" href="../services/parameters.html#parametrization"><em>Overriding URIs</em></a>.</p>
-</div>
-<div class="section" id="collection">
-<span id="concept-collection"></span><h2>Collection<a class="headerlink" href="#collection" title="Permalink to this headline">¶</a></h2>
-<p>We need to distinguish the structure of an instance (class) from a group of instances with the same structure (collection).
-Therefore, for each class corresponds a unique collection adn vice-versa.
-The collection name and the class name are the same.</p>
-</div>
-<div class="section" id="instance">
-<span id="concept-instance"></span><h2>Instance<a class="headerlink" href="#instance" title="Permalink to this headline">¶</a></h2>
-<p>An instance is a set of data that is treated as a unit, whose structure is described by a class.
-The group of instances that share the same class form a collection.
-A collection subset or the whole collection is stored in a context.</p>
-<p>Instances must be easily retrieved.
-Morevoer, &#8220;instance queries&#8221; must be really simple for developers to understand as they will do way more requests on instances than on classes.
-As such, the interface for manipulating instances accepts JSON content_type as most of the RESTful APIs do.</p>
-</div>
+  <div class="section" id="semantic-annotation">
+<h1>Semantic Annotation<a class="headerlink" href="#semantic-annotation" title="Permalink to this headline">¶</a></h1>
+<p>Xubiru</p>
 </div>
 
 

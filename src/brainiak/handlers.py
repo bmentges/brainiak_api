@@ -42,9 +42,6 @@ from brainiak.utils.params import CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject
 from brainiak.utils.sparql import extract_po_tuples, clean_up_reserved_attributes, InstanceError
 
-# Annotation API
-from brainiak.annotation import AnnotationHandler
-
 logger = LazyObject(get_logger)
 
 custom_decorator.wrapper = greenlet_asynchronous
@@ -755,3 +752,30 @@ class UnmatchedHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def patch(self):
         self.default_action()
+
+
+# annotation api
+
+class AnnotationHandler(BrainiakRequestHandler):
+    SUPPORTED_METHODS = list("GET")
+
+    @greenlet_asynchronous
+    def get(self, context_name, class_name):
+        # self.request.query = unquote(self.request.query)
+        #
+        # with safe_params():
+        #     self.query_params = ParamDict(self,
+        #                                   context_name=context_name,
+        #                                   class_name=class_name)
+        # del context_name
+        # del class_name
+        #
+        try:
+            response = schema_resource.get_cached_schema(self.query_params, include_meta=True)
+        except schema_resource.SchemaNotFound, e:
+            raise HTTPError(404, log_message=e.message)
+
+        if self.query_params['expand_uri'] == "0":
+            response = normalize_all_uris_recursively(response, mode=SHORTEN)
+        self.add_cache_headers(response['meta'])
+        self.finalize(response['body'])

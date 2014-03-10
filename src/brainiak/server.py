@@ -22,23 +22,6 @@ server = None
 define("debug", default=settings.DEBUG, help="Debug mode", type=bool)
 
 
-class Application(TornadoApplication):
-
-    def __init__(self, debug=False):
-        try:
-            log.initialize()
-            event_bus.initialize()
-            # Wipeout all entries to avoid inconsistencies due to algorithmic changes between releases
-            flushall()
-            super(Application, self).__init__(get_routes(), debug=debug)
-        except Exception as e:
-            sys.stdout.write(u"Failed to initialize application. {0}".format(unicode(e)))
-            traceback.print_exc(file=sys.stdout)
-            sys.exit(1)
-
-application = Application()
-
-
 def get_routes():
     return [
         # INTERNAL resources for monitoring and meta-infromation inspection
@@ -71,6 +54,24 @@ def get_routes():
         URLSpec(r'/$', RootHandler),
         URLSpec(r'/.*$', UnmatchedHandler),
     ]
+
+
+
+class Application(TornadoApplication):
+
+    def __init__(self, debug=False):
+        try:
+            log.initialize()
+            event_bus.initialize()
+            # Wipeout all entries to avoid inconsistencies due to algorithmic changes between releases
+            flushall()
+            super(Application, self).__init__(get_routes(), debug=debug)
+        except Exception as e:
+            sys.stdout.write(u"Failed to initialize application. {0}".format(unicode(e)))
+            traceback.print_exc(file=sys.stdout)
+            sys.exit(1)
+
+application = Application()
 
 
 def main():  # pragma: no cover

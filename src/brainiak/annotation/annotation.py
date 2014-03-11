@@ -1,3 +1,4 @@
+from dateutil import parser
 from brainiak import triplestore
 from brainiak.utils.sparql import compress_keys_and_values
 from brainiak.utils.resources import calculate_offset
@@ -51,19 +52,28 @@ def get_content_with_annotation(query_params):
     items_list = compress_keys_and_values(result, keymap=keymap)
     return build_json(items_list, query_params)
 
+def procDateTime(date):
+    #return the given date in isoformat with Z
+    #validate date and format e.g 2013-02-29 is format valid but is not a valid date
+    #or 2013-02-28T25:00 is format valid but the hour is invalid
+    dateObj = parser(date)
+    return dateObj.isoformat() + "Z"
 
 def decorate_params_with_time_range_clause(query_params):
-    # TODO validate date in isodate format
+
+
 
     # TODO refactor to create a specific ParamDict
     clause = ""
 
     conditionals = []
     if query_params["from"]:
-        conditionals.append('?issued >= xsd:dateTime("{from}T00:00:00Z")'.format(**query_params))
+        query_params["from"] = procDateTime(query_params["from"])
+        conditionals.append('?issued >= xsd:dateTime("{from}")'.format(**query_params))
 
     if query_params["to"]:
-        conditionals.append('?issued < xsd:dateTime("{to}T00:00:00Z")'.format(**query_params))
+        query_params["to"] = procDateTime(query_params["to"])
+        conditionals.append('?issued < xsd:dateTime("{to}")'.format(**query_params))
 
     if conditionals:
         clause = "FILTER(" + " && ".join(conditionals) + ")"

@@ -1,17 +1,9 @@
 from dateutil import parser
+
 from brainiak import triplestore
 from brainiak.utils.sparql import compress_keys_and_values
 from brainiak.utils.resources import calculate_offset
 
-# QUERY_ANNOTATION = u"""
-# SELECT COUNT(?class) AS ?total_items
-# FROM <%(graph_uri)s>
-# {
-#     ?class a owl:Class ;
-#            rdfs:label ?label .
-#     %(lang_filter_label)s
-# }
-# """
 
 QUERY_ANNOTATION = u"""
 SELECT ?subject ?label ?permalink ?issued FROM <{graph_uri}> WHERE {{
@@ -28,9 +20,53 @@ LIMIT {per_page}
 OFFSET {offset}
 """
 
+QUERY_POPULAR_ANNOTATIONS = u"""
+SELECT count(distinct ?s) as ?obj_count ?annotation_uri ?annotation_label FROM <{graph_uri}> WHERE {{
+?s a <{class_uri}>;
+  base:status_de_publicacao "P" ;
+  base:data_da_primeira_publicacao ?issued ;
+  rdfs:label ?label ;
+  base:permalink ?permalink ;
+  ?property ?annotation_uri .
+?annotation_uri rdfs:label ?annotation_label.
+filter(?property in ("esportes:trata_do_esporte",
+       esportes:trata_da_entidade,
+       esportes:trata_da_equipe,
+       esportes:trata_do_evento,
+       esportes:trata_do_canal_programa,
+       esportes:trata_do_eu_atleta,
+       esportes:cita_sede,
+       esportes:trata_do_evento_noticioso))
+{time_range_filter_clause}
+}}
+ORDER BY {sort_order}(?issued)
+LIMIT {per_page}
+OFFSET {offset}
+"""
+
+
+def query_popular_annotations(query_params):
+    query = QUERY_POPULAR_ANNOTATIONS.format(**query_params)
+    return triplestore.query_sparql(query,
+                                    query_params.triplestore_config)
+
+
+def get_content_popular_annotations(query_params):
+    decorate_params_with_time_range_clause(query_params)
+    query_params["offset"] = calculate_offset(query_params)
+    result = query_popular_annotations(query_params)
+
+    keymap = {
+        "subject": "@id",
+        "label": "title",
+    }
+
+    # TODO decorate with JSON schema meta_properties
+    items_list = compress_keys_and_values(result, keymap=keymap)
+    return build_json(items_list, query_params)
+
 
 def query_annotation(query_params):
-
     query = QUERY_ANNOTATION.format(**query_params)
     return triplestore.query_sparql(query,
                                     query_params.triplestore_config)
@@ -39,8 +75,8 @@ def query_annotation(query_params):
 def get_content_with_annotation(query_params):
     decorate_params_with_time_range_clause(query_params)
     query_params["offset"] = calculate_offset(query_params)
-
     # TODO filter class to only accept base:Conteudo
+    # how about write directly in query this constraint?
     result = query_annotation(query_params)
 
     keymap = {
@@ -52,6 +88,7 @@ def get_content_with_annotation(query_params):
     items_list = compress_keys_and_values(result, keymap=keymap)
     return build_json(items_list, query_params)
 
+
 def procDateTime(date):
     #return the given date in isoformat with Z
     #validate date and format e.g 2013-02-29 is format valid but is not a valid date
@@ -59,10 +96,8 @@ def procDateTime(date):
     dateObj = parser(date)
     return dateObj.isoformat() + "Z"
 
+
 def decorate_params_with_time_range_clause(query_params):
-
-
-
     # TODO refactor to create a specific ParamDict
     clause = ""
 

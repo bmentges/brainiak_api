@@ -92,7 +92,10 @@ VALID_PARAMS = [
     'expand_object_properties',
     'meta_properties',
     'pattern',
-    'object_uri'
+    # Annotation
+    'object_uri',
+    'from',
+    'to'
 ]
 
 VALID_PATTERNS = (

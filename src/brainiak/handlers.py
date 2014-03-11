@@ -6,7 +6,7 @@ from contextlib import contextmanager
 import ujson as json
 from urllib import unquote
 from tornado.httpclient import HTTPError as HTTPClientError
-from tornado.web import HTTPError, RequestHandler, URLSpec
+from tornado.web import HTTPError, RequestHandler
 from tornado_cors import CorsMixin, custom_decorator
 from jsonschema import validate, ValidationError
 
@@ -72,8 +72,6 @@ def safe_params(valid_params=None, body_params=None):
     except RequiredParamMissing as ex:
         msg = _(u"Required parameter ({0:s}) was not given.").format(ex)
         raise HTTPError(400, log_message=unicode(msg))
-
-
 
 
 class BrainiakRequestHandler(CorsMixin, RequestHandler):
@@ -756,11 +754,13 @@ class UnmatchedHandler(BrainiakRequestHandler):
 
 # annotation api
 from brainiak.annotation.annotation import get_content_with_annotation
-from brainiak.utils.params import LIST_PARAMS, RequiredParamsDict
+from brainiak.utils.params import LIST_PARAMS, RequiredParamsDict, optionals
+
 
 class AnnotationHandler(BrainiakRequestHandler):
 
-    ANNOTATIONS_PARAMS = LIST_PARAMS + RequiredParamsDict(object_uri="")
+    ANNOTATIONS_PARAMS = LIST_PARAMS + RequiredParamsDict(object_uri="") + \
+        optionals("from", "to")
 
     SUPPORTED_METHODS = ["GET"]
 
@@ -769,8 +769,12 @@ class AnnotationHandler(BrainiakRequestHandler):
         self.request.query = unquote(self.request.query)
 
         valid_params = self.ANNOTATIONS_PARAMS
+        valid_params["sort_order"] = "DESC"  # default order
         with safe_params(valid_params):
-            self.query_params = ParamDict(self, **valid_params)
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          **valid_params)
 
         del context_name
         del class_name

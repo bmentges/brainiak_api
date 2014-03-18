@@ -21,7 +21,7 @@ OFFSET {offset}
 """
 
 QUERY_POPULAR_ANNOTATIONS = u"""
-SELECT count(distinct ?s) as ?obj_count ?annotation_uri ?annotation_label FROM <{graph_uri}> WHERE {{
+SELECT count(distinct ?annotation_uri) as ?obj_count ?annotation_uri ?annotation_label FROM <{graph_uri}> WHERE {{
 ?s a <{class_uri}>;
   base:status_de_publicacao "P" ;
   base:data_da_primeira_publicacao ?issued ;
@@ -39,7 +39,6 @@ filter(?property in ("esportes:trata_do_esporte",
        esportes:trata_do_evento_noticioso))
 {time_range_filter_clause}
 }}
-ORDER BY {sort_order}(?issued)
 LIMIT {per_page}
 OFFSET {offset}
 """
@@ -73,27 +72,32 @@ def query_annotation(query_params):
 
 
 def get_content_with_annotation(query_params):
-    decorate_params_with_time_range_clause(query_params)
-    query_params["offset"] = calculate_offset(query_params)
-    # TODO filter class to only accept base:Conteudo
-    # how about write directly in query this constraint?
-    result = query_annotation(query_params)
+    if query_params["object_uri"]:
+        decorate_params_with_time_range_clause(query_params)
+        query_params["offset"] = calculate_offset(query_params)
+        # TODO filter class to only accept base:Conteudo
+        # how about write directly in query this constraint?
+        result = query_annotation(query_params)
 
-    keymap = {
-        "subject": "@id",
-        "label": "title",
-    }
+        keymap = {
+            "subject": "@id",
+            "label": "title",
+        }
 
-    # TODO decorate with JSON schema meta_properties
-    items_list = compress_keys_and_values(result, keymap=keymap)
-    return build_json(items_list, query_params)
+        # TODO decorate with JSON schema meta_properties
+        items_list = compress_keys_and_values(result, keymap=keymap)
+        return build_json(items_list, query_params)
+    else:
+        query_params["offset"] = calculate_offset(query_params)
+
+        return get_content_popular_annotations(query_params)
 
 
 def procDateTime(date):
     #return the given date in isoformat with Z
     #validate date and format e.g 2013-02-29 is format valid but is not a valid date
     #or 2013-02-28T25:00 is format valid but the hour is invalid
-    dateObj = parser(date)
+    dateObj = parser.parse(date)
     return dateObj.isoformat() + "Z"
 
 

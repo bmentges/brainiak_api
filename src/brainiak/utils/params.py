@@ -205,7 +205,8 @@ class ParamDict(dict):
                     dict.__setitem__(self, 'class_name', class_name_value)
 
                 # FIXME: the code below should disappear after #10602 - Normalização no tratamento de parâmetros no Brainiak
-                if class_uri_value and _key_is_undefined('class_prefix'):
+                # class_prefix must be set when class_uri is defined, because it is used by json-schema logic.
+                if class_uri_value:
                     class_prefix_value = "/".join(class_uri_value.split("/")[:-1]) + "/"
                     dict.__setitem__(self, 'class_prefix', class_prefix_value)
 

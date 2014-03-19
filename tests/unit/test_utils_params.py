@@ -104,6 +104,11 @@ class ParamsTestCase(TestCase):
         params = ParamDict(handler, class_uri="dbpedia:Python")
         self.assertEquals("http://dbpedia.org/ontology/Python", params.get("class_uri"))
 
+    def test_class_uri_sets_class_prefix_overriding_slug(self):
+        handler = MockHandler()
+        params = ParamDict(handler, context_name="glb", class_uri="base:Conteudo")
+        self.assertEquals(u'http://semantica.globo.com/base/', params.get("class_prefix"))
+
     def test_has_default_triplestore_config(self):
         handler = MockHandler()
         params = ParamDict(handler)

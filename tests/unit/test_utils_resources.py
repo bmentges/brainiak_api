@@ -1,9 +1,10 @@
 from unittest import TestCase
 
-from mock import patch
+from mock import patch, MagicMock
 
 from brainiak.prefixes import ROOT_CONTEXT
-from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids, LazyObject, calculate_offset
+from brainiak.utils.resources import decorate_with_class_prefix, decorate_with_resource_id, compress_duplicated_ids, LazyObject, calculate_offset, \
+    build_resource_url
 from brainiak.utils.params import ParamDict
 
 from tests.mocks import MockHandler
@@ -38,6 +39,15 @@ class TestCaseListInstanceResource(TestCase):
 
 
 class ResourceUtilsTestCase(TestCase):
+
+    def test_build_resource_url_with_params(self):
+        computed_url = build_resource_url(
+            'http',
+            'localhost:5100',
+            '/g1/Materia?class_uri=g1:Materia',
+            '092bb93a-9e0b-4e66-905b-64d0fcb86edc',
+            'class_uri=g1:Materia')
+        self.assertEqual(computed_url, u'http://localhost:5100/g1/Materia/092bb93a-9e0b-4e66-905b-64d0fcb86edc?class_uri=g1:Materia')
 
     def test_decorate_with_resource_id_with_single_dict(self):
         list_of_dicts = [{"@id": "http://a/b/c"}]

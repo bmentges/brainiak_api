@@ -15,6 +15,20 @@ class LazyObject(object):
         return object.__getattribute__(obj, item)
 
 
+def build_resource_url(protocol, host, request_uri, resource_id, query):
+    try:
+        pos = request_uri.index("?")
+        request_uri = request_uri[:pos]
+    except ValueError:
+        pass
+    if not request_uri.endswith("/"):
+        request_uri = u"{0}/".format(request_uri)
+    url = u"{0}://{1}{2}{3}".format(protocol, host, request_uri, resource_id)
+    if query:
+        url = u"{0}?{1}".format(url, query)
+    return url
+
+
 def check_messages_when_port_is_mentioned(source_message):
     backends = {EVENT_BUS_PORT: 'ActiveMQ'}
     port_pattern = re.compile('(\d+)')

@@ -75,7 +75,9 @@ class InstanceResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.utils.cache.settings", ENABLE_CACHE=True)
     def test_get_instance_200_now_cached(self, mock_cache):
         response = self.fetch('/person/Gender/Female?lang=pt', method='GET')
-        body = json.loads(response.body)
+        first_to_cache = json.loads(response.body)
+        response = self.fetch('/person/Gender/Female?lang=pt', method='GET')
+        body = ujson.loads(response.body)
         self.assertEqual(response.code, 200)
         self.assertIn(u'/person/Gender/Female', body['@id'])
         self.assertTrue(response.headers['X-Cache'].startswith('HIT'))

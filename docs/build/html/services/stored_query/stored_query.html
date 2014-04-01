@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Stored Query &mdash; brainiak 2.4.4 documentation</title>
+    <title>Stored Queries &mdash; brainiak 2.4.4 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../instance/instance.html">Managing Instances</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../search/search.html">Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../suggest/suggest.html">Suggest</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Stored Query</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Stored Queries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../parameters.html">Overriding URIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html">Hypermap of Resources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html#links-specification">Links Specification</a></li>
@@ -136,7 +136,7 @@
             <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
-<li><a class="reference internal" href="#">Stored Query</a><ul>
+<li><a class="reference internal" href="#">Stored Queries</a><ul>
 <li><a class="reference internal" href="#retrieving-and-modifying-a-stored-query">Retrieving and modifying a stored query</a></li>
 <li><a class="reference internal" href="#executing-query">Executing query</a></li>
 <li><a class="reference internal" href="#paging">Paging</a></li>
@@ -173,49 +173,88 @@
   </div>
 
   
-  <div class="section" id="stored-query">
-<h1>Stored Query<a class="headerlink" href="#stored-query" title="Permalink to this headline">¶</a></h1>
-<p>In Brainiak, one can store queries that can not fit a URL description or simple filter (see FILTER P/O), giving users flexibility to explore the model with complex relationships, graph traversal, etc.</p>
+  <div class="section" id="stored-queries">
+<h1>Stored Queries<a class="headerlink" href="#stored-queries" title="Permalink to this headline">¶</a></h1>
+<p>In Brainiak, one can store queries that can not fit a URL description or filter using p/o variables in querystring (see <a class="reference internal" href="../instance/list_instance.html"><em>List of Instances</em></a>), giving users flexibility to explore the model with complex relationships, graph traversal, etc.</p>
 <p>First, users should register a query to be stored.</p>
-<p>Example of registering a query using the following signature:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X PUT <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_query/my_great_query&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
+<p>Users can register a query by performing a request like:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X PUT <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_query/my_query_id&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
 </pre></div>
 </div>
+<p>The <tt class="docutils literal"><span class="pre">my_query_id</span></tt> attribute indicates the query identification to be used when executing it.</p>
 <p>The <tt class="docutils literal"><span class="pre">X-Brainiak-Client-Id</span></tt> header is mandatory for access authentication.
 Running a query registered for a specific client id will only work with the same client id.</p>
-<p>The request payload is a JSON like:</p>
-<div class="highlight-JSON"><pre>{
-  "sparql_template": "select",
-  "description": "This query is so great, it does everything I need to and it is used in apps such and such"
-}</pre>
+<p>The request payload for registering a query is a JSON like:</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+  <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;select %(class_uri)s from %(graph_uri)s {%(class_uri)s a owl:Class}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;This query is so great, it does everything I need to and it is used in apps such and such&quot;</span>
+<span class="p">}</span>
+</pre></div>
 </div>
-<p>TODO: Errors</p>
+<p>If the request is successful, a 201 status code is returned.</p>
+<p>If there is no client id or the JSON is malformed, a 400 status code is returned.</p>
+<p>TODO: Example of 400</p>
 <p>Now, we have a stored query.
 Where is it?</p>
 <div class="section" id="retrieving-and-modifying-a-stored-query">
 <h2>Retrieving and modifying a stored query<a class="headerlink" href="#retrieving-and-modifying-a-stored-query" title="Permalink to this headline">¶</a></h2>
-<p>We store the query in Brainiak, but users might need to retrieve and/or modify a stored query.</p>
-<p>To see registered queries with my client id, just:</p>
+<p>We store the query in Brainiak, but users might need to retrieve and/or modify a stored query to conform with their needs.</p>
+<p>To see registered queries with my client id:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
 </pre></div>
 </div>
-<p>To get a specific query definition, registered with my client id:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_great_query&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
+<p>The response for this query has the following format:</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+  <span class="nt">&quot;client_id&quot;</span><span class="p">:</span> <span class="s2">&quot;my_client_id&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;resource_id&quot;</span><span class="p">:</span> <span class="s2">&quot;my_query_id&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;my query description&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<p>TODO: Errors</p>
+<p>The result can be navigated using <a class="reference internal" href="../pagination.html"><em>Pagination</em></a>.</p>
+<p>To get a specific query definition, registered with my client id:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_query_id&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
+</pre></div>
+</div>
+<p>The response is just a dictionary describing the query as in the list above.</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+  <span class="nt">&quot;resource_id&quot;</span><span class="p">:</span> <span class="s2">&quot;my_query_id&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;my query description&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="executing-query">
 <h2>Executing query<a class="headerlink" href="#executing-query" title="Permalink to this headline">¶</a></h2>
-<p>To execute a query just use the _result modifier</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_great_query&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
+<p>Consider the query described above for gettings classes in a graph.</p>
+<div class="highlight-sql"><pre>select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}</pre>
+</div>
+<p>To execute a query just use the <tt class="docutils literal"><span class="pre">_result</span></tt> modifier.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_query_id/_result?graph_uri&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
 </pre></div>
 </div>
-<p>GET /_query/&lt;resource_id&gt;/_result</p>
+<p>The response is a JSON with a list of dictionaries with the query result.</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+  <span class="nt">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+  <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="nt">&quot;graph_uri&quot;</span><span class="p">,</span> <span class="nt">&quot;http://semantica.globo.com/graph1/&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="nt">&quot;graph_uri&quot;</span><span class="p">,</span> <span class="nt">&quot;http://semantica.globo.com/graph2/&quot;</span><span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="paging">
 <h2>Paging<a class="headerlink" href="#paging" title="Permalink to this headline">¶</a></h2>
-<p>We strongly recommend that variable query templates for paging use naming convention of other Brainaik primitives (<tt class="docutils literal"><span class="pre">page</span></tt>, <tt class="docutils literal"><span class="pre">per_page</span></tt>).</p>
+<p><tt class="docutils literal"><span class="pre">SPARQL</span></tt> uses <tt class="docutils literal"><span class="pre">LIMIT</span></tt>/<tt class="docutils literal"><span class="pre">OFFSET</span></tt> query modifiers for pagination.</p>
+<p>In Brainiak, we use <tt class="docutils literal"><span class="pre">page</span></tt> and <tt class="docutils literal"><span class="pre">per_page</span></tt>.
+We strongly recommend that variables in query templates use this name convention.</p>
 </div>
 </div>
 

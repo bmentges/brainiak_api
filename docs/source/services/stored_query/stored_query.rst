@@ -91,17 +91,17 @@ To execute a query just use the ``_result`` modifier.
 
 .. code-block:: bash
 
-  $ curl -s -X GET '/_query/my_query_id/_result?graph_uri' -H "X-Brainiak-Client-Id: my_client_id"
+  $ curl -s -X GET '/_query/my_query_id/_result?graph_uri=http%3A%2F%2Fsemantica.globo.com%2Fgraph%2F' -H "X-Brainiak-Client-Id: my_client_id"
 
-The response is a JSON with a list of dictionaries with the query result.
+The response is a JSON with a list of dictionaries with the query result for all the classes in graph ``http://semantica.globo.com/graph/``.
 
 .. code-block:: json
 
   {
     "query": ""
     "items": [
-      {"graph_uri", "http://semantica.globo.com/graph1/"},
-      {"graph_uri", "http://semantica.globo.com/graph2/"}
+      {"graph_uri", "http://semantica.globo.com/graph/Class1"},
+      {"graph_uri", "http://semantica.globo.com/graph/Class2"}
     ]
   }
 

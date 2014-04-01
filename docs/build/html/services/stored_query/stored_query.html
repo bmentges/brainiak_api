@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Delete a Instance &mdash; brainiak 2.4.4 documentation</title>
+    <title>Stored Query &mdash; brainiak 2.4.4 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -31,9 +31,9 @@
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="brainiak 2.4.4 documentation" href="../../index.html" />
-    <link rel="up" title="Managing Instances" href="instance.html" />
-    <link rel="next" title="Edit a Instance" href="edit_instance.html" />
-    <link rel="prev" title="Get an Instance" href="get_instance.html" />
+    <link rel="up" title="Services" href="../../services.html" />
+    <link rel="next" title="Overriding URIs" href="../parameters.html" />
+    <link rel="prev" title="Suggest" href="../suggest/suggest.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -89,7 +89,7 @@
 </ul>
 </li>
 </ul>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../concepts.html">Concepts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/resources.html">Ubiquitous Language</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/rest_verbs.html">Using HTTP methods in a RESTful way</a></li>
@@ -97,15 +97,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/modeling.html">Modeling and Ontology Engineering</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../services.html">Services</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="../../services.html">Services</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../context/context.html">Managing Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../prefix/prefix.html">Managing Prefixes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../collection/collection.html">Managing Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schema/schema.html">Managing Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="instance.html">Managing Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../instance/instance.html">Managing Instances</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../search/search.html">Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../suggest/suggest.html">Suggest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../stored_query/stored_query.html">Stored Query</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Stored Query</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../parameters.html">Overriding URIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html">Hypermap of Resources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html#links-specification">Links Specification</a></li>
@@ -136,9 +136,10 @@
             <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
-<li><a class="reference internal" href="#">Delete a Instance</a><ul>
-<li><a class="reference internal" href="#optional-parameters">Optional parameters</a></li>
-<li><a class="reference internal" href="#possible-responses">Possible responses</a></li>
+<li><a class="reference internal" href="#">Stored Query</a><ul>
+<li><a class="reference internal" href="#retrieving-and-modifying-a-stored-query">Retrieving and modifying a stored query</a></li>
+<li><a class="reference internal" href="#executing-query">Executing query</a></li>
+<li><a class="reference internal" href="#paging">Paging</a></li>
 </ul>
 </li>
 </ul>
@@ -147,14 +148,14 @@
           
           
             
-  <li><a href="get_instance.html"
-         title="previous chapter">&laquo; Get an Instance</a></li>
-  <li><a href="edit_instance.html"
-         title="next chapter">Edit a Instance &raquo;</a></li>
+  <li><a href="../suggest/suggest.html"
+         title="previous chapter">&laquo; Suggest</a></li>
+  <li><a href="../parameters.html"
+         title="next chapter">Overriding URIs &raquo;</a></li>
           
           
             <li>
-  <a href="../../_sources/services/instance/delete_instance.txt"
+  <a href="../../_sources/services/stored_query/stored_query.txt"
      rel="nofollow">Source</a></li>
           
         </ul>
@@ -172,68 +173,49 @@
   </div>
 
   
-  <div class="section" id="delete-a-instance">
-<h1>Delete a Instance<a class="headerlink" href="#delete-a-instance" title="Permalink to this headline">¶</a></h1>
-<p>This service deletes a instance, given its context, class name and instance id.</p>
-<p><strong>Basic usage</strong></p>
-<div class="highlight-http"><pre>DELETE 'http://brainiak.semantica.dev.globoi.com/place/Country/Brazil'</pre>
-</div>
-<div class="section" id="optional-parameters">
-<h2>Optional parameters<a class="headerlink" href="#optional-parameters" title="Permalink to this headline">¶</a></h2>
-<p><strong>graph_uri</strong>: Set the graph URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME</span></tt></p>
-<p><strong>class_uri</strong>: Set the class URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME</span></tt></p>
-<p><strong>class_prefix</strong>: by default, the class URI is defined by the API&#8217;s convention (context_uri/class_name).
-If the convention doesn&#8217;t apply, provide class_prefix so the URI will be: class_prefix/class_name.  Example:</p>
-<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
-</div>
-<p>If no <strong>class_prefix</strong> had been provided, the class URI above would be resolved as: <a class="reference external" href="http://semantica.globo.com/place/City">http://semantica.globo.com/place/City</a>.
-As <strong>class_prefix</strong> was defined, the class URI will be: <a class="reference external" href="http://dbpedia.org/City">http://dbpedia.org/City</a>.</p>
-<p><strong>instance_prefix</strong>: by default, the instance URI is defined by the API&#8217;s convention (context_uri/class_name/instance_name). If the convention doesn&#8217;t apply, provide instance_prefix so the URI will be: class_instance/instance_name.  Example:</p>
-<p>examples:</p>
-<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/place/City/Campinas_SP?instance_prefix=http%3A//dbpedia.org/'</pre>
-</div>
-<p>If no <strong>instance_prefix</strong> had been provided, the instance URI above would be resolved as: <a class="reference external" href="http://semantica.globo.com/place/City/Campinas_SP">http://semantica.globo.com/place/City/Campinas_SP</a>. As <strong>instance_prefix</strong> was defined, the instance URI will be: <a class="reference external" href="http://dbpedia.org/Campinas_SP">http://dbpedia.org/Campinas_SP</a>.</p>
-<p>Other example: Instance URI is <a class="reference external" href="http://semantica.globo.com/esportes/atleta/80801">http://semantica.globo.com/esportes/atleta/80801</a></p>
-<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/esportes/Atleta/80801?instance_prefix=http://semantica.globo.com/esportes/atleta/'</pre>
-</div>
-<p>example: Instance URI is <a class="reference external" href="http://semantica.globo.com/base/Pessoa_ImportacaoEleicoes2012TSE_10000001494">http://semantica.globo.com/base/Pessoa_ImportacaoEleicoes2012TSE_10000001494</a> and Graph URI is <a class="reference external" href="http://semantica.globo.com/">http://semantica.globo.com/</a></p>
-<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/base/Pessoa/Pessoa_ImportacaoEleicoes2012TSE_10000001494?instance_prefix=base&amp;graph_uri=glb'</pre>
-</div>
-<p><strong>instance_id</strong>: Unique word identifier for an instance. This is composed with <tt class="docutils literal"><span class="pre">instance_prefix</span></tt> to form an equivalent of <tt class="docutils literal"><span class="pre">instance_uri</span></tt>.</p>
-<p><strong>instance_uri</strong>: Set the instance URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME/INSTANCE_ID</span></tt></p>
-<p><strong>expand_object_properties</strong>: If set to 1 determines that the ObjectProperties of the response will map objects as <tt class="docutils literal"><span class="pre">{&quot;&#64;id&quot;:</span> <span class="pre">&quot;object:uri&quot;,</span> <span class="pre">&quot;title&quot;:</span> <span class="pre">&quot;object</span> <span class="pre">label&quot;}</span></tt>. The default value for <tt class="docutils literal"><span class="pre">expand_object_properties</span></tt> is 0 and the objects of ObjectProperties are represented as strings such as <tt class="docutils literal"><span class="pre">&quot;object:uri&quot;</span></tt>.</p>
-<p><strong>meta_properties</strong>: If set to 0 excludes from response JSON properties like <tt class="docutils literal"><span class="pre">_base_url</span></tt>, <tt class="docutils literal"><span class="pre">&#64;id</span></tt>, <tt class="docutils literal"><span class="pre">&#64;type</span></tt>, etc. The default value is 1.</p>
-</div>
-<div class="section" id="possible-responses">
-<h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>
-<p><strong>Status 204</strong></p>
-<p>If the <a class="reference internal" href="#instance-exists">instance exists</a> and there is no <a class="reference internal" href="#conflict">conflict</a>, the response body is a 204 with no response body.</p>
-<p><strong>Status 400</strong></p>
-<p>If there are unknown parameters in the request, the response is a 400
-with a JSON informing the wrong parameters and the accepted ones.</p>
-<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-    <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 400\nArgument wrong_param is not supported&quot;</span><span class="p">]</span>
-<span class="p">}</span>
+  <div class="section" id="stored-query">
+<h1>Stored Query<a class="headerlink" href="#stored-query" title="Permalink to this headline">¶</a></h1>
+<p>In Brainiak, one can store queries that can not fit a URL description or simple filter (see FILTER P/O), giving users flexibility to explore the model with complex relationships, graph traversal, etc.</p>
+<p>First, users should register a query to be stored.</p>
+<p>Example of registering a query using the following signature:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X PUT <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_query/my_great_query&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
 </pre></div>
 </div>
-<p><strong>Status 404</strong></p>
-<p id="instance-exists">If the instance does not exist, the response is a 404 with a JSON
-informing the error</p>
-<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-  <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;HTTP error: 404\nInstance (NonExistent) of class (Country) in graph (place) was not found.&quot;</span><span class="p">]</span>
-<span class="p">}</span>
+<p>The <tt class="docutils literal"><span class="pre">X-Brainiak-Client-Id</span></tt> header is mandatory for access authentication.
+Running a query registered for a specific client id will only work with the same client id.</p>
+<p>The request payload is a JSON like:</p>
+<div class="highlight-JSON"><pre>{
+  "sparql_template": "select",
+  "description": "This query is so great, it does everything I need to and it is used in apps such and such"
+}</pre>
+</div>
+<p>TODO: Errors</p>
+<p>Now, we have a stored query.
+Where is it?</p>
+<div class="section" id="retrieving-and-modifying-a-stored-query">
+<h2>Retrieving and modifying a stored query<a class="headerlink" href="#retrieving-and-modifying-a-stored-query" title="Permalink to this headline">¶</a></h2>
+<p>We store the query in Brainiak, but users might need to retrieve and/or modify a stored query.</p>
+<p>To see registered queries with my client id, just:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
 </pre></div>
 </div>
-<p><strong>Status 409</strong></p>
-<p id="conflict">When there is a conflict, i.e. the instance is refered by another, there is a dependency between them and
-therefore, the instance cannot be deleted, for consistency. To delete an instance you should first delete
-instances that depend on it.</p>
-<p>The response status is 409 and a JSON informing the dependants is returned.</p>
-<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-  <span class="nt">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Cannot exclude instance because of the dependencies: http://semantica.globo.com/esportes/MateriaEsporte/239172, http://semantica.globo.com/esportes/MateriaEsporte/233213&quot;</span><span class="p">]</span>
-<span class="p">}</span>
+<p>To get a specific query definition, registered with my client id:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_great_query&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
 </pre></div>
 </div>
+<p>TODO: Errors</p>
+</div>
+<div class="section" id="executing-query">
+<h2>Executing query<a class="headerlink" href="#executing-query" title="Permalink to this headline">¶</a></h2>
+<p>To execute a query just use the _result modifier</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_great_query&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
+</pre></div>
+</div>
+<p>GET /_query/&lt;resource_id&gt;/_result</p>
+</div>
+<div class="section" id="paging">
+<h2>Paging<a class="headerlink" href="#paging" title="Permalink to this headline">¶</a></h2>
+<p>We strongly recommend that variable query templates for paging use naming convention of other Brainaik primitives (<tt class="docutils literal"><span class="pre">page</span></tt>, <tt class="docutils literal"><span class="pre">per_page</span></tt>).</p>
 </div>
 </div>
 

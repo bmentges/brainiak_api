@@ -21,6 +21,7 @@ see :ref:`concept-context`, :ref:`concept-schema`, :ref:`concept-collection`, an
    services/instance/instance.rst
    services/search/search.rst
    services/suggest/suggest.rst
+   services/stored_query/stored_query.rst
    services/parameters.rst
    services/links.rst
    services/pagination.rst

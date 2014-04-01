@@ -1,8 +1,18 @@
 Releases
 ========
 
-Version 2.4.4 - 2014/02/04
+
+Version 2.4.5 - 2014//
 ----------------------------
+
+Fixes
+_____
+
+- Location URI was incorrectly generated after a POST that had URL query params (eg.:?class_uri=)
+
+
+Version 2.4.4 - 2014/02/04
+--------------------------
 
 Fixes
 _____

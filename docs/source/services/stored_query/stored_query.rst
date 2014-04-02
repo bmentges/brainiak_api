@@ -1,8 +1,9 @@
-Stored Query
-============
+Stored Queries
+==============
 
-Users of the Braniak API can define and store queries that do more than retrieve objects (insatnces or classes) or
-apply simple filters to collections of instances (see FILTER P/O).
+Users of the Braniak API can define and store queries that do more than retrieve objects (instances or classes) or
+apply simple filters using p/o variables in querystring (see :doc:`/services/instance/list_instance`),
+giving users flexibility to explore the model with complex relationships, graph traversal, etc.
 
 Stored queries gives users the flexibility to explore the model with all the power of SPARQL,
 including complex relationships and graph traversal.
@@ -17,25 +18,28 @@ The service to register a query is the same used to modify it.
 The ``X-Brainiak-Client-Id`` header is mandatory for access authentication.
 The client id used during query registration must be the same used during UPDATE and DELETE.
 
-Example of registering a query using the following signature:
+Users can register a query by performing a request like:
 
 .. code-block:: bash
 
-  $ curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/_query/my_great_query' -H "X-Brainiak-Client-Id: my_client_id" -d payload.josn
+  $ curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/_query/my_query_id' -H "X-Brainiak-Client-Id: my_client_id" -d payload.json
+
+The ``my_query_id`` attribute indicates the query identification to be used when executing it.
 
 
 The payload.json is a JSON object with the query definition and metadata:
 
-.. code-block:: JSON
+.. code-block:: json
 
   {
-    "sparql_template": "select ?some_var where { ?some_var a some_graph:some_class}",
+    "sparql_template": "select %(class_uri)s from %(graph_uri)s {%(class_uri)s a owl:Class}",
     "description": "This query is so great, it does everything I need to and it is used in apps such and such"
   }
 
 Notice that just read-only (i.e. SELECT) queries would be allowed to be registered.
 Sparql queries using CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with http status code 403.
 
+If the request is successful, a 201 status code is returned.
 Malformed queries with invalid json or missing required attributes (e.g sparql_template) would be rejected with
 http status code 400.
 
@@ -43,13 +47,31 @@ http status code 400.
 Listing registered queries
 --------------------------
 
-We store the query in Brainiak, but users might need to retrieve and/or modify a previously stored query.
-
+We store the queries in Brainiak, but users might need to retrieve and/or modify a previously stored query.
 To list all queries registered with the same my_client_id, do:
 
 .. code-block:: bash
 
   $ curl -s -X GET '/_query' -H "X-Brainiak-Client-Id: my_client_id"
+
+
+The response for this query has the following format:
+
+.. code-block:: json
+
+  {
+    "client_id": "my_client_id",
+    "items": [
+      {
+        "resource_id": "my_query_id",
+        "description": "my query description",
+        "sparql_template": "select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}"
+      }
+    ]
+  }
+
+The result can be navigated using :doc:`/services/pagination`.
+If the given client_id is not found the request is invalid and will be rejected with http status code 404.
 
 
 Retrieving a query definition
@@ -59,41 +81,53 @@ To retrieve a specific query definition, registered with my_client_id:
 
 .. code-block:: bash
 
-  $ curl -s -X GET '/_query/my_great_query' -H "X-Brainiak-Client-Id: my_client_id"
+  $ curl -s -X GET '/_query/my_query_id' -H "X-Brainiak-Client-Id: my_client_id"
 
-The response is the same json object that was used during query registration, for example:
 
-.. code-block:: JSON
+The response is the same json object that was used to register the query.
+
+.. code-block:: json
 
   {
-    "sparql_template": "select ?some_var where { ?some_var a some_graph:some_class}",
-    "description": "This query is so great, it does everything I need to and it is used in apps such and such"
+    "description": "my query description",
+    "sparql_template": "select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}"
   }
 
 
-If my_great_query was not registered previously, the request is invalid and will be rejected with http status code 404.
-
+If my_query_id was not registered previously, the request is invalid and will be rejected with http status code 404.
 
 Executing query
 ---------------
 
-To execute a query just use the _result modifier
+Consider the query described above for gettings classes in a graph.
+
+.. code-block:: sql
+
+  select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}
+
+To execute a query just use the ``_result`` modifier.
 
 .. code-block:: bash
 
-  $ curl -s -X GET '/_query/my_great_query' -H "X-Brainiak-Client-Id: my_client_id"
+  $ curl -s -X GET '/_query/my_query_id/_result?graph_uri=http%3A%2F%2Fsemantica.globo.com%2Fgraph%2F' -H "X-Brainiak-Client-Id: my_client_id"
 
+The response is a JSON with a list of dictionaries, each with all the matched variables in the query.
 
+.. code-block:: json
 
-GET /_query/<resource_id>/_result
+  {
+    "item_count": 2,
+    "items": [
+      {"class_uri", "http://semantica.globo.com/graph/Class1"},
+      {"class_uri", "http://semantica.globo.com/graph/Class2"}
+    ]
+  }
 
 
 Paging
 ------
 
-We strongly recommend that variable query templates for paging use naming convention of other Brainaik primitives (``page``, ``per_page``).
+``SPARQL`` uses ``LIMIT``/``OFFSET`` query modifiers for pagination.
 
-
-Errors
-------
-
+In Brainiak, we use ``page`` and ``per_page``.
+We strongly recommend that variables in query templates use this name convention.

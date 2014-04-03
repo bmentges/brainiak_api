@@ -4,12 +4,14 @@ from brainiak.handlers import *
 ROUTES = [
     # INTERNAL resources for monitoring and meta-infromation inspection
     URLSpec(r'/healthcheck/?', HealthcheckHandler),
-    URLSpec(r'/_version/?', VersionHandler),
     URLSpec(r'/_prefixes/?', PrefixHandler),
+    URLSpec(r'/_query/(?P<query_id>[\w\-]+)/?', StoredQueryCRUDHandler),
+    URLSpec(r'/_query/(?P<query_id>[\w\-]+)/_result?', StoredQueryExecutionHandler),
     URLSpec(r'/_status/?$', StatusHandler),
     URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
     URLSpec(r'/_status/cache/?', CacheStatusHandler),
     URLSpec(r'/_status/virtuoso/?', VirtuosoStatusHandler),
+    URLSpec(r'/_version/?', VersionHandler),
 
     URLSpec(r'/_schema_list/?', RootJsonSchemaHandler),
     URLSpec(r'/(?P<context_name>[\w\-]+)/(?P<class_name>[\w\-]+)/_search/_schema_list/?', SearchJsonSchemaHandler),

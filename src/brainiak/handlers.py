@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+
+
 import sys
 import traceback
 from contextlib import contextmanager
@@ -8,7 +10,6 @@ from urllib import unquote
 from tornado.httpclient import HTTPError as HTTPClientError
 from tornado.web import HTTPError, RequestHandler
 from tornado_cors import CorsMixin, custom_decorator
-from jsonschema import validate, ValidationError
 
 # must be imported before other modules
 from brainiak.log import get_logger
@@ -37,6 +38,7 @@ from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize, build_instance_key
 from brainiak.utils.i18n import _
+from brainiak.utils.json_schema import validate_json_schema
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url, build_class_url
 from brainiak.utils.params import CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject, build_resource_url
@@ -609,10 +611,7 @@ class SuggestHandler(BrainiakRequestHandler):
             if '@context' in body_params:
                 del body_params['@context']
 
-            try:
-                validate(body_params, SUGGEST_PARAM_SCHEMA)
-            except ValidationError as ex:
-                raise HTTPError(400, log_message=_(u"Invalid json parameter passed to suggest.\n {0:s}").format(ex))
+            validate_json_schema(body_params, SUGGEST_PARAM_SCHEMA)
 
             self.query_params = ParamDict(self, **valid_params)
 
@@ -724,6 +723,21 @@ class StatusHandler(BrainiakRequestHandler):
         else:
             response = _(u"WORKING")
         self.write(response)
+
+
+class StoredQueryCRUDHandler(BrainiakRequestHandler):
+
+    def put(self, query_id):
+        validate_json_request()
+        validate_client_id_permission_if_query_exists()
+        store_query()
+        #return
+
+
+class StoredQueryExecutionHandler(BrainiakRequestHandler):
+
+    def get(self, query_id):
+        pass
 
 
 class UnmatchedHandler(BrainiakRequestHandler):

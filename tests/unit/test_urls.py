@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from brainiak.handlers import ClassHandler, VersionHandler, \
     HealthcheckHandler, VirtuosoStatusHandler, InstanceHandler, SuggestHandler
+from brainiak.routes import ROUTES
 
 
 class RouteTestCase(TestCase):
@@ -77,7 +78,7 @@ class RouteTestCase(TestCase):
         self.assertFalse(self._groups_match(match_pattern, expected_params))
 
     def _regex_for(self, klass):
-        return filter(lambda u: u.handler_class == klass, handlers.get_routes())[0].regex
+        return filter(lambda u: u.handler_class == klass, ROUTES)[0].regex
 
     def _groups_match(self, match, groups):
         if match is None or len(groups) == 0:

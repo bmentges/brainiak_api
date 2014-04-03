@@ -9,7 +9,7 @@ from tornado.web import Application as TornadoApplication
 
 from brainiak import log, settings
 from brainiak.greenlet_tornado import greenlet_set_ioloop
-from brainiak.handlers import get_routes
+from brainiak.routes import ROUTES
 from brainiak import event_bus
 from brainiak.utils.cache import flushall
 
@@ -27,7 +27,7 @@ class Application(TornadoApplication):
             event_bus.initialize()
             # Wipeout all entries to avoid inconsistencies due to algorithmic changes between releases
             flushall()
-            super(Application, self).__init__(get_routes(), debug=debug)
+            super(Application, self).__init__(ROUTES, debug=debug)
         except Exception as e:
             sys.stdout.write(u"Failed to initialize application. {0}".format(unicode(e)))
             traceback.print_exc(file=sys.stdout)

@@ -1,4 +1,3 @@
-from brainiak import handlers
 from unittest import TestCase
 
 from brainiak.handlers import ClassHandler, VersionHandler, \

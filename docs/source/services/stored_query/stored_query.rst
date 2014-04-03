@@ -8,13 +8,13 @@ giving users flexibility to explore the model with complex relationships, graph 
 Stored queries gives users the flexibility to explore the model with all the power of SPARQL,
 including complex relationships and graph traversal.
 
-First, users must register (store) a query.
+The first step is to register (store) a query.
 
 
 Creating or modifying a query definition
 ----------------------------------------
 
-The service to register a query is the same used to modify it.
+The service to register a query is the same used to update it.
 The ``X-Brainiak-Client-Id`` header is mandatory for access authentication.
 The client id used during query registration must be the same used during UPDATE and DELETE.
 
@@ -33,7 +33,7 @@ The payload.json is a JSON object with the query definition and metadata:
 
   {
     "sparql_template": "select %(class_uri)s from %(graph_uri)s {%(class_uri)s a owl:Class}",
-    "description": "This query is so great, it does everything I need to and it is used in apps such and such"
+    "description": "This query is so great, it does everything I need  and it is used in apps such and such"
   }
 
 Notice that just read-only (i.e. SELECT) queries would be allowed to be registered.

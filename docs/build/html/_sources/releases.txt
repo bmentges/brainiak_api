@@ -4,6 +4,11 @@ Releases
 
 Version 2.4.5 - 2014//
 ----------------------------
+New Features
+____________
+
+- When the header Backstage-Client-Id and X-Brainiak-Client-Id is absent, then nginx sets X-Brainiak-Client-Id with the
+  value given from  Backstage-Client-Id. This is useful for CMAaS interaction.
 
 Fixes
 _____

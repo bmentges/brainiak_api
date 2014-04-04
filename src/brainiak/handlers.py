@@ -33,12 +33,14 @@ from brainiak.schema.get_class import SchemaNotFound
 from brainiak.search.search import do_search
 from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.search.json_schema import schema as search_schema
+from brainiak.stored_query.crud import store_query
+from brainiak.stored_query.json_schema import query_crud_schema
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest
 from brainiak.utils import cache
 from brainiak.utils.cache import memoize, build_instance_key
 from brainiak.utils.i18n import _
-from brainiak.utils.json_schema import validate_json_schema
+from brainiak.utils.json import validate_json_schema, get_json_request_as_dict
 from brainiak.utils.links import build_schema_url_for_instance, content_type_profile, build_schema_url, build_class_url
 from brainiak.utils.params import CLASS_PARAMS, InvalidParam, LIST_PARAMS, GRAPH_PARAMS, INSTANCE_PARAMS, PAGING_PARAMS, DEFAULT_PARAMS, SEARCH_PARAMS, RequiredParamMissing, DefaultParamsDict, ParamDict
 from brainiak.utils.resources import check_messages_when_port_is_mentioned, LazyObject, build_resource_url
@@ -727,11 +729,17 @@ class StatusHandler(BrainiakRequestHandler):
 
 class StoredQueryCRUDHandler(BrainiakRequestHandler):
 
+    #SUPPORTED_METHODS = ("PUT")  # TODO delete
+
+    @greenlet_asynchronous
     def put(self, query_id):
-        validate_json_request()
-        validate_client_id_permission_if_query_exists()
-        store_query()
+        json_payload_object = get_json_request_as_dict(self.request.body)
+        validate_json_schema(json_payload_object, query_crud_schema)
+        # validate client id
+        # validate_client_id_permission_if_query_exists()
+        store_query(json_payload_object, query_id)
         #return
+        return {}
 
 
 class StoredQueryExecutionHandler(BrainiakRequestHandler):

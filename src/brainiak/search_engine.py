@@ -74,3 +74,26 @@ def _build_elasticsearch_analyze_url(indexes, analyzer, target):
         request_url = "http://{0}/{1}/_analyze?text={2}".format(
             ELASTICSEARCH_ENDPOINT, index_path, target)
     return request_url
+
+
+def save_instance(entry, index_name, type_name, instance_id):
+    request_url = "http://{0}/{1}/{2}/{3}".format(
+        ELASTICSEARCH_ENDPOINT, index_name, type_name, instance_id
+        )
+
+    request_params = {
+        "url": unicode(request_url),
+        "method": u"PUT",
+        "body": unicode(json.dumps(entry))
+    }
+    request = HTTPRequest(**request_params)
+    time_i = time.time()
+    response = greenlet_fetch(request)
+    time_f = time.time()
+
+    request_params["time_diff"] = time_f - time_i
+    log_msg = format_post % request_params
+    log.logger.info(log_msg)
+
+    # process_response
+    pass

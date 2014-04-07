@@ -736,7 +736,7 @@ class StoredQueryCRUDHandler(BrainiakRequestHandler):
         # validate client id
         # validate_client_id_permission_if_query_exists()
 
-        # TODO return instance data?
+        # TODO return instance data when editing it?
         status = store_query(json_payload_object, query_id)
         return status
 

@@ -3,15 +3,14 @@ import time
 import urllib
 
 from tornado.httpclient import HTTPRequest
-from tornado.httpclient import HTTPError as ClientHTTPError
-from tornado.web import HTTPError
+from tornado.httpclient import HTTPError
 
 from brainiak import log
 from brainiak.greenlet_tornado import greenlet_fetch
 from brainiak.settings import ELASTICSEARCH_ENDPOINT
 
 
-format_post = u"ELASTICSEARCH - %(method)s - %(url)s - %(status)s - [time: %(time_diff)s] - BODY - %(body)s"
+REQUEST_LOG_FORMAT = u"ELASTICSEARCH - %(method)s - %(url)s - %(status)s - [time: %(time_diff)s] - BODY - %(body)s"
 
 class ElasticSearchException(Exception):
     pass
@@ -26,12 +25,7 @@ def run_search(body, indexes=None):
         "body": unicode(json.dumps(body))
     }
 
-    response, time_diff = _do_request(request_params)
-    request_params["status"] = response.code
-    request_params["time_diff"] = time_diff
-
-    log_msg = format_post % request_params
-    log.logger.info(log_msg)
+    response = _get_response(request_params)
 
     return json.loads(response.body)
 
@@ -57,7 +51,7 @@ def run_analyze(target, analyzer, indexes):
         "headers": {u"Content-Type": u"application/x-www-form-urlencoded"},
     }
 
-    response, time_diff = _do_request(request_params)
+    response = _get_response(request_params)
 
     return json.loads(response.body)
 
@@ -90,26 +84,23 @@ def save_instance(entry, index_name, type_name, instance_id):
         "body": unicode(json.dumps(entry))
     }
 
-    response, time_diff = _do_request(request_params)
-    request_params["status"] = response.code
-    request_params["time_diff"] = time_diff
+    response = _get_response(request_params)
 
-    log_msg = format_post % request_params
-    log.logger.info(log_msg)
+    return response.code
 
-    if response.code in (200, 201):
-        creation_msg = u"Instance saved in Elastic Search.\n" +\
-            u"  URL: {0}".format(request_url)
-        log.logger.info(creation_msg)
-        return response.code
-    else:
-        exception_msg = "Error on Elastic Search when saving an instance.\n  {0} {1} - {2} \n  Body: {3}"
-        exception_msg = exception_msg.format(
-            request_params["method"],
-            request_params["url"],
-            response.code,
-            response.body)
-        raise HTTPError(response.code, log_message=exception_msg)
+def get_instance(index_name, type_name, instance_id):
+    request_url = "http://{0}/{1}/{2}/{3}".format(
+        ELASTICSEARCH_ENDPOINT, index_name, type_name, instance_id
+        )
+
+    request_params = {
+        "url": unicode(request_url),
+        "method": u"GET"
+    }
+
+    response = _get_response(request_params)
+
+    return json.loads(response.body)
 
 
 def _do_request(request_params):
@@ -118,4 +109,22 @@ def _do_request(request_params):
     response = greenlet_fetch(request)
     time_f = time.time()
     time_diff = time_f - time_i
-    return (response, time_diff)
+
+    request_params["status"] = response.code
+    request_params["time_diff"] = time_diff
+    request_params["body"] = response.body
+
+    log_msg = REQUEST_LOG_FORMAT % request_params
+    log.logger.info(log_msg)
+
+    return response
+
+
+def _get_response(request_params):
+    try:
+        response = _do_request(request_params)
+        return response
+    except HTTPError as e:
+        # Throwing explictly tornado.httpclient.HTTPError so that
+        #   handler can detect it as a backend service error
+        raise e

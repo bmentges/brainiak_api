@@ -729,17 +729,16 @@ class StatusHandler(BrainiakRequestHandler):
 
 class StoredQueryCRUDHandler(BrainiakRequestHandler):
 
-    #SUPPORTED_METHODS = ("PUT")  # TODO delete
-
     @greenlet_asynchronous
     def put(self, query_id):
         json_payload_object = get_json_request_as_dict(self.request.body)
         validate_json_schema(json_payload_object, query_crud_schema)
         # validate client id
         # validate_client_id_permission_if_query_exists()
-        store_query(json_payload_object, query_id)
-        #return
-        return {}
+
+        # TODO return instance data?
+        status = store_query(json_payload_object, query_id)
+        return status
 
 
 class StoredQueryExecutionHandler(BrainiakRequestHandler):

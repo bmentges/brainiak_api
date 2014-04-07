@@ -89,8 +89,9 @@ class MockRequest(object):
 
 class MockResponse(object):
 
-    def __init__(self, body):
+    def __init__(self, body, code):
         self.body = body
+        self.code = code
 
 
 class MockHandler():

@@ -6,6 +6,8 @@ from unittest import TestCase
 
 from mock import patch, Mock
 
+from tornado.web import HTTPError
+
 from brainiak import search_engine
 from tests.mocks import MockResponse
 
@@ -78,23 +80,81 @@ class SearchEngineTestCase(TestCase):
             target="text with spaces")
         self.assertEquals(expected_url, response)
 
-    @patch("brainiak.search_engine.greenlet_fetch", return_value=MockResponse("{}"))
-    def test_run_analyze(self, greenlet_fetch_mock):
+    @patch("brainiak.search_engine._do_request",
+           return_value=(MockResponse('{}', 200), 12345))
+    def test_run_analyze(self, request_mock):
         response = search_engine.run_analyze(
             target="sometext",
             analyzer="default",
             indexes="index1")
         self.assertEquals(response, {})
 
-        call_args = greenlet_fetch_mock.call_args[0][0]
-        self.assertEqual(call_args.url, u'http://localhost:9200/index1/_analyze?text=sometext')
-        self.assertEqual(call_args.method, u'GET')
-        self.assertEqual(call_args.headers, {u'Content-Type': u'application/x-www-form-urlencoded'})
+        call_args = request_mock.call_args[0][0]
+        self.assertEqual(call_args["url"], u'http://localhost:9200/index1/_analyze?text=sometext')
+        self.assertEqual(call_args["method"], u'GET')
+        self.assertEqual(call_args["headers"], {u'Content-Type': u'application/x-www-form-urlencoded'})
 
     @patch("brainiak.search_engine.log.logger.info")
-    @patch("brainiak.search_engine.log.logger", logging.getLogger("test"))
-    @patch("brainiak.search_engine.greenlet_fetch", return_value=MockResponse("{}"))
-    def test_run_search(self, greenlet_fetch_mock, info_mock):
+    @patch("brainiak.search_engine.log.logger",
+           logging.getLogger("test"))
+    @patch("brainiak.search_engine._do_request",
+           return_value=(MockResponse("{}", 200), 12345))
+    def test_run_search(self, request_mock, info_mock):
+
+        response = search_engine.run_search(
+            body={},
+            indexes=["index1"]
+        )
+        self.assertEquals(response, {})
+
+        call_args = request_mock.call_args[0][0]
+        self.assertEqual(call_args["url"], u'http://localhost:9200/index1/_search')
+        self.assertEqual(call_args["method"], u'POST')
+        self.assertEqual(call_args["headers"], {u'Content-Type': u'application/x-www-form-urlencoded'})
+        self.assertEqual(call_args["body"], u"{}")
+
+        msgs = info_mock.call_args
+        msg1 = msgs[0][0]
+        msg2 = msgs[1]
+
+        expected_msg1 = u'ELASTICSEARCH - POST - http://localhost:9200/index1/_search - 200 - [time: 12345] - BODY - {}'
+        expected_msg2 = {}
+        self.assertEqual(msg1, expected_msg1)
+        self.assertEqual(msg2, expected_msg2)
+
+    @patch("brainiak.search_engine.log.logger.info")
+    @patch("brainiak.search_engine._do_request",
+           return_value=(MockResponse("{}", 200), 12345))
+    def test_save_instance_return_200(self, request_mock, mock_log_info):
+        response = search_engine.save_instance({"test": "a"}, "index", "type", "id")
+        expected_url = u"http://localhost:9200/index/type/id"
+        expected_method = "PUT"
+        expected_body = u'{"test": "a"}'
+        call_args = request_mock.call_args[0][0]
+        self.assertEqual(call_args["url"], expected_url)
+        self.assertEqual(call_args["method"], expected_method)
+        self.assertEqual(call_args["body"], expected_body)
+
+        creation_msg = u"Instance saved in Elastic Search.\n" +\
+            u"  URL: {0}".format(expected_url)
+        mock_log_info.assert_called_with(creation_msg)
+
+        expected_returned_code = 200
+        self.assertEquals(response, expected_returned_code)
+
+    @patch("brainiak.search_engine._do_request",
+           return_value=(MockResponse('{"error"}', 400), 12345))
+    def test_save_instance_return_400(self, request_mock):
+        expected_msg = 'Error on Elastic Search when saving an instance.\n  PUT http://localhost:9200/index/type/id - 400 \n  Body: {"error"}'
+        try:
+            search_engine.save_instance({"error": "json not in conformance with mapping, ES returns 400"}, "index", "type", "id")
+        except HTTPError as e:
+            self.assertEqual(e.status_code, 400)
+            self.assertEqual(e.log_message, expected_msg)
+
+    @patch("brainiak.search_engine.greenlet_fetch",
+           return_value=MockResponse("{}", 200))
+    def test_do_request(self, fetch_mock):
         # mock time.time
         time_patcher = patch.object(
             search_engine, 'time',
@@ -105,23 +165,7 @@ class SearchEngineTestCase(TestCase):
         self.addCleanup(time_patcher.stop)
         # end mock time.time
 
-        response = search_engine.run_search(
-            body={},
-            indexes=["index1"]
-        )
-        self.assertEquals(response, {})
-
-        call_args = greenlet_fetch_mock.call_args[0][0]
-        self.assertEqual(call_args.url, u'http://localhost:9200/index1/_search')
-        self.assertEqual(call_args.method, u'POST')
-        self.assertEqual(call_args.headers, {u'Content-Type': u'application/x-www-form-urlencoded'})
-        self.assertEqual(call_args.body, u"{}")
-
-        msgs = info_mock.call_args
-        msg1 = msgs[0][0]
-        msg2 = msgs[1]
-
-        expected_msg1 = u'ELASTICSEARCH - http://localhost:9200/index1/_search - POST [time: 0] - QUERY - {}'
-        expected_msg2 = {}
-        self.assertEqual(msg1, expected_msg1)
-        self.assertEqual(msg2, expected_msg2)
+        request_params = {"url": "http://a-url.com"}
+        response, time_diff = search_engine._do_request(request_params)
+        self.assertEquals(response.code, 200)
+        self.assertEquals(time_diff, 0)

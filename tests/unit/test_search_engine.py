@@ -157,7 +157,7 @@ class SearchEngineTestCase(TestCase):
             self.assertEqual(e.log_message, expected_msg)
 
     @patch("brainiak.search_engine._do_request",
-          return_value=MockResponse("{}", 200))
+           return_value=MockResponse("{}", 200))
     def test_get_response(self, mock_do_request):
         expected_code = 200
         response = search_engine._get_response({})

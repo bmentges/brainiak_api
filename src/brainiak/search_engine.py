@@ -12,8 +12,10 @@ from brainiak.settings import ELASTICSEARCH_ENDPOINT
 
 REQUEST_LOG_FORMAT = u"ELASTICSEARCH - %(method)s - %(url)s - %(status)s - [time: %(time_diff)s] - BODY - %(body)s"
 
+
 class ElasticSearchException(Exception):
     pass
+
 
 def run_search(body, indexes=None):
     request_url = _build_elasticsearch_request_url(indexes)
@@ -75,8 +77,7 @@ def _build_elasticsearch_analyze_url(indexes, analyzer, target):
 
 def save_instance(entry, index_name, type_name, instance_id):
     request_url = "http://{0}/{1}/{2}/{3}".format(
-        ELASTICSEARCH_ENDPOINT, index_name, type_name, instance_id
-        )
+        ELASTICSEARCH_ENDPOINT, index_name, type_name, instance_id)
 
     request_params = {
         "url": unicode(request_url),
@@ -88,10 +89,10 @@ def save_instance(entry, index_name, type_name, instance_id):
 
     return response.code
 
+
 def get_instance(index_name, type_name, instance_id):
     request_url = "http://{0}/{1}/{2}/{3}".format(
-        ELASTICSEARCH_ENDPOINT, index_name, type_name, instance_id
-        )
+        ELASTICSEARCH_ENDPOINT, index_name, type_name, instance_id)
 
     request_params = {
         "url": unicode(request_url),

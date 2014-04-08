@@ -7,7 +7,7 @@ from brainiak import settings
 class TestCase(unittest.TestCase):
 
     def test_default_local_variables(self):
-        self.assertEqual(settings.CORS_HEADERS, 'Content-Type, Authorization')
+        self.assertEqual(settings.CORS_HEADERS, 'Content-Type, Authorization, Backstage-Client-Id')
         self.assertEqual(settings.DEBUG, True)
         self.assertEqual(settings.DEFAULT_LANG, 'pt')
         self.assertEqual(settings.DEFAULT_PAGE, '0')

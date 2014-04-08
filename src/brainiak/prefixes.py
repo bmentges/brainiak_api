@@ -59,7 +59,8 @@ LEGACY_PREFIXES = {
     "tvg": "http://semantica.globo.com/tvg/",
     "eureka": "http://semantica.globo.com/eureka/",
     "tecnologia": "http://semantica.globo.com/tecnologia/",
-    "techtudo": "http://semantica.globo.com/techtudo/"
+    "techtudo": "http://semantica.globo.com/techtudo/",
+    "cervejas": "http://semantica.globo.com/cervejas/"
 }
 
 _MAP_SLUG_TO_PREFIX.update(STANDARD_PREFIXES)

@@ -18,7 +18,8 @@ class PrefixesTestCase(unittest.TestCase):
                          'eureka', 'event', 'foaf', 'g1', 'geo', 'glb', 'organization',
                          'owl', 'person', 'place', 'rdf', 'rdfs', 'schema', 'tecnologia', 'techtudo', 'time', 'tvg',
                          'upper', 'xsd']
-        self.assertEqual(sorted(existing_keys), sorted(expected_keys))
+        for key in expected_keys:
+            self.assertIn(key, existing_keys)
 
     def test_prefix_to_slug(self):
         self.assertEqual(prefix_to_slug('http://www.w3.org/1999/02/22-rdf-syntax-ns#'), 'rdf')

@@ -1,6 +1,12 @@
 Stored Queries
 ==============
 
+.. warning::
+
+   This service is underdevelopment. The features described here are just a specification of what is being developed.
+   This warning is going to be removed after the features are implemented and deployed.
+
+
 Users of the Braniak API can define and store queries that do more than retrieve objects (instances or classes) or
 apply simple filters using p/o variables in querystring (see :doc:`/services/instance/list_instance`),
 giving users flexibility to explore the model with complex relationships, graph traversal, etc.
@@ -22,12 +28,14 @@ Users can register a query by performing a request like:
 
 .. code-block:: bash
 
-  $ curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/_query/my_query_id' -H "X-Brainiak-Client-Id: my_client_id" -d payload.json
+  $ curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/_query/my_query_id' -H "X-Brainiak-Client-Id: my_client_id" -T payload.json
 
 The ``my_query_id`` attribute indicates the query identification to be used when executing it.
 
 
 The payload.json is a JSON object with the query definition and metadata:
+The required attributes are: sparql_template and description.
+
 
 .. code-block:: json
 
@@ -37,11 +45,11 @@ The payload.json is a JSON object with the query definition and metadata:
   }
 
 Notice that just read-only (i.e. SELECT) queries would be allowed to be registered.
-Sparql queries using CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with http status code 403.
+Sparql queries using CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with HTTP status code 403.
 
 If the request is successful, a 201 status code is returned.
 Malformed queries with invalid json or missing required attributes (e.g sparql_template) would be rejected with
-http status code 400.
+HTTP status code 400.
 
 
 Listing registered queries
@@ -71,7 +79,7 @@ The response for this query has the following format:
   }
 
 The result can be navigated using :doc:`/services/pagination`.
-If the given client_id is not found the request is invalid and will be rejected with http status code 404.
+If the given client_id is not found the request is invalid and will be rejected with HTTPstatus code 404.
 
 
 Retrieving a query definition
@@ -94,10 +102,14 @@ The response is the same json object that was used to register the query.
   }
 
 
-If my_query_id was not registered previously, the request is invalid and will be rejected with http status code 404.
+If my_query_id was not registered previously, the request is invalid and will be rejected with HTTP status code 404.
 
-Executing query
----------------
+
+Deleting a query
+----------------
+
+Executing a query
+-----------------
 
 Consider the query described above for gettings classes in a graph.
 

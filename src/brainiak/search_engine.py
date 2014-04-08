@@ -119,6 +119,7 @@ def delete_instance(index_name, type_name, instance_id):
 
     return response is not None
 
+
 def _do_request(request_params):
     request = HTTPRequest(**request_params)
     time_i = time.time()

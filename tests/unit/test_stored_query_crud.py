@@ -26,8 +26,8 @@ class StoredQueryCRUDTestCase(TestCase):
     @patch("brainiak.stored_query.crud.stored_query_exists",
            return_value=False)
     def test_store_query_edition(self,
-                                  mock_stored_query_exists,
-                                  mock_save_instance):
+                                 mock_stored_query_exists,
+                                 mock_save_instance):
         expected_response = 201
         entry = {
             "sparql_template": "select ?class from <%(graph_uri)s> {?class a owl:Class}",
@@ -51,11 +51,17 @@ class StoredQueryCRUDTestCase(TestCase):
             self.assertEqual(response, query_example["_source"])
 
     def test_get_stored_query_is_none(self):
+        query_example = {
+            "_source": {
+                "sparql_template": "",
+                "description": ""
+            }
+        }
         query_id = "my_query_id"
         with patch("brainiak.stored_query.crud.get_instance",
-                   return_value=None):
-            self.assertIsNone(crud.get_stored_query(query_id))
-
+                   return_value=query_example):
+            response = crud.get_stored_query(query_id)
+            self.assertEqual(response, query_example["_source"])
 
     @patch("brainiak.stored_query.crud.get_stored_query",
            return_value=None)

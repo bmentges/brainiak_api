@@ -21,14 +21,17 @@ Creating or modifying a query definition
 ----------------------------------------
 
 The service to register a query is the same used to update it.
-The ``X-Brainiak-Client-Id`` header is mandatory for access authentication.
-The client id used during query registration must be the same used during UPDATE and DELETE.
+.. /// WARNING \\\ Commented out mentions to client-id because this first relase will not have authorization
+.. The ``X-Brainiak-Client-Id`` header is mandatory for access authentication.
+.. The client id used during query registration must be the same used during UPDATE and DELETE.
 
 Users can register a query by performing a request like:
 
 .. code-block:: bash
 
-  $ curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/_query/my_query_id' -H "X-Brainiak-Client-Id: my_client_id" -T payload.json
+  $ curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/_query/my_query_id'  -T payload.json
+
+.. -H "X-Brainiak-Client-Id: my_client_id"
 
 The ``my_query_id`` attribute indicates the query identification to be used when executing it.
 
@@ -44,23 +47,28 @@ The required attributes are: sparql_template and description.
     "description": "This query is so great, it does everything I need  and it is used in apps such and such"
   }
 
-Notice that just read-only (i.e. SELECT) queries would be allowed to be registered.
-Sparql queries using CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with HTTP status code 403.
+When the request is successful for creating a query, a ``201`` status code is returned.
+For modifying existent queries, a ``200`` status code is returned.
 
-If the request is successful, a 201 status code is returned.
+Notice that just read-only (i.e. SELECT) queries would be allowed to be registered.
+Sparql queries using CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with HTTP status code ``403``.
+
 Malformed queries with invalid json or missing required attributes (e.g sparql_template) would be rejected with
-HTTP status code 400.
+HTTP status code ``400``.
 
 
 Listing registered queries
 --------------------------
 
 We store the queries in Brainiak, but users might need to retrieve and/or modify a previously stored query.
-To list all queries registered with the same my_client_id, do:
+To list all queries registered, do:
+.. To list all queries registered with the same my_client_id, do:
 
 .. code-block:: bash
 
-  $ curl -s -X GET '/_query' -H "X-Brainiak-Client-Id: my_client_id"
+  $ curl -s -X GET 'http://brainiak.semantica.dev.globoi.com/_query'
+
+.. -H "X-Brainiak-Client-Id: my_client_id"
 
 
 The response for this query has the following format:
@@ -79,20 +87,22 @@ The response for this query has the following format:
   }
 
 The result can be navigated using :doc:`/services/pagination`.
-If the given client_id is not found the request is invalid and will be rejected with HTTPstatus code 404.
+If the given client_id is not found the request is invalid and will be rejected with HTTPstatus code ``404``.
 
 
-Retrieving a query definition
+Retrieving a specific query definition
 -----------------------------
 
-To retrieve a specific query definition, registered with my_client_id:
+To retrieve a specific query definition, registered with my_query_id:
 
 .. code-block:: bash
 
-  $ curl -s -X GET '/_query/my_query_id' -H "X-Brainiak-Client-Id: my_client_id"
+  $ curl -s -X GET '/_query/my_query_id'
+
+.. -H "X-Brainiak-Client-Id: my_client_id"
 
 
-The response is the same json object that was used to register the query.
+The response is the same JSON object that was used to register the query.
 
 .. code-block:: json
 
@@ -102,11 +112,21 @@ The response is the same json object that was used to register the query.
   }
 
 
-If my_query_id was not registered previously, the request is invalid and will be rejected with HTTP status code 404.
+If my_query_id was not registered previously, the request is invalid and will be rejected with HTTP status code ``404``.
 
 
 Deleting a query
 ----------------
+
+To delete a stored query, registered with my_query_id:
+
+.. code-block:: bash
+
+  $ curl -s -X DELETE '/_query/my_query_id'
+
+If the query exists and was successfuly deleted, a ``204`` status code is returned.
+If the query does not exists and there was an attempt to delete it, a ``404`` status code will be returned.
+
 
 Executing a query
 -----------------
@@ -121,7 +141,8 @@ To execute a query just use the ``_result`` modifier.
 
 .. code-block:: bash
 
-  $ curl -s -X GET '/_query/my_query_id/_result?graph_uri=http%3A%2F%2Fsemantica.globo.com%2Fgraph%2F' -H "X-Brainiak-Client-Id: my_client_id"
+  $ curl -s -X GET '/_query/my_query_id/_result?graph_uri=http%3A%2F%2Fsemantica.globo.com%2Fgraph%2F'
+.. -H "X-Brainiak-Client-Id: my_client_id"
 
 The response is a JSON with a list of dictionaries, each with all the matched variables in the query.
 

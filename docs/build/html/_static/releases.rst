@@ -3,12 +3,15 @@ Releases
 
 
 Version 2.4.5 - 2014//
-----------------------------
+----------------------
+
 New Features
 ____________
 
-- When the header Backstage-Client-Id and X-Brainiak-Client-Id is absent, then nginx sets X-Brainiak-Client-Id with the
-  value given from  Backstage-Client-Id. This is useful for CMAaS interaction.
+- When the header ``Backstage-Client-Id`` is present and ``X-Brainiak-Client-Id`` is absent, then nginx sets X-Brainiak-Client-Id with the value given from  Backstage-Client-Id. This is useful for CMAaS interaction.
+- Adding ``Backstage-Client-Id`` to config.settings CORS_HEADRES
+- Adding graph 'cervejas' to prefixes to enable a test for the Backstage team
+
 
 Fixes
 _____

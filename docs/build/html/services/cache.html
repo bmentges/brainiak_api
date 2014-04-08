@@ -189,14 +189,14 @@ To check if cache is enabled for some resource, run:</p>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 204 No Content
 Server: nginx
-Date: Wed, 02 Apr 2014 20:55:26 GMT
+Date: Tue, 08 Apr 2014 22:38:00 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 0
 Connection: keep-alive
 Access-Control-Allow-Methods: GET, OPTIONS, PURGE
 Access-Control-Max-Age: 86400
 Access-Control-Allow-Origin: *
-Access-Control-Allow-Headers: Content-Type, Authorization
+Access-Control-Allow-Headers: Content-Type, Authorization, Backstage-Client-Id
 </pre></div>
 </div>
 <p>If cache is enabled, <tt class="docutils literal"><span class="pre">PURGE</span></tt> will be shown on the response header <tt class="docutils literal"><span class="pre">Access-Control-Allow-Methods</span></tt>.</p>
@@ -219,13 +219,13 @@ Access-Control-Allow-Headers: Content-Type, Authorization
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Wed, 02 Apr 2014 20:55:27 GMT
-Content-Type: application/json; profile=http://localhost:8090/_schema_list
-Content-Length: 983
+Date: Tue, 08 Apr 2014 22:38:01 GMT
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
+Content-Length: 1008
 Connection: keep-alive
-X-Cache: MISS from localhost:8090
-Last-Modified: Wed, 02 Apr 2014 17:55:27 -0300
-Etag: &quot;6992c285caf8615306994d4f71487a992bd0ae2d&quot;
+X-Cache: MISS from brainiak.semantica.dev.globoi.com
+Last-Modified: Tue, 08 Apr 2014 19:38:01 -0300
+Etag: &quot;4d53e4145ce64273c7604ad86c4cc81d5dddbb05&quot;
 Access-Control-Allow-Origin: *
 </pre></div>
 </div>
@@ -235,13 +235,13 @@ Access-Control-Allow-Origin: *
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Wed, 02 Apr 2014 20:55:28 GMT
-Content-Type: application/json; profile=http://localhost:8090/_schema_list
-Content-Length: 983
+Date: Tue, 08 Apr 2014 22:38:02 GMT
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
+Content-Length: 1008
 Connection: keep-alive
-X-Cache: HIT from localhost:8090
-Last-Modified: Wed, 02 Apr 2014 17:55:27 -0300
-Etag: &quot;ad4cf5208b7eb27d1b16c157477075bfc2131cdc&quot;
+X-Cache: HIT from brainiak.semantica.dev.globoi.com
+Last-Modified: Tue, 08 Apr 2014 19:38:01 -0300
+Etag: &quot;f288c34015f52392c33fd6bffd95e7bfb25c4a0a&quot;
 Access-Control-Allow-Origin: *
 </pre></div>
 </div>
@@ -262,7 +262,7 @@ but when purging the instance all versions should be removed from the cache disr
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Wed, 02 Apr 2014 20:55:28 GMT
+Date: Tue, 08 Apr 2014 22:38:02 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 0
 Connection: keep-alive

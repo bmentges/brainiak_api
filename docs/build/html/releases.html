@@ -273,8 +273,9 @@
 <div class="section" id="new-features">
 <h3>New Features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>When the header Backstage-Client-Id and X-Brainiak-Client-Id is absent, then nginx sets X-Brainiak-Client-Id with the
-value given from  Backstage-Client-Id. This is useful for CMAaS interaction.</li>
+<li>When the header <tt class="docutils literal"><span class="pre">Backstage-Client-Id</span></tt> is present and <tt class="docutils literal"><span class="pre">X-Brainiak-Client-Id</span></tt> is absent, then nginx sets X-Brainiak-Client-Id with the value given from  Backstage-Client-Id. This is useful for CMAaS interaction.</li>
+<li>Adding <tt class="docutils literal"><span class="pre">Backstage-Client-Id</span></tt> to config.settings CORS_HEADRES</li>
+<li>Adding graph &#8216;cervejas&#8217; to prefixes to enable a test for the Backstage team</li>
 </ul>
 </div>
 <div class="section" id="fixes">

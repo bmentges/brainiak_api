@@ -139,8 +139,9 @@
 <li><a class="reference internal" href="#">Stored Queries</a><ul>
 <li><a class="reference internal" href="#creating-or-modifying-a-query-definition">Creating or modifying a query definition</a></li>
 <li><a class="reference internal" href="#listing-registered-queries">Listing registered queries</a></li>
-<li><a class="reference internal" href="#retrieving-a-query-definition">Retrieving a query definition</a></li>
-<li><a class="reference internal" href="#executing-query">Executing query</a></li>
+<li><a class="reference internal" href="#retrieving-a-specific-query-definition">Retrieving a specific query definition</a></li>
+<li><a class="reference internal" href="#deleting-a-query">Deleting a query</a></li>
+<li><a class="reference internal" href="#executing-a-query">Executing a query</a></li>
 <li><a class="reference internal" href="#paging">Paging</a></li>
 </ul>
 </li>
@@ -177,6 +178,11 @@
   
   <div class="section" id="stored-queries">
 <h1>Stored Queries<a class="headerlink" href="#stored-queries" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This service is underdevelopment. The features described here are just a specification of what is being developed.
+This warning is going to be removed after the features are implemented and deployed.</p>
+</div>
 <p>Users of the Braniak API can define and store queries that do more than retrieve objects (instances or classes) or
 apply simple filters using p/o variables in querystring (see <a class="reference internal" href="../instance/list_instance.html"><em>List of Instances</em></a>),
 giving users flexibility to explore the model with complex relationships, graph traversal, etc.</p>
@@ -186,31 +192,35 @@ including complex relationships and graph traversal.</p>
 <div class="section" id="creating-or-modifying-a-query-definition">
 <h2>Creating or modifying a query definition<a class="headerlink" href="#creating-or-modifying-a-query-definition" title="Permalink to this headline">¶</a></h2>
 <p>The service to register a query is the same used to update it.
-The <tt class="docutils literal"><span class="pre">X-Brainiak-Client-Id</span></tt> header is mandatory for access authentication.
-The client id used during query registration must be the same used during UPDATE and DELETE.</p>
+.. /// WARNING \Commented out mentions to client-id because this first relase will not have authorization
+.. The <tt class="docutils literal"><span class="pre">X-Brainiak-Client-Id</span></tt> header is mandatory for access authentication.
+.. The client id used during query registration must be the same used during UPDATE and DELETE.</p>
 <p>Users can register a query by performing a request like:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X PUT <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_query/my_query_id&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span> -d payload.json
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X PUT <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_query/my_query_id&#39;</span>  -T payload.json
 </pre></div>
 </div>
 <p>The <tt class="docutils literal"><span class="pre">my_query_id</span></tt> attribute indicates the query identification to be used when executing it.</p>
-<p>The payload.json is a JSON object with the query definition and metadata:</p>
+<p>The payload.json is a JSON object with the query definition and metadata:
+The required attributes are: sparql_template and description.</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
   <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;select %(class_uri)s from %(graph_uri)s {%(class_uri)s a owl:Class}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;This query is so great, it does everything I need  and it is used in apps such and such&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>When the request is successful for creating a query, a <tt class="docutils literal"><span class="pre">201</span></tt> status code is returned.
+For modifying existent queries, a <tt class="docutils literal"><span class="pre">200</span></tt> status code is returned.</p>
 <p>Notice that just read-only (i.e. SELECT) queries would be allowed to be registered.
-Sparql queries using CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with http status code 403.</p>
-<p>If the request is successful, a 201 status code is returned.
-Malformed queries with invalid json or missing required attributes (e.g sparql_template) would be rejected with
-http status code 400.</p>
+Sparql queries using CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with HTTP status code <tt class="docutils literal"><span class="pre">403</span></tt>.</p>
+<p>Malformed queries with invalid json or missing required attributes (e.g sparql_template) would be rejected with
+HTTP status code <tt class="docutils literal"><span class="pre">400</span></tt>.</p>
 </div>
 <div class="section" id="listing-registered-queries">
 <h2>Listing registered queries<a class="headerlink" href="#listing-registered-queries" title="Permalink to this headline">¶</a></h2>
 <p>We store the queries in Brainiak, but users might need to retrieve and/or modify a previously stored query.
-To list all queries registered with the same my_client_id, do:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
+To list all queries registered, do:
+.. To list all queries registered with the same my_client_id, do:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_query&#39;</span>
 </pre></div>
 </div>
 <p>The response for this query has the following format:</p>
@@ -227,30 +237,39 @@ To list all queries registered with the same my_client_id, do:</p>
 </pre></div>
 </div>
 <p>The result can be navigated using <a class="reference internal" href="../pagination.html"><em>Pagination</em></a>.
-If the given client_id is not found the request is invalid and will be rejected with http status code 404.</p>
+If the given client_id is not found the request is invalid and will be rejected with HTTPstatus code <tt class="docutils literal"><span class="pre">404</span></tt>.</p>
 </div>
-<div class="section" id="retrieving-a-query-definition">
-<h2>Retrieving a query definition<a class="headerlink" href="#retrieving-a-query-definition" title="Permalink to this headline">¶</a></h2>
-<p>To retrieve a specific query definition, registered with my_client_id:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_query_id&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
+<div class="section" id="retrieving-a-specific-query-definition">
+<h2>Retrieving a specific query definition<a class="headerlink" href="#retrieving-a-specific-query-definition" title="Permalink to this headline">¶</a></h2>
+<p>To retrieve a specific query definition, registered with my_query_id:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_query_id&#39;</span>
 </pre></div>
 </div>
-<p>The response is the same json object that was used to register the query.</p>
+<p>The response is the same JSON object that was used to register the query.</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
   <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;my query description&quot;</span><span class="p">,</span>
   <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>If my_query_id was not registered previously, the request is invalid and will be rejected with http status code 404.</p>
+<p>If my_query_id was not registered previously, the request is invalid and will be rejected with HTTP status code <tt class="docutils literal"><span class="pre">404</span></tt>.</p>
 </div>
-<div class="section" id="executing-query">
-<h2>Executing query<a class="headerlink" href="#executing-query" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="deleting-a-query">
+<h2>Deleting a query<a class="headerlink" href="#deleting-a-query" title="Permalink to this headline">¶</a></h2>
+<p>To delete a stored query, registered with my_query_id:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X DELETE <span class="s1">&#39;/_query/my_query_id&#39;</span>
+</pre></div>
+</div>
+<p>If the query exists and was successfuly deleted, a <tt class="docutils literal"><span class="pre">204</span></tt> status code is returned.
+If the query does not exists and there was an attempt to delete it, a <tt class="docutils literal"><span class="pre">404</span></tt> status code will be returned.</p>
+</div>
+<div class="section" id="executing-a-query">
+<h2>Executing a query<a class="headerlink" href="#executing-a-query" title="Permalink to this headline">¶</a></h2>
 <p>Consider the query described above for gettings classes in a graph.</p>
 <div class="highlight-sql"><pre>select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}</pre>
 </div>
 <p>To execute a query just use the <tt class="docutils literal"><span class="pre">_result</span></tt> modifier.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_query_id/_result?graph_uri=http%3A%2F%2Fsemantica.globo.com%2Fgraph%2F&#39;</span> -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_query_id/_result?graph_uri=http%3A%2F%2Fsemantica.globo.com%2Fgraph%2F&#39;</span>
 </pre></div>
 </div>
 <p>The response is a JSON with a list of dictionaries, each with all the matched variables in the query.</p>

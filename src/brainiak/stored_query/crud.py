@@ -16,7 +16,8 @@ def store_query(entry, query_id):
 
 def get_stored_query(query_id):
     instance = get_instance(ES_INDEX_NAME, ES_TYPE_NAME, query_id)
-    return instance
+    if instance is not None:
+        return instance["_source"]
 
 
 def stored_query_exists(query_id):

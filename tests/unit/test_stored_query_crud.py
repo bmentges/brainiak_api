@@ -39,14 +39,23 @@ class StoredQueryCRUDTestCase(TestCase):
 
     def test_get_stored_query(self):
         query_example = {
-            "sparql_template": "",
-            "description": ""
+            "_source": {
+                "sparql_template": "",
+                "description": ""
+            }
         }
         query_id = "my_query_id"
         with patch("brainiak.stored_query.crud.get_instance",
                    return_value=query_example):
             response = crud.get_stored_query(query_id)
-            self.assertEqual(response, query_example)
+            self.assertEqual(response, query_example["_source"])
+
+    def test_get_stored_query_is_none(self):
+        query_id = "my_query_id"
+        with patch("brainiak.stored_query.crud.get_instance",
+                   return_value=None):
+            self.assertIsNone(crud.get_stored_query(query_id))
+
 
     @patch("brainiak.stored_query.crud.get_stored_query",
            return_value=None)

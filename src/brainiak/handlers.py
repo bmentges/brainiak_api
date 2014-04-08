@@ -758,7 +758,8 @@ class StoredQueryCRUDHandler(BrainiakRequestHandler):
         deleted = delete_stored_query(query_id)
         if deleted:
             self.finalize(204)
-        raise HTTPError(404, log_message=_(u"The query with id ({0}) was not found and, therefore, not deleted.").format(query_id))
+        else:
+            raise HTTPError(404, log_message=_(u"The query with id ({0}) was not found and, therefore, not deleted.").format(query_id))
 
     def finalize(self, response):
         if isinstance(response, dict):

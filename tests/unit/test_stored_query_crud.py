@@ -59,3 +59,15 @@ class StoredQueryCRUDTestCase(TestCase):
     def test_stored_query_exists_but_it_does(self, mock_get_stored_query):
         query_id = "existent_query"
         self.assertTrue(crud.stored_query_exists(query_id))
+
+    @patch("brainiak.stored_query.crud.delete_instance",
+           return_value=True)
+    def test_delete_stored_query_that_exists(self, mock_delete):
+        query_id = "existent_query"
+        self.assertTrue(crud.delete_stored_query(query_id))
+
+    @patch("brainiak.stored_query.crud.delete_instance",
+           return_value=False)
+    def test_delete_stored_query_but_does_not_exist(self, mock_delete):
+        query_id = "existent_query"
+        self.assertFalse(crud.delete_stored_query(query_id))

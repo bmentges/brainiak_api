@@ -1,4 +1,5 @@
-from brainiak.search_engine import save_instance, get_instance
+from brainiak.search_engine import save_instance, get_instance,\
+    delete_instance
 
 ES_INDEX_NAME = "brainiak"
 ES_TYPE_NAME = "query"
@@ -20,3 +21,7 @@ def get_stored_query(query_id):
 
 def stored_query_exists(query_id):
     return get_stored_query(query_id) is not None
+
+
+def delete_stored_query(query_id):
+    return delete_instance(ES_INDEX_NAME, ES_TYPE_NAME, query_id)

@@ -3,7 +3,7 @@ import time
 import urllib
 
 from tornado.httpclient import HTTPRequest
-from tornado.httpclient import HTTPError
+from tornado.httpclient import HTTPError as ClientHTTPError
 
 from brainiak import log
 from brainiak.greenlet_tornado import greenlet_fetch
@@ -22,7 +22,7 @@ def run_search(body, indexes=None):
 
     request_params = {
         "url": unicode(request_url),
-        "method": u"POST",
+        "method": "POST",
         "headers": {u"Content-Type": u"application/x-www-form-urlencoded"},
         "body": unicode(json.dumps(body))
     }
@@ -49,7 +49,7 @@ def run_analyze(target, analyzer, indexes):
     request_url = _build_elasticsearch_analyze_url(indexes, analyzer, target)
     request_params = {
         "url": unicode(request_url),
-        "method": u"GET",
+        "method": "GET",
         "headers": {u"Content-Type": u"application/x-www-form-urlencoded"},
     }
 
@@ -81,7 +81,7 @@ def save_instance(entry, index_name, type_name, instance_id):
 
     request_params = {
         "url": unicode(request_url),
-        "method": u"PUT",
+        "method": "PUT",
         "body": unicode(json.dumps(entry))
     }
 
@@ -96,13 +96,28 @@ def get_instance(index_name, type_name, instance_id):
 
     request_params = {
         "url": unicode(request_url),
-        "method": u"GET"
+        "method": "GET"
     }
 
     response = _get_response(request_params)
 
-    return json.loads(response.body)
+    if response is not None:
+        return json.loads(response.body)
 
+
+def delete_instance(index_name, type_name, instance_id):
+    request_url = "http://{0}/{1}/{2}/{3}".format(
+        ELASTICSEARCH_ENDPOINT, index_name, type_name, instance_id)
+
+    request_params = {
+        "url": unicode(request_url),
+        "method": "DELETE",
+        "allow_nonstandard_methods": True
+    }
+
+    response = _get_response(request_params)
+
+    return response is not None
 
 def _do_request(request_params):
     request = HTTPRequest(**request_params)
@@ -125,7 +140,10 @@ def _get_response(request_params):
     try:
         response = _do_request(request_params)
         return response
-    except HTTPError as e:
-        # Throwing explictly tornado.httpclient.HTTPError so that
+    except ClientHTTPError as e:
+        # Throwing explictly tornado.httpclient.ClientHTTPError so that
         #   handler can detect it as a backend service error
-        raise e
+        if e.code == 404:
+            return None
+        else:
+            raise e

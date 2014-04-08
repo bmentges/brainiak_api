@@ -25,3 +25,6 @@ class StoredQueryCRUDIntegrationTestCase(TornadoAsyncHTTPTestCase):
                               body=json.dumps(PAYLOAD_WITHOUT_DESCRIPTION))
         self.assertEqual(response.code, 400)
         self.assertTrue("JSON not according to JSON schema definition", response.body)
+
+    def test_put_create_stored_query(self):
+        response = self.fetch('/_query/')

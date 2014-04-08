@@ -6,7 +6,7 @@ from unittest import TestCase
 
 from mock import patch, Mock
 
-from tornado.web import HTTPError
+from tornado.httpclient import HTTPError as ClientHTTPError
 
 from brainiak import search_engine
 from tests.mocks import MockResponse
@@ -94,12 +94,9 @@ class SearchEngineTestCase(TestCase):
         self.assertEqual(call_args["method"], u'GET')
         self.assertEqual(call_args["headers"], {u'Content-Type': u'application/x-www-form-urlencoded'})
 
-    @patch("brainiak.search_engine.log.logger.info")
-    @patch("brainiak.search_engine.log.logger",
-           logging.getLogger("test"))
-    @patch("brainiak.search_engine._do_request",
+    @patch("brainiak.search_engine._get_response",
            return_value=MockResponse("{}", 200))
-    def test_run_search(self, request_mock, info_mock):
+    def test_run_search(self, request_mock):
 
         response = search_engine.run_search(
             body={},
@@ -113,10 +110,9 @@ class SearchEngineTestCase(TestCase):
         self.assertEqual(call_args["headers"], {u'Content-Type': u'application/x-www-form-urlencoded'})
         self.assertEqual(call_args["body"], u"{}")
 
-    @patch("brainiak.search_engine.log.logger.info")
     @patch("brainiak.search_engine._do_request",
            return_value=MockResponse("{}", 200))
-    def test_save_instance_return_200(self, request_mock, mock_log_info):
+    def test_save_instance_return_200(self, request_mock):
         response = search_engine.save_instance({"test": "a"}, "index", "type", "id")
         expected_url = u"http://localhost:9200/index/type/id"
         expected_method = "PUT"
@@ -135,26 +131,40 @@ class SearchEngineTestCase(TestCase):
         expected_msg = 'Error on Elastic Search when saving an instance.\n  PUT http://localhost:9200/index/type/id - 400\n  Body: {"error"}'
         try:
             search_engine.save_instance({"error": "json not in conformance with mapping, ES returns 400"}, "index", "type", "id")
-        except HTTPError as e:
+        except ClientHTTPError as e:
             self.assertEqual(e.status_code, 400)
             self.assertEqual(e.log_message, expected_msg)
 
-    @patch("brainiak.search_engine.log.logger.info")
     @patch("brainiak.search_engine._get_response",
            return_value=MockResponse('{"my_instance": 123}', 200))
-    def test_get_instance_return_200(self, request_mock, mock_log_info):
+    def test_get_instance_return_200(self, request_mock):
         instance = search_engine.get_instance("index", "type", "id")
         self.assertEqual(instance, {"my_instance": 123})
 
     @patch("brainiak.search_engine._get_response",
-           side_effect=HTTPError(500, log_message="xubi"))
+           return_value=None)
+    def test_get_instance_returns_none(self, request_mock):
+        self.assertIsNone(search_engine.get_instance("index", "type", "id"))
+
+    @patch("brainiak.search_engine._get_response",
+           side_effect=ClientHTTPError(500, message="xubi"))
     def test_get_instance_return_500(self, request_mock):
-        expected_msg = 'xubi'
+        expected_msg = 'HTTP 500: xubi'
         try:
             search_engine.get_instance("index", "type", "id")
-        except HTTPError as e:
-            self.assertEqual(e.status_code, 500)
-            self.assertEqual(e.log_message, expected_msg)
+        except ClientHTTPError as e:
+            self.assertEqual(e.code, 500)
+            self.assertEqual(e.message, expected_msg)
+
+    @patch("brainiak.search_engine._get_response",
+           return_value=MockResponse('{"my_instance": 123}', 200))
+    def test_delete_instance_true(self, request_mock):
+        self.assertTrue(search_engine.delete_instance("index", "type", "id"))
+
+    @patch("brainiak.search_engine._get_response",
+           return_value=None)
+    def test_delete_instance_false(self, request_mock):
+        self.assertFalse(search_engine.delete_instance("index", "type", "id"))
 
     @patch("brainiak.search_engine._do_request",
            return_value=MockResponse("{}", 200))
@@ -164,15 +174,20 @@ class SearchEngineTestCase(TestCase):
         self.assertEqual(response.code, expected_code)
 
     @patch("brainiak.search_engine._do_request",
-           side_effect=HTTPError(400, log_message="error"))
-    def test_get_response_raises_httperror(self, mock_do_request):
+           side_effect=ClientHTTPError(400, message="error"))
+    def test_get_response_raises_ClientHTTPError(self, mock_do_request):
         expected_code = 400
-        expected_msg = "error"
+        expected_msg = "HTTP 400: error"
         try:
             search_engine._get_response({})
-        except HTTPError as e:
-            self.assertEqual(e.status_code, expected_code)
-            self.assertEqual(e.log_message, expected_msg)
+        except ClientHTTPError as e:
+            self.assertEqual(e.code, expected_code)
+            self.assertEqual(e.message, expected_msg)
+
+    @patch("brainiak.search_engine._do_request",
+           side_effect=ClientHTTPError(404, message="error"))
+    def test_get_response_404_returns_none(self, mock_do_request):
+        self.assertIsNone(search_engine._get_response({}))
 
     @patch("brainiak.log.logger.info")
     @patch("brainiak.search_engine.greenlet_fetch",

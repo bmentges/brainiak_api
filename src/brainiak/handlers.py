@@ -33,7 +33,7 @@ from brainiak.schema.get_class import SchemaNotFound
 from brainiak.search.search import do_search
 from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.search.json_schema import schema as search_schema
-from brainiak.stored_query.crud import store_query
+from brainiak.stored_query.crud import store_query, get_stored_query, delete_stored_query
 from brainiak.stored_query.json_schema import query_crud_schema
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest
@@ -729,6 +729,19 @@ class StatusHandler(BrainiakRequestHandler):
 
 class StoredQueryCRUDHandler(BrainiakRequestHandler):
 
+    def __init__(self, *args, **kwargs):
+        super(StoredQueryCRUDHandler, self).__init__(*args, **kwargs)
+
+    @greenlet_asynchronous
+    def get(self, query_id):
+        stored_query = get_stored_query(query_id)
+        if stored_query is not None:
+            self.finalize(stored_query)
+        else:
+            not_found_message = _("The stored query with id '{0}' does not exist").format(query_id)
+            raise HTTPError(404,
+                            log_message=not_found_message)
+
     @greenlet_asynchronous
     def put(self, query_id):
         json_payload_object = get_json_request_as_dict(self.request.body)
@@ -738,7 +751,21 @@ class StoredQueryCRUDHandler(BrainiakRequestHandler):
 
         # TODO return instance data when editing it?
         status = store_query(json_payload_object, query_id)
-        return status
+        self.finalize(status)
+
+    @greenlet_asynchronous
+    def delete(self, query_id):
+        deleted = delete_stored_query(query_id)
+        if deleted:
+            self.finalize(204)
+        raise HTTPError(404, log_message=_(u"The query with id ({0}) was not found and, therefore, not deleted.").format(query_id))
+
+    def finalize(self, response):
+        if isinstance(response, dict):
+            self.write(response)
+            # TODO json schema navigation?
+        elif isinstance(response, int):  # status code
+            self.set_status(response)
 
 
 class StoredQueryExecutionHandler(BrainiakRequestHandler):

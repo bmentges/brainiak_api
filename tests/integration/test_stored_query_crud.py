@@ -98,3 +98,58 @@ class StoredQueryCRUDIntegrationTestCase(TornadoAsyncHTTPTestCase):
         delete_response = self.fetch('/_query/{0}'.format(query_id),
                       method='DELETE')
         self.assertEqual(delete_response.code, 204)
+
+    def test_get_stored_query_that_does_not_exist(self):
+        query_id = "my_inexistent_query_id"
+        self.assertFalse(self._query_exists(query_id))
+
+    def test_get_stored_query_exists(self):
+        query_id = "my_test_query"
+        self._assert_query_does_not_exist(query_id)
+
+        entry = '''{
+            "sparql_template": "select ?class {?class a owl:Class}",
+            "description": "my query"
+        }'''
+
+        create_response = self.fetch('/_query/{0}'.format(query_id),
+                              method='PUT',
+                              body=entry)
+        self.assertEqual(create_response.code, 201)
+
+        self._assert_query_exists(query_id)
+
+        # delete inserted query
+        delete_response = self.fetch('/_query/{0}'.format(query_id),
+                      method='DELETE')
+        self.assertEqual(delete_response.code, 204)
+
+    def test_delete_that_does_not_exist(self):
+        query_id = "my_inexistent_query_id"
+        self._assert_query_does_not_exist(query_id)
+
+        delete_response = self.fetch('/_query/{0}'.format(query_id),
+                      method='DELETE')
+        self.assertEqual(delete_response.code, 404)
+
+
+    def test_delete_stored_query_exists(self):
+        query_id = "my_test_query"
+        self._assert_query_does_not_exist(query_id)
+
+        entry = '''{
+            "sparql_template": "select ?class {?class a owl:Class}",
+            "description": "my query"
+        }'''
+
+        create_response = self.fetch('/_query/{0}'.format(query_id),
+                              method='PUT',
+                              body=entry)
+        self.assertEqual(create_response.code, 201)
+
+        self._assert_query_exists(query_id)
+
+        # delete inserted query
+        delete_response = self.fetch('/_query/{0}'.format(query_id),
+                      method='DELETE')
+        self.assertEqual(delete_response.code, 204)

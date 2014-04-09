@@ -21,8 +21,11 @@ Creating or modifying a query definition
 ----------------------------------------
 
 The service to register a query is the same used to update it.
+
 .. /// WARNING \\\ Commented out mentions to client-id because this first relase will not have authorization
+
 .. The ``X-Brainiak-Client-Id`` header is mandatory for access authentication.
+
 .. The client id used during query registration must be the same used during UPDATE and DELETE.
 
 Users can register a query by performing a request like:
@@ -62,6 +65,8 @@ Listing registered queries
 
 We store the queries in Brainiak, but users might need to retrieve and/or modify a previously stored query.
 To list all queries registered, do:
+
+
 .. To list all queries registered with the same my_client_id, do:
 
 .. code-block:: bash
@@ -73,10 +78,11 @@ To list all queries registered, do:
 
 The response for this query has the following format:
 
+..    "client_id": "my_client_id",
+
 .. code-block:: json
 
   {
-    "client_id": "my_client_id",
     "items": [
       {
         "resource_id": "my_query_id",
@@ -87,7 +93,8 @@ The response for this query has the following format:
   }
 
 The result can be navigated using :doc:`/services/pagination`.
-If the given client_id is not found the request is invalid and will be rejected with HTTPstatus code ``404``.
+
+.. If the given client_id is not found the request is invalid and will be rejected with HTTPstatus code ``404``.
 
 
 Retrieving a specific query definition

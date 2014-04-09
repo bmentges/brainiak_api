@@ -191,10 +191,7 @@ including complex relationships and graph traversal.</p>
 <p>The first step is to register (store) a query.</p>
 <div class="section" id="creating-or-modifying-a-query-definition">
 <h2>Creating or modifying a query definition<a class="headerlink" href="#creating-or-modifying-a-query-definition" title="Permalink to this headline">¶</a></h2>
-<p>The service to register a query is the same used to update it.
-.. /// WARNING \Commented out mentions to client-id because this first relase will not have authorization
-.. The <tt class="docutils literal"><span class="pre">X-Brainiak-Client-Id</span></tt> header is mandatory for access authentication.
-.. The client id used during query registration must be the same used during UPDATE and DELETE.</p>
+<p>The service to register a query is the same used to update it.</p>
 <p>Users can register a query by performing a request like:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X PUT <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_query/my_query_id&#39;</span>  -T payload.json
 </pre></div>
@@ -218,14 +215,12 @@ HTTP status code <tt class="docutils literal"><span class="pre">400</span></tt>.
 <div class="section" id="listing-registered-queries">
 <h2>Listing registered queries<a class="headerlink" href="#listing-registered-queries" title="Permalink to this headline">¶</a></h2>
 <p>We store the queries in Brainiak, but users might need to retrieve and/or modify a previously stored query.
-To list all queries registered, do:
-.. To list all queries registered with the same my_client_id, do:</p>
+To list all queries registered, do:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_query&#39;</span>
 </pre></div>
 </div>
 <p>The response for this query has the following format:</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-  <span class="nt">&quot;client_id&quot;</span><span class="p">:</span> <span class="s2">&quot;my_client_id&quot;</span><span class="p">,</span>
   <span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
       <span class="nt">&quot;resource_id&quot;</span><span class="p">:</span> <span class="s2">&quot;my_query_id&quot;</span><span class="p">,</span>
@@ -236,8 +231,7 @@ To list all queries registered, do:
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The result can be navigated using <a class="reference internal" href="../pagination.html"><em>Pagination</em></a>.
-If the given client_id is not found the request is invalid and will be rejected with HTTPstatus code <tt class="docutils literal"><span class="pre">404</span></tt>.</p>
+<p>The result can be navigated using <a class="reference internal" href="../pagination.html"><em>Pagination</em></a>.</p>
 </div>
 <div class="section" id="retrieving-a-specific-query-definition">
 <h2>Retrieving a specific query definition<a class="headerlink" href="#retrieving-a-specific-query-definition" title="Permalink to this headline">¶</a></h2>

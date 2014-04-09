@@ -26,3 +26,6 @@ def stored_query_exists(query_id):
 
 def delete_stored_query(query_id):
     return delete_instance(ES_INDEX_NAME, ES_TYPE_NAME, query_id)
+
+def _validate_query(sparql_template):
+    pass

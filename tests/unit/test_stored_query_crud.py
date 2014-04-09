@@ -86,6 +86,3 @@ class StoredQueryCRUDTestCase(TestCase):
     def test_delete_stored_query_but_does_not_exist(self, mock_delete):
         query_id = "existent_query"
         self.assertFalse(crud.delete_stored_query(query_id))
-
-    def test_validate_query(self):
-        

@@ -13,6 +13,7 @@ class StoredQueryExecuteTestCase(TestCase):
         stored_query = {
             "sparql_template": "SELECT ?s FROM <%(graph_uri)s> {?s a owl:Class}"
         }
+
         class QueryStringParams(object):
             arguments = {"graph_uri": "http://my_graph.com/"}
 
@@ -24,6 +25,7 @@ class StoredQueryExecuteTestCase(TestCase):
         stored_query = {
             "sparql_template": "SELECT ?s FROM <%(graph_uri)s> {?s a owl:Class}"
         }
+
         class QueryStringParams(object):
             arguments = {"a": "an_invalid_param"}
 

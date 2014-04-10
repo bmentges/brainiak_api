@@ -19,5 +19,9 @@ gender:Transgender rdf:type person:Gender ;
                    rdfs:label "Transgender"@en ;
                    rdfs:label "Transgênero"@pt .
 
+# Intentionally without label in english
+gender:Alien rdf:type person:Gender ;
+             rdfs:label "Alienígena"@pt .
+
 <http://test.com/other_prefix/Test> a person:Gender ;
-                                    rdfs:label "Teste"@en .
+                                    rdfs:label "Teste"@pt .

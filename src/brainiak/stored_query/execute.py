@@ -21,5 +21,5 @@ def get_query(stored_query, querystring_params):
         query = template % querystring_params.arguments
         return query
     except KeyError as key_error:
-        missing_key_message = _("Missing key {0} in querystring").format(key_error.args[0])
+        missing_key_message = _("Missing key '{0}' in querystring").format(key_error.args[0])
         raise HTTPError(400, log_message=missing_key_message)

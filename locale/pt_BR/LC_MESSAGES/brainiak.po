@@ -308,6 +308,22 @@ msgstr "A propriedade {0} parece estar duplicada na classe {1}"
 msgid "Cannot exclude instance because of the dependencies: {0}"
 msgstr "Não foi possível excluir instâncias devido às dependências: {0}"
 
+#: brainiak/handlers.py:743 (StoredQueryCRUDHandler)
+msgid "The stored query with id '{0}' was not found"
+msgstr "A query armazenada com id '{0}' não foi encontrada"
+
+#: brainiak/handlers.py:764 (StoredQueryCRUDHandler)
+msgid "The query with id '{0}' was not found and, therefore, not deleted."
+msgstr "A query com id '{0}' não foi encontrada e, portanto, não foi deletada"
+
+#: brainiak/handlers.py:780 (StoredQueryExecutionHandler)
+msgid "The stored query with id '{0}' was not found during execution attempt"
+msgstr "A query com id '{0}' não foi encontrada durante a tentativa de execução"
+
+#: brainiak/stored_query/execute.py:24
+msgid "Missing key '{0}' in querystring"
+msgstr "Chave '{0}' não encontrada na querystring"
+
 #~ msgid ""
 #~ "Method get_cache_path should be overwritten for caching & purging purposes"
 #~ msgstr ""

@@ -740,7 +740,7 @@ class StoredQueryCRUDHandler(BrainiakRequestHandler):
         if stored_query is not None:
             self.finalize(stored_query)
         else:
-            not_found_message = _("The stored query with id '{0}' does not exist").format(query_id)
+            not_found_message = _("The stored query with id '{0}' was not found").format(query_id)
             raise HTTPError(404,
                             log_message=not_found_message)
 
@@ -748,8 +748,8 @@ class StoredQueryCRUDHandler(BrainiakRequestHandler):
     def put(self, query_id):
         json_payload_object = get_json_request_as_dict(self.request.body)
         validate_json_schema(json_payload_object, query_crud_schema)
-        # validate client id
-        # validate_client_id_permission_if_query_exists()
+        # TODO validate client id
+        # TODO validate_client_id_permission_if_query_exists()
 
         # TODO return instance data when editing it?
         status = store_query(json_payload_object, query_id)
@@ -761,7 +761,7 @@ class StoredQueryCRUDHandler(BrainiakRequestHandler):
         if deleted:
             self.finalize(204)
         else:
-            raise HTTPError(404, log_message=_(u"The query with id ({0}) was not found and, therefore, not deleted.").format(query_id))
+            raise HTTPError(404, log_message=_(u"The query with id '{0}' was not found and, therefore, not deleted.").format(query_id))
 
     def finalize(self, response):
         if isinstance(response, dict):
@@ -777,7 +777,7 @@ class StoredQueryExecutionHandler(BrainiakRequestHandler):
     def get(self, query_id):
         stored_query = get_stored_query(query_id)
         if stored_query is None:
-            not_found_message = _("The stored query with id '{0}' does not exist").format(query_id)
+            not_found_message = _("The stored query with id '{0}' was not found during execution attempt").format(query_id)
             raise HTTPError(404,
                             log_message=not_found_message)
 

@@ -50,18 +50,12 @@ class StoredQueryCRUDTestCase(TestCase):
             response = crud.get_stored_query(query_id)
             self.assertEqual(response, query_example["_source"])
 
-    def test_get_stored_query_is_none(self):
-        query_example = {
-            "_source": {
-                "sparql_template": "",
-                "description": ""
-            }
-        }
-        query_id = "my_query_id"
-        with patch("brainiak.stored_query.crud.get_instance",
-                   return_value=query_example):
-            response = crud.get_stored_query(query_id)
-            self.assertEqual(response, query_example["_source"])
+    @patch("brainiak.stored_query.crud.get_instance",
+           return_value=None)
+    def test_get_stored_query_is_none(self, mocked_get_instance):
+        query_id = "query_id"
+        response = crud.get_stored_query(query_id)
+        self.assertEqual(response, None)
 
     @patch("brainiak.stored_query.crud.get_stored_query",
            return_value=None)
@@ -86,3 +80,11 @@ class StoredQueryCRUDTestCase(TestCase):
     def test_delete_stored_query_but_does_not_exist(self, mock_delete):
         query_id = "existent_query"
         self.assertFalse(crud.delete_stored_query(query_id))
+
+    @patch("brainiak.stored_query.crud.get_stored_query", return_value={})
+    def test_stored_query_exists(self, mocked_get_stored_query):
+        self.assertTrue(crud.stored_query_exists("query_id"))
+
+    @patch("brainiak.stored_query.crud.get_stored_query", return_value=None)
+    def test_stored_query_does_not_exist(self, mocked_get_stored_query):
+        self.assertFalse(crud.stored_query_exists("query_id"))

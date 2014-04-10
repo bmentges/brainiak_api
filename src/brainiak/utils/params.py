@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from copy import copy
+import re
 from urllib import urlencode
 from urlparse import unquote, parse_qs
 from contextlib import contextmanager
@@ -91,7 +92,8 @@ VALID_PARAMS = [
     'direct_instances_only',
     'expand_object_properties',
     'meta_properties',
-    'pattern'
+    'pattern',
+    'valid_patterns'
 ]
 
 VALID_PATTERNS = (
@@ -268,8 +270,8 @@ class ParamDict(dict):
         if class_uri is not None:
             self._set_if_optional("instance_prefix", class_uri + "/")
 
-    def _matches_dynamic_pattern(self, key):
-        return any([pattern.match(key) for pattern in VALID_PATTERNS])
+    def _matches_dynamic_pattern(self, key, valid_patterns=VALID_PATTERNS):
+        return any([pattern.match(key) for pattern in valid_patterns])
 
     def _override_with(self, handler):
         "Override this dictionary with values whose keys are present in the request"
@@ -332,3 +334,14 @@ class ParamDict(dict):
 
     def get_aux_param(self, key):
         return self._aux_parameters[key]
+
+
+class QueryExecutionParamDict(ParamDict):
+
+    def __init__(self, handler, **kw):
+        self.valid_patterns = [re.compile(".*")]
+        super(QueryExecutionParamDict, self).__init__(handler, **kw)
+
+    def _matches_dynamic_pattern(self, key):
+        valid_patterns = self.valid_patterns
+        return super(QueryExecutionParamDict, self)._matches_dynamic_pattern(key, valid_patterns=valid_patterns)

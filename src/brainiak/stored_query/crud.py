@@ -4,7 +4,6 @@ from brainiak.search_engine import save_instance, get_instance,\
 ES_INDEX_NAME = "brainiak"
 ES_TYPE_NAME = "query"
 
-
 def store_query(entry, query_id):
     if stored_query_exists(query_id):
         save_instance(entry, ES_INDEX_NAME, ES_TYPE_NAME, query_id)
@@ -15,10 +14,10 @@ def store_query(entry, query_id):
 
 
 def get_stored_query(query_id):
-    instance = get_instance(ES_INDEX_NAME, ES_TYPE_NAME, query_id)
-    if instance is not None:
-        return instance["_source"]
-
+    stored_query = get_instance(ES_INDEX_NAME, ES_TYPE_NAME, query_id)
+    if stored_query is not None:
+        stored_query = stored_query["_source"]
+        return stored_query
 
 def stored_query_exists(query_id):
     return get_stored_query(query_id) is not None
@@ -26,6 +25,3 @@ def stored_query_exists(query_id):
 
 def delete_stored_query(query_id):
     return delete_instance(ES_INDEX_NAME, ES_TYPE_NAME, query_id)
-
-def _validate_query(sparql_template):
-    pass

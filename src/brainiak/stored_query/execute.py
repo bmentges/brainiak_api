@@ -17,6 +17,7 @@ def get_query(stored_query, querystring_params):
     # template existence is validated in stored query creation/modification
     template = stored_query["sparql_template"]
     try:
+        # .arguments is a dict with decoded querystring params
         query = template % querystring_params.arguments
         return query
     except KeyError as key_error:

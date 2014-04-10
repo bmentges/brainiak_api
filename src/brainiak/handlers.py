@@ -776,13 +776,16 @@ class StoredQueryExecutionHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def get(self, query_id):
         stored_query = get_stored_query(query_id)
+        if stored_query is None:
+            not_found_message = _("The stored query with id '{0}' does not exist").format(query_id)
+            raise HTTPError(404,
+                            log_message=not_found_message)
 
         valid_params = PAGING_PARAMS
 
         with safe_params(valid_params):
             self.query_params = QueryExecutionParamDict(self)
             response = execute_query(stored_query, self.query_params)
-            # TODO validate_response_fields
 
         # return result
         return self.finalize(response)

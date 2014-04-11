@@ -785,7 +785,7 @@ class StoredQueryExecutionHandler(BrainiakRequestHandler):
 
         with safe_params(valid_params):
             self.query_params = QueryExecutionParamDict(self)
-            response = execute_query(stored_query, self.query_params)
+            response = execute_query(query_id, stored_query, self.query_params)
 
         # return result
         return self.finalize(response)

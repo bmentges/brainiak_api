@@ -98,7 +98,7 @@ The result can be navigated using :doc:`/services/pagination`.
 
 
 Retrieving a specific query definition
------------------------------
+--------------------------------------
 
 To retrieve a specific query definition, registered with my_query_id:
 

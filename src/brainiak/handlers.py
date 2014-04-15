@@ -33,6 +33,7 @@ from brainiak.schema.get_class import SchemaNotFound
 from brainiak.search.search import do_search
 from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.search.json_schema import schema as search_schema
+from brainiak.stored_query.collection import get_stored_queries
 from brainiak.stored_query.crud import store_query, get_stored_query, delete_stored_query
 from brainiak.stored_query.execution import execute_query
 from brainiak.stored_query.json_schema import query_crud_schema
@@ -731,8 +732,10 @@ class StatusHandler(BrainiakRequestHandler):
 
 class StoredQueryCollectionHandler(BrainiakRequestHandler):
 
+    @greenlet_asynchronous
     def get(self):
-        self.write({})
+        response_dict = get_stored_queries()
+        self.write(response_dict)
 
 
 class StoredQueryCRUDHandler(BrainiakRequestHandler):

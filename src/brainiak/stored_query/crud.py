@@ -1,8 +1,6 @@
 from brainiak.search_engine import save_instance, get_instance,\
     delete_instance
-
-ES_INDEX_NAME = "brainiak"
-ES_TYPE_NAME = "query"
+from brainiak.stored_query import ES_INDEX_NAME, ES_TYPE_NAME
 
 
 def store_query(entry, query_id):

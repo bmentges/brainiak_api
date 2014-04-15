@@ -117,7 +117,8 @@ class GeneralFunctionsTestCase(unittest.TestCase):
         self.assertIn(expected, response)
 
     @patch("brainiak.utils.cache.ping", return_value=False)
-    def test_status_fail(self, ping):
+    @patch("brainiak.utils.cache.get_usage_message", return_value="")
+    def test_status_fail(self, mock_get_usage_message, mock_ping):
         response = status_message()
         expected = 'Redis connection authenticated [:\xf3\xf9\x8c]A\xd7\xc9\x92\xa6\xfbcy\x9fp\x0f+] | FAILED | localhost:6379 | Ping failed'
         self.assertEqual(response, expected)

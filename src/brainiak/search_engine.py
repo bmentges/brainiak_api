@@ -105,6 +105,28 @@ def get_instance(index_name, type_name, instance_id):
         return json.loads(response.body)
 
 
+def get_all_instances_from_type(index_name, type_name):
+    request_url = "http://{0}/{1}/{2}/_search".format(
+        ELASTICSEARCH_ENDPOINT, index_name, type_name)
+
+    request_body = {
+        "query" : {"match_all" : {}},
+        "fields": ["sparql_template", "description"]
+    }
+
+    request_params = {
+        "url": unicode(request_url),
+        "method": "GET",
+        "body": unicode(json.dumps(request_body))
+    }
+
+    response = _get_response(request_params)
+
+    # TODO refactor response handling
+    if response is not None:
+        return json.loads(response.body)
+
+
 def delete_instance(index_name, type_name, instance_id):
     request_url = "http://{0}/{1}/{2}/{3}".format(
         ELASTICSEARCH_ENDPOINT, index_name, type_name, instance_id)

@@ -1,7 +1,9 @@
 from unittest import TestCase
 
 from brainiak.handlers import ClassHandler, VersionHandler, \
-    HealthcheckHandler, VirtuosoStatusHandler, InstanceHandler, SuggestHandler
+    HealthcheckHandler, VirtuosoStatusHandler, InstanceHandler, SuggestHandler, \
+    StoredQueryCollectionHandler, StoredQueryCRUDHandler, StoredQueryCRUDHandler, \
+    StoredQueryExecutionHandler
 from brainiak.routes import ROUTES
 
 
@@ -65,7 +67,9 @@ class RouteTestCase(TestCase):
         VALID_INSTANCE_RESOURCE_SUFFIX = "/person/Gender/Male"
         match_pattern = regex.match(VALID_INSTANCE_RESOURCE_SUFFIX)
 
-        expected_params = {"context_name": "person", "class_name": "Gender", "instance_id": "Male"}
+        expected_params = {"context_name": "person",
+                           "class_name": "Gender",
+                           "instance_id": "Male"}
         self.assertTrue(self._groups_match(match_pattern, expected_params))
 
     def test_instance_resource_nonexistent_params(self):
@@ -73,8 +77,34 @@ class RouteTestCase(TestCase):
         VALID_INSTANCE_RESOURCE_SUFFIX = "/person/Gender/Male"
         match_pattern = regex.match(VALID_INSTANCE_RESOURCE_SUFFIX)
 
-        expected_params = {"context_name": "person", "class_name": "Gender", "crazy_parameter": "crazy_value"}
+        expected_params = {"context_name": "person",
+                           "class_name": "Gender",
+                           "crazy_parameter": "crazy_value"}
         self.assertFalse(self._groups_match(match_pattern, expected_params))
+
+    def test_stored_query_route_list_all(self):
+        regex = self._regex_for(StoredQueryCollectionHandler)
+        VALID_STORED_QUERY_COLLECTION_SUFFIX = "/_query"
+        match = regex.match(VALID_STORED_QUERY_COLLECTION_SUFFIX)
+        self.assertTrue(match is not None)
+
+    def test_stored_query_route_crud(self):
+        regex = self._regex_for(StoredQueryCRUDHandler)
+        VALID_STORED_QUERY_CRUD_SUFFIX = "/_query/query_id"
+        match_pattern = regex.match(VALID_STORED_QUERY_CRUD_SUFFIX)
+
+        expected_params = {"query_id": "query_id"}
+        self.assertTrue(self._groups_match(match_pattern, expected_params))
+
+    def test_stored_query_route_execution(self):
+        regex = self._regex_for(StoredQueryExecutionHandler)
+        VALID_INSTANCE_RESOURCE_SUFFIX = "/_query/query_id/_result"
+        match_pattern = regex.match(VALID_INSTANCE_RESOURCE_SUFFIX)
+
+        expected_params = {"query_id": "query_id"}
+        self.assertTrue(self._groups_match(match_pattern, expected_params))
+
+
 
     def _regex_for(self, klass):
         return filter(lambda u: u.handler_class == klass, ROUTES)[0].regex

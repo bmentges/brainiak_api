@@ -729,6 +729,12 @@ class StatusHandler(BrainiakRequestHandler):
         self.write(response)
 
 
+class StoredQueryCollectionHandler(BrainiakRequestHandler):
+
+    def get(self):
+        self.write({})
+
+
 class StoredQueryCRUDHandler(BrainiakRequestHandler):
 
     def __init__(self, *args, **kwargs):

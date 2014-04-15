@@ -3,13 +3,13 @@ Stored Queries
 
 .. warning::
 
-   This service is underdevelopment. The features described here are just a specification of what is being developed.
+   This service is under development. The features described here are just a specification of what is being developed.
    This warning is going to be removed after the features are implemented and deployed.
 
 
 Users of the Braniak API can define and store queries that do more than retrieve objects (instances or classes) or
-apply simple filters using p/o variables in querystring (see :doc:`/services/instance/list_instance`),
-giving users flexibility to explore the model with complex relationships, graph traversal, etc.
+apply simple filters using p/o variables in querystring (see :doc:`/services/instance/list_instance`).
+Stored queries give users flexibility to explore the model with complex relationships, graph traversal, etc.
 
 Stored queries gives users the flexibility to explore the model with all the power of SPARQL,
 including complex relationships and graph traversal.
@@ -98,7 +98,7 @@ The result can be navigated using :doc:`/services/pagination`.
 
 
 Retrieving a specific query definition
------------------------------
+--------------------------------------
 
 To retrieve a specific query definition, registered with my_query_id:
 
@@ -164,10 +164,41 @@ The response is a JSON with a list of dictionaries, each with all the matched va
   }
 
 
+Counting in queries
++++++++++++++++++++
+
+When using the aggregator COUNT in SPARQL, for instance consider the following query:
+
+.. code-block:: sql
+
+    select distinct count(?o) from %(some_graph)s:  {?s a ?o}
+
+This would return a result with ``callret-N`` as variable name:
+
+.. code-block:: json
+
+    {"items": [{"callret-0": "42"}]}
+
+In order to have a more descriptive result, use ``as``
+
+.. code-block:: sql
+
+    select distinct count(?o) as ?count from %(some_graph)s:  {?s a ?o}
+
+This would return the more descriptive result:
+
+.. code-block:: json
+
+    {"items": [{"count": "42"}]}
+
+
+
 Paging
 ------
 
 ``SPARQL`` uses ``LIMIT``/``OFFSET`` query modifiers for pagination.
 
-In Brainiak, we use ``page`` and ``per_page``.
-We strongly recommend that variables in query templates use this name convention.
+In Brainiak, we use ``page`` and ``per_page`` as reserved pagination parameters.
+We strongly recommend that variables in query templates **DO NOT USE** these reserved names.
+
+

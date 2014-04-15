@@ -24,7 +24,7 @@ install:
 	@cp ./tools/git-hooks/pre-commit ./.git/hooks/pre-commit
 	@chmod ug+x ./.git/hooks/pre-commit
 
-test: build_settings clean pep8 pep8_tests
+tests: build_settings clean pep8 pep8_tests
 	@echo "Running pep8, unit and integration tests..."
 	@nosetests -s  --cover-branches --cover-erase --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests  --exclude-dir=$(HOME_BRAINIAK)/tests/acceptance --exclude=$(HOME_BRAINIAK)/tests/acceptance --with-xunit --with-spec --spec-color $(EXTRA_NOSE_PARAMS) --with-stopwatch
 

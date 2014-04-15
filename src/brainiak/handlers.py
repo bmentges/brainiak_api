@@ -34,7 +34,7 @@ from brainiak.search.search import do_search
 from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.search.json_schema import schema as search_schema
 from brainiak.stored_query.crud import store_query, get_stored_query, delete_stored_query
-from brainiak.stored_query.execute import execute_query
+from brainiak.stored_query.execution import execute_query
 from brainiak.stored_query.json_schema import query_crud_schema
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
 from brainiak.suggest.suggest import do_suggest

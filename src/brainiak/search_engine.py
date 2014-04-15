@@ -10,7 +10,7 @@ from brainiak.greenlet_tornado import greenlet_fetch
 from brainiak.settings import ELASTICSEARCH_ENDPOINT
 
 
-REQUEST_LOG_FORMAT = u"ELASTICSEARCH - %(method)s - %(url)s - %(status)s - [time: %(time_diff)s] - BODY - %(body)s"
+REQUEST_LOG_FORMAT = u"ELASTICSEARCH - %(method)s - %(url)s - %(status)s - [time: %(time_diff)s] - REQUEST BODY - %(request_body)s - RESPONSE BODY - %(response_body)s"
 
 
 class ElasticSearchException(Exception):
@@ -104,19 +104,20 @@ def get_instance(index_name, type_name, instance_id):
     if response is not None:
         return json.loads(response.body)
 
-
-def get_all_instances_from_type(index_name, type_name):
+def get_all_instances_from_type(index_name, type_name, offset, per_page):
     request_url = "http://{0}/{1}/{2}/_search".format(
         ELASTICSEARCH_ENDPOINT, index_name, type_name)
 
     request_body = {
         "query" : {"match_all" : {}},
-        "fields": ["sparql_template", "description"]
+        "fields": ["sparql_template", "description"],
+        "from": offset,
+        "size": per_page
     }
 
     request_params = {
         "url": unicode(request_url),
-        "method": "GET",
+        "method": "POST",
         "body": unicode(json.dumps(request_body))
     }
 
@@ -151,7 +152,8 @@ def _do_request(request_params):
 
     request_params["status"] = response.code
     request_params["time_diff"] = time_diff
-    request_params["body"] = response.body
+    request_params["response_body"] = response.body
+    request_params["request_body"] = request_params.get("body", "")
 
     log_msg = REQUEST_LOG_FORMAT % request_params
     log.logger.info(log_msg)

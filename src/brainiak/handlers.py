@@ -734,8 +734,13 @@ class StoredQueryCollectionHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def get(self):
-        response_dict = get_stored_queries()
-        self.write(response_dict)
+        valid_params = PAGING_PARAMS
+
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self, **valid_params)
+            response = get_stored_queries(self.query_params)
+
+        self.write(response)
 
 
 class StoredQueryCRUDHandler(BrainiakRequestHandler):

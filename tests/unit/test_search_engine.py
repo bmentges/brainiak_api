@@ -193,7 +193,7 @@ class SearchEngineTestCase(TestCase):
     @patch("brainiak.search_engine.greenlet_fetch",
            return_value=MockResponse("{}", 200))
     def test_do_request(self, fetch_mock, mock_log_info):
-        expected_msg = u'ELASTICSEARCH - GET - http://a-url.com - 200 - [time: 0] - BODY - {}'
+        expected_msg = u'ELASTICSEARCH - GET - http://a-url.com - 200 - [time: 0] - REQUEST BODY -  - RESPONSE BODY - {}'
         expected_code = 200
         # mock time.time
         time_patcher = patch.object(

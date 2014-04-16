@@ -104,12 +104,13 @@ def get_instance(index_name, type_name, instance_id):
     if response is not None:
         return json.loads(response.body)
 
+
 def get_all_instances_from_type(index_name, type_name, offset, per_page):
     request_url = "http://{0}/{1}/{2}/_search".format(
         ELASTICSEARCH_ENDPOINT, index_name, type_name)
 
     request_body = {
-        "query" : {"match_all" : {}},
+        "query": {"match_all": {}},
         "fields": ["sparql_template", "description"],
         "from": offset,
         "size": per_page

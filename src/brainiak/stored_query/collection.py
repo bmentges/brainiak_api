@@ -7,6 +7,7 @@ from brainiak.utils.resources import decorate_dict_with_pagination, \
 
 NO_RESULTS_MESSAGE_FORMAT = "There is no query stored"
 
+
 def get_stored_queries(params):
     offset = int(calculate_offset(params))
     per_page = int(params.get("per_page", DEFAULT_PER_PAGE))

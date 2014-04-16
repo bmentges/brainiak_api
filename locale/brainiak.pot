@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-14 18:33-0300\n"
+"POT-Creation-Date: 2014-04-16 17:13-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,132 +17,132 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: brainiak/handlers.py:67
+#: brainiak/handlers.py:68
 #, python-brace-format
 msgid "Argument {0:s} is not supported."
 msgstr ""
 
-#: brainiak/handlers.py:70 brainiak/handlers.py:73
+#: brainiak/handlers.py:71 brainiak/handlers.py:74
 #, python-brace-format
 msgid " The supported querystring arguments are: {0}."
 msgstr ""
 
-#: brainiak/handlers.py:77
+#: brainiak/handlers.py:78
 #, python-brace-format
 msgid " The supported body arguments are: {0}."
 msgstr ""
 
-#: brainiak/handlers.py:80
+#: brainiak/handlers.py:81
 #, python-brace-format
 msgid "Required parameter ({0:s}) was not given."
 msgstr ""
 
-#: brainiak/handlers.py:103 brainiak/handlers.py:247 brainiak/handlers.py:315
-#: brainiak/handlers.py:468
+#: brainiak/handlers.py:104 brainiak/handlers.py:248 brainiak/handlers.py:316
+#: brainiak/handlers.py:469
 msgid "Cache is disabled (Brainaik's settings.ENABLE_CACHE is set to False)"
 msgstr ""
 
-#: brainiak/handlers.py:123
+#: brainiak/handlers.py:124
 #, python-brace-format
 msgid "Access to backend service failed.  {0:s}."
 msgstr ""
 
-#: brainiak/handlers.py:131
+#: brainiak/handlers.py:132
 msgid ""
 "\n"
 "Response:\n"
 msgstr ""
 
-#: brainiak/handlers.py:137
+#: brainiak/handlers.py:138
 #, python-brace-format
 msgid "Ontology inconsistency: {0}\n"
 msgstr ""
 
-#: brainiak/handlers.py:152
+#: brainiak/handlers.py:153
 #, python-brace-format
 msgid ""
 "Unknown HTTP error [{0}]:\n"
 "  {1}\n"
 msgstr ""
 
-#: brainiak/handlers.py:155
+#: brainiak/handlers.py:156
 #, python-brace-format
 msgid "HTTP error: {0}\n"
 msgstr ""
 
-#: brainiak/handlers.py:158
+#: brainiak/handlers.py:159
 #, python-brace-format
 msgid "Uncaught exception: {0}\n"
 msgstr ""
 
-#: brainiak/handlers.py:228
+#: brainiak/handlers.py:229
 msgid "Failed to retrieve json-schema"
 msgstr ""
 
-#: brainiak/handlers.py:259
+#: brainiak/handlers.py:260
 msgid "Failed to retrieve list of graphs"
 msgstr ""
 
-#: brainiak/handlers.py:289
+#: brainiak/handlers.py:290
 #, python-brace-format
 msgid "Context {0} not found"
 msgstr ""
 
-#: brainiak/handlers.py:388
+#: brainiak/handlers.py:389
 #, python-brace-format
 msgid "Class {0} doesn't exist in context {1}."
 msgstr ""
 
-#: brainiak/handlers.py:393 brainiak/handlers.py:517
+#: brainiak/handlers.py:394 brainiak/handlers.py:518
 msgid "No JSON object could be decoded"
 msgstr ""
 
-#: brainiak/handlers.py:433
+#: brainiak/handlers.py:434
 #, python-brace-format
 msgid ""
 "Instances of class ({class_uri}) in graph ({graph_uri}){filter_message}, "
 "language=({lang}) and in page=({page}) were not found."
 msgstr ""
 
-#: brainiak/handlers.py:528
+#: brainiak/handlers.py:529
 #, python-brace-format
 msgid "Class {0} doesn't exist in graph {1}."
 msgstr ""
 
-#: brainiak/handlers.py:575
+#: brainiak/handlers.py:576
 #, python-brace-format
 msgid "Instance ({0}) of class ({1}) in graph ({2}) was not found."
 msgstr ""
 
-#: brainiak/handlers.py:611 brainiak/utils/json.py:20
+#: brainiak/handlers.py:612 brainiak/utils/json.py:20
 #, python-brace-format
 msgid "JSON malformed. Received: {0}."
 msgstr ""
 
-#: brainiak/handlers.py:629
+#: brainiak/handlers.py:630
 msgid "There were no search results."
 msgstr ""
 
-#: brainiak/handlers.py:728
+#: brainiak/handlers.py:729
 msgid "WORKING"
 msgstr ""
 
-#: brainiak/handlers.py:743
+#: brainiak/handlers.py:757
 #, python-brace-format
 msgid "The stored query with id '{0}' was not found"
 msgstr ""
 
-#: brainiak/handlers.py:764
+#: brainiak/handlers.py:778
 #, python-brace-format
 msgid "The query with id '{0}' was not found and, therefore, not deleted."
 msgstr ""
 
-#: brainiak/handlers.py:780
+#: brainiak/handlers.py:794
 #, python-brace-format
 msgid "The stored query with id '{0}' was not found during execution attempt"
 msgstr ""
 
-#: brainiak/handlers.py:797
+#: brainiak/handlers.py:811
 #, python-brace-format
 msgid "The URL ({0}) is not recognized."
 msgstr ""
@@ -232,9 +232,11 @@ msgstr ""
 msgid "The property {0} seems to be duplicated in class {1}"
 msgstr ""
 
-#: brainiak/stored_query/execute.py:45
+#: brainiak/stored_query/execution.py:45
 #, python-brace-format
-msgid "Missing key '{0}' in querystring"
+msgid ""
+"Missing key '{0}' in querystring.\n"
+"  Template: {1}"
 msgstr ""
 
 #: brainiak/suggest/suggest.py:19

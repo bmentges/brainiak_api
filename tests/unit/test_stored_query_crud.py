@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from tornado.web import HTTPError
 from mock import patch
 
 from brainiak.stored_query import crud
@@ -10,7 +11,10 @@ class StoredQueryCRUDTestCase(TestCase):
     @patch("brainiak.stored_query.crud.save_instance")
     @patch("brainiak.stored_query.crud.stored_query_exists",
            return_value=True)
+    @patch("brainiak.stored_query.crud._allowed_query",
+           return_value=True)
     def test_store_query_creation(self,
+                                  mock_allowed,
                                   mock_stored_query_exists,
                                   mock_save_instance):
         expected_response = 200
@@ -25,7 +29,10 @@ class StoredQueryCRUDTestCase(TestCase):
     @patch("brainiak.stored_query.crud.save_instance")
     @patch("brainiak.stored_query.crud.stored_query_exists",
            return_value=False)
+    @patch("brainiak.stored_query.crud._allowed_query",
+           return_value=True)
     def test_store_query_edition(self,
+                                 mock_allowed,
                                  mock_stored_query_exists,
                                  mock_save_instance):
         expected_response = 201
@@ -88,3 +95,55 @@ class StoredQueryCRUDTestCase(TestCase):
     @patch("brainiak.stored_query.crud.get_stored_query", return_value=None)
     def test_stored_query_does_not_exist(self, mocked_get_stored_query):
         self.assertFalse(crud.stored_query_exists("query_id"))
+
+    def test_valid_query_for_invalid_query(self):
+        query_template = """
+        INSERT DATA INTO <xubi> {
+          <1> <2> <3>
+        }
+        """
+        response = crud._allowed_query(query_template)
+        self.assertFalse(response)
+
+    def test_valid_query_for_invalid_query_2(self):
+        query_template = """INSERT DATA INTO <xubi> {
+          <1> <2> <3>
+        }
+        """
+        response = crud._allowed_query(query_template)
+        self.assertFalse(response)
+
+    def test_valid_query_for_invalid_query_with_comment_block(self):
+        query_template = """/*aaa*/INSERT DATA INTO <xubi> {
+          <1> <2> <3>
+        }
+        """
+        response = crud._allowed_query(query_template)
+        self.assertFalse(response)
+
+    def test_valid_query(self):
+        query_template = """
+        SELECT * {
+          <1> insert:xubiru ?modify
+        }
+        """
+        response = crud._allowed_query(query_template)
+        self.assertTrue(response)
+
+    def test_valid_query_for_with_comment_block(self):
+        query_template = """
+        /*INSERT comment modify */SELECT * {
+          <1> insert:xubiru ?modify
+        }
+        """
+        response = crud._allowed_query(query_template)
+        self.assertTrue(response)
+
+    @patch("brainiak.stored_query.crud._allowed_query",
+           return_value=False)
+    def test_not_allowed_query_raises_error(self, mock_allowed):
+        entry = {
+            "sparql_template": "INSERT DATA INTO <a> {<1> <2> <3>}"
+        }
+        query_id = "query_id"
+        self.assertRaises(HTTPError, crud.store_query, entry, query_id)

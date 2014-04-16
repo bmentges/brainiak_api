@@ -1,15 +1,33 @@
+import re
+
 from brainiak.search_engine import save_instance, get_instance,\
     delete_instance
 from brainiak.stored_query import ES_INDEX_NAME, ES_TYPE_NAME
 
+from tornado.web import HTTPError
+
+
+FORBIDDEN_SPARUL_PATTERN = \
+    re.compile(r"(^|\s+)(INSERT|MODIFY|DELETE|DROP|CLEAR|LOAD|CREATE|CONSTRUCT)\s",
+               re.IGNORECASE | re.MULTILINE | re.UNICODE)
+FORBIDDEN_SPARUL_MESSAGE = "SPARUL queries (updates on triplestore) are not allowed"
 
 def store_query(entry, query_id):
+    if not _allowed_query(entry["sparql_template"]):
+       raise HTTPError(400, log_message=FORBIDDEN_SPARUL_MESSAGE)
+
     if stored_query_exists(query_id):
         save_instance(entry, ES_INDEX_NAME, ES_TYPE_NAME, query_id)
         return 200
     else:
         save_instance(entry, ES_INDEX_NAME, ES_TYPE_NAME, query_id)
         return 201
+
+
+def _allowed_query(query_template):
+    query_template = re.sub(r'(/\*.+?\*/)', '', query_template, flags=re.DOTALL)
+    match = FORBIDDEN_SPARUL_PATTERN.match(query_template)
+    return match is None
 
 
 def get_stored_query(query_id):

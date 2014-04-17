@@ -197,5 +197,3 @@ SPARQL uses ``LIMIT``/``OFFSET`` query modifiers for pagination.
 
 In Brainiak, we use ``page`` and ``per_page`` as reserved pagination parameters.
 We strongly recommend that variables in query templates **DO NOT USE** these reserved names.
-
-

@@ -97,6 +97,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/modeling.html">Modeling and Ontology Engineering</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../first_steps.html">First Steps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../globocom/authorization.html">Authorization using Accounts</a></li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../services.html">Services</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../context/context.html">Managing Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../prefix/prefix.html">Managing Prefixes</a></li>
@@ -181,11 +185,6 @@
   
   <div class="section" id="stored-queries">
 <h1>Stored Queries<a class="headerlink" href="#stored-queries" title="Permalink to this headline">¶</a></h1>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This service is under development. The features described here are just a specification of what is being developed.
-This warning is going to be removed after the features are implemented and deployed.</p>
-</div>
 <p>Users of the Braniak API can define and store queries that do more than retrieve objects (instances or classes) or
 apply simple filters using p/o variables in querystring (see <a class="reference internal" href="../instance/list_instance.html"><em>List of Instances</em></a>).
 Stored queries give users flexibility to explore the model with complex relationships, graph traversal, etc.</p>
@@ -203,17 +202,16 @@ including complex relationships and graph traversal.</p>
 <p>The payload.json is a JSON object with the query definition and metadata:
 The required attributes are: sparql_template and description.</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-  <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;select %(class_uri)s from %(graph_uri)s {%(class_uri)s a owl:Class}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;SELECT %(class_uri)s FROM %(graph_uri)s {%(class_uri)s a owl:Class}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;This query is so great, it does everything I need  and it is used in apps such and such&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>When the request is successful for creating a query, a <tt class="docutils literal"><span class="pre">201</span></tt> status code is returned.
 For modifying existent queries, a <tt class="docutils literal"><span class="pre">200</span></tt> status code is returned.</p>
-<p>Notice that just read-only (i.e. SELECT) queries would be allowed to be registered.
-Sparql queries using CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with HTTP status code <tt class="docutils literal"><span class="pre">403</span></tt>.</p>
-<p>Malformed queries with invalid json or missing required attributes (e.g sparql_template) would be rejected with
-HTTP status code <tt class="docutils literal"><span class="pre">400</span></tt>.</p>
+<p>Notice that just read-only (e.g. SELECT) queries would be allowed to be registered.
+SPARQL 1.1 queries (most specifically, <a class="reference external" href="http://en.wikipedia.org/wiki/SPARUL">SPARUL</a> ones) such as CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with HTTP status code <tt class="docutils literal"><span class="pre">403</span></tt>.</p>
+<p>Malformed queries with invalid JSON or missing required attributes (e.g sparql_template) would be rejected with HTTP status code <tt class="docutils literal"><span class="pre">400</span></tt>.</p>
 </div>
 <div class="section" id="listing-registered-queries">
 <h2>Listing registered queries<a class="headerlink" href="#listing-registered-queries" title="Permalink to this headline">¶</a></h2>
@@ -228,7 +226,7 @@ To list all queries registered, do:</p>
     <span class="p">{</span>
       <span class="nt">&quot;resource_id&quot;</span><span class="p">:</span> <span class="s2">&quot;my_query_id&quot;</span><span class="p">,</span>
       <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;my query description&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}&quot;</span>
+      <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;SELECT ?class_uri FROM %(graph_uri)s {?class_uri a owl:Class}&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
 <span class="p">}</span>
@@ -245,7 +243,7 @@ To list all queries registered, do:</p>
 <p>The response is the same JSON object that was used to register the query.</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
   <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;my query description&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}&quot;</span>
+  <span class="nt">&quot;sparql_template&quot;</span><span class="p">:</span> <span class="s2">&quot;SELECT ?class_uri FROM %(graph_uri)s {?class_uri a owl:Class}&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -263,7 +261,7 @@ If the query does not exists and there was an attempt to delete it, a <tt class=
 <div class="section" id="executing-a-query">
 <h2>Executing a query<a class="headerlink" href="#executing-a-query" title="Permalink to this headline">¶</a></h2>
 <p>Consider the query described above for gettings classes in a graph.</p>
-<div class="highlight-sql"><pre>select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}</pre>
+<div class="highlight-sql"><pre>SELECT ?class_uri FROM %(graph_uri)s {?class_uri a owl:Class}</pre>
 </div>
 <p>To execute a query just use the <tt class="docutils literal"><span class="pre">_result</span></tt> modifier.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X GET <span class="s1">&#39;/_query/my_query_id/_result?graph_uri=http%3A%2F%2Fsemantica.globo.com%2Fgraph%2F&#39;</span>
@@ -282,14 +280,14 @@ If the query does not exists and there was an attempt to delete it, a <tt class=
 <div class="section" id="counting-in-queries">
 <h3>Counting in queries<a class="headerlink" href="#counting-in-queries" title="Permalink to this headline">¶</a></h3>
 <p>When using the aggregator COUNT in SPARQL, for instance consider the following query:</p>
-<div class="highlight-sql"><pre>select distinct count(?o) from %(some_graph)s:  {?s a ?o}</pre>
+<div class="highlight-sparql"><pre>SELECT DISTINCT COUNT(?o) {?s a ?o}</pre>
 </div>
 <p>This would return a result with <tt class="docutils literal"><span class="pre">callret-N</span></tt> as variable name:</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span><span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="nt">&quot;callret-0&quot;</span><span class="p">:</span> <span class="s2">&quot;42&quot;</span><span class="p">}]}</span>
 </pre></div>
 </div>
-<p>In order to have a more descriptive result, use <tt class="docutils literal"><span class="pre">as</span></tt></p>
-<div class="highlight-sql"><pre>select distinct count(?o) as ?count from %(some_graph)s:  {?s a ?o}</pre>
+<p>In order to have a more descriptive result, use SPARQL <tt class="docutils literal"><span class="pre">AS</span></tt> modifier to create an alias.</p>
+<div class="highlight-sparql"><pre>SELECT DISTINCT COUNT(?o) AS ?count {?s a ?o}</pre>
 </div>
 <p>This would return the more descriptive result:</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span><span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="s2">&quot;42&quot;</span><span class="p">}]}</span>
@@ -299,7 +297,7 @@ If the query does not exists and there was an attempt to delete it, a <tt class=
 </div>
 <div class="section" id="paging">
 <h2>Paging<a class="headerlink" href="#paging" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">SPARQL</span></tt> uses <tt class="docutils literal"><span class="pre">LIMIT</span></tt>/<tt class="docutils literal"><span class="pre">OFFSET</span></tt> query modifiers for pagination.</p>
+<p>SPARQL uses <tt class="docutils literal"><span class="pre">LIMIT</span></tt>/<tt class="docutils literal"><span class="pre">OFFSET</span></tt> query modifiers for pagination.</p>
 <p>In Brainiak, we use <tt class="docutils literal"><span class="pre">page</span></tt> and <tt class="docutils literal"><span class="pre">per_page</span></tt> as reserved pagination parameters.
 We strongly recommend that variables in query templates <strong>DO NOT USE</strong> these reserved names.</p>
 </div>

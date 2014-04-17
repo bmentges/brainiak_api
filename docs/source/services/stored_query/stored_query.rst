@@ -1,12 +1,6 @@
 Stored Queries
 ==============
 
-.. warning::
-
-   This service is under development. The features described here are just a specification of what is being developed.
-   This warning is going to be removed after the features are implemented and deployed.
-
-
 Users of the Braniak API can define and store queries that do more than retrieve objects (instances or classes) or
 apply simple filters using p/o variables in querystring (see :doc:`/services/instance/list_instance`).
 Stored queries give users flexibility to explore the model with complex relationships, graph traversal, etc.
@@ -46,18 +40,17 @@ The required attributes are: sparql_template and description.
 .. code-block:: json
 
   {
-    "sparql_template": "select %(class_uri)s from %(graph_uri)s {%(class_uri)s a owl:Class}",
+    "sparql_template": "SELECT %(class_uri)s FROM %(graph_uri)s {%(class_uri)s a owl:Class}",
     "description": "This query is so great, it does everything I need  and it is used in apps such and such"
   }
 
 When the request is successful for creating a query, a ``201`` status code is returned.
 For modifying existent queries, a ``200`` status code is returned.
 
-Notice that just read-only (i.e. SELECT) queries would be allowed to be registered.
-Sparql queries using CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with HTTP status code ``403``.
+Notice that just read-only (e.g. SELECT) queries would be allowed to be registered.
+SPARQL 1.1 queries (most specifically, `SPARUL <http://en.wikipedia.org/wiki/SPARUL>`_ ones) such as CONSTRUCT, MODIFY, INSERT, DELETE would be rejected with HTTP status code ``403``.
 
-Malformed queries with invalid json or missing required attributes (e.g sparql_template) would be rejected with
-HTTP status code ``400``.
+Malformed queries with invalid JSON or missing required attributes (e.g sparql_template) would be rejected with HTTP status code ``400``.
 
 
 Listing registered queries
@@ -87,7 +80,7 @@ The response for this query has the following format:
       {
         "resource_id": "my_query_id",
         "description": "my query description",
-        "sparql_template": "select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}"
+        "sparql_template": "SELECT ?class_uri FROM %(graph_uri)s {?class_uri a owl:Class}"
       }
     ]
   }
@@ -115,7 +108,7 @@ The response is the same JSON object that was used to register the query.
 
   {
     "description": "my query description",
-    "sparql_template": "select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}"
+    "sparql_template": "SELECT ?class_uri FROM %(graph_uri)s {?class_uri a owl:Class}"
   }
 
 
@@ -142,7 +135,7 @@ Consider the query described above for gettings classes in a graph.
 
 .. code-block:: sql
 
-  select ?class_uri from %(graph_uri)s {?class_uri a owl:Class}
+  SELECT ?class_uri FROM %(graph_uri)s {?class_uri a owl:Class}
 
 To execute a query just use the ``_result`` modifier.
 
@@ -169,9 +162,11 @@ Counting in queries
 
 When using the aggregator COUNT in SPARQL, for instance consider the following query:
 
-.. code-block:: sql
 
-    select distinct count(?o) from %(some_graph)s:  {?s a ?o}
+.. code-block:: sparql
+
+    SELECT DISTINCT COUNT(?o) {?s a ?o}
+
 
 This would return a result with ``callret-N`` as variable name:
 
@@ -179,11 +174,13 @@ This would return a result with ``callret-N`` as variable name:
 
     {"items": [{"callret-0": "42"}]}
 
-In order to have a more descriptive result, use ``as``
 
-.. code-block:: sql
+In order to have a more descriptive result, use SPARQL ``AS`` modifier to create an alias.
 
-    select distinct count(?o) as ?count from %(some_graph)s:  {?s a ?o}
+.. code-block:: sparql
+
+  SELECT DISTINCT COUNT(?o) AS ?count {?s a ?o}
+
 
 This would return the more descriptive result:
 
@@ -196,9 +193,7 @@ This would return the more descriptive result:
 Paging
 ------
 
-``SPARQL`` uses ``LIMIT``/``OFFSET`` query modifiers for pagination.
+SPARQL uses ``LIMIT``/``OFFSET`` query modifiers for pagination.
 
 In Brainiak, we use ``page`` and ``per_page`` as reserved pagination parameters.
 We strongly recommend that variables in query templates **DO NOT USE** these reserved names.
-
-

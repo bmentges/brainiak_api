@@ -27,6 +27,7 @@ The Brainiak API provides a configurable way to access RDF data using simple RES
    :maxdepth: 3
 
    concepts.rst
+   first_steps.rst
    services.rst
    tutorials.rst
    troubleshoot.rst

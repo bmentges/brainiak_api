@@ -151,8 +151,8 @@ The response is a JSON with a list of dictionaries, each with all the matched va
   {
     "item_count": 2,
     "items": [
-      {"class_uri", "http://semantica.globo.com/graph/Class1"},
-      {"class_uri", "http://semantica.globo.com/graph/Class2"}
+      {"class_uri": "http://semantica.globo.com/graph/Class1"},
+      {"class_uri": "http://semantica.globo.com/graph/Class2"}
     ]
   }
 

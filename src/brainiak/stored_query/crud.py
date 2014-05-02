@@ -10,7 +10,11 @@ from tornado.web import HTTPError
 FORBIDDEN_SPARUL_PATTERN = \
     re.compile(r"(^|\s+)(INSERT|MODIFY|DELETE|DROP|CLEAR|LOAD|CREATE|CONSTRUCT)\s",
                re.IGNORECASE | re.MULTILINE | re.UNICODE)
-FORBIDDEN_SPARUL_MESSAGE = "SPARUL queries (updates on triplestore) are not allowed"
+FORBIDDEN_SPARUL_MESSAGE = u"SPARUL queries (updates on triplestore) are not allowed"
+
+MISSING_CLIENT_ID_MESSAGE = u"Missing X-Brainiak-Client-Id in headers"
+
+CLIENT_ID_HEADER = "X-Brainiak-Client-Id"
 
 def store_query(entry, query_id):
     if not _allowed_query(entry["sparql_template"]):
@@ -23,11 +27,6 @@ def store_query(entry, query_id):
         save_instance(entry, ES_INDEX_NAME, ES_TYPE_NAME, query_id)
         return 201
 
-
-def _allowed_query(query_template):
-    query_template = re.sub(r'(/\*.+?\*/)', '', query_template, flags=re.DOTALL)
-    match = FORBIDDEN_SPARUL_PATTERN.match(query_template)
-    return match is None
 
 
 def get_stored_query(query_id):
@@ -43,3 +42,14 @@ def stored_query_exists(query_id):
 
 def delete_stored_query(query_id):
     return delete_instance(ES_INDEX_NAME, ES_TYPE_NAME, query_id)
+
+
+def validate_headers(headers):
+    if not CLIENT_ID_HEADER in headers:
+        raise HTTPError(400, log_message=MISSING_CLIENT_ID_MESSAGE)
+
+
+def _allowed_query(query_template):
+    query_template = re.sub(r'(/\*.+?\*/)', '', query_template, flags=re.DOTALL)
+    match = FORBIDDEN_SPARUL_PATTERN.match(query_template)
+    return match is None

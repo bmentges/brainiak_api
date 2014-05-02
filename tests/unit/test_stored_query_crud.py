@@ -147,3 +147,9 @@ class StoredQueryCRUDTestCase(TestCase):
         }
         query_id = "query_id"
         self.assertRaises(HTTPError, crud.store_query, entry, query_id)
+
+    def test_headers_with_client_id(self):
+        crud.validate_headers({"X-Brainiak-Client-Id": "dsd4asdr6aftsg7asgdsa"})
+
+    def test_headers_without_client_id_raises_exception(self):
+        self.assertRaises(HTTPError, crud.validate_headers, {"a-header": "a-value"})

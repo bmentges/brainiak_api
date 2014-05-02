@@ -34,7 +34,7 @@ from brainiak.search.search import do_search
 from brainiak.suggest.json_schema import schema as suggest_schema
 from brainiak.search.json_schema import schema as search_schema
 from brainiak.stored_query.collection import get_stored_queries
-from brainiak.stored_query.crud import store_query, get_stored_query, delete_stored_query
+from brainiak.stored_query.crud import store_query, get_stored_query, delete_stored_query, validate_headers
 from brainiak.stored_query.execution import execute_query
 from brainiak.stored_query.json_schema import query_crud_schema
 from brainiak.suggest.json_schema import SUGGEST_PARAM_SCHEMA
@@ -760,6 +760,7 @@ class StoredQueryCRUDHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def put(self, query_id):
+        validate_headers(self.request.headers)
         json_payload_object = get_json_request_as_dict(self.request.body)
         validate_json_schema(json_payload_object, query_crud_schema)
         # TODO validate client id

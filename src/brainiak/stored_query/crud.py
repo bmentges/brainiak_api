@@ -4,6 +4,8 @@ from brainiak.search_engine import save_instance, get_instance,\
     delete_instance
 from brainiak.stored_query import ES_INDEX_NAME, ES_TYPE_NAME
 
+from brainiak.utils.params import CLIENT_ID_HEADER
+
 from tornado.web import HTTPError
 
 
@@ -14,7 +16,6 @@ FORBIDDEN_SPARUL_MESSAGE = u"SPARUL queries (updates on triplestore) are not all
 
 MISSING_CLIENT_ID_MESSAGE = u"Missing X-Brainiak-Client-Id in headers"
 
-CLIENT_ID_HEADER = "X-Brainiak-Client-Id"
 
 def store_query(entry, query_id):
     if not _allowed_query(entry["sparql_template"]):

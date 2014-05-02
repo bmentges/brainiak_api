@@ -14,6 +14,9 @@ from brainiak.utils.sparql import PATTERN_O, PATTERN_P
 from brainiak.utils.config_parser import ConfigParserNoSectionError, parse_section
 
 
+CLIENT_ID_HEADER = "X-Brainiak-Client-Id"
+
+
 class InvalidParam(Exception):
     pass
 
@@ -171,11 +174,11 @@ class ParamDict(dict):
         return {key: handler.get_argument(key) for key in query_dict}
 
     def _set_triplestore_config(self, request):
-        auth_client_id = request.headers.get('X-Brainiak-Client-Id', 'default')
+        auth_client_id = request.headers.get(CLIENT_ID_HEADER, 'default')
         try:
             self.triplestore_config = parse_section(section=auth_client_id)
         except ConfigParserNoSectionError:
-            raise HTTPError(404, _(u"Client-Id provided at 'X-Brainiak-Client-Id' ({0}) is not known").format(auth_client_id))
+            raise HTTPError(404, _(u"Client-Id provided at '{0}' ({1}) is not known").format(CLIENT_ID_HEADER, auth_client_id))
 
     def __setitem__(self, key, value):
         """Process collateral effects in params that are related.

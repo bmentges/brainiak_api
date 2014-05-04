@@ -132,8 +132,8 @@ class AuthenticatedAccessTestCase(TornadoAsyncHTTPTestCase):
         computed_body = json.loads(response.body)
         self.assertEqual(computed_body, expected_body)
 
-    def test_valid_client_id_from_eureka_client(self):
-        eureka_client_id = 'YXA67LOpsLMnEeKa8nvYJ9aXRQ'
+    def test_valid_client_id_from_another_client(self):
+        eureka_client_id = 'other'
         response = self.fetch("/", method='GET', headers={'X-Brainiak-Client-Id': eureka_client_id})
         self.assertEqual(response.code, 200)
 

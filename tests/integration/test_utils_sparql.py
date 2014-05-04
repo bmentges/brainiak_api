@@ -1,5 +1,5 @@
-from tests.sparql import QueryTestCase
 from brainiak.utils.sparql import QUERY_VALUE_EXISTS, is_result_true
+from tests.sparql import QueryTestCase
 
 
 class ValidateUniquenessTestCase(QueryTestCase):

@@ -1,100 +1,58 @@
 # coding: utf-8
+import json
 import unittest
-from mock import patch
 
+from mock import patch
 from tornado.web import HTTPError
 
 from brainiak import triplestore
-import SPARQLWrapper
 from tests.mocks import triplestore_config
 
 
-class MockException(Exception):
-    def __str__(self):
-        return "Mocked exception"
-
-
 class MockResponse(object):
-    body = "{}"
+
+    def __init__(self, status_code=200, body="{}"):
+        self.status_code = status_code
+        self.body = body
+        self.text = body
+
+    def json(self):
+        return json.loads(self.body)
 
 
-class MockSPARQLWrapper():
+class TriplestoreTestCase(unittest.TestCase):\
 
-    iteration = 0
-    exception_iterations = []
-
-    def __init__(self, *args, **kw):
-        pass
-
-    def query(self):
-        self.iteration += 1
-        if (self.iteration - 1) in self.exception_iterations:
-            # note that msg is used due to SPARQLWrapper.SPARQLExceptions.py
-            # implementation of error messages
-            e = Exception()
-            e.msg = "ERROR %d" % (self.iteration - 1)
-            raise e
-
-    def addDefaultGraph(self, graph):
-        pass
-
-    def setQuery(self, query):
-        pass
-
-    def setCredentials(self, username, password, mode=None, realm=None):
-        pass
-
-
-class TriplestoreTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.original_sparql_wrapper = SPARQLWrapper.SPARQLWrapper
-        SPARQLWrapper.SPARQLWrapper = MockSPARQLWrapper
-
-    def tearDown(self):
-        SPARQLWrapper.SPARQLWrapper = self.original_sparql_wrapper
-
-    def test_both_without_auth_and_with_auth_work(self):
-        SPARQLWrapper.SPARQLWrapper.iteration = 0
-        SPARQLWrapper.SPARQLWrapper.exception_iterations = []
-
+    @patch("brainiak.triplestore.requests.get", return_value=MockResponse())
+    def test_both_without_auth_and_with_auth_work(self, mock_get):
         received_msg = triplestore.status(user="USER", password="PASSWORD")
         msg1 = 'Virtuoso connection not-authenticated | SUCCEED | http://localhost:8890/sparql-auth'
-        msg2 = 'Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | SUCCEED | http://localhost:8890/sparql-auth'
+        msg2 = 'Virtuoso connection authenticated [USER:PASSWORD] | SUCCEED | http://localhost:8890/sparql-auth'
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
 
-    def test_without_auth_works_but_with_auth_doesnt(self):
-        SPARQLWrapper.SPARQLWrapper.iteration = 0
-        SPARQLWrapper.SPARQLWrapper.exception_iterations = [1]
+    @patch("brainiak.triplestore.requests.get", side_effect=[MockResponse(), MockResponse(401)])
+    def test_without_auth_works_but_with_auth_doesnt(self, mock_get):
         received_msg = triplestore.status(user="USER", password="PASSWORD")
         msg1 = "Virtuoso connection not-authenticated | SUCCEED | http://localhost:8890/sparql-auth"
-        msg2 = "Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | FAILED | http://localhost:8890/sparql-auth | ERROR 1"
+        msg2 = "Virtuoso connection authenticated [USER:PASSWORD] | FAILED | http://localhost:8890/sparql-auth | Status code: 401. Body: {}"
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
 
-    def test_without_auth_doesnt_work_but_with_auth_works(self):
-        SPARQLWrapper.SPARQLWrapper.iteration = 0
-        SPARQLWrapper.SPARQLWrapper.exception_iterations = [0]
+    @patch("brainiak.triplestore.requests.get", side_effect=[MockResponse(401), MockResponse()])
+    def test_without_auth_doesnt_work_but_with_auth_works(self, mock_get):
         received_msg = triplestore.status(user="USER", password="PASSWORD")
-        msg1 = "Virtuoso connection not-authenticated | FAILED | http://localhost:8890/sparql-auth | ERROR 0"
-        msg2 = "Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | SUCCEED | http://localhost:8890/sparql-auth"
+        msg1 = "Virtuoso connection not-authenticated | FAILED | http://localhost:8890/sparql-auth | Status code: 401. Body: {}"
+        msg2 = "Virtuoso connection authenticated [USER:PASSWORD] | SUCCEED | http://localhost:8890/sparql-auth"
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
 
-    def test_both_without_auth_and_with_auth_dont_work(self):
-        SPARQLWrapper.SPARQLWrapper.iteration = 0
-        SPARQLWrapper.SPARQLWrapper.exception_iterations = [0, 1]
+    @patch("brainiak.triplestore.requests.get", return_value=MockResponse(401))
+    def test_both_without_auth_and_with_auth_dont_work(self, mock_get):
         received_msg = triplestore.status(user="USER", password="PASSWORD")
-        msg1 = "Virtuoso connection not-authenticated | FAILED | http://localhost:8890/sparql-auth | ERROR 0"
-        msg2 = "Virtuoso connection authenticated [USER:1\x9fM&\xe3\xc56\xb5\xdd\x87\x1b\xb2\xc5.1x] | FAILED | http://localhost:8890/sparql-auth | ERROR 1"
+        msg1 = "Virtuoso connection not-authenticated | FAILED | http://localhost:8890/sparql-auth | Status code: 401. Body: {}"
+        msg2 = "Virtuoso connection authenticated [USER:PASSWORD] | FAILED | http://localhost:8890/sparql-auth | Status code: 401. Body: {}"
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
-
-    @patch('brainiak.triplestore.SPARQLWrapper.SPARQLWrapper.query', side_effect=MockException())
-    def test_status_default_exception_msg(self, mock_query):
-        received_msg = triplestore.status(user="USER", password="PASSWORD")
-        self.assertTrue(received_msg.endswith("Mocked exception"))
 
     @patch('brainiak.triplestore.run_query', side_effect=HTTPError(401))
     def test_query_sparql_with_http_error_401(self, run_query):

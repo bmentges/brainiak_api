@@ -1,11 +1,13 @@
-from mock import patch
+import unittest
 
+from mock import patch
 from tornado.httpclient import HTTPError
 
 from brainiak import triplestore
 from brainiak import greenlet_tornado
 from tests.tornado_cases import TornadoAsyncTestCase
 from tests.mocks import triplestore_config
+
 
 SIMPLE_COUNT_CLASSES_QUERY = "SELECT COUNT(*) WHERE {?s a owl:Class}"
 
@@ -37,3 +39,30 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
         self.assertEqual(info.call_count, 1)
         log_msg = "POST - http://localhost:8890/sparql-auth - None - api-semantica [tempo: 0] - QUERY - SELECT COUNT(*) WHERE {?s a owl:Class}"
         self.assertTrue(info.call_args, log_msg)
+
+
+class RunQueryTestCase(unittest.TestCase):
+
+    def test_sync_query_not_authenticated_works(self):
+        endpoint = "http://localhost:8890/sparql"
+        query = "ASK {rdfs:label ?p owl:Thing}"
+        response = triplestore.sync_query(endpoint, query)
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertTrue(body['boolean'])
+
+    def test_sync_query_authenticated_works(self):
+        endpoint = "http://localhost:8890/sparql-auth"
+        query = "ASK {rdfs:label ?p owl:Thing}"
+        auth = ("api-semantica", "api-semantica")
+        response = triplestore.sync_query(endpoint, query, auth=auth)
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertTrue(body['boolean'])
+
+    def test_sync_query_authenticated_fails(self):
+        endpoint = "http://localhost:8890/sparql-auth"
+        query = "ASK {rdfs:label ?p owl:Thing}"
+        auth = ("api-semantica", "api-semantica")
+        response = triplestore.sync_query(endpoint, query)
+        self.assertEqual(response.status_code, 401)

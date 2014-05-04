@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import md5
+import simplejson
 import time
 import urllib
 
-import SPARQLWrapper
+#import SPARQLWrapper
+import requests
+import ujson as json
 from tornado.httpclient import HTTPRequest
 from tornado.httpclient import HTTPError as ClientHTTPError
 from tornado.web import HTTPError
-import ujson as json
 
 from brainiak import log
 from brainiak.greenlet_tornado import greenlet_fetch
@@ -76,55 +78,51 @@ def status(**kw):
     endpoint_dict = parse_section()
     user = kw.get("user") or endpoint_dict["auth_username"]
     password = kw.get("password") or endpoint_dict["auth_password"]
-    mode = kw.get("mode") or endpoint_dict["auth_mode"]
     url = kw.get("url") or endpoint_dict["url"]
-
-    query = "SELECT COUNT(*) WHERE {?s a owl:Class}"
-    endpoint = SPARQLWrapper.SPARQLWrapper(url)
-    endpoint.addDefaultGraph("http://semantica.globo.com/person")
-    endpoint.setQuery(query)
+    graph = u"http://semantica.globo.com/person"
+    query = u"SELECT COUNT(*) WHERE {?s a owl:Class}"
 
     # Do not cast to unicode these lines
-    failure_msg = "Virtuoso connection %(type)s | FAILED | %(endpoint)s | %(error)s"
-    success_msg = 'Virtuoso connection %(type)s | SUCCEED | %(endpoint)s'
+    failure_msg = u"Virtuoso connection %(type)s | FAILED | %(endpoint)s | %(error)s"
+    success_msg = u'Virtuoso connection %(type)s | SUCCEED | %(endpoint)s'
 
     info = {
-        "type": "not-authenticated",
+        "type": u"not-authenticated",
         "endpoint": url
     }
 
-    try:
-        endpoint.query()
+    response = sync_query(url, query, default_graph=graph)
+    if response.status_code == 200:
         msg = success_msg % info
-    except Exception as error:
-        if hasattr(error, 'msg'):
-            # note that msg is used due to SPARQLWrapper.SPARQLExceptions.py
-            # implementation of error messages
-            message = error.msg
-        else:
-            message = str(error)
-
-        info["error"] = message
+    else:
+        info["error"] = u"Status code: {0}. Body: {1}".format(response.status_code, response.text)
         msg = failure_msg % info
 
-    password_md5 = md5.new(password).digest()  # do not cast to unicode here
+    #password_md5 = md5.new(password).digest()  # do not cast to unicode here
     info = {
-        "type": "authenticated [%s:%s]" % (user, password_md5),
+        "type": u"authenticated [%s:%s]" % (user, password),
         "endpoint": url
     }
 
-    endpoint.setCredentials(user, password, mode=mode, realm="SPARQL")
+    response = sync_query(url, query, default_graph=graph, auth=(user, password))
 
-    try:
-        endpoint.query()
-        msg = msg + "<br>" + success_msg % info
-    except Exception as error:
-        if hasattr(error, 'msg'):
-            message = error.msg
-        else:
-            message = str(error)
-
-        info["error"] = message
-        msg = msg + "<br>" + failure_msg % info
+    if response.status_code == 200:
+        auth_msg = success_msg % info
+    else:
+        info["error"] = u"Status code: {0}. Body: {1}".format(response.status_code, response.text)
+        auth_msg = failure_msg % info
+    msg = u"{0}<br>{1}".format(msg, auth_msg)
 
     return msg
+
+
+def sync_query(endpoint, query, default_graph=None, auth=None):
+    quoted_query = urllib.quote(query)
+    url = u"{0}?query={1}&format=application%2Fjson".format(endpoint, quoted_query)
+    if default_graph:
+        url = url + u"&default-graph-uri={0}".format(default_graph)
+    if auth:
+        auth = requests.auth.HTTPDigestAuth(*auth)
+    response = requests.get(url, auth=auth)
+
+    return response

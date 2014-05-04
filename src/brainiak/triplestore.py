@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import md5
-import simplejson
+import json as simplejson
 import time
 import urllib
 

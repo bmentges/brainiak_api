@@ -1,5 +1,4 @@
 *.py[cod]
-tdi.json
 
 # C extensions
 *.so
@@ -46,13 +45,3 @@ dump.rdb
 
 .DS_Store
 .project
-
-# Brainiak
-src/brainiak/settings.py
-config/gunicorn-api_semantica-be-logging.config
-
-# Ruby
-.ruby-gemset
-.ruby-version
-Gemfile
-Gemfile.lock

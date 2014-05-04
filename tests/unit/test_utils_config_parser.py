@@ -16,7 +16,7 @@ class ConfigParserTestCase(TestCase):
         self.assertEqual(response, expected_response)
 
     def test_parse_config_file_and_eureka_section(self):
-        local_ini = "config/local/triplestore.ini"
+        local_ini = "src/brainiak/triplestore.ini"
         response = parse_section(local_ini, "YXA67LOpsLMnEeKa8nvYJ9aXRQ")
         expected_response = {
             'url': 'http://localhost:8890/sparql-auth',

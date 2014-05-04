@@ -28,7 +28,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(settings.REDIS_ENDPOINT, 'localhost')
         self.assertEqual(settings.REDIS_PORT, 6379)
         self.assertEqual(settings.SERVER_PORT, 5100)
-        self.assertEqual(settings.TRIPLESTORE_CONFIG_FILEPATH, 'config/local/triplestore.ini')
+        self.assertEqual(settings.TRIPLESTORE_CONFIG_FILEPATH, 'src/brainiak/triplestore.ini')
         self.assertEqual(settings.URI_PREFIX, "http://semantica.globo.com/")
 
     def test_non_default_local_variables(self):

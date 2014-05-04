@@ -28,7 +28,7 @@ NOTIFY_BUS = True
 
 DEFAULT_RULESET_URI = "http://semantica.globo.com/ruleset"
 
-CORS_HEADERS = 'Content-Type, Authorization, Backstage-Client-Id'
+CORS_HEADERS = 'Content-Type, Authorization'
 
 GRAPHS_WITHOUT_INSTANCES = ["http://semantica.globo.com/upper/"]
 
@@ -38,18 +38,5 @@ ENABLE_CACHE = False
 REDIS_PASSWORD = None
 LOG_LEVEL = logging.DEBUG
 ES_ANALYZER = "default"
-
-
-def load_environment_variables(env):
-    if env != "local":
-        global ENABLE_CACHE, REDIS_PASSWORD, LOG_LEVEL, ES_ANALYZER
-        ENABLE_CACHE = True
-        REDIS_PASSWORD = 'ignored'
-        LOG_LEVEL = logging.ERROR
-        ES_ANALYZER = "globo_analyzer"
-
-
-ENVIRONMENT = 'local'
-load_environment_variables(ENVIRONMENT)
 
 ANNOTATION_PROPERTY_HAS_UNIQUE_VALUE = "base:tem_valor_unico"

@@ -120,19 +120,19 @@ class GeneralFunctionsTestCase(unittest.TestCase):
     @patch("brainiak.utils.cache.get_usage_message", return_value="")
     def test_status_fail(self, mock_get_usage_message, mock_ping):
         response = status_message()
-        expected = 'Redis connection authenticated [:\xf3\xf9\x8c]A\xd7\xc9\x92\xa6\xfbcy\x9fp\x0f+] | FAILED | localhost:6379 | Ping failed'
+        expected = 'Redis connection authenticated [:None] | FAILED | localhost:6379 | Ping failed'
         self.assertEqual(response, expected)
 
     @patch("brainiak.utils.cache.ping", side_effect=raise_exception)
     def test_status_exception(self, ping):
         response = status_message()
-        expected = "Redis connection authenticated [:\xf3\xf9\x8c]A\xd7\xc9\x92\xa6\xfbcy\x9fp\x0f+] | FAILED | localhost:6379 | Traceback (most recent call last)"
+        expected = "Redis connection authenticated [:None] | FAILED | localhost:6379 | Traceback (most recent call last)"
         self.assertIn(expected, response)
 
     @patch("brainiak.utils.cache.ping", side_effect=raise_connection_exception)
     def test_status_exception_connection(self, ping):
         response = status_message()
-        expected = "Redis connection authenticated [:\xf3\xf9\x8c]A\xd7\xc9\x92\xa6\xfbcy\x9fp\x0f+] | FAILED | localhost:6379 | Traceback (most recent call last)"
+        expected = "Redis connection authenticated [:None] | FAILED | localhost:6379 | Traceback (most recent call last)"
         self.assertIn(expected, response)
 
     STANDARD_INFO_KEYS = {

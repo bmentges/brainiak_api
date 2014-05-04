@@ -214,7 +214,8 @@ def get_usage_message():
 
 def status_message():
     params = {
-        "password": md5.new(str(settings.REDIS_PASSWORD)).digest(),  # do not cast to unicode
+        #"password": md5.new(str(settings.REDIS_PASSWORD)).digest(),  # do not cast to unicode
+        "password": settings.REDIS_PASSWORD,
         "endpoint": "{0}:{1}".format(settings.REDIS_ENDPOINT, settings.REDIS_PORT),
     }
     failure_msg = "Redis connection authenticated [:%(password)s] | FAILED | %(endpoint)s | %(error)s"

@@ -7,7 +7,7 @@ from brainiak import settings
 class TestCase(unittest.TestCase):
 
     def test_default_local_variables(self):
-        self.assertEqual(settings.CORS_HEADERS, 'Content-Type, Authorization, Backstage-Client-Id')
+        self.assertEqual(settings.CORS_HEADERS, 'Content-Type, Authorization')
         self.assertEqual(settings.DEBUG, True)
         self.assertEqual(settings.DEFAULT_LANG, 'pt')
         self.assertEqual(settings.DEFAULT_PAGE, '0')
@@ -17,7 +17,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual(settings.GRAPHS_WITHOUT_INSTANCES, ["http://semantica.globo.com/upper/"])
         self.assertEqual(settings.ELASTICSEARCH_ENDPOINT, 'localhost:9200')
         self.assertEqual(settings.ENABLE_CACHE, False)
-        self.assertEqual(settings.ENVIRONMENT, 'local')
         self.assertEqual(settings.EVENT_BUS_HOST, 'localhost')
         self.assertEqual(settings.EVENT_BUS_PORT, 61613)
         self.assertEqual(settings.ES_ANALYZER, 'default')
@@ -30,10 +29,3 @@ class TestCase(unittest.TestCase):
         self.assertEqual(settings.SERVER_PORT, 5100)
         self.assertEqual(settings.TRIPLESTORE_CONFIG_FILEPATH, 'src/brainiak/triplestore.ini')
         self.assertEqual(settings.URI_PREFIX, "http://semantica.globo.com/")
-
-    def test_non_default_local_variables(self):
-        settings.load_environment_variables("prod")
-        self.assertEqual(settings.ENABLE_CACHE, True)
-        self.assertEqual(settings.ES_ANALYZER, "globo_analyzer")
-        self.assertEqual(settings.LOG_LEVEL, logging.ERROR)
-        self.assertEqual(settings.REDIS_PASSWORD, "ignored")

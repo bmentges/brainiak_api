@@ -17,10 +17,10 @@ class ConfigParserTestCase(TestCase):
 
     def test_parse_config_file_and_eureka_section(self):
         local_ini = "src/brainiak/triplestore.ini"
-        response = parse_section(local_ini, "YXA67LOpsLMnEeKa8nvYJ9aXRQ")
+        response = parse_section(local_ini, "other")
         expected_response = {
             'url': 'http://localhost:8890/sparql-auth',
-            'app_name': 'Eureka',
+            'app_name': 'Other',
             'auth_mode': 'digest',
             'auth_username': 'api-semantica',
             'auth_password': 'api-semantica'

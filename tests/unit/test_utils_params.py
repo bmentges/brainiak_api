@@ -122,13 +122,13 @@ class ParamsTestCase(TestCase):
         self.assertEquals(expected_config, params.triplestore_config)
 
     def test_has_different_triplestore_config(self):
-        handler = MockHandler(headers={'X-Brainiak-Client-Id': 'YXA67LOpsLMnEeKa8nvYJ9aXRQ'})
+        handler = MockHandler(headers={'X-Brainiak-Client-Id': 'other'})
         params = ParamDict(handler)
         expected_config = {
             'url': 'http://localhost:8890/sparql-auth',
             'auth_password': 'api-semantica',
             'auth_username': 'api-semantica',
-            'app_name': 'Eureka',
+            'app_name': 'Other',
             'auth_mode': 'digest'
         }
         self.assertEquals(expected_config, params.triplestore_config)

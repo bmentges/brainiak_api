@@ -104,8 +104,6 @@ class RouteTestCase(TestCase):
         expected_params = {"query_id": "query_id"}
         self.assertTrue(self._groups_match(match_pattern, expected_params))
 
-
-
     def _regex_for(self, klass):
         return filter(lambda u: u.handler_class == klass, ROUTES)[0].regex
 

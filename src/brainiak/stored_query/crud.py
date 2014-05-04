@@ -19,7 +19,7 @@ MISSING_CLIENT_ID_MESSAGE = u"Missing X-Brainiak-Client-Id in headers"
 
 def store_query(entry, query_id):
     if not _allowed_query(entry["sparql_template"]):
-       raise HTTPError(400, log_message=FORBIDDEN_SPARUL_MESSAGE)
+        raise HTTPError(400, log_message=FORBIDDEN_SPARUL_MESSAGE)
 
     if stored_query_exists(query_id):
         save_instance(entry, ES_INDEX_NAME, ES_TYPE_NAME, query_id)
@@ -27,7 +27,6 @@ def store_query(entry, query_id):
     else:
         save_instance(entry, ES_INDEX_NAME, ES_TYPE_NAME, query_id)
         return 201
-
 
 
 def get_stored_query(query_id):

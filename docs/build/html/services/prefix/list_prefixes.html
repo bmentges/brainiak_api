@@ -197,47 +197,13 @@
 <p><strong>Status 200</strong></p>
 <p>The response body is a JSON containing the prefixes in a &#8220;&#64;context&#8221; section
 and the root context, which is a context whose name is not in the prefix URI.</p>
-<div class="highlight-text"><div class="highlight"><pre>{
-    &quot;@context&quot;: {
-        &quot;base&quot;: &quot;http://semantica.globo.com/base/&quot;,
-        &quot;dbpedia&quot;: &quot;http://dbpedia.org/ontology/&quot;,
-        &quot;dc&quot;: &quot;http://purl.org/dc/elements/1.1/&quot;,
-        &quot;dct&quot;: &quot;http://purl.org/dc/terms/&quot;,
-        &quot;ego&quot;: &quot;http://semantica.globo.com/ego/&quot;,
-        &quot;esportes&quot;: &quot;http://semantica.globo.com/esportes/&quot;,
-        &quot;eureka&quot;: &quot;http://semantica.globo.com/eureka/&quot;,
-        &quot;event&quot;: &quot;http://purl.org/NET/c4dm/event.owl#&quot;,
-        &quot;foaf&quot;: &quot;http://xmlns.com/foaf/0.1/&quot;,
-        &quot;g1&quot;: &quot;http://semantica.globo.com/G1/&quot;,
-        &quot;geo&quot;: &quot;http://www.w3.org/2003/01/geo/wgs84_pos#&quot;,
-        &quot;glb&quot;: &quot;http://semantica.globo.com/&quot;,
-        &quot;nodeID&quot;: &quot;nodeID&quot;,
-        &quot;organization&quot;: &quot;http://semantica.globo.com/organization/&quot;,
-        &quot;owl&quot;: &quot;http://www.w3.org/2002/07/owl#&quot;,
-        &quot;person&quot;: &quot;http://semantica.globo.com/person/&quot;,
-        &quot;place&quot;: &quot;http://semantica.globo.com/place/&quot;,
-        &quot;rdf&quot;: &quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;,
-        &quot;rdfs&quot;: &quot;http://www.w3.org/2000/01/rdf-schema#&quot;,
-        &quot;schema&quot;: &quot;http://schema.org/&quot;,
-        &quot;techtudo&quot;: &quot;http://semantica.globo.com/techtudo/&quot;,
-        &quot;tecnologia&quot;: &quot;http://semantica.globo.com/tecnologia/&quot;,
-        &quot;time&quot;: &quot;http://www.w3.org/2006/time#&quot;,
-        &quot;tvg&quot;: &quot;http://semantica.globo.com/tvg/&quot;,
-        &quot;upper&quot;: &quot;http://semantica.globo.com/upper/&quot;,
-        &quot;xsd&quot;: &quot;http://www.w3.org/2001/XMLSchema#&quot;
-    },
-    &quot;root_context&quot;: &quot;glb&quot;
-}
+<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
 </pre></div>
 </div>
 <p><strong>Status 400</strong></p>
 <p>If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.</p>
-<div class="highlight-text"><div class="highlight"><pre>{
-    &quot;errors&quot;: [
-        &quot;HTTP error: 400\nO argumento invalid_param n\u00e3o \u00e9 suportado. Os argumentos de querystring suportados s\u00e3o: do_item_count, expand_uri, graph_uri, lang, page, per_page, sort_by, sort_include_empty, sort_order.&quot;
-    ]
-}
+<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
 </pre></div>
 </div>
 <p><strong>Status 500</strong></p>

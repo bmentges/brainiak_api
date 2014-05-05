@@ -191,16 +191,7 @@ To check if cache is enabled for some resource, run:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X OPTIONS http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 204 No Content
-Server: nginx
-Date: Thu, 24 Apr 2014 15:00:39 GMT
-Content-Type: text/html; charset=UTF-8
-Content-Length: 0
-Connection: keep-alive
-Access-Control-Allow-Methods: GET, OPTIONS, PURGE
-Access-Control-Max-Age: 86400
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Headers: Content-Type, Authorization, Backstage-Client-Id
+<div class="highlight-text"><div class="highlight"><pre>
 </pre></div>
 </div>
 <p>If cache is enabled, <tt class="docutils literal"><span class="pre">PURGE</span></tt> will be shown on the response header <tt class="docutils literal"><span class="pre">Access-Control-Allow-Methods</span></tt>.</p>
@@ -221,32 +212,14 @@ Access-Control-Allow-Headers: Content-Type, Authorization, Backstage-Client-Id
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X GET http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
-Server: nginx
-Date: Thu, 24 Apr 2014 15:00:40 GMT
-Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
-Content-Length: 1008
-Connection: keep-alive
-X-Cache: MISS from brainiak.semantica.dev.globoi.com
-Last-Modified: Thu, 24 Apr 2014 12:00:40 -0300
-Etag: &quot;4d53e4145ce64273c7604ad86c4cc81d5dddbb05&quot;
-Access-Control-Allow-Origin: *
+<div class="highlight-text"><div class="highlight"><pre>
 </pre></div>
 </div>
 <p>From the second time on, <tt class="docutils literal"><span class="pre">X-Cache</span></tt> will contain <tt class="docutils literal"><span class="pre">HIT</span></tt> and <tt class="docutils literal"><span class="pre">Last-Modified</span></tt> will be the same:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X GET http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
-Server: nginx
-Date: Thu, 24 Apr 2014 15:00:41 GMT
-Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
-Content-Length: 1008
-Connection: keep-alive
-X-Cache: HIT from brainiak.semantica.dev.globoi.com
-Last-Modified: Thu, 24 Apr 2014 12:00:40 -0300
-Etag: &quot;f288c34015f52392c33fd6bffd95e7bfb25c4a0a&quot;
-Access-Control-Allow-Origin: *
+<div class="highlight-text"><div class="highlight"><pre>
 </pre></div>
 </div>
 </div>
@@ -264,13 +237,7 @@ but when purging the instance all versions should be removed from the cache disr
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X PURGE http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
-Server: nginx
-Date: Thu, 24 Apr 2014 15:00:41 GMT
-Content-Type: text/html; charset=UTF-8
-Content-Length: 0
-Connection: keep-alive
-Access-Control-Allow-Origin: *
+<div class="highlight-text"><div class="highlight"><pre>
 </pre></div>
 </div>
 </div>

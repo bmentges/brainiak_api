@@ -194,8 +194,9 @@ including complex relationships and graph traversal.</p>
 <div class="section" id="creating-or-modifying-a-query-definition">
 <h2>Creating or modifying a query definition<a class="headerlink" href="#creating-or-modifying-a-query-definition" title="Permalink to this headline">¶</a></h2>
 <p>The service to register a query is the same used to update it.</p>
+<p>The <tt class="docutils literal"><span class="pre">X-Brainiak-Client-Id</span></tt> header is mandatory for access authentication.</p>
 <p>Users can register a query by performing a request like:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X PUT <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_query/my_query_id&#39;</span>  -T payload.json
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s -X PUT <span class="s1">&#39;http://brainiak.semantica.dev.globoi.com/_query/my_query_id&#39;</span>  -T payload.json -H <span class="s2">&quot;X-Brainiak-Client-Id: my_client_id&quot;</span>
 </pre></div>
 </div>
 <p>The <tt class="docutils literal"><span class="pre">my_query_id</span></tt> attribute indicates the query identification to be used when executing it.</p>
@@ -271,8 +272,8 @@ If the query does not exists and there was an attempt to delete it, a <tt class=
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
   <span class="nt">&quot;item_count&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
   <span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span><span class="nt">&quot;class_uri&quot;</span><span class="p">,</span> <span class="nt">&quot;http://semantica.globo.com/graph/Class1&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&quot;class_uri&quot;</span><span class="p">,</span> <span class="nt">&quot;http://semantica.globo.com/graph/Class2&quot;</span><span class="p">}</span>
+    <span class="p">{</span><span class="nt">&quot;class_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/graph/Class1&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="nt">&quot;class_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/graph/Class2&quot;</span><span class="p">}</span>
   <span class="p">]</span>
 <span class="p">}</span>
 </pre></div>

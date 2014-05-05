@@ -224,10 +224,7 @@ this property and/or object values. For example:</p>
 <p>It is also possible to set multiple <tt class="docutils literal"><span class="pre">p's</span></tt> and/or <tt class="docutils literal"><span class="pre">o's</span></tt>, adding a number after them (p1, o1, p2, o2, etc). Example:</p>
 <div class="highlight-http"><pre>GET 'http://brainiak.semantica.dev.globoi.com/place/City/?o=base:UF_RJ&amp;p1=place:longitude&amp;p2=place:latitude&amp;per_page=1''</pre>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>{
-    &quot;items&quot;: [],
-    &quot;warning&quot;: &quot;N\u00e3o foram encontradas inst\u00e2ncias da classe (http://semantica.globo.com/place/City) no grafo (http://semantica.globo.com/place/) with o=(http://semantica.globo.com/base/UF_RJ) with p1=(http://semantica.globo.com/place/longitude) with p2=(http://semantica.globo.com/place/latitude), com idioma (pt) e p\u00e1gina (1).&quot;
-}
+<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
 </pre></div>
 </div>
 <p>Note by this last example that if only the predicate is provided, the related object for each item will be returned.
@@ -246,55 +243,7 @@ From the example above: <tt class="docutils literal"><span class="pre">p:</span>
 <p><strong>Status 200</strong></p>
 <p>If there are instances that match the query, the response body is a JSON containing instances&#8217; titles, resources_id and &#64;ids (URIs).
 By default, the first page containing 10 items is returned (<tt class="docutils literal"><span class="pre">?page=1&amp;per_page=10</span></tt>).</p>
-<div class="highlight-text"><div class="highlight"><pre>{
-    &quot;@context&quot;: {
-        &quot;@language&quot;: &quot;pt&quot;
-    },
-    &quot;@id&quot;: &quot;place:Continent&quot;,
-    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Continent&quot;,
-    &quot;_class_prefix&quot;: &quot;place&quot;,
-    &quot;_first_args&quot;: &quot;per_page=10&amp;page=1&quot;,
-    &quot;_next_args&quot;: &quot;per_page=10&amp;page=2&quot;,
-    &quot;_schema_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/Continent/_schema&quot;,
-    &quot;items&quot;: [
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Africa&quot;,
-            &quot;class_prefix&quot;: &quot;place&quot;,
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
-            &quot;resource_id&quot;: &quot;Africa&quot;,
-            &quot;title&quot;: &quot;\u00c1frica&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Antarctica&quot;,
-            &quot;class_prefix&quot;: &quot;place&quot;,
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
-            &quot;resource_id&quot;: &quot;Antarctica&quot;,
-            &quot;title&quot;: &quot;Oceania&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Europe&quot;,
-            &quot;class_prefix&quot;: &quot;place&quot;,
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
-            &quot;resource_id&quot;: &quot;Europe&quot;,
-            &quot;title&quot;: &quot;Europa&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/Asia&quot;,
-            &quot;class_prefix&quot;: &quot;place&quot;,
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
-            &quot;resource_id&quot;: &quot;Asia&quot;,
-            &quot;title&quot;: &quot;\u00c1sia&quot;
-        },
-        {
-            &quot;@id&quot;: &quot;http://semantica.globo.com/place/Continent/America&quot;,
-            &quot;class_prefix&quot;: &quot;place&quot;,
-            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/Continent/&quot;,
-            &quot;resource_id&quot;: &quot;America&quot;,
-            &quot;title&quot;: &quot;Am\u00e9rica&quot;
-        }
-    ],
-    &quot;pattern&quot;: &quot;&quot;
-}
+<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
 </pre></div>
 </div>
 <p>If there are no instances for this class, the response will contain a warning and a items list empty.</p>
@@ -306,11 +255,7 @@ By default, the first page containing 10 items is returned (<tt class="docutils 
 <p><strong>Status 400</strong></p>
 <p>If there are unknown parameters in the request query string, the response status code is 400.
 A JSON containing both the wrong parameters and the accepted ones is returned.</p>
-<div class="highlight-text"><div class="highlight"><pre>{
-    &quot;errors&quot;: [
-        &quot;HTTP error: 400\nO argumento invalid_param n\u00e3o \u00e9 suportado. Os argumentos de querystring suportados s\u00e3o: class_prefix, class_uri, direct_instances_only, do_item_count, expand_uri, graph_uri, lang, page, per_page, sort_by, sort_include_empty, sort_order.&quot;
-    ]
-}
+<div class="highlight-text"><div class="highlight"><pre>No JSON object could be decoded
 </pre></div>
 </div>
 <p><strong>Status 404</strong></p>

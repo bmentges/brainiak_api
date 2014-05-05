@@ -16,19 +16,15 @@ Creating or modifying a query definition
 
 The service to register a query is the same used to update it.
 
-.. /// WARNING \\\ Commented out mentions to client-id because this first relase will not have authorization
+The ``X-Brainiak-Client-Id`` header is mandatory for access authentication.
 
-.. The ``X-Brainiak-Client-Id`` header is mandatory for access authentication.
-
-.. The client id used during query registration must be the same used during UPDATE and DELETE.
+.. Not true yet. The client id used during query registration must be the same used during UPDATE and DELETE.
 
 Users can register a query by performing a request like:
 
 .. code-block:: bash
 
-  $ curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/_query/my_query_id'  -T payload.json
-
-.. -H "X-Brainiak-Client-Id: my_client_id"
+  $ curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/_query/my_query_id'  -T payload.json -H "X-Brainiak-Client-Id: my_client_id"
 
 The ``my_query_id`` attribute indicates the query identification to be used when executing it.
 

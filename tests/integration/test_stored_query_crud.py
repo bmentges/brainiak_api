@@ -61,7 +61,8 @@ class StoredQueryCRUDIntegrationTestCase(TornadoAsyncHTTPTestCase):
 
         # delete inserted query
         delete_response = self.fetch('/_query/{0}'.format(query_id),
-                                     method='DELETE')
+                                     method='DELETE',
+                                     headers={"X-Brainiak-Client-Id": "client-id"})
         self.assertEqual(delete_response.code, 204)
 
     def test_put_edit_stored_query(self):
@@ -128,7 +129,8 @@ class StoredQueryCRUDIntegrationTestCase(TornadoAsyncHTTPTestCase):
 
         # delete inserted query
         delete_response = self.fetch('/_query/{0}'.format(query_id),
-                                     method='DELETE')
+                                     method='DELETE',
+                                     headers={"X-Brainiak-Client-Id": "client-id"})
         self.assertEqual(delete_response.code, 204)
 
     def test_delete_that_does_not_exist(self):
@@ -136,7 +138,8 @@ class StoredQueryCRUDIntegrationTestCase(TornadoAsyncHTTPTestCase):
         self._assert_query_does_not_exist(query_id)
 
         delete_response = self.fetch('/_query/{0}'.format(query_id),
-                                     method='DELETE')
+                                     method='DELETE',
+                                     headers={"X-Brainiak-Client-Id": "client-id"})
         self.assertEqual(delete_response.code, 404)
 
     def test_delete_stored_query_exists(self):
@@ -159,5 +162,6 @@ class StoredQueryCRUDIntegrationTestCase(TornadoAsyncHTTPTestCase):
 
         # delete inserted query
         delete_response = self.fetch('/_query/{0}'.format(query_id),
-                                     method='DELETE')
+                                     method='DELETE',
+                                     headers={"X-Brainiak-Client-Id": "client-id"})
         self.assertEqual(delete_response.code, 204)

@@ -774,11 +774,11 @@ class StoredQueryCRUDHandler(BrainiakRequestHandler):
 
     @greenlet_asynchronous
     def delete(self, query_id):
-        deleted = delete_stored_query(query_id)
-        if deleted:
-            self.finalize(204)
-        else:
-            raise HTTPError(404, log_message=_(u"The query with id '{0}' was not found and, therefore, not deleted.").format(query_id))
+        validate_headers(self.request.headers)
+        client_id = self.request.headers.get(CLIENT_ID_HEADER)
+
+        delete_stored_query(query_id, client_id)
+        self.finalize(204)
 
     def finalize(self, response):
         if isinstance(response, dict):

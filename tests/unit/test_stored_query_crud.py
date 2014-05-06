@@ -76,17 +76,19 @@ class StoredQueryCRUDTestCase(TestCase):
         query_id = "existent_query"
         self.assertTrue(crud.stored_query_exists(query_id))
 
-    @patch("brainiak.stored_query.crud.delete_instance",
-           return_value=True)
-    def test_delete_stored_query_that_exists(self, mock_delete):
+    @patch("brainiak.stored_query.crud.validate_client_id")
+    @patch("brainiak.stored_query.crud.get_stored_query", return_value={"client_id": "client_id"})
+    @patch("brainiak.stored_query.crud.delete_instance")
+    def test_delete_stored_query_that_exists(self, mock_delete, mock_get_stored_query, mock_validate_client_id):
         query_id = "existent_query"
-        self.assertTrue(crud.delete_stored_query(query_id))
+        client_id = "client_id"
+        self.assertIsNone(crud.delete_stored_query(query_id, client_id))
 
-    @patch("brainiak.stored_query.crud.delete_instance",
-           return_value=False)
-    def test_delete_stored_query_but_does_not_exist(self, mock_delete):
+    @patch("brainiak.stored_query.crud.get_stored_query", return_value=None)
+    def test_delete_inexistent_stored_query_raises_error(self, mock_delete):
         query_id = "existent_query"
-        self.assertFalse(crud.delete_stored_query(query_id))
+        client_id = "client_id"
+        self.assertRaises(HTTPError, crud.delete_stored_query, query_id, client_id)
 
     @patch("brainiak.stored_query.crud.get_stored_query", return_value={})
     def test_stored_query_exists(self, mocked_get_stored_query):

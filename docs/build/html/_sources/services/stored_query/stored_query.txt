@@ -18,17 +18,15 @@ The service to register a query is the same used to update it.
 
 .. /// WARNING \\\ Commented out mentions to client-id because this first relase will not have authorization
 
-.. The ``X-Brainiak-Client-Id`` header is mandatory for access authentication.
+The ``X-Brainiak-Client-Id`` header is mandatory for access authentication.
 
-.. The client id used during query registration must be the same used during UPDATE and DELETE.
+The client id used during query registration must be the same used during UPDATE and DELETE.
 
 Users can register a query by performing a request like:
 
 .. code-block:: bash
 
-  $ curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/_query/my_query_id'  -T payload.json
-
-.. -H "X-Brainiak-Client-Id: my_client_id"
+  $ curl -s -X PUT 'http://brainiak.semantica.dev.globoi.com/_query/my_query_id' -T payload.json -H "X-Brainiak-Client-Id: my_client_id"
 
 The ``my_query_id`` attribute indicates the query identification to be used when executing it.
 
@@ -122,7 +120,7 @@ To delete a stored query, registered with my_query_id:
 
 .. code-block:: bash
 
-  $ curl -s -X DELETE '/_query/my_query_id'
+  $ curl -s -X DELETE '/_query/my_query_id' -H "X-Brainiak-Client-Id: my_client_id"
 
 If the query exists and was successfuly deleted, a ``204`` status code is returned.
 If the query does not exists and there was an attempt to delete it, a ``404`` status code will be returned.
@@ -151,8 +149,8 @@ The response is a JSON with a list of dictionaries, each with all the matched va
   {
     "item_count": 2,
     "items": [
-      {"class_uri", "http://semantica.globo.com/graph/Class1"},
-      {"class_uri", "http://semantica.globo.com/graph/Class2"}
+      {"class_uri": "http://semantica.globo.com/graph/Class1"},
+      {"class_uri": "http://semantica.globo.com/graph/Class2"}
     ]
   }
 

@@ -9,8 +9,8 @@ from brainiak.stored_query import crud
 class StoredQueryCRUDTestCase(TestCase):
 
     @patch("brainiak.stored_query.crud.save_instance")
-    @patch("brainiak.stored_query.crud.stored_query_exists",
-           return_value=True)
+    @patch("brainiak.stored_query.crud.get_stored_query",
+           return_value={"client_id": "client_id"})
     @patch("brainiak.stored_query.crud._allowed_query",
            return_value=True)
     def test_store_query_creation(self,
@@ -22,13 +22,13 @@ class StoredQueryCRUDTestCase(TestCase):
             "sparql_template": "select ?class {?class a owl:Class}",
             "description": "get all classes _o/"
         }
-        query_id = "get_all_classes_query"
-        response = crud.store_query(entry, query_id)
+        query_id, client_id = "get_all_classes_query", "client_id"
+        response = crud.store_query(entry, query_id, client_id)
         self.assertEqual(response, expected_response)
 
     @patch("brainiak.stored_query.crud.save_instance")
-    @patch("brainiak.stored_query.crud.stored_query_exists",
-           return_value=False)
+    @patch("brainiak.stored_query.crud.get_stored_query",
+           return_value=None)
     @patch("brainiak.stored_query.crud._allowed_query",
            return_value=True)
     def test_store_query_edition(self,
@@ -40,8 +40,8 @@ class StoredQueryCRUDTestCase(TestCase):
             "sparql_template": "select ?class from <%(graph_uri)s> {?class a owl:Class}",
             "description": "get all classes with graph_uri as parameter"
         }
-        query_id = "get_all_classes_query"
-        response = crud.store_query(entry, query_id)
+        query_id, client_id = "get_all_classes_query", "client_id"
+        response = crud.store_query(entry, query_id, client_id)
         self.assertEqual(response, expected_response)
 
     def test_get_stored_query(self):
@@ -145,11 +145,21 @@ class StoredQueryCRUDTestCase(TestCase):
         entry = {
             "sparql_template": "INSERT DATA INTO <a> {<1> <2> <3>}"
         }
-        query_id = "query_id"
-        self.assertRaises(HTTPError, crud.store_query, entry, query_id)
+        query_id, client_id = "query_id", "client_id"
+        self.assertRaises(HTTPError, crud.store_query, entry, query_id, client_id)
 
     def test_headers_with_client_id(self):
         crud.validate_headers({"X-Brainiak-Client-Id": "dsd4asdr6aftsg7asgdsa"})
 
     def test_headers_without_client_id_raises_exception(self):
         self.assertRaises(HTTPError, crud.validate_headers, {"a-header": "a-value"})
+
+    def test_validate_client_id(self):
+        client_id = "client_id"
+        stored_query = {"client_id": "client_id"}
+        self.assertIsNone(crud.validate_client_id(client_id, stored_query))
+
+    def test_validate_client_id_raises_exception(self):
+        client_id = "other_client_id"
+        stored_query = {"client_id": "client_id"}
+        self.assertRaises(HTTPError, crud.validate_client_id, client_id, stored_query)

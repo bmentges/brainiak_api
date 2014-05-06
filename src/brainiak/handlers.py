@@ -761,15 +761,15 @@ class StoredQueryCRUDHandler(BrainiakRequestHandler):
     @greenlet_asynchronous
     def put(self, query_id):
         validate_headers(self.request.headers)
-        client_id_dict = {"client_id": self.request.headers.get(CLIENT_ID_HEADER)}
+        client_id = self.request.headers.get(CLIENT_ID_HEADER)
+        client_id_dict = {"client_id": client_id}
 
         json_payload_object = get_json_request_as_dict(self.request.body)
         validate_json_schema(json_payload_object, query_crud_schema)
         json_payload_object.update(client_id_dict)
 
-        # TODO validate_client_id_permission_to_edit_if_query_exists()
         # TODO return instance data when editing it?
-        status = store_query(json_payload_object, query_id)
+        status = store_query(json_payload_object, query_id, client_id)
         self.finalize(status)
 
     @greenlet_asynchronous

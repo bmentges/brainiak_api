@@ -1,8 +1,6 @@
 # coding: utf-8
 import re
 import uuid
-import unittest
-import urllib
 
 import dateutil.parser
 import ujson as json
@@ -67,7 +65,7 @@ def normalize_term(term, language=""):
 
 
 def is_literal(term):
-    return (not term.startswith("?")) and (not ":" in term)
+    return (not term.startswith("?")) and (":" not in term)
 
 
 def is_url(term):
@@ -198,7 +196,7 @@ def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=Non
     for item in result_dict['results']['bindings']:
         row = {}
         for key in item:
-            if not key in ignore_keys:
+            if key not in ignore_keys:
                 value = item[key]['value']
                 effective_key = keymap.get(key, key)
                 if item[key]['type'] == 'uri' and context and effective_key != '@id' and not expand_uri:
@@ -371,7 +369,25 @@ def generic_sparqlfy(value, *args):
     >>> generic_sparqlfy('word')
     ... '"word"'
     """
+    if is_multiline_string(value):
+        return u'"""{0}"""'.format(value)
     return u'"{0}"'.format(value)
+
+
+MULTI_LINE_PATTERN = re.compile(r'[\n\r]')
+
+
+def is_multiline_string(value):
+    """
+    Verify if string is multiline
+    Useful to convert strings in INSERT triples to \"\"\"string\"\"\"
+
+    Example:
+
+    >>> is_multiline_string("testing\nfeature")
+    ... True
+    """
+    return re.search(MULTI_LINE_PATTERN, value) is not None
 
 
 def sparqlfy_string(value, *args):

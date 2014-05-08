@@ -183,15 +183,15 @@
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X POST -T <span class="s2">&quot;new_york_city.json&quot;</span> http://brainiak.semantica.dev.globoi.com/place/City
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 400 Bad Request
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 201 Created
 Server: nginx
-Date: Tue, 06 May 2014 14:09:13 GMT
-Content-Type: application/json; charset=UTF-8
-Content-Length: 359
+Date: Thu, 08 May 2014 19:39:20 GMT
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/place/City/_schema_list
+Content-Length: 0
 Connection: keep-alive
+X-Brainiak-Resource-Uri: http://semantica.globo.com/place/City/9f0ead95-fdbf-4432-ac59-10a953be54d6
+Location: http://brainiak.semantica.dev.globoi.com/place/City/9f0ead95-fdbf-4432-ac59-10a953be54d6
 Access-Control-Allow-Origin: *
-
-{&quot;errors&quot;: [&quot;Valor incorreto para a propriedade (http://semantica.globo.com/place/latitude). Um (http://www.w3.org/2001/XMLSchema#float) era esperado, mas (-22.958314) foi fornecido.&quot;, &quot;Valor incorreto para a propriedade (http://semantica.globo.com/place/longitude). Um (http://www.w3.org/2001/XMLSchema#float) era esperado, mas (-43.407133) foi fornecido.&quot;]}
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -201,19 +201,12 @@ In order to avoid that, either remove the last &#8220;/&#8221; or use &#8216;-d 
 </div>
 <p>Sample JSON &#8220;new_city.json&#8221; for the class <a class="reference external" href="http://brainiak.semantica.dev.globoi.com/place/City/_schema">City</a>:</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-    <span class="nt">&quot;@context&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;rdf&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;place&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;rdfs&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/2000/01/rdf-schema#&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;base&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/base/&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;upper&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/upper/&quot;</span>
-    <span class="p">},</span>
     <span class="nt">&quot;upper:name&quot;</span><span class="p">:</span> <span class="s2">&quot;Globoland&quot;</span><span class="p">,</span>
     <span class="nt">&quot;upper:fullName&quot;</span><span class="p">:</span> <span class="s2">&quot;Globoland (RJ)&quot;</span><span class="p">,</span>
     <span class="nt">&quot;rdfs:comment&quot;</span><span class="p">:</span> <span class="s2">&quot;City of Globo&#39;s companies. Historically known as PROJAC.&quot;</span><span class="p">,</span>
     <span class="nt">&quot;place:partOfState&quot;</span><span class="p">:</span> <span class="s2">&quot;base:UF_RJ&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;place:latitude&quot;</span><span class="p">:</span> <span class="s2">&quot;-22.958314&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;place:longitude&quot;</span><span class="p">:</span> <span class="s2">&quot;-43.407133&quot;</span>
+    <span class="nt">&quot;place:latitude&quot;</span><span class="p">:</span> <span class="mf">-22.958314</span><span class="p">,</span>
+    <span class="nt">&quot;place:longitude&quot;</span><span class="p">:</span> <span class="mf">-43.407133</span>
 <span class="p">}</span>
 </pre></div>
 </div>

@@ -225,8 +225,28 @@ this property and/or object values. For example:</p>
 <div class="highlight-http"><pre>GET 'http://brainiak.semantica.dev.globoi.com/place/City/?o=base:UF_RJ&amp;p1=place:longitude&amp;p2=place:latitude&amp;per_page=1''</pre>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>{
-    &quot;items&quot;: [],
-    &quot;warning&quot;: &quot;N\u00e3o foram encontradas inst\u00e2ncias da classe (http://semantica.globo.com/place/City) no grafo (http://semantica.globo.com/place/) with o=(http://semantica.globo.com/base/UF_RJ) with p1=(http://semantica.globo.com/place/longitude) with p2=(http://semantica.globo.com/place/latitude), com idioma (pt) e p\u00e1gina (1).&quot;
+    &quot;@context&quot;: {
+        &quot;@language&quot;: &quot;pt&quot;
+    },
+    &quot;@id&quot;: &quot;place:City&quot;,
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City&quot;,
+    &quot;_class_prefix&quot;: &quot;place&quot;,
+    &quot;_first_args&quot;: &quot;p2=place:latitude&amp;per_page=1&amp;p1=place:longitude&amp;page=1&amp;o=base:UF_RJ&quot;,
+    &quot;_next_args&quot;: &quot;p2=place:latitude&amp;per_page=1&amp;p1=place:longitude&amp;page=2&amp;o=base:UF_RJ&quot;,
+    &quot;_schema_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/_schema&quot;,
+    &quot;items&quot;: [
+        {
+            &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/0eebe227-3543-4333-9b33-1452f8a4afca&quot;,
+            &quot;class_prefix&quot;: &quot;place&quot;,
+            &quot;instance_prefix&quot;: &quot;http://semantica.globo.com/place/City/&quot;,
+            &quot;p&quot;: &quot;place:partOfState&quot;,
+            &quot;place:latitude&quot;: &quot;-22.9583&quot;,
+            &quot;place:longitude&quot;: &quot;-43.4071&quot;,
+            &quot;resource_id&quot;: &quot;0eebe227-3543-4333-9b33-1452f8a4afca&quot;,
+            &quot;title&quot;: &quot;Globoland&quot;
+        }
+    ],
+    &quot;pattern&quot;: &quot;&quot;
 }
 </pre></div>
 </div>

@@ -47,12 +47,12 @@ class ResultHandlerTestCase(unittest.TestCase):
         u'head': {u'link': [], u'vars': [u'graph', u'videoClass', u'program']},
         u'results': {u'distinct': False,
                      u'bindings': [
-                    {
-                        u'graph': {u'type': u'uri', u'value': u'http://test.domain.com/'},
-                        u'program': {u'type': u'uri', u'value': u'http://test.domain.com/base/Programa_Bem_Estar'},
-                        u'videoClass': {u'type': u'uri', u'value': u'http://test.domain.com/G1/Video'}
-                    }],
-        u'ordered': True}}
+                         {
+                             u'graph': {u'type': u'uri', u'value': u'http://test.domain.com/'},
+                             u'program': {u'type': u'uri', u'value': u'http://test.domain.com/base/Programa_Bem_Estar'},
+                             u'videoClass': {u'type': u'uri', u'value': u'http://test.domain.com/G1/Video'}
+                         }],
+                     u'ordered': True}}
 
     def test_create_uri(self):
         original_uuid = uuid.uuid4
@@ -834,8 +834,10 @@ class BindingsToDictTestCase(unittest.TestCase):
     def test_convert_valid_input(self):
         key_name = 'predicate'
         bindings = {
-            u'head': {u'link': [],
-            u'vars': [u'predicate', u'predicate_graph', u'predicate_comment', u'type', u'range', u'title', u'range_graph', u'range_label', u'super_property', u'domain_class']},
+            u'head': {
+                u'link': [],
+                u'vars': [u'predicate', u'predicate_graph', u'predicate_comment', u'type', u'range', u'title', u'range_graph', u'range_label', u'super_property', u'domain_class']
+            },
             u'results': {
                 u'distinct': False,
                 u'bindings': [{
@@ -857,15 +859,16 @@ class BindingsToDictTestCase(unittest.TestCase):
     def test_convert_invalid_input(self):
         key_name = 'inexistent'
         bindings = {
-            u'head': {u'link': [],
-            u'vars': [u'predicate', u'predicate_graph', u'predicate_comment', u'type', u'range', u'title', u'range_graph', u'range_label', u'super_property', u'domain_class']},
+            u'head': {
+                u'link': [],
+                u'vars': [u'predicate', u'predicate_graph', u'predicate_comment', u'type', u'range', u'title', u'range_graph', u'range_label', u'super_property', u'domain_class']},
             u'results': {
                 u'distinct': False,
                 u'bindings': [
-                {
-                    u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
-                    u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'}
-                }]
+                    {
+                        u'predicate': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
+                        u'range': {u'type': u'uri', u'value': u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'}
+                    }]
             }
         }
 
@@ -880,6 +883,17 @@ class SparqlfyTestCase(unittest.TestCase):
         response = generic_sparqlfy("dummy")
         expected = '"dummy"'
         self.assertEqual(response, expected)
+
+    def test_generic_sparqlfy_with_multiline_string(self):
+        response = generic_sparqlfy("dummy\nmultiline")
+        expected = '"""dummy\nmultiline"""'
+        self.assertEqual(response, expected)
+
+    def test_is_multiline_string(self):
+        self.assertTrue(is_multiline_string("multi\nline\r\nstring"))
+
+    def test_is_not_multiline_string(self):
+        self.assertFalse(is_multiline_string("not multi line string"))
 
     def test_sparqlfy_string_without_lang(self):
         response = sparqlfy_string("No i18n")
@@ -1079,7 +1093,7 @@ class ValidateValueUniquenessTestCase(unittest.TestCase):
             "id": "http://example.onto/City"
         }
         is_value_already_used(instance_uri, object_value, predicate_uri,
-                        class_object, graph_uri, QueryParams())
+                              class_object, graph_uri, QueryParams())
 
     @patch("brainiak.utils.sparql.triplestore.query_sparql")
     @patch("brainiak.utils.sparql.is_result_true", return_value=False)

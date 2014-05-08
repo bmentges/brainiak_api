@@ -471,6 +471,7 @@ def sparqlfy_with_casting(value, predicate_datatype):
 
 SPARQLFY_MAP = {
     "rdf:XMLLiteral": sparqlfy_string,
+    "rdfs:Literal": sparqlfy_string,
     "xsd:string": sparqlfy_string,
     "xsd:boolean": sparqlfy_boolean
 }

@@ -115,7 +115,7 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
             "ex": "http://example.onto/"
             },
-            "ex:name": "Globoland",
+            "ex:name": "Globoland\r\nwith multiline",
         }
         response = self.fetch('/example/City?graph_uri=http://example.onto/&class_prefix=http://example.onto/',
                                 method='POST',
@@ -132,7 +132,7 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(mocked_notify_bus.called)
         expected = {
             'action': 'POST',
-            'instance_data': {u'http://example.onto/name': u'Globoland'},
+            'instance_data': {u'http://example.onto/name': u'Globoland\r\nwith multiline'},
             'instance': 'http://example.onto/City/123',
             'klass': 'http://example.onto/City',
             'graph': 'http://example.onto/'

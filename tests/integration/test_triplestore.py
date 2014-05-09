@@ -45,7 +45,7 @@ class RunQueryTestCase(unittest.TestCase):
 
     def test_sync_query_not_authenticated_works(self):
         endpoint = "http://localhost:8890/sparql"
-        query = "ASK {rdfs:label ?p owl:Thing}"
+        query = "ASK {?s a ?o}"
         response = triplestore.sync_query(endpoint, query)
         self.assertEqual(response.status_code, 200)
         body = response.json()
@@ -53,7 +53,7 @@ class RunQueryTestCase(unittest.TestCase):
 
     def test_sync_query_authenticated_works(self):
         endpoint = "http://localhost:8890/sparql-auth"
-        query = "ASK {rdfs:label ?p owl:Thing}"
+        query = "ASK {?s a ?o}"
         auth = ("api-semantica", "api-semantica")
         response = triplestore.sync_query(endpoint, query, auth=auth)
         self.assertEqual(response.status_code, 200)
@@ -62,7 +62,6 @@ class RunQueryTestCase(unittest.TestCase):
 
     def test_sync_query_authenticated_fails(self):
         endpoint = "http://localhost:8890/sparql-auth"
-        query = "ASK {rdfs:label ?p owl:Thing}"
-        auth = ("api-semantica", "api-semantica")
+        query = "ASK {?s a ?o}"
         response = triplestore.sync_query(endpoint, query)
         self.assertEqual(response.status_code, 401)

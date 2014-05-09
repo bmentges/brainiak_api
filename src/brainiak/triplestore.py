@@ -4,11 +4,11 @@ import urllib
 
 import requests
 import ujson as json
-from tornado.httpclient import HTTPRequest
+from tornado.httpclient import HTTPRequest, HTTPClient
 from tornado.httpclient import HTTPError as ClientHTTPError
 from tornado.web import HTTPError
 
-from brainiak import log
+from brainiak import log, greenlet_tornado
 from brainiak.greenlet_tornado import greenlet_fetch
 from brainiak.utils.config_parser import parse_section
 
@@ -35,7 +35,7 @@ def query_sparql(query, triplestore_config):
 format_post = u"POST - %(url)s - %(user_ip)s - %(auth_username)s [tempo: %(time_diff)s] - QUERY - %(query)s"
 
 
-def run_query(query, triplestore_config):
+def build_query_params(query, triplestore_config):
     params = {
         "query": unicode(query).encode("utf-8"),
         "format": "application/sparql-results+json"
@@ -52,10 +52,32 @@ def run_query(query, triplestore_config):
     # app_name (from triplestore.ini) can't be passed forward to HTTPRequest
     # it raises exception
     request_params.pop("app_name")
+    return request_params
 
+
+def run_async_query_with_greenlet(request_params):
     request = HTTPRequest(**request_params)
-    time_i = time.time()
     response = greenlet_fetch(request)
+    return response
+
+
+def run_async_query_without_greenlet(request_params):
+    print "oi"
+    client = HTTPClient(greenlet_tornado._io_loop)
+    request = HTTPRequest(**request_params)
+    response = client.fetch(request)
+    return response
+
+
+def run_query(query, triplestore_config, use_greenlet=True):
+    request_params = build_query_params(query, triplestore_config)
+
+    time_i = time.time()
+    if use_greenlet:
+        response = run_async_query_with_greenlet(request_params)
+    else:
+        response = run_async_query_without_greenlet(request_params)
+
     time_f = time.time()
 
     request_params["time_diff"] = time_f - time_i
@@ -95,7 +117,6 @@ def status(**kw):
         info["error"] = u"Status code: {0}. Body: {1}".format(response.status_code, response.text)
         msg = failure_msg % info
 
-    #password_md5 = md5.new(password).digest()  # do not cast to unicode here
     info = {
         "type": u"authenticated [%s:%s]" % (user, password),
         "endpoint": url

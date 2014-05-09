@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-import md5
-import json as simplejson
 import time
 import urllib
 
-#import SPARQLWrapper
 import requests
 import ujson as json
 from tornado.httpclient import HTTPRequest

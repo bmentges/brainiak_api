@@ -6,6 +6,7 @@ import urllib
 import requests
 from requests.auth import HTTPDigestAuth
 import ujson as json
+from simplejson import JSONDecodeError
 
 from tornado.httpclient import HTTPRequest
 from tornado.httpclient import HTTPError as ClientHTTPError
@@ -14,6 +15,10 @@ from tornado.web import HTTPError
 from brainiak import log
 from brainiak.greenlet_tornado import greenlet_fetch
 from brainiak.utils.config_parser import parse_section
+
+
+JSON_DECODE_ERROR_MESSAGE = "Could not decode JSON:\n  {0}"
+UNAUTHORIZED_MESSAGE = 'Check triplestore user and password.'
 
 
 def do_run_query(request_params, async):
@@ -29,8 +34,7 @@ def do_run_query(request_params, async):
             response = greenlet_fetch(request)
         except ClientHTTPError as e:
             if e.code == 401:
-                message = 'Check triplestore user and password.'
-                raise HTTPError(e.code, message=message)
+                raise HTTPError(e.code, message=UNAUTHORIZED_MESSAGE)
             else:
                 raise e
     else:
@@ -39,6 +43,9 @@ def do_run_query(request_params, async):
         request_params.pop("auth_password", None)
 
         response = requests.request(**request_params)
+        if response.status_code == 401:
+            raise HTTPError(401, message=UNAUTHORIZED_MESSAGE)
+
     time_f = time.time()
     diff = time_f - time_i
 
@@ -50,6 +57,7 @@ def log_request(log_params):
         Just logs the request
     """
     log_params["user_ip"] = unicode(None)
+    log_params["auth_username"] = log_params.get("auth_username", None)
     log_msg = format_post % log_params
     log.logger.info(log_msg)
 
@@ -62,7 +70,10 @@ def process_json_triplestore_response(response, async):
     if async:
         result_dict = json.loads(unicode(response.body))
     else:
-        result_dict = response.json()
+        try:
+            result_dict = response.json()
+        except JSONDecodeError:
+            raise ClientHTTPError(400, JSON_DECODE_ERROR_MESSAGE.format(response.text))
     return result_dict
 
 
@@ -113,11 +124,16 @@ def build_request_params(query, triplestore_config, async):
     if async:
         request_params.update(body_dict)
     else:
-        # Considering all DIGEST authencations
-        auth_credentials = HTTPDigestAuth(triplestore_config["auth_username"],
-                                          triplestore_config["auth_password"])
-        request_params.update({"auth": auth_credentials, "url": triplestore_config["url"]})
-        request_params.update({"data": body_params})
+        request_params.update({
+            "data": body_params,
+            "url": triplestore_config["url"]})
+        if "auth_mode" in triplestore_config and \
+           "auth_username" in triplestore_config and  \
+           "auth_password" in triplestore_config:
+            # Considering all DIGEST authencations
+            auth_credentials = HTTPDigestAuth(triplestore_config["auth_username"],
+                                              triplestore_config["auth_password"])
+            request_params.update({"auth": auth_credentials})
 
     return request_params
 
@@ -126,54 +142,53 @@ class VirtuosoException(Exception):
     pass
 
 
-def status(**kw):
+VIRTUOSO_FAILURE_MESSAGE = u"Virtuoso connection %(type)s | FAILED | %(endpoint)s | %(error)s"
+VIRTUOSO_SUCCESS_MESSAGE = u'Virtuoso connection %(type)s | SUCCEED | %(endpoint)s'
+
+
+def status():
+
     endpoint_dict = parse_section()
-    user = kw.get("user") or endpoint_dict["auth_username"]
-    password = kw.get("password") or endpoint_dict["auth_password"]
-    url = kw.get("url") or endpoint_dict["url"]
-    graph = u"http://semantica.globo.com/person"
-    query = u"SELECT COUNT(*) WHERE {?s a owl:Class}"
+    unauthorized_endpoint_dict = copy.copy(endpoint_dict)
 
-    # Do not cast to unicode these lines
-    failure_msg = u"Virtuoso connection %(type)s | FAILED | %(endpoint)s | %(error)s"
-    success_msg = u'Virtuoso connection %(type)s | SUCCEED | %(endpoint)s'
+    query = u"""
+        SELECT COUNT(*)
+        FROM <http://semantica.globo.com/person>
+        WHERE {?s a owl:Class}
+    """
 
     info = {
+        "type": u"authenticated [%s:%s]" % (endpoint_dict["auth_username"],
+                                            endpoint_dict["auth_password"]),
+        "endpoint": endpoint_dict["url"]
+    }
+
+    auth_msg = _run_status_request(query, endpoint_dict, info)
+
+    unauthorized_endpoint_dict.pop("auth_mode", None)
+
+    info.update({
         "type": u"not-authenticated",
-        "endpoint": url
-    }
+    })
 
-    response = sync_query(url, query, default_graph=graph)
-    if response.status_code == 200:
-        msg = success_msg % info
-    else:
-        info["error"] = u"Status code: {0}. Body: {1}".format(response.status_code, response.text)
-        msg = failure_msg % info
+    non_auth_msg = _run_status_request(query, unauthorized_endpoint_dict, info)
 
-    info = {
-        "type": u"authenticated [%s:%s]" % (user, password),
-        "endpoint": url
-    }
-
-    response = sync_query(url, query, default_graph=graph, auth=(user, password))
-
-    if response.status_code == 200:
-        auth_msg = success_msg % info
-    else:
-        info["error"] = u"Status code: {0}. Body: {1}".format(response.status_code, response.text)
-        auth_msg = failure_msg % info
-    msg = u"{0}<br>{1}".format(msg, auth_msg)
+    msg = u"{0}<br>{1}".format(auth_msg, non_auth_msg)
 
     return msg
 
 
-def sync_query(endpoint, query, default_graph=None, auth=None):
-    quoted_query = urllib.quote(query)
-    url = u"{0}?query={1}&format=application%2Fjson".format(endpoint, quoted_query)
-    if default_graph:
-        url = url + u"&default-graph-uri={0}".format(default_graph)
-    if auth:
-        auth = requests.auth.HTTPDigestAuth(*auth)
-    response = requests.get(url, auth=auth)
+def _run_status_request(query, endpoint_dict, info):
+    try:
+        query_sparql(query, endpoint_dict, async=False)
+    except (ClientHTTPError, HTTPError) as e:
+        # Reason for this: ClientHTTPError has one pattern and HTTPError for status code attribute
+        code = hasattr(e, "status_code") and e.status_code
+        if not code:
+            code = hasattr(e, "code") and e.code
 
-    return response
+        info["error"] = u"Status code: {0}. Message: {1}".format(code, e.message)
+        message = VIRTUOSO_FAILURE_MESSAGE % info
+    else:
+        message = VIRTUOSO_SUCCESS_MESSAGE % info
+    return message

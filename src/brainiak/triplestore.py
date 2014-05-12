@@ -1,92 +1,125 @@
 # -*- coding: utf-8 -*-
+import copy
 import time
 import urllib
 
 import requests
+from requests.auth import HTTPDigestAuth
 import ujson as json
-from tornado.httpclient import HTTPRequest, HTTPClient
+
+from tornado.httpclient import HTTPRequest
 from tornado.httpclient import HTTPError as ClientHTTPError
 from tornado.web import HTTPError
 
-from brainiak import log, greenlet_tornado
+from brainiak import log
 from brainiak.greenlet_tornado import greenlet_fetch
 from brainiak.utils.config_parser import parse_section
 
 
-def query_sparql(query, triplestore_config):
+def do_run_query(request_params, async):
+    # app_name (from triplestore.ini) can't be passed forward to tornado.httpclient.HTTPRequest .
+    # It raises an exception
+    # Similarly, there are parameters that make requests.request fail
+    request_params.pop("app_name", None)
+
+    time_i = time.time()
+    if async:
+        request = HTTPRequest(**request_params)
+        try:
+            response = greenlet_fetch(request)
+        except ClientHTTPError as e:
+            if e.code == 401:
+                message = 'Check triplestore user and password.'
+                raise HTTPError(e.code, message=message)
+            else:
+                raise e
+    else:
+        request_params.pop("auth_mode", None)
+        request_params.pop("auth_username", None)
+        request_params.pop("auth_password", None)
+
+        response = requests.request(**request_params)
+    time_f = time.time()
+    diff = time_f - time_i
+
+    return response, diff
+
+
+def log_request(log_params):
+    """
+        Just logs the request
+    """
+    log_params["user_ip"] = unicode(None)
+    log_msg = format_post % log_params
+    log.logger.info(log_msg)
+
+
+def process_json_triplestore_response(response, async):
+    """
+        Returns a python dict with triplestore response.
+        Unifying tornado and requests response.
+    """
+    if async:
+        result_dict = json.loads(unicode(response.body))
+    else:
+        result_dict = response.json()
+    return result_dict
+
+
+def query_sparql(query, triplestore_config, async=True):
     """
     Simple interface that given a SPARQL query string returns a string representing a SPARQL results bindings
     in JSON format. For now it only works with Virtuoso, but in futurw we intend to support other databases
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
-    try:
-        query_response = run_query(query, triplestore_config)
-    except ClientHTTPError as e:
-        if e.code == 401:
-            message = 'Check triplestore user and password.'
-            raise HTTPError(e.code, message=message)
-        else:
-            raise e
+    request_params = build_request_params(query, triplestore_config, async)
+    log_params = copy.copy(request_params)
 
-    result_dict = json.loads(unicode(query_response.body))
+    response, time_diff = do_run_query(request_params, async)
+
+    log_params["query"] = unicode(query)
+    log_params["time_diff"] = time_diff
+    log_request(log_params)
+
+    result_dict = process_json_triplestore_response(response, async)
     return result_dict
 
 # This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works
 format_post = u"POST - %(url)s - %(user_ip)s - %(auth_username)s [tempo: %(time_diff)s] - QUERY - %(query)s"
 
 
-def build_query_params(query, triplestore_config):
-    params = {
+def build_request_params(query, triplestore_config, async):
+    """
+        This function creates a dict according to the param async.
+        If True, a dict with args for tornado.httpclient.HTTPRequest is created.
+        If False, a dict with args for requests.request interface is created.
+    """
+    body_params = {
         "query": unicode(query).encode("utf-8"),
         "format": "application/sparql-results+json"
     }
-    body = urllib.urlencode(params)
+
+    body_string = urllib.urlencode(body_params)
+    body_dict = {"body": body_string}
 
     request_params = {
         "method": "POST",
-        "headers": {"Content-Type": "application/x-www-form-urlencoded"},
-        "body": body
+        "headers": {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
     }
 
     request_params.update(triplestore_config)
-    # app_name (from triplestore.ini) can't be passed forward to HTTPRequest
-    # it raises exception
-    request_params.pop("app_name")
-    return request_params
-
-
-def run_async_query_with_greenlet(request_params):
-    request = HTTPRequest(**request_params)
-    response = greenlet_fetch(request)
-    return response
-
-
-def run_async_query_without_greenlet(request_params):
-    print "oi"
-    client = HTTPClient(greenlet_tornado._io_loop)
-    request = HTTPRequest(**request_params)
-    response = client.fetch(request)
-    return response
-
-
-def run_query(query, triplestore_config, use_greenlet=True):
-    request_params = build_query_params(query, triplestore_config)
-
-    time_i = time.time()
-    if use_greenlet:
-        response = run_async_query_with_greenlet(request_params)
+    if async:
+        request_params.update(body_dict)
     else:
-        response = run_async_query_without_greenlet(request_params)
+        # Considering all DIGEST authencations
+        auth_credentials = HTTPDigestAuth(triplestore_config["auth_username"],
+                                          triplestore_config["auth_password"])
+        request_params.update({"auth": auth_credentials, "url": triplestore_config["url"]})
+        request_params.update({"data": body_params})
 
-    time_f = time.time()
-
-    request_params["time_diff"] = time_f - time_i
-    request_params["query"] = unicode(query)
-    request_params["user_ip"] = unicode(None)
-    log_msg = format_post % request_params
-    log.logger.info(log_msg)
-
-    return response
+    return request_params
 
 
 class VirtuosoException(Exception):

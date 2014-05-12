@@ -1,12 +1,14 @@
 import unittest
 
-from mock import patch
-from tornado.httpclient import HTTPError
+from tornado.httpclient import HTTPError as ClientHTTPError
+from tornado.web import HTTPError
+
 
 from brainiak import triplestore
 from brainiak import greenlet_tornado
-from tests.tornado_cases import TornadoAsyncTestCase
+from brainiak.utils.sparql import compress_keys_and_values
 from tests.mocks import triplestore_config
+from tests.tornado_cases import TornadoAsyncTestCase
 
 
 SIMPLE_COUNT_CLASSES_QUERY = "SELECT COUNT(*) WHERE {?s a owl:Class}"
@@ -16,29 +18,39 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
 
     @greenlet_tornado.greenlet_test
     def test_query_ok(self):
-        response = triplestore.run_query(SIMPLE_COUNT_CLASSES_QUERY, triplestore_config)
-        self.assertEqual(response.code, 200)
+        response = triplestore.query_sparql(SIMPLE_COUNT_CLASSES_QUERY, triplestore_config)
+        compress_keys_and_values(response)
 
     @greenlet_tornado.greenlet_test
     def test_malformed_query(self):
         MALFORMED_QUERY = "SELECT A MALFORMED QUERY {?s ?p ?o}"
-        self.assertRaises(HTTPError, triplestore.run_query, MALFORMED_QUERY, triplestore_config)
+        try:
+            triplestore.query_sparql(MALFORMED_QUERY, triplestore_config)
+        except ClientHTTPError as e:
+            self.assertEqual(e.code, 400)
+        else:
+            self.fail("ClientHTTPError should have been raised")
+
 
     @greenlet_tornado.greenlet_test
-    def test_not_authenticated_access_to_authenticated_endpoint(self):
+    def test_query_to_authenticated_endpoint_inexistent_username(self):
         modified_dict = triplestore_config.copy()
         modified_dict["auth_username"] = 'inexistent'
-        self.assertRaises(HTTPError, triplestore.run_query, SIMPLE_COUNT_CLASSES_QUERY, modified_dict)
+        try:
+            triplestore.query_sparql(SIMPLE_COUNT_CLASSES_QUERY, modified_dict)
+        except HTTPError as e:
+            self.assertEqual(e.status_code, 401)
+        else:
+            self.fail("ClientHTTPError should have been raised")
 
-    @patch("brainiak.triplestore.greenlet_fetch", return_value=None)
-    @patch("brainiak.triplestore.log.logger.info")
-    @patch("brainiak.triplestore.time.time", return_value=0)
-    def test_authenticated_access_to_not_authenticated_endpoint(self, time, info, greenlet_fetch):
-        response = triplestore.run_query(SIMPLE_COUNT_CLASSES_QUERY, triplestore_config)
-        self.assertEqual(response, None)
-        self.assertEqual(info.call_count, 1)
-        log_msg = "POST - http://localhost:8890/sparql-auth - None - api-semantica [tempo: 0] - QUERY - SELECT COUNT(*) WHERE {?s a owl:Class}"
-        self.assertTrue(info.call_args, log_msg)
+
+    @greenlet_tornado.greenlet_test
+    def test_authenticated_access_to_not_authenticated_endpoint(self):
+        response = triplestore.query_sparql(SIMPLE_COUNT_CLASSES_QUERY, triplestore_config)
+        try:
+            int(response["results"]["bindings"][0]["callret-0"]["value"])
+        except Exception as e:
+            self.fail(u"Exception: {0}".format(e))
 
 
 class RunQueryTestCase(unittest.TestCase):

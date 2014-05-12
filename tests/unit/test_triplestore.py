@@ -54,17 +54,25 @@ class TriplestoreTestCase(unittest.TestCase):\
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
 
-    @patch('brainiak.triplestore.run_query', side_effect=HTTPError(401))
+    @patch('brainiak.triplestore.do_run_query', side_effect=HTTPError(401))
     def test_query_sparql_with_http_error_401(self, run_query):
         self.assertRaises(HTTPError, triplestore.query_sparql, "", {})
 
-    @patch('brainiak.triplestore.run_query', side_effect=HTTPError(500))
+    @patch('brainiak.triplestore.do_run_query', side_effect=HTTPError(500))
     def test_query_sparql_with_http_error_500(self, run_query):
         self.assertRaises(HTTPError, triplestore.query_sparql, "", {})
 
-    @patch('brainiak.triplestore.run_query', return_value=MockResponse())
+    @patch('brainiak.triplestore.do_run_query', return_value=(MockResponse(), 0))
     def test_query_sparql_withouterror(self, run_query):
-        response = triplestore.query_sparql("", {})
+        config = {
+            "app_name": "Brainiak",
+            "url": "http://localhost:8890/sparql-auth",
+            "auth_mode": "digest",
+            "auth_username": "api-semantica",
+            "auth_password": "api-semantica"
+        }
+
+        response = triplestore.query_sparql("", config)
         self.assertEqual(response, {})
 
     @patch('brainiak.triplestore.greenlet_fetch', return_value=MockResponse())

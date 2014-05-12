@@ -8,8 +8,10 @@ import ujson as json
 from brainiak import triplestore
 from brainiak.log import get_logger
 from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
+from brainiak.triplestore import query_sparql
 from brainiak.type_mapper import MAP_RDF_EXPANDED_TYPE_TO_PYTHON
 from brainiak.utils.resources import LazyObject
+from brainiak.utils import config_parser
 from brainiak.utils.i18n import _
 
 logger = LazyObject(get_logger)
@@ -24,7 +26,7 @@ XSD_STRING = u'http://www.w3.org/2001/XMLSchema#string'
 
 XML_LITERAL = u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'
 
-RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
+RDFS_LABEL = u'http://www.w3.org/2000/01/rdf-schema#label'
 
 IGNORED_DATATYPES = [XML_LITERAL, XSD_STRING]
 
@@ -699,3 +701,32 @@ def extract_po_tuples(query_string_dict):
         po_list.append((p_value, o_value, index))
 
     return sorted(po_list)
+
+
+QUERY_SUBPROPERTIES = u"""
+DEFINE input:inference <%(ruleset)s>
+SELECT DISTINCT ?property WHERE {
+  ?property rdfs:subPropertyOf <%(property)s>
+}
+"""
+
+
+LABEL_PROPERTIES = [RDFS_LABEL]
+
+
+def get_subproperties(super_property):
+    params = {
+        "ruleset": "http://semantica.globo.com/ruleset",
+        "property": super_property
+    }
+    query = QUERY_SUBPROPERTIES % params
+    result_dict = query_sparql(query,
+                               config_parser.parse_section(),
+                               async=False)
+    subproperties = filter_values(result_dict, "property")
+    return subproperties
+
+
+def load_label_properties():
+    global LABEL_PROPERTIES
+    LABEL_PROPERTIES += get_subproperties(RDFS_LABEL)

@@ -196,7 +196,7 @@ class SuggestTestCase(TestCase):
         self.assertEqual(len(computed), 1)
         self.assertDictEqual(expected, computed[0])
 
-    @patch("brainiak.suggest.suggest._get_subproperties", return_value=["property1", "property2"])
+    @patch("brainiak.suggest.suggest.get_subproperties", return_value=["property1", "property2"])
     def test_get_search_fields(self, mocked_get_subproperties):
         expected = {"property1", "property2", "rdfs:label"}
         search_params = {
@@ -576,7 +576,7 @@ class ExtraSuggestTestCase(TestCase):
     @patch("brainiak.suggest.suggest._build_items", return_value=SAMPLE_BUILD_ITEMS)
     @patch("brainiak.suggest.suggest.run_search", return_value=SAMPLE_ES_RESPONSE)
     @patch("brainiak.suggest.suggest.run_analyze", return_value={u'tokens': [{u'token': u'globoland'}]})
-    @patch("brainiak.suggest.suggest._get_subproperties", return_value=[u'http://semantica.globo.com/upper/name'])
+    @patch("brainiak.suggest.suggest.get_subproperties", return_value=[u'http://semantica.globo.com/upper/name'])
     @patch("brainiak.suggest.suggest._get_predicate_ranges", return_value=SAMPLE_RESPOSE_TO_GET_PREDICATE_RANGES)
     def test_do_suggest_with_data(self, mock_get_predicate_ranges, mock_get_subproperties, mock_run_analyze, mock_run_search, mock_build_items, mock_decorate):
         handler = MockHandler()
@@ -615,7 +615,7 @@ class ExtraSuggestTestCase(TestCase):
 
     @patch("brainiak.suggest.suggest.run_search", return_value={"hits": {"total": 0}})
     @patch("brainiak.suggest.suggest.run_analyze", return_value={u'tokens': []})
-    @patch("brainiak.suggest.suggest._get_subproperties", return_value=[])
+    @patch("brainiak.suggest.suggest.get_subproperties", return_value=[])
     @patch("brainiak.suggest.suggest._get_predicate_ranges", return_value=SAMPLE_RESPOSE_TO_GET_PREDICATE_RANGES)
     def test_do_suggest_without_data(self, mock_get_predicate_ranges, mock_get_subproperties, mock_run_analyze, mock_run_search):
         handler = MockHandler()

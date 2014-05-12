@@ -8,6 +8,7 @@ import rdflib
 from SPARQLWrapper import Wrapper, JSON
 
 from brainiak.utils.config_parser import parse_section
+from brainiak import settings
 
 
 def strip(query_string):
@@ -124,6 +125,9 @@ def mocked_convert(self):
 
 
 def run_isql(cmd):
+    if hasattr(settings, "REMOTE_ISQL"):
+        ISQL = settings.REMOTE_ISQL
+
     isql_cmd = ISQL_CMD % (cmd, ISQL)
     process = subprocess.Popen(isql_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_value, stderr_value = process.communicate()

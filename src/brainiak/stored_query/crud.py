@@ -19,6 +19,7 @@ MISSING_CLIENT_ID_MESSAGE = u"Missing X-Brainiak-Client-Id in headers"
 QUERY_CREATED_BY_OTHER_CLIENT_ID_MESSAGE = u"You tried to modify or delete a stored query created by other client_id"
 QUERY_NOT_FOUND_WHEN_DELETING = u"The query with id '{0}' was not found and, therefore, not deleted."
 
+
 def store_query(entry, query_id, client_id):
     if not _allowed_query(entry["sparql_template"]):
         raise HTTPError(400, log_message=FORBIDDEN_SPARUL_MESSAGE)
@@ -61,7 +62,7 @@ def delete_stored_query(query_id, client_id):
 
 
 def validate_headers(headers):
-    if not CLIENT_ID_HEADER in headers:
+    if CLIENT_ID_HEADER not in headers:
         raise HTTPError(400, log_message=MISSING_CLIENT_ID_MESSAGE)
 
 

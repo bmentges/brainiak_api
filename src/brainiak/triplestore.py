@@ -20,6 +20,11 @@ from brainiak.utils.config_parser import parse_section
 JSON_DECODE_ERROR_MESSAGE = "Could not decode JSON:\n  {0}"
 UNAUTHORIZED_MESSAGE = 'Check triplestore user and password.'
 
+DEFAULT_VIRTUOSO_REQUEST_HEADERS = {
+    "Content-Type": "application/x-www-form-urlencoded"
+}
+DEFAULT_RESPONSE_FORMAT = "application/sparql-results+json"
+DEFAULT_HTTP_METHOD = "POST"
 
 def do_run_query(request_params, async):
     # app_name (from triplestore.ini) can't be passed forward to tornado.httpclient.HTTPRequest .
@@ -62,7 +67,7 @@ def log_request(log_params):
     log.logger.info(log_msg)
 
 
-def process_json_triplestore_response(response, async):
+def _process_json_triplestore_response(response, async=True):
     """
         Returns a python dict with triplestore response.
         Unifying tornado and requests response.
@@ -83,7 +88,7 @@ def query_sparql(query, triplestore_config, async=True):
     in JSON format. For now it only works with Virtuoso, but in futurw we intend to support other databases
     that are SPARQL 1.1 complaint (including SPARQL result bindings format).
     """
-    request_params = build_request_params(query, triplestore_config, async)
+    request_params = _build_request_params(query, triplestore_config, async)
     log_params = copy.copy(request_params)
 
     response, time_diff = do_run_query(request_params, async)
@@ -92,14 +97,14 @@ def query_sparql(query, triplestore_config, async=True):
     log_params["time_diff"] = time_diff
     log_request(log_params)
 
-    result_dict = process_json_triplestore_response(response, async)
+    result_dict = _process_json_triplestore_response(response, async)
     return result_dict
 
 # This is based on virtuoso_connector app, used by App Semantica, so QA2 Virtuoso Analyser works
 format_post = u"POST - %(url)s - %(user_ip)s - %(auth_username)s [tempo: %(time_diff)s] - QUERY - %(query)s"
 
 
-def build_request_params(query, triplestore_config, async):
+def _build_request_params(query, triplestore_config, async):
     """
         This function creates a dict according to the param async.
         If True, a dict with args for tornado.httpclient.HTTPRequest is created.
@@ -107,17 +112,15 @@ def build_request_params(query, triplestore_config, async):
     """
     body_params = {
         "query": unicode(query).encode("utf-8"),
-        "format": "application/sparql-results+json"
+        "format": DEFAULT_RESPONSE_FORMAT
     }
 
     body_string = urllib.urlencode(body_params)
     body_dict = {"body": body_string}
 
     request_params = {
-        "method": "POST",
-        "headers": {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
+        "method": DEFAULT_HTTP_METHOD,
+        "headers": DEFAULT_VIRTUOSO_REQUEST_HEADERS,
     }
 
     request_params.update(triplestore_config)

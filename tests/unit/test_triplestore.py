@@ -22,40 +22,55 @@ class MockResponse(object):
 
 class TriplestoreTestCase(unittest.TestCase):\
 
-    @patch("brainiak.triplestore.requests.get", return_value=MockResponse())
-    def test_both_without_auth_and_with_auth_work(self, mock_get):
-        received_msg = triplestore.status(user="USER", password="PASSWORD")
-        msg1 = 'Virtuoso connection not-authenticated | SUCCEED | http://localhost:8890/sparql-auth'
-        msg2 = 'Virtuoso connection authenticated [USER:PASSWORD] | SUCCEED | http://localhost:8890/sparql-auth'
+    @patch("brainiak.triplestore.parse_section", return_value={"auth_username": "USER",
+                                                               "auth_password": "PASSWORD",
+                                                               "url": "url"})
+    @patch("brainiak.triplestore.requests.request", return_value=MockResponse())
+    def test_both_without_auth_and_with_auth_work(self, mock_request, mock_parse_section):
+        received_msg = triplestore.status()
+        msg1 = 'Virtuoso connection authenticated [USER:PASSWORD] | SUCCEED | url'
+        msg2 = 'Virtuoso connection not-authenticated | SUCCEED | url'
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
 
-    @patch("brainiak.triplestore.requests.get", side_effect=[MockResponse(), MockResponse(401)])
-    def test_without_auth_works_but_with_auth_doesnt(self, mock_get):
-        received_msg = triplestore.status(user="USER", password="PASSWORD")
-        msg1 = "Virtuoso connection not-authenticated | SUCCEED | http://localhost:8890/sparql-auth"
-        msg2 = "Virtuoso connection authenticated [USER:PASSWORD] | FAILED | http://localhost:8890/sparql-auth | Status code: 401. Body: {}"
+    @patch("brainiak.triplestore.parse_section", return_value={"auth_username": "USER",
+                                                               "auth_password": "PASSWORD",
+                                                               "url": "url"})
+    @patch("brainiak.triplestore.requests.request", side_effect=[MockResponse(401), MockResponse()])
+    def test_without_auth_works_but_with_auth_doesnt(self, mock_parse_section, mock_request):
+        received_msg = triplestore.status()
+        msg1 = "Virtuoso connection authenticated [USER:PASSWORD] | FAILED | url | Status code: 401. Message: "
+        msg2 = "Virtuoso connection not-authenticated | SUCCEED | url"
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
 
-    @patch("brainiak.triplestore.requests.get", side_effect=[MockResponse(401), MockResponse()])
-    def test_without_auth_doesnt_work_but_with_auth_works(self, mock_get):
-        received_msg = triplestore.status(user="USER", password="PASSWORD")
-        msg1 = "Virtuoso connection not-authenticated | FAILED | http://localhost:8890/sparql-auth | Status code: 401. Body: {}"
-        msg2 = "Virtuoso connection authenticated [USER:PASSWORD] | SUCCEED | http://localhost:8890/sparql-auth"
+    @patch("brainiak.triplestore.parse_section", return_value={"auth_username": "USER",
+                                                               "auth_password": "PASSWORD",
+                                                               "url": "url"})
+    @patch("brainiak.triplestore.requests.request", side_effect=[MockResponse(), MockResponse(401)])
+    def test_without_auth_doesnt_work_but_with_auth_works(self, mock_request, mock_parse_section):
+        received_msg = triplestore.status()
+        msg1 = "Virtuoso connection authenticated [USER:PASSWORD] | SUCCEED | url"
+        msg2 = "Virtuoso connection not-authenticated | FAILED | url | Status code: 401. Message: "
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
 
-    @patch("brainiak.triplestore.requests.get", return_value=MockResponse(401))
-    def test_both_without_auth_and_with_auth_dont_work(self, mock_get):
-        received_msg = triplestore.status(user="USER", password="PASSWORD")
-        msg1 = "Virtuoso connection not-authenticated | FAILED | http://localhost:8890/sparql-auth | Status code: 401. Body: {}"
-        msg2 = "Virtuoso connection authenticated [USER:PASSWORD] | FAILED | http://localhost:8890/sparql-auth | Status code: 401. Body: {}"
+    @patch("brainiak.triplestore.parse_section", return_value={"auth_username": "USER",
+                                                               "auth_password": "PASSWORD",
+                                                               "url": "url"})
+    @patch("brainiak.triplestore.requests.request", return_value=MockResponse(401))
+    def test_both_without_auth_and_with_auth_dont_work(self, mock_request, mock_parse_section):
+        received_msg = triplestore.status()
+        msg1 = "Virtuoso connection authenticated [USER:PASSWORD] | FAILED | url | Status code: 401. Message: "
+        msg2 = "Virtuoso connection not-authenticated | FAILED | url | Status code: 401. Message: "
         expected_msg = "<br>".join([msg1, msg2])
         self.assertEqual(received_msg, expected_msg)
 
+    @patch("brainiak.triplestore.parse_section", return_value={"auth_username": "USER",
+                                                               "auth_password": "PASSWORD",
+                                                               "url": "url"})
     @patch('brainiak.triplestore.do_run_query', side_effect=HTTPError(401))
-    def test_query_sparql_with_http_error_401(self, run_query):
+    def test_query_sparql_with_http_error_401(self, run_query, mock_parse_section):
         self.assertRaises(HTTPError, triplestore.query_sparql, "", {})
 
     @patch('brainiak.triplestore.do_run_query', side_effect=HTTPError(500))
@@ -66,7 +81,7 @@ class TriplestoreTestCase(unittest.TestCase):\
     def test_query_sparql_withouterror(self, run_query):
         config = {
             "app_name": "Brainiak",
-            "url": "http://localhost:8890/sparql-auth",
+            "url": "url",
             "auth_mode": "digest",
             "auth_username": "api-semantica",
             "auth_password": "api-semantica"

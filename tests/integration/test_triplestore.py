@@ -53,27 +53,25 @@ class TriplestoreTestCase(TornadoAsyncTestCase):
             self.fail(u"Exception: {0}".format(e))
 
 
+from brainiak.utils import config_parser
+
 class RunQueryTestCase(unittest.TestCase):
 
     def test_sync_query_not_authenticated_works(self):
-        endpoint = "http://localhost:8890/sparql"
         query = "ASK {?s a ?o}"
-        response = triplestore.sync_query(endpoint, query)
-        self.assertEqual(response.status_code, 200)
-        body = response.json()
-        self.assertTrue(body['boolean'])
+        triplestore_config = config_parser.parse_section()
+        triplestore_config["url"] = "http://localhost:8890/sparql"
+        response = triplestore.query_sparql(query, triplestore_config, async=False)
+        self.assertEqual(response["boolean"], True)
 
     def test_sync_query_authenticated_works(self):
-        endpoint = "http://localhost:8890/sparql-auth"
         query = "ASK {?s a ?o}"
-        auth = ("api-semantica", "api-semantica")
-        response = triplestore.sync_query(endpoint, query, auth=auth)
-        self.assertEqual(response.status_code, 200)
-        body = response.json()
-        self.assertTrue(body['boolean'])
+        triplestore_config = config_parser.parse_section()
+        response = triplestore.query_sparql(query, triplestore_config, async=False)
+        self.assertEqual(response["boolean"], True)
 
     def test_sync_query_authenticated_fails(self):
-        endpoint = "http://localhost:8890/sparql-auth"
         query = "ASK {?s a ?o}"
-        response = triplestore.sync_query(endpoint, query)
-        self.assertEqual(response.status_code, 401)
+        triplestore_config = config_parser.parse_section()
+        triplestore_config["auth_password"] = "wrong_password"
+        self.assertRaises(HTTPError, triplestore.query_sparql, query, triplestore_config, async=False)

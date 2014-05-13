@@ -7,7 +7,7 @@ import ujson as json
 
 from brainiak import triplestore
 from brainiak.log import get_logger
-from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
+from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, normalize_all_uris_recursively
 from brainiak.triplestore import query_sparql
 from brainiak.type_mapper import MAP_RDF_EXPANDED_TYPE_TO_PYTHON
 from brainiak.utils.resources import LazyObject
@@ -730,3 +730,4 @@ def get_subproperties(super_property):
 def load_label_properties():
     global LABEL_PROPERTIES
     LABEL_PROPERTIES += get_subproperties(RDFS_LABEL)
+    normalize_all_uris_recursively(LABEL_PROPERTIES)

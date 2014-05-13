@@ -1,5 +1,5 @@
 import logging
-import unittest
+from unittest import TestCase
 import uuid
 from mock import patch
 
@@ -9,7 +9,7 @@ from brainiak.utils.sparql import *
 from tests.mocks import mock_schema, triplestore_config
 
 
-class MockSchemaTestCase(unittest.TestCase):
+class MockSchemaTestCase(TestCase):
 
     maxDiff = None
 
@@ -41,7 +41,7 @@ class MockSchemaTestCase(unittest.TestCase):
         self.assertEqual(class_object, expected_object)
 
 
-class ResultHandlerTestCase(unittest.TestCase):
+class ResultHandlerTestCase(TestCase):
 
     CLASS = {
         u'head': {u'link': [], u'vars': [u'graph', u'videoClass', u'program']},
@@ -154,7 +154,7 @@ class ResultHandlerTestCase(unittest.TestCase):
         self.assertEqual(compressed_list, expected_list)
 
 
-class GetOneTestCase(unittest.TestCase):
+class GetOneTestCase(TestCase):
 
     response = {u'head': {u'link': [], u'vars': [u'graph', u'videoClass', u'program']},
                 u'results': {u'distinct': False, u'bindings':
@@ -172,7 +172,7 @@ class GetOneTestCase(unittest.TestCase):
         self.assertEqual(computed, expected)
 
 
-class IsInsertResponseSuccessfulTestCase(unittest.TestCase):
+class IsInsertResponseSuccessfulTestCase(TestCase):
 
     def test_is_response_successful_true(self):
         msg = "Insert into <http://some_graph/sample-place/>, 1 (or less) triples -- done"
@@ -193,7 +193,7 @@ class IsInsertResponseSuccessfulTestCase(unittest.TestCase):
         self.assertFalse(is_insert_response_successful(None))
 
 
-class IsModifyResponseSuccessfulTestCase(unittest.TestCase):
+class IsModifyResponseSuccessfulTestCase(TestCase):
 
     def test_is_response_successful_true(self):
         msg = "Modify <http://somegraph/bla>, delete 2 (or less) and insert 1 (or less) triples -- done"
@@ -229,7 +229,7 @@ class IsModifyResponseSuccessfulTestCase(unittest.TestCase):
         self.assertFalse(is_modify_response_successful(fake_response, n_inserted=0))
 
 
-class SomeTriplesDeletedTestCase(unittest.TestCase):
+class SomeTriplesDeletedTestCase(TestCase):
 
     def test_deleted_triples(self):
         result_dict = {"head": {"link": [], "vars": ["callret-0"]}, "results": {"distinct": False, "ordered": True, "bindings": [{"callret-0": {"type": "literal", "value": "Delete from <a>, 1 (or less) triples -- done"}}]}}
@@ -248,7 +248,7 @@ class SomeTriplesDeletedTestCase(unittest.TestCase):
         self.assertRaises(UnexpectedResultException, some_triples_deleted, result_dict, "a")
 
 
-class LiteralLangTestCase(unittest.TestCase):
+class LiteralLangTestCase(TestCase):
 
     def test_has_lang_literal_true(self):
         self.assertTrue(has_lang("'i18n'@en"))
@@ -263,7 +263,7 @@ class LiteralLangTestCase(unittest.TestCase):
         self.assertFalse(has_lang(False))
 
 
-class IsResultTrueTestCase(unittest.TestCase):
+class IsResultTrueTestCase(TestCase):
 
     def test_is_result_true(self):
         result_dict = {"head": {"link": []}, "boolean": True}
@@ -278,7 +278,7 @@ class IsResultTrueTestCase(unittest.TestCase):
         self.assertFalse(is_result_true(result_dict))
 
 
-class CreateExplicitTriplesTestCase(unittest.TestCase):
+class CreateExplicitTriplesTestCase(TestCase):
 
     maxDiff = None
 
@@ -609,7 +609,7 @@ class CreateExplicitTriplesTestCase(unittest.TestCase):
         self.assertEqual(cleaned_instance_data, expected_clean_instance_data)
 
 
-class LanguageSupportTestCase(unittest.TestCase):
+class LanguageSupportTestCase(TestCase):
 
     def test_language_tag_empty(self):
         query_params = {"a": 1}
@@ -625,7 +625,7 @@ class LanguageSupportTestCase(unittest.TestCase):
         self.assertEquals("@en", language_tag)
 
 
-class NormalizeTerm(unittest.TestCase):
+class NormalizeTerm(TestCase):
 
     def test_normalize_term_expanded_uri(self):
         term = "http://expanded.uri"
@@ -674,7 +674,7 @@ class NormalizeTerm(unittest.TestCase):
         self.assertTrue(response)
 
 
-class SuperPropertiesTestCase(unittest.TestCase):
+class SuperPropertiesTestCase(TestCase):
 
     def test_get_super_properties(self):
         sample_bindings = [
@@ -713,7 +713,7 @@ class SuperPropertiesTestCase(unittest.TestCase):
         self.assertEqual(computed, expected)
 
 
-class POTestCase(unittest.TestCase):
+class POTestCase(TestCase):
 
     def test_extract_po_tuples_p(self):
         params = {"p": "some:predicate"}
@@ -777,7 +777,7 @@ class POTestCase(unittest.TestCase):
         self.assertEqual(computed, expected)
 
 
-class GetPredicatedDatatypeTestCase(unittest.TestCase):
+class GetPredicatedDatatypeTestCase(TestCase):
 
     def setUp(self):
         self.class_object = {
@@ -799,7 +799,7 @@ class GetPredicatedDatatypeTestCase(unittest.TestCase):
         self.assertIsNone(result)
 
 
-class EncodeBooleanTestCase(unittest.TestCase):
+class EncodeBooleanTestCase(TestCase):
 
     def test_encode_true(self):
         result = encode_boolean(True)
@@ -813,7 +813,7 @@ class EncodeBooleanTestCase(unittest.TestCase):
         self.assertRaises(InstanceError, encode_boolean, "aaa")
 
 
-class DecodeBooleanTestCase(unittest.TestCase):
+class DecodeBooleanTestCase(TestCase):
 
     def test_decode_1(self):
         result = decode_boolean("1")
@@ -827,7 +827,7 @@ class DecodeBooleanTestCase(unittest.TestCase):
         self.assertRaises(InstanceError, decode_boolean, "aaa")
 
 
-class BindingsToDictTestCase(unittest.TestCase):
+class BindingsToDictTestCase(TestCase):
 
     maxDiff = None
 
@@ -877,7 +877,7 @@ class BindingsToDictTestCase(unittest.TestCase):
         self.assertEqual(computed, expected)
 
 
-class SparqlfyTestCase(unittest.TestCase):
+class SparqlfyTestCase(TestCase):
 
     def test_generic_sparqlfy(self):
         response = generic_sparqlfy("dummy")
@@ -1053,7 +1053,7 @@ class SparqlfyTestCase(unittest.TestCase):
         self.assertFalse(response)
 
 
-class ValidateValueUniquenessTestCase(unittest.TestCase):
+class ValidateValueUniquenessTestCase(TestCase):
 
     def test_property_must_map_a_unique_value_is_true(self):
         class_object = {
@@ -1117,3 +1117,19 @@ class ValidateValueUniquenessTestCase(unittest.TestCase):
         }
         response = is_value_already_used(instance_uri, object_value, predicate_uri, class_object, graph_uri, QueryParams())
         self.assertFalse(response)
+
+
+class RdfsLabelValidationTestCase(TestCase):
+
+    def test_exists_label_property(self):
+        instance_data = {
+            u'rdfs:label': "a label",
+            u"a:property": "a value"
+        }
+        self.assertTrue(are_there_label_properties_in(instance_data))
+
+    def test_does_not_exist_label_property(self):
+        instance_data = {
+            u"a:property": "a value"
+        }
+        self.assertFalse(are_there_label_properties_in(instance_data))

@@ -731,3 +731,15 @@ def load_label_properties():
     global LABEL_PROPERTIES
     LABEL_PROPERTIES += get_subproperties(RDFS_LABEL)
     normalize_all_uris_recursively(LABEL_PROPERTIES)
+
+
+def are_there_label_properties_in(instance_data):
+    """
+        Validate there are label properties in instance data when creating/modifying an instance
+        LABEL_PROPERTIES is a list like [u'http://www.w3.org/2000/01/rdf-schema#label']
+    """
+    instance_data = normalize_all_uris_recursively(instance_data)
+    for label_property in LABEL_PROPERTIES:
+        if label_property in instance_data:
+            return True
+    return False

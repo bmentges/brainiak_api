@@ -3,6 +3,7 @@ import json
 import unittest
 
 from mock import patch
+from requests.auth import HTTPDigestAuth
 import simplejson
 from tornado.httpclient import HTTPError as ClientHTTPError
 from tornado.web import HTTPError
@@ -24,6 +25,8 @@ class MockResponse(object):
 
 class TriplestoreTestCase(unittest.TestCase):
 
+    maxDiff = None
+
     TRIPLESTORE_CONFIG = {
         "app_name": "Brainiak",
         "url": "url",
@@ -32,8 +35,8 @@ class TriplestoreTestCase(unittest.TestCase):
         "auth_password": "api-semantica"
     }
 
-    EXAMPLE_QUERY = u"SELECT * {?s a ?o}"
-    EXAMPLE_QUERY_URL_ENCODED = "query=SELECT+%2A+%7B%3Fs+a+%3Fo%7D&format=application%2Fsparql-results%2Bjson"
+    EXAMPLE_QUERY = "SELECT * {?s a ?o}"
+    EXAMPLE_QUERY_URL_ENCODED = u"query=SELECT+%2A+%7B%3Fs+a+%3Fo%7D&format=application%2Fsparql-results%2Bjson"
 
     @patch("brainiak.triplestore.log.logger")
     @patch("brainiak.triplestore.parse_section", return_value={"auth_username": "USER",
@@ -141,6 +144,25 @@ class TriplestoreTestCase(unittest.TestCase):
                                                      self.TRIPLESTORE_CONFIG,
                                                      async=True)
         self.assertEqual(response, expected_request_for_tornado)
+
+    def test_build_request_params_for_sync_query(self):
+        expected_request_for_requests = {
+            "headers": {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            "method": triplestore.DEFAULT_HTTP_METHOD,
+            "data": {
+                "query": self.EXAMPLE_QUERY,
+                'format': triplestore.DEFAULT_RESPONSE_FORMAT
+            }
+        }
+        expected_request_for_requests.update(self.TRIPLESTORE_CONFIG)
+
+        response = triplestore._build_request_params(self.EXAMPLE_QUERY,
+                                                     self.TRIPLESTORE_CONFIG,
+                                                     async=False)
+        response.pop("auth")  # object created inside _build_request_params
+        self.assertEqual(response, expected_request_for_requests)
 
     @patch('brainiak.triplestore.log.logger')
     @patch('brainiak.triplestore.do_run_query', return_value=(MockResponse(), 0))

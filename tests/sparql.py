@@ -126,9 +126,11 @@ def mocked_convert(self):
 
 def run_isql(cmd):
     if hasattr(settings, "REMOTE_ISQL"):
-        ISQL = settings.REMOTE_ISQL
+        isql = settings.REMOTE_ISQL
+    else:
+        isql = ISQL
 
-    isql_cmd = ISQL_CMD % (cmd, ISQL)
+    isql_cmd = ISQL_CMD % (cmd, isql)
     process = subprocess.Popen(isql_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_value, stderr_value = process.communicate()
     if stderr_value:

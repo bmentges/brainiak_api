@@ -1,4 +1,4 @@
 from brainiak.settings import *
 
 DEBUG = True
-REMOTE_ISQL = "isql -u dev -p dev dev.virtuoso.globoi.com"
+REMOTE_ISQL = "isql -U dev -P dev -H dev.virtuoso.globoi.com"

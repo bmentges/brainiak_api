@@ -7,7 +7,7 @@ ROUTES = [
     URLSpec(r'/_prefixes/?', PrefixHandler),
     URLSpec(r'/_query/?', StoredQueryCollectionHandler),
     URLSpec(r'/_query/(?P<query_id>[\w\-]+)/?', StoredQueryCRUDHandler),
-    URLSpec(r'/_query/(?P<query_id>[\w\-]+)/_result?', StoredQueryExecutionHandler),
+    URLSpec(r'/_query/(?P<query_id>[\w\-]+)/_result/?', StoredQueryExecutionHandler),
     URLSpec(r'/_status/?$', StatusHandler),
     URLSpec(r'/_status/activemq/?', EventBusStatusHandler),
     URLSpec(r'/_status/cache/?', CacheStatusHandler),

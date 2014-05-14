@@ -47,8 +47,8 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             raise Exception()
         schema_resource.get_schema = lambda params: raise_exception()
         response = self.fetch('/person/Person/',
-                                method='POST',
-                                body=json.dumps({}))
+                              method='POST',
+                              body=json.dumps({}))
         self.assertEqual(response.code, 500)
         body = json.loads(response.body)
         self.assertIn("HTTP error: 500\nException:\n", body["errors"][0])
@@ -57,8 +57,8 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.logger")
     def test_create_instance_400_invalid_json(self, log, settings):
         response = self.fetch('/place/City/',
-                                method='POST',
-                                body="invalid input")
+                              method='POST',
+                              body="invalid input")
         self.assertEqual(response.code, 400)
         body = json.loads(response.body)
         self.assertEquals(body["errors"], ['HTTP error: 400\nNo JSON object could be decoded'])
@@ -68,8 +68,8 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     def test_create_instance_404_inexistant_class(self, log, settings):
         payload = {}
         response = self.fetch('/xubiru/X/',
-                                method='POST',
-                                body=json.dumps(payload))
+                              method='POST',
+                              body=json.dumps(payload))
         self.assertEqual(response.code, 404)
         body = json.loads(response.body)
         self.assertEqual(body["errors"], [u"HTTP error: 404\nClass xubiru/X doesn't exist in context xubiru."])
@@ -105,21 +105,24 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                "id": "http://example.onto/City",
                "title": "City"
            })
-    def test_create_instance_201(self, mock_get_schema, mock_get_instance_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
-                                 mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
+    @patch("brainiak.instance.create_instance.are_there_label_properties_in", return_value=True)
+    def test_create_instance_201(
+        self, mock_are_there_label_properties_in, mock_get_schema, mock_get_instance_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
+            mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
         mockeed_triplestore.query_sparql = self.query
         payload = {
             "@context": {
-            "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-            "place": "http://example.onto/place/",
-            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-            "ex": "http://example.onto/"
+                "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "place": "http://example.onto/place/",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "ex": "http://example.onto/"
             },
-            "ex:name": "Globoland",
+            "ex:name": "Globoland\r\nwith multiline",
         }
         response = self.fetch('/example/City?graph_uri=http://example.onto/&class_prefix=http://example.onto/',
-                                method='POST',
-                                body=json.dumps(payload))
+                              method='POST',
+                              body=json.dumps(payload))
+
         self.assertEqual(response.code, 201)
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))
@@ -132,7 +135,7 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(mocked_notify_bus.called)
         expected = {
             'action': 'POST',
-            'instance_data': {u'http://example.onto/name': u'Globoland'},
+            'instance_data': {u'http://example.onto/name': u'Globoland\r\nwith multiline'},
             'instance': 'http://example.onto/City/123',
             'klass': 'http://example.onto/City',
             'graph': 'http://example.onto/'
@@ -169,10 +172,10 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         mockeed_triplestore.query_sparql = self.query
         payload = {
             "@context": {
-            "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-            "place": "http://example.onto/place/",
-            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-            "ex": "http://example.onto/"
+                "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "place": "http://example.onto/place/",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "ex": "http://example.onto/"
             },
             "ex:name": 1,
         }
@@ -181,9 +184,29 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                               body=json.dumps(payload))
         self.assertEqual(response.code, 400)
 
+    @patch("brainiak.instance.create_instance.are_there_label_properties_in", return_value=False)
+    def test_return_400_without_rdfs_label(self, mock_are_there_label_properties_in):
+        payload = {
+            "@context": {
+                "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "place": "http://example.onto/place/",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "ex": "http://example.onto/"
+            },
+            "ex:sssssss": "isNotSubPropertyOfLabel",
+        }
+
+        response = self.fetch('/example/City?graph_uri=http://example.onto/&class_prefix=http://example.onto/',
+                              method='POST',
+                              body=json.dumps(payload))
+        self.assertEqual(response.code, 400)
+        expected_msg_substring = "Label properties like rdfs:label or its subproperties are required"
+        self.assertIn(expected_msg_substring, json.loads(response.body)["errors"][0])
+
     def test_query(self):
         self.graph_uri = "http://fofocapedia.org/"
         self.assertInstanceDoesNotExist('criatura', 'fulano')
-        query = create_instance.QUERY_INSERT_TRIPLES % {"triples": '<fulano> a <criatura>; <gosta-de> <ciclano>', "prefix": "", "graph_uri": self.graph_uri}
+        query = create_instance.QUERY_INSERT_TRIPLES % {
+            "triples": '<fulano> a <criatura>; <gosta-de> <ciclano>', "prefix": "", "graph_uri": self.graph_uri}
         self.query(query)
         self.assertInstanceExist('criatura', 'fulano')

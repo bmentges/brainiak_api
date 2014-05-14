@@ -49,6 +49,21 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         patcher.stop()
 
     @patch("brainiak.handlers.logger")
+    def test_edit_instance_400_no_label_property(self, log):
+        actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='GET')
+        self.assertEqual(actual_new_york.code, 200)
+        actual_new_york_dict = json.loads(actual_new_york.body)
+        self.assertIn("rdfs:label", actual_new_york_dict)
+        del actual_new_york_dict["rdfs:label"]
+        modified_new_york_response = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
+                                       method='PUT',
+                                       body=json.dumps(actual_new_york_dict))
+
+        self.assertEqual(modified_new_york_response.code, 400)
+        expected_msg_substring = "Label properties like rdfs:label or its subproperties are required"
+        self.assertIn(expected_msg_substring, json.loads(modified_new_york_response.body)["errors"][0])
+
+    @patch("brainiak.handlers.logger")
     def test_edit_instance_400_no_body(self, log):
         response = self.fetch('/anything/Place/new_york', method='PUT')
         self.assertEqual(response.code, 400)

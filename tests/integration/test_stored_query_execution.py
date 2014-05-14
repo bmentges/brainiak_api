@@ -7,6 +7,9 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 import ujson as json
 
 
+CLIENT_ID_HEADERS = {"X-Brainiak-Client-Id": "my_client_id"}
+
+
 class StoredQueryCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     maxDiff = None
@@ -22,7 +25,7 @@ class StoredQueryCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestCase):
             "sparql_template": "SELECT ?s FROM <%(g)s> {?s a owl:Class}",
             "description": ""
         }'''
-        response = self.fetch(request_uri, method="PUT", body=body)
+        response = self.fetch(request_uri, method="PUT", body=body, headers=CLIENT_ID_HEADERS)
         # 200,201: dont worry if test fails and tearDown is not called to delete the query
         self.assertTrue(response.code in (200, 201))
 
@@ -36,14 +39,14 @@ class StoredQueryCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestCase):
             return get_status
         elif get_status == 200:
             request_uri = "/_query/{0}".format(self.query_id)
-            response = self.fetch(request_uri, method="DELETE")
+            response = self.fetch(request_uri, method="DELETE", headers=CLIENT_ID_HEADERS)
             return response.code
         else:
             self.fail("Unexpected GET status {0}".format(get_status))
 
     def _get_stored_query(self):
         request_uri = "/_query/{0}".format(self.query_id)
-        response = self.fetch(request_uri)
+        response = self.fetch(request_uri, headers=CLIENT_ID_HEADERS)
         return response.code
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
@@ -106,7 +109,7 @@ class StoredQueryWithOptionalsCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestC
             "description": ""
         }
         body = json.dumps(body)
-        response = self.fetch(request_uri, method="PUT", body=body)
+        response = self.fetch(request_uri, method="PUT", body=body, headers=CLIENT_ID_HEADERS)
         # 200,201: dont worry if test fails and tearDown is not called to delete the query, update will also work in subsequent execution
         self.assertTrue(response.code in (200, 201))
 
@@ -125,7 +128,7 @@ class StoredQueryWithOptionalsCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestC
             return get_status
         elif get_status == 200:
             request_uri = "/_query/{0}".format(self.query_id)
-            response = self.fetch(request_uri, method="DELETE")
+            response = self.fetch(request_uri, method="DELETE", headers=CLIENT_ID_HEADERS)
             return response.code
         else:
             self.fail("Unexpected GET status {0}".format(get_status))

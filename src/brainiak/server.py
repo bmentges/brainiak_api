@@ -26,6 +26,7 @@ class Application(TornadoApplication):
         try:
             log.initialize()
             event_bus.initialize()
+            load_label_properties()
             # Wipeout all entries to avoid inconsistencies due to algorithmic changes between releases
 
             flushall()
@@ -46,7 +47,6 @@ def main():  # pragma: no cover
     server.listen(options.port)
     io_loop = IOLoop.instance()
     greenlet_set_ioloop(io_loop)
-    load_label_properties()
     io_loop.start()
 
 

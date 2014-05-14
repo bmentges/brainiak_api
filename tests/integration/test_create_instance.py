@@ -105,7 +105,8 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                "id": "http://example.onto/City",
                "title": "City"
            })
-    def test_create_instance_201(self, mock_get_schema, mock_get_instance_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
+    @patch("brainiak.instance.create_instance.are_there_label_properties_in", return_value=True)
+    def test_create_instance_201(self, mock_are_there_label_properties_in, mock_get_schema, mock_get_instance_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
                                  mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
         mockeed_triplestore.query_sparql = self.query
         payload = {
@@ -120,6 +121,7 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         response = self.fetch('/example/City?graph_uri=http://example.onto/&class_prefix=http://example.onto/',
                                 method='POST',
                                 body=json.dumps(payload))
+
         self.assertEqual(response.code, 201)
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))
@@ -180,6 +182,26 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
                               method='POST',
                               body=json.dumps(payload))
         self.assertEqual(response.code, 400)
+
+
+    @patch("brainiak.instance.create_instance.are_there_label_properties_in", return_value=False)
+    def test_return_400_without_rdfs_label(self, mock_are_there_label_properties_in):
+        payload = {
+            "@context": {
+                "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "place": "http://example.onto/place/",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "ex": "http://example.onto/"
+            },
+            "ex:sssssss": "isNotSubPropertyOfLabel",
+        }
+
+        response = self.fetch('/example/City?graph_uri=http://example.onto/&class_prefix=http://example.onto/',
+                              method='POST',
+                              body=json.dumps(payload))
+        self.assertEqual(response.code, 400)
+        expected_msg_substring = "Label properties like rdfs:label or its subproperties are required"
+        self.assertIn(expected_msg_substring, json.loads(response.body)["errors"][0])
 
     def test_query(self):
         self.graph_uri = "http://fofocapedia.org/"

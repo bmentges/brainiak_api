@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Caching &mdash; brainiak 2.4.4 documentation</title>
+    <title>Caching &mdash; brainiak 2.5.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '2.4.4',
+        VERSION:     '2.5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.4.4 documentation" href="../index.html" />
+    <link rel="top" title="brainiak 2.5.0 documentation" href="../index.html" />
     <link rel="up" title="Services" href="../services.html" />
     <link rel="next" title="Internationalization" href="i18n.html" />
     <link rel="prev" title="Handling Errors" href="errors.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.4.4</b></span>
+      <span class="navbar-text pull-left"><b>2.5.0</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -66,7 +66,7 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../releases.html">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-5-2014">Version 2.4.5 - 2014//</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-5-0-2014-05-19">Version 2.5.0 - 2014/05/19</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-4-2014-02-04">Version 2.4.4 - 2014/02/04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-3-2014-01-17">Version 2.4.3 - 2014/01/17</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-2-2014-01-15">Version 2.4.2 - 2014/01/15</a></li>
@@ -193,7 +193,7 @@ To check if cache is enabled for some resource, run:</p>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 204 No Content
 Server: nginx
-Date: Wed, 14 May 2014 18:54:48 GMT
+Date: Mon, 19 May 2014 18:56:37 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 0
 Connection: keep-alive
@@ -223,12 +223,12 @@ Access-Control-Allow-Headers: Content-Type, Authorization, Backstage-Client-Id
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Wed, 14 May 2014 18:54:51 GMT
+Date: Mon, 19 May 2014 18:56:40 GMT
 Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
 Content-Length: 1008
 Connection: keep-alive
 X-Cache: MISS from brainiak.semantica.dev.globoi.com
-Last-Modified: Wed, 14 May 2014 15:54:51 -0300
+Last-Modified: Mon, 19 May 2014 15:56:40 -0300
 Etag: &quot;4d53e4145ce64273c7604ad86c4cc81d5dddbb05&quot;
 Access-Control-Allow-Origin: *
 </pre></div>
@@ -239,12 +239,12 @@ Access-Control-Allow-Origin: *
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Wed, 14 May 2014 18:54:52 GMT
+Date: Mon, 19 May 2014 18:56:41 GMT
 Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/_schema_list
 Content-Length: 1008
 Connection: keep-alive
 X-Cache: HIT from brainiak.semantica.dev.globoi.com
-Last-Modified: Wed, 14 May 2014 15:54:51 -0300
+Last-Modified: Mon, 19 May 2014 15:56:40 -0300
 Etag: &quot;f288c34015f52392c33fd6bffd95e7bfb25c4a0a&quot;
 Access-Control-Allow-Origin: *
 </pre></div>
@@ -266,7 +266,7 @@ but when purging the instance all versions should be removed from the cache disr
 </div>
 <div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
 Server: nginx
-Date: Wed, 14 May 2014 18:54:52 GMT
+Date: Mon, 19 May 2014 18:56:41 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 0
 Connection: keep-alive
@@ -287,23 +287,8 @@ Access-Control-Allow-Origin: *
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X PURGE --header <span class="s2">&quot;X-Cache-Recursive: 1&quot;</span> http://brainiak.semantica.dev.globoi.com/
 </pre></div>
 </div>
-<p>Be careful when using this feature, all cached resources from that point on will be purged.</p>
-<p>For example, if the following keys were cached:</p>
-<ol class="loweralpha simple">
-<li><a class="reference external" href="http://localhost:5100/">http://localhost:5100/</a></li>
-<li><a class="reference external" href="http://localhost:5100/person/">http://localhost:5100/person/</a></li>
-<li><a class="reference external" href="http://localhost:5100/person/Person">http://localhost:5100/person/Person</a></li>
-<li><a class="reference external" href="http://localhost:5100/person/Person/IsaacNewton">http://localhost:5100/person/Person/IsaacNewton</a></li>
-</ol>
-<p>And the command below is run:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X PURGE --header <span class="s2">&quot;X-Cache-Recursive: 1&quot;</span> http://brainiak.semantica.dev.globoi.com/
-</pre></div>
-</div>
-<p>All cache will be purged (a, b, c and d).</p>
-<p>Otherwise, to purge only (c) and (d), the command bellow should be run:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X PURGE --header <span class="s2">&quot;X-Cache-Recursive: 1&quot;</span> http://brainiak.semantica.dev.globoi.com/person/Person
-</pre></div>
-</div>
+<p>At this time, we only accept purging all cache.
+In the near future, it will be accepted more granular purging, such as purge everything cached from this context, collection, and so on.</p>
 </div>
 </div>
 

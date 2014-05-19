@@ -1,22 +1,20 @@
 Releases
 ========
 
-
-Version 2.4.5 - 2014//
-----------------------
+Version 2.5.0 - 2014/05/19
+--------------------------
 
 New Features
 ____________
 
-- When the header ``Backstage-Client-Id`` is present and ``X-Brainiak-Client-Id`` is absent, then nginx sets X-Brainiak-Client-Id with the value given from  Backstage-Client-Id. This is useful for CMAaS interaction.
-- Adding ``Backstage-Client-Id`` to config.settings CORS_HEADRES
-- Adding graph 'cervejas' to prefixes to enable a test for the Backstage team
+- Stored queries. More on this here (see :doc:`/services/stored_query/stored_query`).
 
+Fixes, Improvements
+___________________
 
-Fixes
-_____
-
-- Location URI was incorrectly generated after a POST that had URL query params (eg.:?class_uri=)
+- Location URI was incorrectly generated after a POST that had URL query params (eg.:``?class_uri=``)
+- Validating existence of ``rdfs:label`` and/or subproperties when creating/modifying instances. In some methods, e.g. listing a collection, ``rdfs:label`` existence for an instance was a premise but it was possible to insert instances without any label properties.
+- Fixed broken multi-line string insertion.
 
 
 Version 2.4.4 - 2014/02/04

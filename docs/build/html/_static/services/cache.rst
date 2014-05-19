@@ -93,29 +93,5 @@ It is also possible to cleanup recursively, calling ``PURGE`` with the header ``
 
   $ curl -i -X PURGE --header "X-Cache-Recursive: 1" http://brainiak.semantica.dev.globoi.com/
 
-Be careful when using this feature, all cached resources from that point on will be purged.
-
-For example, if the following keys were cached:
-
-a. http://localhost:5100/
-b. http://localhost:5100/person/
-c. http://localhost:5100/person/Person
-d. http://localhost:5100/person/Person/IsaacNewton
-
-And the command below is run:
-
-.. code-block:: bash
-
-  $ curl -i -X PURGE --header "X-Cache-Recursive: 1" http://brainiak.semantica.dev.globoi.com/
-
-All cache will be purged (a, b, c and d).
-
-Otherwise, to purge only (c) and (d), the command bellow should be run:
-
-.. code-block:: bash
-
-  $ curl -i -X PURGE --header "X-Cache-Recursive: 1" http://brainiak.semantica.dev.globoi.com/person/Person
-
-
-
-
+At this time, we only accept purging all cache.
+In the near future, it will be accepted more granular purging, such as purge everything cached from this context, collection, and so on.

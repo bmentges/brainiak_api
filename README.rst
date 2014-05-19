@@ -43,6 +43,8 @@ After virtualenv is ready (run in development mode): ::
 
     make run
 
+Brainiak will be available at: http://localhost:5100/
+
 Testing
 =======
 

@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Building Brainiak in your local environment &mdash; brainiak 2.4.4 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-2.3.0/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-2.3.0/css/bootstrap-responsive.min.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.4.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="brainiak 2.4.4 documentation" href="../index.html" />
+    <link rel="up" title="Tutorials" href="../tutorials.html" />
+    <link rel="next" title="Troubleshooting" href="../troubleshoot.html" />
+    <link rel="prev" title="Tutorials" href="../tutorials.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+<div class="container">
+  
+  <div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+      <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+      <a class="brand" href="../index.html">Brainiak</a>
+      <span class="navbar-text pull-left"><b>2.4.4</b></span>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+          <li class="divider-vertical"></li>
+          
+            <li class="dropdown globaltoc-container">
+  <a href="../index.html"
+     class="dropdown-toggle"
+     data-toggle="dropdown">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+    ><ul>
+<li class="toctree-l1"><a class="reference internal" href="../releases.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-5-2014">Version 2.4.5 - 2014//</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-4-2014-02-04">Version 2.4.4 - 2014/02/04</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-3-2014-01-17">Version 2.4.3 - 2014/01/17</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-2-2014-01-15">Version 2.4.2 - 2014/01/15</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-1-2014-01-10">Version 2.4.1 - 2014/01/10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-4-0-2013-11-28">Version 2.4.0 - 2013/11/28</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-3-8-2013-10-04">Version 2.3.8 - 2013/10/04</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-3-7-2013-10-31">Version 2.3.7 - 2013/10/31</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-3-6-2013-10-28">Version 2.3.6 - 2013/10/28</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-3-3-2-3-5-2013-10-28">Version 2.3.3-2.3.5 - 2013/10/28</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-3-2-2013-10-28">Version 2.3.2 - 2013/10/28</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-3-1-2013-10-23">Version 2.3.1 - 2013/10/23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-3-0-2013-10-22">Version 2.3.0 - 2013/10/22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-2-5-2013-10-15">Version 2.2.5 - 2013/10/15</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-2-3-2-2-4-2013-09-25">Version 2.2.3 + 2.2.4 - 2013/09/25</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-2-0-2-2-2-2013-08-29">Version 2.2.0 + 2.2.2 - 2013/08/29</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-1-0-2013-08-01">Version 2.1.0 - 2013/08/01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-2-0-0-2013-07-18">Version 2.0.0 - 2013/07/18</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-1-1-0-2013-05-28">Version 1.1.0 - 2013/05/28</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases.html#version-1-0-0-2013-04-24">Version 1.0.0  - 2013/04/24</a></li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/resources.html">Ubiquitous Language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/rest_verbs.html">Using HTTP methods in a RESTful way</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/hypermedia.html">Hypermedia Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/modeling.html">Modeling and Ontology Engineering</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../first_steps.html">First Steps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../globocom/authorization.html">Authorization using Accounts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../services.html">Services</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../services/context/context.html">Managing Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/prefix/prefix.html">Managing Prefixes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/collection/collection.html">Managing Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/schema/schema.html">Managing Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/instance/instance.html">Managing Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/search/search.html">Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/suggest/suggest.html">Suggest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/stored_query/stored_query.html">Stored Queries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/parameters.html">Overriding URIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/links.html">Hypermap of Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/links.html#links-specification">Links Specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/links.html#rel-vocabulary">Rel Vocabulary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/pagination.html">Pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/errors.html">Handling Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/cache.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services/i18n.html">Internationalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services.html#convention-for-url-resources">Convention for URL Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../services.html#service-examples">Service Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Building Brainiak in your local environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshoot.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#i-receive-error-404-with-message-x-brainiak-client-id-is-not-known">I receive error 404 with message &#8216;X-Brainiak-Client-Id&#8217; is not known</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-backend-triplestore">How to check if Brainiak is connected with the backend triplestore?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#how-to-check-if-brainiak-is-connected-with-the-activemq">How to check if Brainiak is connected with the ActiveMQ?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#any-service-gives-me-the-message-access-to-backend-service-failed">Any service gives me the message: &#8220;Access to backend service failed&#8221;?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshoot.html#when-filtering-instances-using-p-and-o-i-only-get-http-error-404-but-when-i-only-use-p-it-lists-items-containing-the-o-i-defined-what-am-i-doing-wrong">When filtering instances using <tt class="docutils literal"><span class="pre">p</span></tt> and <tt class="docutils literal"><span class="pre">o</span></tt> I only get &#8220;HTTP error: 404&#8221;. But when I only use <tt class="docutils literal"><span class="pre">p</span></tt>, it lists items containing the <tt class="docutils literal"><span class="pre">o</span></tt> I defined. What am I doing wrong?</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+            <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"><ul>
+<li><a class="reference internal" href="#">Building Brainiak in your local environment</a><ul>
+<li><a class="reference internal" href="#source-code">Source-code</a></li>
+<li><a class="reference internal" href="#python-dependencies">Python dependencies</a><ul>
+<li><a class="reference internal" href="#python-2-7">Python 2.7</a></li>
+<li><a class="reference internal" href="#python-libs">Python libs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#non-python-dependencies">Non-python dependencies</a><ul>
+<li><a class="reference internal" href="#openlink-virtuoso">OpenLink Virtuoso</a><ul>
+<li><a class="reference internal" href="#install-in-macos-x">Install in MacOS X</a></li>
+<li><a class="reference internal" href="#install-in-fedora">Install in Fedora</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#after-installing-virtuoso">After-installing Virtuoso</a><ul>
+<li><a class="reference internal" href="#add-authenticated-user">Add authenticated user</a></li>
+<li><a class="reference internal" href="#activate-inference-in-graphs">Activate inference in graphs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+          
+          
+            
+  <li><a href="../tutorials.html"
+         title="previous chapter">&laquo; Tutorials</a></li>
+  <li><a href="../troubleshoot.html"
+         title="next chapter">Troubleshooting &raquo;</a></li>
+          
+          
+            <li>
+  <a href="../_sources/tutorials/building_local_dev_environment.txt"
+     rel="nofollow">Source</a></li>
+          
+        </ul>
+
+        
+          
+<form class="navbar-search pull-right" style="margin-bottom:-3px;" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="section" id="building-brainiak-in-your-local-environment">
+<h1>Building Brainiak in your local environment<a class="headerlink" href="#building-brainiak-in-your-local-environment" title="Permalink to this headline">¶</a></h1>
+<p>Brainiak is developed using <a class="reference external" href="http://python.org">Python</a> 2.7 and the web framework <a class="reference external" href="http://www.tornadoweb.org/en/stable/">Tornado</a>, on top of <a class="reference external" href="http://virtuoso.openlinksw.com/">Virtuoso</a>.</p>
+<div class="section" id="source-code">
+<h2>Source-code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
+<p>Clone Brainiak repository using <a class="reference external" href="http://git-scm.com/">Git</a>:</p>
+<div class="highlight-bash"><div class="highlight"><pre>git clone git://ngit.globoi.com/brainiak/brainiak.git
+</pre></div>
+</div>
+<p>Or, if you have super-powers:</p>
+<div class="highlight-bash"><div class="highlight"><pre>git clone git@ngit.globoi.com:brainiak/brainiak.git
+</pre></div>
+</div>
+</div>
+<div class="section" id="python-dependencies">
+<h2>Python dependencies<a class="headerlink" href="#python-dependencies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python-2-7">
+<h3>Python 2.7<a class="headerlink" href="#python-2-7" title="Permalink to this headline">¶</a></h3>
+<p>Most recent GNU Linux and MacOS distributions have <a class="reference external" href="http://python.org">Python</a> installed by default. If this is not your case, <a class="reference external" href="http://www.python.org/download/releases/2.7/">download and install it</a>.</p>
+</div>
+<div class="section" id="python-libs">
+<h3>Python libs<a class="headerlink" href="#python-libs" title="Permalink to this headline">¶</a></h3>
+<p>We strongly suggest you use <a class="reference external" href="http://www.virtualenv.org/">VirtualEnv</a> and <a class="reference external" href="http://virtualenvwrapper.readthedocs.org/en/latest/">VirtualEnvWrapper</a>, to isolate dependencies of each Python project you run locally:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>sudo python easy_install setuptools
+<span class="nv">$ </span>sudo python easy_install pip
+<span class="nv">$ </span>sudo pip install virtualenv virtualenvwrapper
+<span class="nv">$ </span><span class="nb">source</span> <span class="sb">`</span>which virtualenvwrapper.sh<span class="sb">`</span>
+<span class="nv">$ </span>mkvirtualenv brainiak
+</pre></div>
+</div>
+<p>To install other python packages, make sure you enter Brainiak root directory and run:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>make install
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="non-python-dependencies">
+<h2>Non-python dependencies<a class="headerlink" href="#non-python-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>When running Brainiak locally, you can refer a local or remote <a class="reference external" href="http://virtuoso.openlinksw.com/">Virtuoso</a> server.</p>
+<p>Brainiak access to <a class="reference external" href="http://virtuoso.openlinksw.com/">Virtuoso</a> is defined in the <cite>settings.py</cite> file, at <cite>brainiak/src/brainiak</cite> directory, by the lines:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SPARQL_ENDPOINT</span> <span class="o">=</span> <span class="s">&#39;http://localhost:8890/sparql-auth&#39;</span>
+<span class="n">SPARQL_ENDPOINT_USER</span> <span class="o">=</span> <span class="s">&quot;api-semantica&quot;</span>
+<span class="n">SPARQL_ENDPOINT_PASSWORD</span> <span class="o">=</span> <span class="s">&quot;api-semantica&quot;</span>
+<span class="n">SPARQL_ENDPOINT_AUTH_MODE</span> <span class="o">=</span> <span class="s">&quot;digest&quot;</span>
+<span class="n">SPARQL_ENDPOINT_REALM</span> <span class="o">=</span> <span class="s">&quot;SPARQL&quot;</span>
+</pre></div>
+</div>
+<p>In order to point your local Brainiak to DEV&#8217;s Virtuoso, for instance, <cite>SPARQL_ENDPOINT</cite> could be changed to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SPARQL_ENDPOINT</span> <span class="o">=</span> <span class="s">&quot;http://dev.virtuoso.globoi.com:8890/sparql-auth&quot;</span>
+</pre></div>
+</div>
+<p>Note that <strong>digest authentication is mandatory</strong> for Brainiak&#8217;s access to Virtuoso. Therefore, make sure <cite>SPARQL_ENDPOINT_USER</cite> and <cite>SPARQL_ENDPOINT_PASSWORD</cite> are appropriately set.</p>
+<p>The steps below should be followed just if you are installing Virtuoso locally.</p>
+<div class="section" id="openlink-virtuoso">
+<h3>OpenLink Virtuoso<a class="headerlink" href="#openlink-virtuoso" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://virtuoso.openlinksw.com/">Virtuoso</a> is a middleware and hybrid database engine that combines the functionalities of RDBMS, ORDBMS, virtual database, RDF, XML, free-text, web application server and file server.</p>
+<p>Internally, Brainiak uses <a class="reference external" href="http://virtuoso.openlinksw.com/">Virtuoso</a> as an Object-relational database (throught <a class="reference external" href="http://en.wikipedia.org/wiki/Resource_Description_Framework">RDF</a>).</p>
+<p><em>Version</em>: Virtuoso Open Source Edition (multi threaded) 6.1</p>
+<div class="section" id="install-in-macos-x">
+<h4>Install in MacOS X<a class="headerlink" href="#install-in-macos-x" title="Permalink to this headline">¶</a></h4>
+<p>Using <a class="reference external" href="http://mxcl.github.com/homebrew/">HomeBrew</a>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>sudo brew install virtuoso
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-in-fedora">
+<h4>Install in Fedora<a class="headerlink" href="#install-in-fedora" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>sudo yum install virtuoso
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="after-installing-virtuoso">
+<h3>After-installing Virtuoso<a class="headerlink" href="#after-installing-virtuoso" title="Permalink to this headline">¶</a></h3>
+<p>Run isql (OpenLink Interactive SQL) prompt:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>isql
+OpenLink Interactive SQL <span class="o">(</span>Virtuoso<span class="o">)</span>, version 0.9849b.
+Type HELP; <span class="k">for </span><span class="nb">help </span>and EXIT; to exit.
+SQL&gt;
+</pre></div>
+</div>
+<p>And execute the steps bellow from it.</p>
+<div class="section" id="add-authenticated-user">
+<h4>Add authenticated user<a class="headerlink" href="#add-authenticated-user" title="Permalink to this headline">¶</a></h4>
+<p>Create an user <cite>api-semantica</cite> with password <cite>api-semantica</cite>, and grant it update permissions, using the following commands:</p>
+<div class="highlight-bash"><div class="highlight"><pre>SQL&gt; DB.DBA.USER_CREATE <span class="o">(</span><span class="s1">&#39;api-semantica&#39;</span>, <span class="s1">&#39;api-semantica&#39;</span><span class="o">)</span>;
+SQL&gt; grant SPARQL_UPDATE to <span class="s2">&quot;api-semantica&quot;</span>;
+</pre></div>
+</div>
+</div>
+<div class="section" id="activate-inference-in-graphs">
+<h4>Activate inference in graphs<a class="headerlink" href="#activate-inference-in-graphs" title="Permalink to this headline">¶</a></h4>
+<p>Some Brainiak primitives make queries to Virtuoso using inference. To make sure this primitives will work appropriatelly, you have to enable associate Brainiak ruleset for all your graphs, <strong>after loading instances to your graphs</strong>.</p>
+<p>Brainiak, by default, uses inference in all graphs that are mapped to the rule named &#8216;<a class="reference external" href="http://semantica.globo.com/ruleset">http://semantica.globo.com/ruleset</a>&#8216;.</p>
+<p>For instance, to apply Brainiak ruleset &#8216;<a class="reference external" href="http://semantica.globo.com/ruleset">http://semantica.globo.com/ruleset</a>&#8216; to the graph <cite>http://semantica.globo.com/new_graph</cite>, run:</p>
+<div class="highlight-bash"><div class="highlight"><pre>SQL&gt; rdfs_rule_set<span class="o">(</span><span class="s1">&#39;http://semantica.globo.com/ruleset&#39;</span>, <span class="s1">&#39;http://semantica.globo.com/new_graph&#39;</span><span class="o">)</span>;
+</pre></div>
+</div>
+<p>For more information about this function, read <a class="reference external" href="http://docs.openlinksw.com/virtuoso/fn_rdfs_rule_set.html">fn_rdfs_rule_set</a> documentation at OpenLink&#8217;s website.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Globo.com.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

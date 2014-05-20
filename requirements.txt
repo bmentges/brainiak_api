@@ -15,7 +15,6 @@ ujson==1.33
 jsonschema==2.3.0
 alf==0.4
 python-dateutil==2.2
-
 #docs
 sphinxcontrib-programoutput==0.8
 sphinx-bootstrap-theme==0.1.8

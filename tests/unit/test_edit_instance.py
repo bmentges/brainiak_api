@@ -35,15 +35,15 @@ class TestCaseInstanceResource(unittest.TestCase):
 
     def test_edit_instance_without_params(self):
         query_params = {}
-        self.assertRaises(HTTPError, edit_instance.edit_instance, query_params, None)
+        self.assertRaises(HTTPError, edit_instance.edit_instance, query_params, {})
 
     def test_edit_instance_with_just_instance_uri(self):
-        query_params = {'instance_uri': 'anything'}
-        self.assertRaises(HTTPError, edit_instance.edit_instance, query_params, None)
+        query_params = {'instance_uri': 'anything', 'rdfs:label': 'a label'}
+        self.assertRaises(HTTPError, edit_instance.edit_instance, query_params, {})
 
     def test_edit_instance_without_class_uri(self):
-        query_params = {'instance_uri': 'anything', 'graph_uri': 'anything'}
-        self.assertRaises(HTTPError, edit_instance.edit_instance, query_params, None)
+        query_params = {'instance_uri': 'anything', 'graph_uri': 'anything', 'rdfs:label': 'a label'}
+        self.assertRaises(HTTPError, edit_instance.edit_instance, query_params, {})
 
 
 class TestCaseRaise500(unittest.TestCase):

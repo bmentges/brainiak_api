@@ -23,6 +23,10 @@ Sample JSON "new_city.json" for the class City_:
 
 .. include :: examples/create_instance_payload.rst
 
+.. warning::
+
+
+
 Note that prefixes are defined in the "@context" section.
 `Default prefixes  <http://brainiak.semantica.dev.globoi.com/_prefixes>`_ are implicit and don't need to be declared.
 

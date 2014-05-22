@@ -12,6 +12,7 @@ from brainiak.greenlet_tornado import greenlet_set_ioloop
 from brainiak.routes import ROUTES
 from brainiak import event_bus
 from brainiak.utils.cache import flushall
+from brainiak.utils.sparql import load_label_properties
 
 
 server = None
@@ -25,7 +26,9 @@ class Application(TornadoApplication):
         try:
             log.initialize()
             event_bus.initialize()
+            load_label_properties()
             # Wipeout all entries to avoid inconsistencies due to algorithmic changes between releases
+
             flushall()
             super(Application, self).__init__(ROUTES, debug=debug)
         except Exception as e:

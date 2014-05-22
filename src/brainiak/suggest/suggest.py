@@ -8,8 +8,8 @@ from brainiak.schema.get_class import get_cached_schema
 from brainiak.search_engine import run_search, run_analyze
 from brainiak.utils import resources
 from brainiak.utils.i18n import _
-from brainiak.utils.sparql import RDFS_LABEL, is_result_empty, add_language_support, \
-    filter_values
+from brainiak.utils.sparql import is_result_empty, add_language_support, \
+    filter_values, LABEL_PROPERTIES, get_subproperties
 
 
 def do_suggest(query_params, suggest_params):
@@ -24,16 +24,14 @@ def do_suggest(query_params, suggest_params):
     graphs = _validate_graph_restriction(query_params, range_result)
     indexes = ["semantica." + uri_to_slug(graph) for graph in graphs]
 
-    title_fields = [RDFS_LABEL]
-    title_fields += _get_subproperties(query_params, RDFS_LABEL)
-    search_fields = list(set(_get_search_fields(query_params, suggest_params) + title_fields))
+    search_fields = list(set(_get_search_fields(query_params, suggest_params) + LABEL_PROPERTIES))
 
     response_params = suggest_params.get("response", {})
     response_fields = _get_response_fields(
         query_params,
         response_params,
         classes,
-        title_fields)
+        LABEL_PROPERTIES)
 
     # request_body = _build_body_query(
     #     query_params,
@@ -68,7 +66,7 @@ def do_suggest(query_params, suggest_params):
 
     total_items = elasticsearch_result["hits"]["total"]
     if total_items:
-        items = _build_items(query_params, elasticsearch_result, title_fields, class_fields)
+        items = _build_items(query_params, elasticsearch_result, LABEL_PROPERTIES, class_fields)
         response = build_json(items, total_items, query_params)
     else:
         response = {}
@@ -129,21 +127,11 @@ SELECT DISTINCT ?property WHERE {
 """
 
 
-def _get_subproperties(query_params, super_property):
-    params = {
-        "ruleset": "http://semantica.globo.com/ruleset",
-        "property": super_property
-    }
-    query = QUERY_SUBPROPERTIES % params
-    result = triplestore.query_sparql(query, query_params.triplestore_config)
-    return filter_values(result, "property")
-
-
 def _get_search_fields(query_params, search_params):
     search_fields_in_search_params = search_params.get("search", []).get("fields", [])
     search_fields = set(search_fields_in_search_params)
     for field in search_fields_in_search_params:
-        sub_properties = _get_subproperties(query_params, field)
+        sub_properties = get_subproperties(field)
         search_fields.update(sub_properties)
 
     return list(search_fields)

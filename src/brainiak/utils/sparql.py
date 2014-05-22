@@ -1,17 +1,17 @@
 # coding: utf-8
 import re
 import uuid
-import unittest
-import urllib
 
 import dateutil.parser
 import ujson as json
 
 from brainiak import triplestore
 from brainiak.log import get_logger
-from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri
+from brainiak.prefixes import expand_uri, is_compressed_uri, is_uri, normalize_all_uris_recursively
+from brainiak.triplestore import query_sparql
 from brainiak.type_mapper import MAP_RDF_EXPANDED_TYPE_TO_PYTHON
 from brainiak.utils.resources import LazyObject
+from brainiak.utils import config_parser
 from brainiak.utils.i18n import _
 
 logger = LazyObject(get_logger)
@@ -26,7 +26,7 @@ XSD_STRING = u'http://www.w3.org/2001/XMLSchema#string'
 
 XML_LITERAL = u'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'
 
-RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
+RDFS_LABEL = u'http://www.w3.org/2000/01/rdf-schema#label'
 
 IGNORED_DATATYPES = [XML_LITERAL, XSD_STRING]
 
@@ -67,7 +67,7 @@ def normalize_term(term, language=""):
 
 
 def is_literal(term):
-    return (not term.startswith("?")) and (not ":" in term)
+    return (not term.startswith("?")) and (":" not in term)
 
 
 def is_url(term):
@@ -198,7 +198,7 @@ def compress_keys_and_values(result_dict, keymap={}, ignore_keys=[], context=Non
     for item in result_dict['results']['bindings']:
         row = {}
         for key in item:
-            if not key in ignore_keys:
+            if key not in ignore_keys:
                 value = item[key]['value']
                 effective_key = keymap.get(key, key)
                 if item[key]['type'] == 'uri' and context and effective_key != '@id' and not expand_uri:
@@ -371,7 +371,25 @@ def generic_sparqlfy(value, *args):
     >>> generic_sparqlfy('word')
     ... '"word"'
     """
+    if is_multiline_string(value):
+        return u'"""{0}"""'.format(value)
     return u'"{0}"'.format(value)
+
+
+MULTI_LINE_PATTERN = re.compile(r'[\n\r]')
+
+
+def is_multiline_string(value):
+    """
+    Verify if string is multiline
+    Useful to convert strings in INSERT triples to \"\"\"string\"\"\"
+
+    Example:
+
+    >>> is_multiline_string("testing\nfeature")
+    ... True
+    """
+    return re.search(MULTI_LINE_PATTERN, value) is not None
 
 
 def sparqlfy_string(value, *args):
@@ -455,6 +473,7 @@ def sparqlfy_with_casting(value, predicate_datatype):
 
 SPARQLFY_MAP = {
     "rdf:XMLLiteral": sparqlfy_string,
+    "rdfs:Literal": sparqlfy_string,
     "xsd:string": sparqlfy_string,
     "xsd:boolean": sparqlfy_boolean
 }
@@ -682,3 +701,45 @@ def extract_po_tuples(query_string_dict):
         po_list.append((p_value, o_value, index))
 
     return sorted(po_list)
+
+
+QUERY_SUBPROPERTIES = u"""
+DEFINE input:inference <%(ruleset)s>
+SELECT DISTINCT ?property WHERE {
+  ?property rdfs:subPropertyOf <%(property)s>
+}
+"""
+
+
+LABEL_PROPERTIES = [RDFS_LABEL]
+
+
+def get_subproperties(super_property):
+    params = {
+        "ruleset": "http://semantica.globo.com/ruleset",
+        "property": super_property
+    }
+    query = QUERY_SUBPROPERTIES % params
+    result_dict = query_sparql(query,
+                               config_parser.parse_section(),
+                               async=False)
+    subproperties = filter_values(result_dict, "property")
+    return subproperties
+
+
+def load_label_properties():
+    global LABEL_PROPERTIES
+    LABEL_PROPERTIES += get_subproperties(RDFS_LABEL)
+    normalize_all_uris_recursively(LABEL_PROPERTIES)
+
+
+def are_there_label_properties_in(instance_data):
+    """
+        Validate there are label properties in instance data when creating/modifying an instance
+        LABEL_PROPERTIES is a list like [u'http://www.w3.org/2000/01/rdf-schema#label']
+    """
+    instance_data = normalize_all_uris_recursively(instance_data)
+    for label_property in LABEL_PROPERTIES:
+        if label_property in instance_data:
+            return True
+    return False

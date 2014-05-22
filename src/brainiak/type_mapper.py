@@ -52,6 +52,7 @@ _MAP_JSON_TO_EXPAND_XSD_TYPE = {k: expand_uri(v) for k, v in _MAP_XSD_TO_JSON_TY
 MAP_RDF_TYPE_TO_PYTHON = {
     "rdf:XMLLiteral": unicode,
     "rdf:Literal": unicode,
+    "rdfs:Literal": unicode,
     "xsd:string": unicode,
     "xsd:anyURI": unicode,
     "xsd:float": float,

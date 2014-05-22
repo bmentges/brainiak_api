@@ -4,10 +4,13 @@ from brainiak.instance.common import extract_class_uri, extract_graph_uri, get_c
 from brainiak.schema.get_class import get_cached_schema
 from brainiak.utils.i18n import _
 from brainiak.utils.sparql import is_result_true, create_explicit_triples, create_implicit_triples,\
-    join_triples, is_modify_response_successful, join_prefixes, InstanceError
+    join_triples, is_modify_response_successful, join_prefixes, InstanceError, are_there_label_properties_in
 
 
 def edit_instance(query_params, instance_data):
+    if not are_there_label_properties_in(instance_data):
+        raise HTTPError(400, log_message=_(u"Label properties like rdfs:label or its subproperties are required"))
+
     if must_retrieve_graph_and_class_uri(query_params):
         triplestore_response = get_class_and_graph(query_params)
         bindings = triplestore_response['results']['bindings']

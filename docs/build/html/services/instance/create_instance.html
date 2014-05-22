@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Create an Instance &mdash; brainiak 2.4.4 documentation</title>
+    <title>Create an Instance &mdash; brainiak 2.5.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2.4.4',
+        VERSION:     '2.5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="brainiak 2.4.4 documentation" href="../../index.html" />
+    <link rel="top" title="brainiak 2.5.0 documentation" href="../../index.html" />
     <link rel="up" title="Managing Instances" href="instance.html" />
     <link rel="next" title="List of Instances" href="list_instance.html" />
     <link rel="prev" title="Managing Instances" href="instance.html" />
@@ -53,7 +53,7 @@
       </button>
 
       <a class="brand" href="../../index.html">Brainiak</a>
-      <span class="navbar-text pull-left"><b>2.4.4</b></span>
+      <span class="navbar-text pull-left"><b>2.5.0</b></span>
 
       <div class="nav-collapse">
         <ul class="nav">
@@ -66,7 +66,7 @@
   <ul class="dropdown-menu globaltoc"
     ><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../releases.html">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-5-2014">Version 2.4.5 - 2014//</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-5-0-2014-05-19">Version 2.5.0 - 2014/05/19</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-4-2014-02-04">Version 2.4.4 - 2014/02/04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-3-2014-01-17">Version 2.4.3 - 2014/01/17</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../releases.html#version-2-4-2-2014-01-15">Version 2.4.2 - 2014/01/15</a></li>
@@ -183,15 +183,15 @@
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -X POST -T <span class="s2">&quot;new_york_city.json&quot;</span> http://brainiak.semantica.dev.globoi.com/place/City
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 400 Bad Request
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 201 Created
 Server: nginx
-Date: Thu, 24 Apr 2014 15:00:46 GMT
-Content-Type: application/json; charset=UTF-8
-Content-Length: 359
+Date: Mon, 19 May 2014 18:56:44 GMT
+Content-Type: application/json; profile=http://brainiak.semantica.dev.globoi.com/place/City/_schema_list
+Content-Length: 0
 Connection: keep-alive
+X-Brainiak-Resource-Uri: http://semantica.globo.com/place/City/39d60192-8354-4c08-8cd0-cf25a372f1e2
+Location: http://brainiak.semantica.dev.globoi.com/place/City/39d60192-8354-4c08-8cd0-cf25a372f1e2
 Access-Control-Allow-Origin: *
-
-{&quot;errors&quot;: [&quot;Valor incorreto para a propriedade (http://semantica.globo.com/place/latitude). Um (http://www.w3.org/2001/XMLSchema#float) era esperado, mas (-22.958314) foi fornecido.&quot;, &quot;Valor incorreto para a propriedade (http://semantica.globo.com/place/longitude). Um (http://www.w3.org/2001/XMLSchema#float) era esperado, mas (-43.407133) foi fornecido.&quot;]}
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -201,19 +201,12 @@ In order to avoid that, either remove the last &#8220;/&#8221; or use &#8216;-d 
 </div>
 <p>Sample JSON &#8220;new_city.json&#8221; for the class <a class="reference external" href="http://brainiak.semantica.dev.globoi.com/place/City/_schema">City</a>:</p>
 <div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
-    <span class="nt">&quot;@context&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;rdf&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;place&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/place/&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;rdfs&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/2000/01/rdf-schema#&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;base&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/base/&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;upper&quot;</span><span class="p">:</span> <span class="s2">&quot;http://semantica.globo.com/upper/&quot;</span>
-    <span class="p">},</span>
     <span class="nt">&quot;upper:name&quot;</span><span class="p">:</span> <span class="s2">&quot;Globoland&quot;</span><span class="p">,</span>
     <span class="nt">&quot;upper:fullName&quot;</span><span class="p">:</span> <span class="s2">&quot;Globoland (RJ)&quot;</span><span class="p">,</span>
     <span class="nt">&quot;rdfs:comment&quot;</span><span class="p">:</span> <span class="s2">&quot;City of Globo&#39;s companies. Historically known as PROJAC.&quot;</span><span class="p">,</span>
     <span class="nt">&quot;place:partOfState&quot;</span><span class="p">:</span> <span class="s2">&quot;base:UF_RJ&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;place:latitude&quot;</span><span class="p">:</span> <span class="s2">&quot;-22.958314&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;place:longitude&quot;</span><span class="p">:</span> <span class="s2">&quot;-43.407133&quot;</span>
+    <span class="nt">&quot;place:latitude&quot;</span><span class="p">:</span> <span class="mf">-22.958314</span><span class="p">,</span>
+    <span class="nt">&quot;place:longitude&quot;</span><span class="p">:</span> <span class="mf">-43.407133</span>
 <span class="p">}</span>
 </pre></div>
 </div>

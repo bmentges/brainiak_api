@@ -38,8 +38,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.handlers.notify_bus")
     @patch("brainiak.handlers.logger")
     @patch("brainiak.event_bus.logger")
-    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}, "http://tatipedia.org/Place"))
-    def test_notify_event_bus_on_put(self, mock_schema, log, log2, mock_notify_bus):
+    def test_notify_event_bus_on_put(self, log, log2, mock_notify_bus):
         expected_message = {
             "instance": "http://tatipedia.org/new_york",
             "klass": "http://tatipedia.org/Place",
@@ -53,7 +52,7 @@ class BusNotificationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(actual_new_york.code, 200)
 
         actual_new_york_dict = json.loads(actual_new_york.body)
-        actual_new_york_dict["rdfs:comment"] = "Some random comment"
+        actual_new_york_dict["http://tatipedia.org/comment"] = "Some random comment"
 
         modified_new_york = self.fetch(
             '/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',

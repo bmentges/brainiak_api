@@ -30,7 +30,9 @@ class StoredQueryCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestCase):
         requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
 
     def tearDown(self):
-        requests.delete(self.elastic_request_url)
+	index_url = "http://{0}/brainiak".format(settings.ELASTICSEARCH_ENDPOINT) 
+        requests.delete(index_url)
+        super(TornadoAsyncHTTPTestCase, self).tearDown()
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     def test_get_query_result(self, mocked_lang):
@@ -94,8 +96,8 @@ class StoredQueryWithOptionalsCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestC
         self.assertTrue(response.code in (200, 201))
 
     def tearDown(self):
-        super(TornadoAsyncHTTPTestCase, self).setUp()
         self._delete_stored_query()
+        super(TornadoAsyncHTTPTestCase, self).tearDown()
 
     def _get_stored_query(self):
         request_uri = "/_query/{0}".format(self.query_id)

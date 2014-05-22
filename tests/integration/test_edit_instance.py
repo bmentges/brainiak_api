@@ -1,10 +1,9 @@
 from mock import patch
 import ujson as json
+
 from brainiak import server
 from brainiak.instance import create_instance, edit_instance
 from brainiak.utils.sparql import is_modify_response_successful
-from tests.mocks import mock_schema
-
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 from tests.sparql import QueryTestCase
 
@@ -53,8 +52,8 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='GET')
         self.assertEqual(actual_new_york.code, 200)
         actual_new_york_dict = json.loads(actual_new_york.body)
-        self.assertIn("rdfs:label", actual_new_york_dict)
-        del actual_new_york_dict["rdfs:label"]
+        self.assertIn("http://tatipedia.org/name", actual_new_york_dict)
+        del actual_new_york_dict["http://tatipedia.org/name"]
         modified_new_york_response = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                                        method='PUT',
                                        body=json.dumps(actual_new_york_dict))
@@ -74,14 +73,10 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 400)
 
     @patch("brainiak.handlers.logger")
-    @patch("brainiak.instance.create_instance.get_cached_schema",
-           return_value=mock_schema({"rdfs:label": "string",
-                                     "rdfs:comment": "string",
-                                     "http://tatipedia.org/speak": "string"}, "http://tatipedia.org/Place"))
-    def test_edit_instance_that_doesnt_exist_201(self, mock_schema, mock_log):  # Bus notification test is in a separated test file
+    def test_edit_instance_that_doesnt_exist_201(self, mock_log):  # Bus notification test is in a separated test file
         response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                               method='PUT',
-                              body=json.dumps({"rdfs:label": "Inexistent city"}))
+                              body=json.dumps({"http://tatipedia.org/name": "Inexistent city"}))
         self.assertEqual(response.code, 201)
         location = response.headers['Location']
         self.assertTrue(location.startswith("http://localhost:"))
@@ -90,15 +85,14 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         resource_id = response.headers['X-Brainiak-Resource-Uri']
         self.assertTrue(resource_id, "http://semantica.globo.com/place/Place/InexistentCity")
 
-    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}, "http://tatipedia.org/Place"))
-    def test_edit_instance_200_adding_predicate(self, mock_schema):
+    def test_edit_instance_200_adding_predicate(self):
         actual_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method='GET')
         self.assertEqual(actual_new_york.code, 200)
         actual_new_york_dict = json.loads(actual_new_york.body)
-        self.assertIn("rdfs:label", actual_new_york_dict)
-        self.assertNotIn("rdfs:comment", actual_new_york_dict)
+        self.assertIn("http://tatipedia.org/name", actual_new_york_dict)
+        self.assertNotIn("http://tatipedia.org/comment", actual_new_york_dict)
         # Add an attribute
-        actual_new_york_dict["rdfs:comment"] = "Some random comment"
+        actual_new_york_dict["http://tatipedia.org/comment"] = "Some random comment"
         modified_new_york = self.fetch('/anything/Place/new_york?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                                        method='PUT',
                                        body=json.dumps(actual_new_york_dict))
@@ -107,33 +101,28 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     @patch("brainiak.handlers.logger")
-    @patch("brainiak.instance.create_instance.get_cached_schema",
-           return_value=mock_schema({"rdfs:label": "string",
-                                     "rdfs:comment": "string",
-                                     "http://tatipedia.org/speak": "string"}, id="http://tatipedia.org/Place"))
-    def test_edit_instance_with_incorrect_values_raises_400(self, mock_schema, mock_log, mock_settings):
+    def test_edit_instance_with_incorrect_values_raises_400(self, mock_log, mock_settings):
         response = self.fetch('/place/Place/InexistentCity?class_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                               method='PUT',
-                              body=json.dumps({"rdfs:label": 1}))
+                              body=json.dumps({"http://tatipedia.org/name": 1}))
         self.assertEqual(response.code, 400)
         computed_payload = json.loads(response.body)
         expected_payload = {
             "errors": [
-                "Incorrect value for property (http://www.w3.org/2000/01/rdf-schema#label). A (http://www.w3.org/2001/XMLSchema#string) was expected, but (1) was given."
+                "Incorrect value for property (http://tatipedia.org/name). A (http://www.w3.org/2001/XMLSchema#string) was expected, but (1) was given."
             ]
         }
         self.assertEqual(computed_payload, expected_payload)
 
     @patch("brainiak.handlers.logger")
-    @patch("brainiak.instance.edit_instance.get_cached_schema", return_value=mock_schema({"rdfs:label": "string", "rdfs:comment": "string", "http://tatipedia.org/speak": "string"}, id="http://tatipedia.org/Place"))
-    def test_edit_instance_by_instance_uri_return_200_adding_predicate(self, mock_schema, mock_log):
+    def test_edit_instance_by_instance_uri_return_200_adding_predicate(self, mock_log):
         actual_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york', method='GET')
         self.assertEqual(actual_new_york.code, 200)
         actual_new_york_dict = json.loads(actual_new_york.body)
-        self.assertIn("rdfs:label", actual_new_york_dict)
-        self.assertNotIn("rdfs:comment", actual_new_york_dict)
+        self.assertIn("http://tatipedia.org/name", actual_new_york_dict)
+        self.assertNotIn("http://tatipedia.org/comment", actual_new_york_dict)
         # Add an attribute
-        actual_new_york_dict["rdfs:comment"] = "Some random comment"
+        actual_new_york_dict["http://tatipedia.org/comment"] = "Some random comment"
         modified_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york',
                                        method='PUT',
                                        body=json.dumps(actual_new_york_dict))
@@ -150,7 +139,7 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertTrue(actual_new_york.headers['X-Cache'].startswith('MISS'))
 
         # Add an attribute
-        actual_new_york_dict["rdfs:label"] = "Up-to-date label"
+        actual_new_york_dict["http://tatipedia.org/name"] = "Up-to-date label"
         modified_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york',
                                        method='PUT',
                                        body=json.dumps(actual_new_york_dict))
@@ -159,7 +148,7 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         updated_new_york = self.fetch('/_/_/_/?instance_uri=http://tatipedia.org/new_york', method='GET')
         self.assertEqual(actual_new_york.code, 200)
         updated_new_york_dict = json.loads(updated_new_york.body)
-        self.assertEqual(updated_new_york_dict['rdfs:label'], "Up-to-date label")
+        self.assertEqual(updated_new_york_dict["http://tatipedia.org/name"], "Up-to-date label")
         self.assertTrue(updated_new_york.headers['X-Cache'].startswith('MISS'))
 
 

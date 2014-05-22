@@ -15,8 +15,19 @@ tpedia:Species a owl:Class .
 tpedia:SoccerClub a owl:Class ;
                   rdfs:label "Time de futebol" .
 
-rdfs:label rdfs:domain tpedia:Place ,
-                       tpedia:Person .
+tpedia:name a owl:DatatypeProperty ;
+      rdfs:label "Name of place or person" ;
+      rdfs:subPropertyOf rdfs:label ;
+      rdfs:domain tpedia:Place ,
+                       tpedia:Person ;
+      rdfs:range xsd:string .
+
+tpedia:comment a owl:DatatypeProperty ;
+      rdfs:label "Name of place or person" ;
+      rdfs:subPropertyOf rdfs:comment ;
+      rdfs:domain tpedia:Place ,
+                       tpedia:Person ;
+      rdfs:range xsd:string .
 
 tpedia:speak a owl:DatatypeProperty ;
            rdfs:domain tpedia:Place ;
@@ -25,14 +36,14 @@ tpedia:speak a owl:DatatypeProperty ;
 
 
 tpedia:john a tpedia:Person ;
-            rdfs:label "John Jones" ;
+            tpedia:name "John Jones" ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:likes "Aikido" ;
             dbpedia:nickname "JJ" ;
             tpedia:isAlive "Yes"@en .
 
 tpedia:mary a tpedia:Person ;
-            rdfs:label "Mary Land" ;
+            tpedia:name "Mary Land" ;
             tpedia:likes tpedia:Capoeira ;
             tpedia:likes tpedia:JiuJitsu ;
             tpedia:dislikes tpedia:BungeeJump ;
@@ -40,42 +51,42 @@ tpedia:mary a tpedia:Person ;
             tpedia:isAlive "No"@en .
 
 tpedia:new_york a tpedia:Place ;
-                rdfs:label "Nova Iorque"@pt ;
-                rdfs:label "New York"@en ;
+                tpedia:name "Nova Iorque"@pt ;
+                tpedia:name "New York"@en ;
                 tpedia:speak "Ingles"@pt .
 
 tpedia:london a tpedia:Place ;
-              rdfs:label "Londres"@pt ;
-              rdfs:label "London"@en ;
+              tpedia:name "Londres"@pt ;
+              tpedia:name "London"@en ;
               tpedia:speak "Ingles"@pt .
 
 tpedia:Australia a tpedia:Place ;
-                 rdfs:label "Austrália"@pt ;
+                 tpedia:name "Austrália"@pt ;
                  tpedia:speak "Inglês"@pt .
 
 tpedia:Platypus a tpedia:Species ;
-                rdfs:label "Ornitorrinco"@pt ;
+                tpedia:name "Ornitorrinco"@pt ;
                 tpedia:order tpedia:Monotremata ;
                 tpedia:livesIn tpedia:Australia .
 
 tpedia:Echidna a tpedia:Species ;
-               rdfs:label "Equidna"@pt ;
+               tpedia:name "Equidna"@pt ;
                tpedia:order tpedia:Monotremata ;
                tpedia:livesIn tpedia:NewGuinea .
 
 tpedia:Teinolophos a tpedia:Species ;
-                   rdfs:label "Teinolophos trusleri" ;
+                   tpedia:name "Teinolophos trusleri" ;
                    tpedia:order tpedia:Monotremata ;
                    tpedia:livesIn tpedia:Australia ;
                    tpedia:status tpedia:Extinct .
 
 tpedia:SPFC a tpedia:SoccerClub ;
-            rdfs:label "São Paulo Futebol Clube";
+            tpedia:name "São Paulo Futebol Clube";
             tpedia:stadium "Morumbi" .
 
 tpedia:CEC a tpedia:SoccerClub ;
-           rdfs:label "Cruzeiro Esporte Clube" ;
+           tpedia:name "Cruzeiro Esporte Clube" ;
            tpedia:stadium "Toca da Raposa" .
 
 tpedia:CRF a tpedia:SoccerClub ;
-           rdfs:label "Clube de Regatas do Flamengo" .
+           tpedia:name "Clube de Regatas do Flamengo" .

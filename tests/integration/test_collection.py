@@ -1,10 +1,11 @@
 import json
 import urllib
-from mock import patch
+
+from mock import patch, PropertyMock
+
 from brainiak import triplestore, settings
 from brainiak.collection import get_collection
 from brainiak.collection.get_collection import query_filter_instances, Query
-
 from tests.mocks import Params
 from tests.sparql import QueryTestCase
 from tests.utils import URLTestCase
@@ -314,8 +315,9 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
     fixtures = ["tests/sample/instances.n3"]
     graph_uri = "http://tatipedia.org/"
 
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     @patch("brainiak.handlers.logger")
-    def test_json_returns_object_per_item(self, log):
+    def test_json_returns_object_per_item(self, mock_log, mock_inference_graph):
         response = self.fetch('/tpedia/Person/?p=http://tatipedia.org/likes&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/', method='GET')
         self.assertEqual(response.code, 200)
         computed_items = json.loads(response.body)["items"]
@@ -341,8 +343,9 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         sorted_expected_items = sorted(expected_items)
         self.assertEqual(sorted_computed_items, sorted_expected_items)
 
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     @patch("brainiak.handlers.logger")
-    def test_multiple_predicates(self, log):
+    def test_multiple_predicates(self, mock_log, mock_inference_graph):
         response = self.fetch('/tpedia/Person/?o=http://tatipedia.org/JiuJitsu&p1=http://tatipedia.org/isAlive&o1=Yes&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&lang=en', method='GET')
         self.assertEqual(response.code, 200)
         computed_items = json.loads(response.body)["items"]
@@ -358,8 +361,9 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertItemsEqual(computed_items, expected_items)
 
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     @patch("brainiak.handlers.logger")
-    def test_multiple_unknown_predicates(self, log):
+    def test_multiple_unknown_predicates(self, mock_log, mock_inference_graph):
         response = self.fetch('/tpedia/Person/?o=http://tatipedia.org/JiuJitsu&o1=Yes&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&lang=en', method='GET')
         self.assertEqual(response.code, 200)
         computed_items = json.loads(response.body)["items"]
@@ -376,8 +380,9 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertItemsEqual(computed_items, expected_items)
 
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     @patch("brainiak.handlers.logger")
-    def test_multiple_unknown_objects(self, log):
+    def test_multiple_unknown_objects(self, mock_log, mock_inference_graph):
         response = self.fetch('/tpedia/Person/?p=http://tatipedia.org/likes&p1=http://tatipedia.org/isAlive&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&lang=en', method='GET')
         self.assertEqual(response.code, 200)
         computed_items = json.loads(response.body)["items"]
@@ -407,8 +412,9 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertItemsEqual(computed_items, expected_items)
 
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     @patch("brainiak.handlers.logger")
-    def test_json_returns_sortby_per_item(self, log):
+    def test_json_returns_sortby_per_item(self, mock_log, mock_inference_graph):
         response = self.fetch('/tpedia/Person/?sort_by=dbpedia:nickname&graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/', method='GET')
         self.assertEqual(response.code, 200)
         computed_items = json.loads(response.body)["items"]
@@ -432,8 +438,9 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertEqual(computed_items, expected_items)
 
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     @patch("brainiak.handlers.logger")
-    def test_json_returns_sortby_include_empty_value(self, log):
+    def test_json_returns_sortby_include_empty_value(self, mock_log, mock_inference_graph):
         response = self.fetch('/tpedia/SoccerClub/?graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&sort_by=http://tatipedia.org/stadium', method='GET')
         self.assertEqual(response.code, 200)
         computed_items = json.loads(response.body)["items"]
@@ -464,8 +471,9 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertEqual(computed_items, expected_items)
 
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     @patch("brainiak.handlers.logger")
-    def test_json_returns_sortby_exclude_empty_value(self, log):
+    def test_json_returns_sortby_exclude_empty_value(self, mock_log, mock_inference_graph):
         response = self.fetch('/tpedia/SoccerClub/?graph_uri=http://tatipedia.org/&class_prefix=http://tatipedia.org/&sort_by=http://tatipedia.org/stadium&sort_include_empty=0', method='GET')
         self.assertEqual(response.code, 200)
         computed_items = json.loads(response.body)["items"]
@@ -505,7 +513,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         get_collection.query_filter_instances = self.original_query_filter_instances
         get_collection.query_count_filter_instances = self.original_query_count_filter_instances
 
-    def test_sort_by(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_sort_by(self, mock_inference_graph):
         params = Params({
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": "?p",
@@ -538,7 +547,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         ]
         self.assertEqual(computed, expected)
 
-    def test_sort_by_multiple_predicates(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_sort_by_multiple_predicates(self, mock_inference_graph):
         params = Params({
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p1": "?p",
@@ -553,17 +563,26 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         })
         query = Query(params).to_string()
         computed = self.query(query)["results"]["bindings"]
+        # TODO: check if this is the right behavior (need to check if it is post-processed)
         expected = [
+            {
+                u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
+                u'p': {u'type': u'uri', u'value': u'http://tatipedia.org/name'},
+                u'sort_object': {u'type': u'literal', u'value': u'Toca da Raposa'},
+                u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
+            },
             {
                 u'label': {u'type': u'literal', u'value': u'Cruzeiro Esporte Clube'},
                 u'p': {u'type': u'uri', u'value': u'http://www.w3.org/2000/01/rdf-schema#label'},
                 u'sort_object': {u'type': u'literal', u'value': u'Toca da Raposa'},
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/CEC'}
             }
+
         ]
         self.assertEqual(computed, expected)
 
-    def test_sort_by_exclude_empty_values(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_sort_by_exclude_empty_values(self, mock_inference_graph):
         params = Params({
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": "?p",
@@ -592,7 +611,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         ]
         self.assertEqual(computed, expected)
 
-    def test_sort_by_p(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_sort_by_p(self, mock_inference_graph):
         params = Params({
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": 'http://tatipedia.org/stadium',
@@ -620,7 +640,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         ]
         self.assertEqual(expected, computed)
 
-    def test_sort_by_label_with_different_p(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_sort_by_label_with_different_p(self, mock_inference_graph):
         params = Params({
             "class_uri": 'http://tatipedia.org/SoccerClub',
             "p": 'http://tatipedia.org/stadium',
@@ -648,7 +669,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         ]
         self.assertEqual(expected, computed)
 
-    def test_count_query(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_count_query(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Species",
             "p": "http://tatipedia.org/order",
@@ -664,7 +686,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         expected = [{u'total': {u'datatype': u'http://www.w3.org/2001/XMLSchema#integer', u'type': u'typed-literal', u'value': u'3'}}]
         self.assertEqual(computed, expected)
 
-    def test_instance_filter_query_by_predicate_and_object(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_instance_filter_query_by_predicate_and_object(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Person",
             "p": "http://tatipedia.org/likes",
@@ -684,7 +707,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
         self.assertEqual(computed, expected)
 
-    def test_instance_filter_query_by_object(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_instance_filter_query_by_object(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Person",
             "p": "?p",
@@ -703,7 +727,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
                      u'p': {u'type': u'uri', u'value': u'http://tatipedia.org/dislikes'}}]
         self.assertEqual(computed, expected)
 
-    def test_instance_filter_query_by_predicate(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_instance_filter_query_by_predicate(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Person",
             "graph_uri": self.graph_uri,
@@ -722,7 +747,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
 
         self.assertEqual(computed, expected)
 
-    def test_instance_filter_query_by_predicate_with_multiple_response(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_instance_filter_query_by_predicate_with_multiple_response(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Person",
             "lang": "",
@@ -760,7 +786,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(len(computed), 4)
         self.assertEqual(sorted(computed), sorted(expected))
 
-    def test_instance_filter_query_by_object_represented_as_string(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_instance_filter_query_by_object_represented_as_string(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Person",
             "p": "?p",
@@ -796,7 +823,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     #     response = self.query(query, params["graph_uri"])
     #     self.assertFalse(response["results"]["bindings"])
 
-    def test_query_filter_instances_with_language_restriction_to_pt(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_query_filter_instances_with_language_restriction_to_pt(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",
@@ -823,7 +851,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(len(computed_bindings), 2)
         self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 
-    def test_query_filter_instances_with_language_restriction_to_pt_and_any(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_query_filter_instances_with_language_restriction_to_pt_and_any(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Species",
             "p": "http://tatipedia.org/order",
@@ -855,7 +884,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         self.assertEqual(len(computed_bindings), 3)
         self.assertEqual(sorted(computed_bindings), sorted(expected_bindings))
 
-    def test_query_page_0(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_query_page_0(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",
@@ -871,7 +901,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         computed_bindings = self.query(query)["results"]["bindings"]
         self.assertEqual(len(computed_bindings), 1)
 
-    def test_query_page_1(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_query_page_1(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",
@@ -887,7 +918,8 @@ class FilterInstancesQueryTestCase(QueryTestCase):
         computed_bindings = self.query(query)["results"]["bindings"]
         self.assertEqual(len(computed_bindings), 1)
 
-    def test_query_filter_instances_with_language_restriction_to_en(self):
+    @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
+    def test_query_filter_instances_with_language_restriction_to_en(self, mock_inference_graph):
         params = Params({
             "class_uri": "http://tatipedia.org/Place",
             "p": "http://tatipedia.org/speak",

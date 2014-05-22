@@ -8,8 +8,8 @@ triplestore_config = {
     'url': 'http://localhost:8890/sparql-auth',
     'app_name': 'Brainiak',
     'auth_mode': 'digest',
-    'auth_username': 'api-semantica',
-    'auth_password': 'api-semantica'
+    'auth_username': 'dba',
+    'auth_password': 'dba'
 }
 
 

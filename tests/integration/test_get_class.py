@@ -303,7 +303,7 @@ class PredicatesQueryTestCase(QueryTestCase):
                 u'type': {u'type': u'uri', u'value': u'http://www.w3.org/2002/07/owl#ObjectProperty'}
             }
         ]
-        self.assertListEqual(expected, computed)
+        self.assertListEqual(sorted(expected), sorted(computed))
 
     def test_query_predicate_subproperty(self):
         filter_ = "FILTER (?domain_class IN (<http://example.onto/Yorkshire_Terrier>))"

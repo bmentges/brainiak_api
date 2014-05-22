@@ -114,8 +114,8 @@ class ParamsTestCase(TestCase):
         params = ParamDict(handler)
         expected_config = {
             'url': 'http://localhost:8890/sparql-auth',
-            'auth_password': 'api-semantica',
-            'auth_username': 'api-semantica',
+            'auth_password': 'dba',
+            'auth_username': 'dba',
             'app_name': 'Brainiak',
             'auth_mode': 'digest'
         }
@@ -126,8 +126,8 @@ class ParamsTestCase(TestCase):
         params = ParamDict(handler)
         expected_config = {
             'url': 'http://localhost:8890/sparql-auth',
-            'auth_password': 'api-semantica',
-            'auth_username': 'api-semantica',
+            'auth_password': 'one_password',
+            'auth_username': 'one_user',
             'app_name': 'Other',
             'auth_mode': 'digest'
         }

@@ -10,20 +10,20 @@ class ConfigParserTestCase(TestCase):
             'url': 'http://localhost:8890/sparql-auth',
             'app_name': 'Brainiak',
             'auth_mode': 'digest',
-            'auth_username': 'api-semantica',
-            'auth_password': 'api-semantica'
+            'auth_username': 'dba',
+            'auth_password': 'dba'
         }
         self.assertEqual(response, expected_response)
 
-    def test_parse_config_file_and_eureka_section(self):
+    def test_parse_config_file_and_other_section(self):
         local_ini = "src/brainiak/triplestore.ini"
         response = parse_section(local_ini, "other")
         expected_response = {
             'url': 'http://localhost:8890/sparql-auth',
             'app_name': 'Other',
             'auth_mode': 'digest',
-            'auth_username': 'api-semantica',
-            'auth_password': 'api-semantica'
+            'auth_username': 'one_user',
+            'auth_password': 'one_password'
         }
         self.assertEqual(response, expected_response)
 

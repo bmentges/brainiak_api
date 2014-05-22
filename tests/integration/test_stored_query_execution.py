@@ -16,12 +16,11 @@ class StoredQueryCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestCase):
     maxDiff = None
     fixtures = ["tests/sample/gender.n3"]
     graph_uri = "http://example.onto/"
-    query_id = "myqueryid"
 
     def setUp(self):
-        super(TornadoAsyncHTTPTestCase, self).setUp()
-
-        self.elastic_request_url = "http://" + settings.ELASTICSEARCH_ENDPOINT + "/brainiak/query/myqueryid"
+        super(StoredQueryCRUDExecution, self).setUp()
+        self.delete_index()
+        self.elastic_request_url = "http://{0}/brainiak/query/q".format(settings.ELASTICSEARCH_ENDPOINT)
         entry = {
             "sparql_template": "SELECT ?s FROM <%(g)s> {?s a owl:Class}",
             "description": ""
@@ -29,10 +28,13 @@ class StoredQueryCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestCase):
 
         requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
 
-    def tearDown(self):
+    def delete_index(self):
 	index_url = "http://{0}/brainiak".format(settings.ELASTICSEARCH_ENDPOINT) 
         requests.delete(index_url)
-        super(TornadoAsyncHTTPTestCase, self).tearDown()
+
+    def tearDown(self):
+        self.delete_index()
+        super(StoredQueryCRUDExecution, self).tearDown()
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     def test_get_query_result(self, mocked_lang):
@@ -41,8 +43,7 @@ class StoredQueryCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestCase):
         }
 
         graph_uri_encoded = quote_plus(self.graph_uri)
-        request_uri = '/_query/{0}/_result?g={1}'.format(self.query_id,
-                                                         graph_uri_encoded)
+        request_uri = '/_query/q/_result?g={0}'.format(graph_uri_encoded)
         response = self.fetch(request_uri)
 
         self.assertEqual(response.code, 200)
@@ -51,18 +52,22 @@ class StoredQueryCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     def test_get_query_result_with_missing_param(self, mocked_lang):
-        request_uri = '/_query/{0}/_result'.format(self.query_id)
+        request_uri = '/_query/q/_result'
         response = self.fetch(request_uri)
-
         self.assertEqual(response.code, 400)
+        computed = json.loads(response.body)['errors'][0]
+        expected = "HTTP error: 400\nMissing key 'g' in querystring.\n  Template: SELECT ?s FROM <%(g)s> {?s a owl:Class}"
+        self.assertEqual(computed, expected)
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     def test_get_query_result_with_query_not_found(self, mocked_lang):
-        requests.delete(self.elastic_request_url)
-        request_uri = '/_query/{0}/_result'.format(self.query_id)
+        self.delete_index()
+        request_uri = '/_query/q/_result'
         response = self.fetch(request_uri)
-
         self.assertEqual(response.code, 404)
+        computed = json.loads(response.body)['errors'][0]
+        expected = "HTTP error: 404\nThe stored query with id 'q' was not found during execution attempt"
+        self.assertEqual(computed, expected)
 
 
 class StoredQueryWithOptionalsCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestCase):
@@ -71,11 +76,10 @@ class StoredQueryWithOptionalsCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestC
     fixtures = ["tests/sample/gender.n3"]
     graph_uri = "http://example.onto/"
 
-    query_id = "my_integration_test_query_id_with_optionals"
-
     def setUp(self):
-        super(TornadoAsyncHTTPTestCase, self).setUp()
-        request_uri = "/_query/{0}".format(self.query_id)
+        TornadoAsyncHTTPTestCase.setUp(self)
+        self._delete_stored_query()
+        request_uri = "/_query/1"
         body = {
             "sparql_template": """
                 PREFIX person: <http://test.com/person/>
@@ -92,28 +96,23 @@ class StoredQueryWithOptionalsCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestC
         }
         body = json.dumps(body)
         response = self.fetch(request_uri, method="PUT", body=body, headers=CLIENT_ID_HEADERS)
-        # 200,201: dont worry if test fails and tearDown is not called to delete the query, update will also work in subsequent execution
-        self.assertTrue(response.code in (200, 201))
+        self.assertEqual(response.code, 201)
 
     def tearDown(self):
         self._delete_stored_query()
-        super(TornadoAsyncHTTPTestCase, self).tearDown()
+        super(StoredQueryWithOptionalsCRUDExecution, self).tearDown()
 
     def _get_stored_query(self):
-        request_uri = "/_query/{0}".format(self.query_id)
+        request_uri = "/_query/1"
         response = self.fetch(request_uri)
         return response.code
 
     def _delete_stored_query(self):
-        get_status = self._get_stored_query()
-        if get_status == 404:
-            return get_status
-        elif get_status == 200:
-            request_uri = "/_query/{0}".format(self.query_id)
+        status = self._get_stored_query()
+        if status == 200:
+            request_uri = "/_query/1"
             response = self.fetch(request_uri, method="DELETE", headers=CLIENT_ID_HEADERS)
-            return response.code
-        else:
-            self.fail("Unexpected GET status {0}".format(get_status))
+            self.assertEqual(response.code, 204)
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     def test_get_query_result_with_optionals(self, mocked_lang):
@@ -130,11 +129,8 @@ class StoredQueryWithOptionalsCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestC
             {u"s": u"http://test.com/other_prefix/Test"},
             {u"s": u"http://test.com/person/Gender/Alien"}]
 
-        lang = "pt"
-        request_uri = '/_query/{0}/_result?lang={1}'.format(self.query_id,
-                                                            lang)
+        request_uri = '/_query/1/_result?lang=pt'
         response = self.fetch(request_uri)
-
         self.assertEqual(response.code, 200)
         result_items = json.loads(response.body)["items"]
         self.assertEqual(sorted(expected_response_items),

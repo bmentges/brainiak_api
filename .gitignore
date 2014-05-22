@@ -45,3 +45,6 @@ dump.rdb
 
 .DS_Store
 .project
+
+# Vi
+*.sw[a-z]

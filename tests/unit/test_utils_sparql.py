@@ -510,6 +510,17 @@ class CreateExplicitTriplesTestCase(TestCase):
             u"Incorrect value for property (http://personpedia.com/isAlive). A (http://www.w3.org/2001/XMLSchema#boolean) was expected, but (http://personpedia.com/TheImportanceOfBeingEarnest) was given."]
         self.assertEqual(json.loads(str(exception.exception)), expected_error_msg)
 
+    def test_create_explicit_triples_erased_property_diagnosed_by_daniel(self):
+        instance_uri = u'http://semantica.globo.com/G1/DisputaEleitoral/DisputaEleitoral_Governador_2014_PE'
+        instance_data = {u'http://semantica.globo.com/G1/local_de_atuacao': [u'http://semantica.globo.com/base/UF_PE']}
+        class_object = {'title': u'Disputa Eleitoral', 'properties': {u'http://semantica.globo.com/G1/local_de_atuacao': {'required': True, 'format': 'uri', 'graph': u'http://semantica.globo.com/G1/', 'title': u'Local de atua\xe7\xe3o', 'range': [{'graph': u'http://semantica.globo.com/', 'type': 'string', 'format': 'uri', '@id': u'http://semantica.globo.com/base/Cidade', 'title': u'Cidade'}, {'graph': u'http://semantica.globo.com/', 'type': 'string', 'format': 'uri', '@id': u'http://semantica.globo.com/base/UF', 'title': u'UF'}, {'@id': u'http://semantica.globo.com/base/Pais', 'graph': u'http://semantica.globo.com/', 'title': u'Pa\xeds', 'type': 'string', 'format': 'uri'}], 'items': {}, 'type': 'array', 'class': u'http://semantica.globo.com/G1/DisputaEleitoral'}}, '@context': {'@language': 'pt'}, '$schema': 'http://json-schema.org/draft-04/schema#', 'type': 'object', 'id': u'http://semantica.globo.com/G1/DisputaEleitoral'}
+        graph_uri = 'http://semantica.globo.com/G1/'
+        query_params = {'lang': 'pt', 'class_uri': u'http://semantica.globo.com/G1/DisputaEleitoral', 'meta_properties': None, 'instance_prefix': 'http://semantica.globo.com/G1/', 'class_name': u'DisputaEleitoral', 'expand_object_properties': None, 'class_prefix': u'http://semantica.globo.com/G1/', 'instance_id': u'_', 'context_name': 'G1', 'graph_uri': 'http://semantica.globo.com/G1/', 'instance_uri': u'http://semantica.globo.com/G1/DisputaEleitoral/DisputaEleitoral_Governador_2014_PE', 'expand_uri': u'1'}
+        response = create_explicit_triples(instance_uri, instance_data, class_object, graph_uri, query_params)
+        expected = [(u'<http://semantica.globo.com/G1/DisputaEleitoral/DisputaEleitoral_Governador_2014_PE>', u'<http://semantica.globo.com/G1/local_de_atuacao>', u'<http://semantica.globo.com/base/UF_PE>')]
+
+        self.assertEqual(response, expected)
+
     def test_unpack_tuples(self):
         instance_data = {
             "key1": "1a",

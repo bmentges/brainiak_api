@@ -556,7 +556,9 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
                         msg = template.format(predicate_uri, class_id, object_value)
                         errors.append(msg)
 
-    undefined_obligatory_properties = find_undefined_obligatory_properties(class_object, instance_data)
+    apparently_undefined_obligatory_properties = find_undefined_obligatory_properties(class_object, instance_data)
+    defined_but_excluded_from_instance_data = [predicate_uri for predicate_uri, object_value in predicate_object_tuples]
+    undefined_obligatory_properties = [item for item in apparently_undefined_obligatory_properties if not item in defined_but_excluded_from_instance_data]
     template = _(u"The property ({0}) is obligatory according to the definition of the class ({1}). A value must be provided for this field in order to create or edit ({2}).")
     for property_ in undefined_obligatory_properties:
         msg = template.format(property_, class_id, instance_uri)

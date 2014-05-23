@@ -29,7 +29,7 @@ unit: clean
 	@echo "Running unit tests..."
 	@nosetests -s --cover-branches --cover-erase --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/unit --with-xunit --with-spec --spec-color $(EXTRA_NOSE_PARAMS) --with-stopwatch --stopwatch-file=.nose-stopwatch-times-unit
 
-integration: clean
+integration: clean check_services
 	@echo "Running integration tests..."
 	@nosetests -s --cover-branches --cover-erase --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests/integration --with-xunit --with-spec --spec-color $(EXTRA_NOSE_PARAMS) --with-stopwatch --stopwatch-file=.nose-stopwatch-times-integration
 
@@ -56,7 +56,7 @@ release:
 	@cd src; python -c "from brainiak.utils.git import build_next_release_string; print build_next_release_string('$(type)')" > brainiak/version.py
 	@cd src; git tag `python -c "from brainiak.utils.git import compute_next_git_tag; print compute_next_git_tag('$(type)')"` -m "$(message)"
 
-run:
+run: check_services
 	@echo "Brainiak is alive!"
 	PYTHONPATH="$(NEW_PYTHONPATH)" python -m brainiak.server
 
@@ -82,6 +82,9 @@ console:
 	@echo "Console Python inside Brainiak code (you must be on the correct Virtualenv)"
 	@PYTHONPATH="$(BRAINIAK_CODE):$(NEW_PYTHONPATH)" python
 
+check_services:
+	@echo "Check if all services used by Brainiak are up"
+	@nosetests -s tests/integration/test_dependencies_tests.py
 
 # i18n #0
 # If "string" should be translated, wrap it using _("string")

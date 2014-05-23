@@ -1,4 +1,3 @@
-from mock import patch
 from tornado.httpclient import HTTPError as ClientHTTPError
 from tornado.web import HTTPError
 
@@ -41,7 +40,7 @@ class TriplestoreTestCase(TornadoAsyncTestCase, QueryTestCase):
         modified_dict["url"] = 'http://localhost:8890/sparql'
 
         response = triplestore.query_sparql(SIMPLE_QUERY, modified_dict)
-        self.assertFalse(response['boolean'])
+        self.assertTrue(response['boolean'])
 
 
 class RunQueryTestCase(QueryTestCase):
@@ -52,7 +51,7 @@ class RunQueryTestCase(QueryTestCase):
         triplestore_config = config_parser.parse_section()
         triplestore_config["url"] = "http://localhost:8890/sparql"
         response = triplestore.query_sparql(SIMPLE_QUERY, triplestore_config, async=False)
-        self.assertFalse(response['boolean'])
+        self.assertTrue(response['boolean'])
 
     def test_sync_query_authenticated_works(self):
         triplestore_config = config_parser.parse_section()

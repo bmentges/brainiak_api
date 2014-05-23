@@ -33,4 +33,3 @@ class ServicesTestCase(unittest.TestCase):
         redis_client = redis.StrictRedis(host=settings.REDIS_ENDPOINT, port=settings.REDIS_PORT, password=settings.REDIS_PASSWORD, db=0)
         computed = redis_client.ping()
         self.assertTrue(computed)
-

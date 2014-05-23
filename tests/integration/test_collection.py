@@ -992,7 +992,7 @@ class GetCollectionDirectObjectTestCase(TornadoAsyncHTTPTestCase, QueryTestCase)
                 "title": "Nina Fox"
             }
         ]
-        self.assertEqual(computed_items, expected_items)
+        self.assertEqual(sorted(computed_items), sorted(expected_items))
 
     @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://example.onto/ruleset")
     def test_get_collection_includes_only_direct_instances(self, settings):

@@ -29,7 +29,7 @@ class StoredQueryCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestCase):
         requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
 
     def delete_index(self):
-	index_url = "http://{0}/brainiak".format(settings.ELASTICSEARCH_ENDPOINT) 
+        index_url = "http://{0}/brainiak".format(settings.ELASTICSEARCH_ENDPOINT)
         requests.delete(index_url)
 
     def tearDown(self):

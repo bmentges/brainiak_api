@@ -352,16 +352,16 @@ class SuggestIntegrationElasticSearchQueryTestCase(ElasticSearchQueryTestCase):
 class SuggestIntegrationElasticSearchComplexQueriesTestCase(ElasticSearchQueryTestCase):
     analyzer = "my_analyzer"
     settings = {
-            "analysis": {
-                "analyzer": {
-                  "my_analyzer": {
+        "analysis": {
+            "analyzer": {
+                "my_analyzer": {
                     "type": "custom",
                     "tokenizer": "standard",
                     #"filter": ["lowercase_pt", "synonym", "standard", "stopwords_pt", "stem_minimal_pt", "asciifolding"],
                     "char_filter": ["html_strip"]
-                  }
-               }
+                }
             }
+        }
     }
     index = "sports.sample"
     fixtures = [

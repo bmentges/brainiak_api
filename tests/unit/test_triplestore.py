@@ -87,17 +87,21 @@ class TriplestoreTestCase(unittest.TestCase):
 
     def test_process_triplestore_response_async_true(self):
         expected = {"a": "json string"}
+
         class TornadoHTTPResponse:
             body = '{"a": "json string"}'
+
         tornado_response = TornadoHTTPResponse()
         response = triplestore._process_json_triplestore_response(tornado_response)
         self.assertEqual(expected, response)
 
     def test_process_triplestore_response_async_false(self):
         expected = {"a": "json string"}
+
         class RequestsHTTPResponse:
             def json(self):
                 return {"a": "json string"}
+
         tornado_response = RequestsHTTPResponse()
         response = triplestore._process_json_triplestore_response(tornado_response,
                                                                   async=False)

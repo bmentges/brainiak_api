@@ -12,8 +12,7 @@ class StoredQueryCRUDIntegrationTestCase(TornadoAsyncHTTPTestCase):
         response = self.fetch('/_query/my_query_id',
                               method='PUT',
                               body='invalid_json',
-                              headers={"X-Brainiak-Client-Id": "client-id"}
-                             )
+                              headers={"X-Brainiak-Client-Id": "client-id"})
         self.assertEqual(response.code, 400)
         self.assertTrue("JSON malformed" in response.body)
 
@@ -30,8 +29,7 @@ class StoredQueryCRUDIntegrationTestCase(TornadoAsyncHTTPTestCase):
         self.assertTrue("JSON not according to JSON schema definition", response.body)
 
     def _query_exists(self, query_id):
-        response = self.fetch('/_query/{0}'.format(query_id),
-                              method='GET')
+        response = self.fetch('/_query/{0}'.format(query_id), method='GET')
         return response.code != 404
 
     def _assert_query_does_not_exist(self, query_id):

@@ -13,7 +13,7 @@ from tests.sparql import QueryTestCase
 from tests.tornado_cases import TornadoAsyncTestCase
 
 
-SIMPLE_QUERY = "ASK {<SomeInstance> a <SomeClass>}" 
+SIMPLE_QUERY = "ASK {<SomeInstance> a <SomeClass>}"
 
 
 class TriplestoreTestCase(TornadoAsyncTestCase, QueryTestCase):
@@ -50,7 +50,6 @@ class TriplestoreTestCase(TornadoAsyncTestCase, QueryTestCase):
         with self.assertRaises(HTTPError) as error:
             triplestore.query_sparql(SIMPLE_QUERY, modified_dict)
         self.assertEqual(error.status_code, 401)
-
 
     @greenlet_tornado.greenlet_test
     def test_authenticated_access_to_not_authenticated_endpoint(self):

@@ -26,6 +26,7 @@ DEFAULT_VIRTUOSO_REQUEST_HEADERS = {
 DEFAULT_RESPONSE_FORMAT = "application/sparql-results+json"
 DEFAULT_HTTP_METHOD = "POST"
 
+
 def do_run_query(request_params, async):
     # app_name (from triplestore.ini) can't be passed forward to tornado.httpclient.HTTPRequest .
     # It raises an exception

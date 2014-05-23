@@ -1,6 +1,15 @@
 Releases
 ========
 
+Version 2.5.1 - 2014/MM/DD
+--------------------------
+
+Fixes, improvements
+___________________
+
+- PUT instance raised exception when trying to add property mapping list of values, if the property was obligatory.
+
+
 Version 2.5.0 - 2014/05/19
 --------------------------
 

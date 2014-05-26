@@ -76,11 +76,15 @@ class StoredQueryWithOptionalsCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestC
     fixtures = ["tests/sample/gender.n3"]
     graph_uri = "http://example.onto/"
 
+    def delete_index(self):
+        index_url = "http://{0}/brainiak".format(settings.ELASTICSEARCH_ENDPOINT)
+        requests.delete(index_url)
+
     def setUp(self):
-        TornadoAsyncHTTPTestCase.setUp(self)
-        self._delete_stored_query()
-        request_uri = "/_query/1"
-        body = {
+        super(StoredQueryWithOptionalsCRUDExecution, self).setUp()
+        self.delete_index()
+        self.elastic_request_url = "http://{0}/brainiak/query/1".format(settings.ELASTICSEARCH_ENDPOINT)
+        entry = {
             "sparql_template": """
                 PREFIX person: <http://test.com/person/>
                 PREFIX gender: <http://test.com/person/Gender/>
@@ -94,25 +98,13 @@ class StoredQueryWithOptionalsCRUDExecution(TornadoAsyncHTTPTestCase, QueryTestC
             """,
             "description": ""
         }
-        body = json.dumps(body)
-        response = self.fetch(request_uri, method="PUT", body=body, headers=CLIENT_ID_HEADERS)
-        self.assertEqual(response.code, 201)
+
+        response = requests.put(self.elastic_request_url + "?refresh=true", data=json.dumps(entry))
+        self.assertEqual(response.status_code, 201)
 
     def tearDown(self):
-        self._delete_stored_query()
+        self.delete_index()
         super(StoredQueryWithOptionalsCRUDExecution, self).tearDown()
-
-    def _get_stored_query(self):
-        request_uri = "/_query/1"
-        response = self.fetch(request_uri)
-        return response.code
-
-    def _delete_stored_query(self):
-        status = self._get_stored_query()
-        if status == 200:
-            request_uri = "/_query/1"
-            response = self.fetch(request_uri, method="DELETE", headers=CLIENT_ID_HEADERS)
-            self.assertEqual(response.code, 204)
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
     def test_get_query_result_with_optionals(self, mocked_lang):

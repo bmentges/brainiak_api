@@ -581,7 +581,7 @@ class GetCardinalitiesFullTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             }
 
         }
-        self.assertEqual(properties, expected_properties)
+        self.assertEqual(sorted(properties), sorted(expected_properties))
 
 
 class GetPredicatesCardinalitiesTestCase(TornadoAsyncTestCase):

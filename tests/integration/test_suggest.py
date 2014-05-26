@@ -18,6 +18,7 @@ from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 class SuggestIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
+    index = "aninalia.sample"
     fixtures = ["tests/sample/animalia.n3"]
     graph_uri = "http://example.onto/"
 
@@ -263,7 +264,33 @@ class SuggestIntegrationElasticSearchQueryTestCase(ElasticSearchQueryTestCase):
         }
     ]
     timeout = 3
-    analyzer = "default"
+    analyzer = "my_analyzer"
+    settings = {
+        "analysis": {
+            "analyzer": {
+                "my_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "standard",
+                    "char_filter": ["html_strip"]
+                }
+            }
+        }
+    }
+    mapping = {
+        "sample.test": {
+            "person": {
+                "properties": {
+                    "birthDate": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+    index = "person.sample"
 
     def query_by_pattern(self, pattern, fields):
         query_params = {"page": "0"}
@@ -295,6 +322,7 @@ class SuggestIntegrationElasticSearchQueryTestCase(ElasticSearchQueryTestCase):
         fields = ["name"]
         query = self.query_by_pattern(pattern, fields)
         response = self.search(query)
+
         self.assertEqual(response["hits"]["total"], 2)
         self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
         self.assertEqual(response["hits"]["hits"][0]["fields"]["name"], u"James")

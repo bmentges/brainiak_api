@@ -514,7 +514,7 @@ def create_explicit_triples(instance_uri, instance_data, class_object, graph_uri
 
     triples = []
     errors = []
-    template_msg = _(u'Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was given.')
+    template_msg = _(u'Incorrect value for property ({1}). A value compatible with a ({2}) was expected, but ({0}) was given.')
 
     for (predicate_uri, object_value) in predicate_object_tuples:
 

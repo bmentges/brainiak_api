@@ -351,7 +351,7 @@ msgid ""
 "Incorrect value for property ({1}). A ({2}) was expected, but ({0}) was "
 "given."
 msgstr ""
-"Valor incorreto para a propriedade ({1}). Um ({2}) era esperado, mas ({0}) "
+"Valor incorreto para a propriedade ({1}). Um valor compatível com ({2}) era esperado, mas ({0}) "
 "foi fornecido."
 
 #: brainiak/utils/sparql.py:504

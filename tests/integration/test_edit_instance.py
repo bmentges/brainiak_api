@@ -109,7 +109,7 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         computed_payload = json.loads(response.body)
         expected_payload = {
             "errors": [
-                "Incorrect value for property (http://tatipedia.org/name). A (http://www.w3.org/2001/XMLSchema#string) was expected, but (1) was given."
+                "Incorrect value for property (http://tatipedia.org/name). A value compatible with a (http://www.w3.org/2001/XMLSchema#string) was expected, but (1) was given."
             ]
         }
         self.assertEqual(computed_payload, expected_payload)

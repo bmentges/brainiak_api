@@ -143,8 +143,14 @@ def assemble_instance_json(query_params, query_result_dict, class_schema):
 # Note: we will filter (remove) blank nodes using Python code due to a problem
 # on filtering using isBlank when inference is enabled at Virtuoso. We've
 # reported the bug to the DB team and we expect soon an answer from OpenLink.
+
+# Attention: the query below had inference turned-on
+# DEFINE input:inference <%(ruleset)s>
+# It was turned off because Virtuoso in version Virtuoso version 06.04.3138 on Linux (x86_64-generic-linux-glibc25-64), Single Server Edition
+# if X is sub-property of Y. And Y is a property of multiple values, a query on objects having values for Y shows the values belonging to X
+# instead of Y when inference is turned on.
+
 QUERY_ALL_PROPERTIES_AND_OBJECTS_TEMPLATE = u"""
-DEFINE input:inference <%(ruleset)s>
 SELECT DISTINCT ?predicate ?object %(object_label_variable)s ?super_property isBlank(?object) as ?is_object_blank {
     <%(instance_uri)s> a <%(class_uri)s> ;
     ?predicate ?object .

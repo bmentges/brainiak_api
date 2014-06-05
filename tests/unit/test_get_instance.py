@@ -80,8 +80,10 @@ class TestCaseInstanceResource(unittest.TestCase):
         })
 
         computed = get_instance.query_all_properties_and_objects(params)
+        # Inference was turned-off on 2014-06-04 due to Virtuoso bug. See releases.rst
+        # DEFINE input:inference <http://semantica.globo.com/ruleset>
+
         expected = """
-            DEFINE input:inference <http://semantica.globo.com/ruleset>
             SELECT DISTINCT ?predicate ?object ?object_label ?super_property isBlank(?object) as ?is_object_blank {
                 <instance_uri> a <class_uri> ;
                     ?predicate ?object .
@@ -107,8 +109,10 @@ class TestCaseInstanceResource(unittest.TestCase):
         })
 
         computed = get_instance.query_all_properties_and_objects(params)
+        # Inference was turned-off on 2014-06-04 due to Virtuoso bug. See releases.rst
+        # DEFINE input:inference <http://semantica.globo.com/ruleset>
+
         expected = """
-            DEFINE input:inference <http://semantica.globo.com/ruleset>
             SELECT DISTINCT ?predicate ?object  ?super_property isBlank(?object) as ?is_object_blank {
                 <instance_uri> a <class_uri> ;
                     ?predicate ?object .

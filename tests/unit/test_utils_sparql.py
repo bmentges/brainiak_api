@@ -477,7 +477,7 @@ class CreateExplicitTriplesTestCase(TestCase):
         )
         with self.assertRaises(InstanceError) as exception:
             create_explicit_triples(instance_uri, instance_data, class_object, None, None)
-        excepted_error_msg = [u'Incorrect value for property (http://personpedia.com/isAlive). A (http://www.w3.org/2001/XMLSchema#boolean) was expected, but (0) was given.']
+        excepted_error_msg = [u'Incorrect value for property (http://personpedia.com/isAlive). A value compatible with a (http://www.w3.org/2001/XMLSchema#boolean) was expected, but (0) was given.']
         self.assertEqual(json.loads(str(exception.exception)), excepted_error_msg)
 
     @patch("brainiak.utils.i18n.settings", DEFAULT_LANG="en")
@@ -504,10 +504,10 @@ class CreateExplicitTriplesTestCase(TestCase):
             create_explicit_triples(instance_uri, instance_data, class_object, None, None)
 
         expected_error_msg = [
-            u"Incorrect value for property (http://personpedia.com/wroteBook). A (owl:ObjectProperty) was expected, but (true) was given.",
-            u"Incorrect value for property (http://personpedia.com/hasNationality). A (http://www.w3.org/2001/XMLSchema#string) was expected, but (46) was given.",
-            u"Incorrect value for property (http://personpedia.com/deathAge). A (http://www.w3.org/2001/XMLSchema#integer) was expected, but (Irish) was given.",
-            u"Incorrect value for property (http://personpedia.com/isAlive). A (http://www.w3.org/2001/XMLSchema#boolean) was expected, but (http://personpedia.com/TheImportanceOfBeingEarnest) was given."]
+            u"Incorrect value for property (http://personpedia.com/wroteBook). A value compatible with a (owl:ObjectProperty) was expected, but (true) was given.",
+            u"Incorrect value for property (http://personpedia.com/hasNationality). A value compatible with a (http://www.w3.org/2001/XMLSchema#string) was expected, but (46) was given.",
+            u"Incorrect value for property (http://personpedia.com/deathAge). A value compatible with a (http://www.w3.org/2001/XMLSchema#integer) was expected, but (Irish) was given.",
+            u"Incorrect value for property (http://personpedia.com/isAlive). A value compatible with a (http://www.w3.org/2001/XMLSchema#boolean) was expected, but (http://personpedia.com/TheImportanceOfBeingEarnest) was given."]
         self.assertEqual(json.loads(str(exception.exception)), expected_error_msg)
 
     def test_create_explicit_triples_erased_property_diagnosed_by_daniel(self):

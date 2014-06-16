@@ -323,7 +323,10 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
         computed_items = json.loads(response.body)["items"]
         expected_items = [
             {
-                u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'http://tatipedia.org/Capoeira'],
+                u'http://tatipedia.org/likes': [
+                    u'http://tatipedia.org/Capoeira',
+                    u'http://tatipedia.org/JiuJitsu'
+                ],
                 u'instance_prefix': u'http://tatipedia.org/',
                 u'class_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'mary',
@@ -331,7 +334,10 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'title': u'Mary Land'
             },
             {
-                u'http://tatipedia.org/likes': [u'http://tatipedia.org/JiuJitsu', u'Aikido'],
+                u'http://tatipedia.org/likes': [
+                    u'Aikido',
+                    u'http://tatipedia.org/JiuJitsu'
+                ],
                 u'instance_prefix': u'http://tatipedia.org/',
                 u'class_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'john',
@@ -392,8 +398,8 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'class_prefix': u'http://tatipedia.org/',
                 u'http://tatipedia.org/isAlive': u'Yes',
                 u'http://tatipedia.org/likes': [
-                    u'http://tatipedia.org/JiuJitsu',
-                    u'Aikido'],
+                    u'Aikido',
+                    u'http://tatipedia.org/JiuJitsu'],
                 u'instance_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'john',
                 u'title': u'John Jones'
@@ -403,13 +409,14 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'class_prefix': u'http://tatipedia.org/',
                 u'http://tatipedia.org/isAlive': u'No',
                 u'http://tatipedia.org/likes': [
-                    u'http://tatipedia.org/JiuJitsu',
-                    u'http://tatipedia.org/Capoeira'],
+                    u'http://tatipedia.org/Capoeira',
+                    u'http://tatipedia.org/JiuJitsu'],
                 u'instance_prefix': u'http://tatipedia.org/',
                 u'resource_id': u'mary',
                 u'title': u'Mary Land'
             }
         ]
+        computed_items = sorted(computed_items,  key=lambda item: item['title'])
         self.assertItemsEqual(computed_items, expected_items)
 
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")

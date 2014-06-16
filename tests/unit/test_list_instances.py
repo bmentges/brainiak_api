@@ -1,11 +1,43 @@
 import unittest
 
-from brainiak.collection.get_collection import Query, merge_by_id, build_json
+from brainiak.collection.get_collection import Query, merge_by_id, build_json,\
+    sort_values_of_properties_which_map_lists
 from brainiak.utils.params import LIST_PARAMS, ParamDict
 from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip
 from tests.utils import URLTestCase
 
+
+class SortItemsListValuesTestCase(unittest.TestCase):
+
+    def test_empty_list(self):
+        sample_list = []
+        computed = sort_values_of_properties_which_map_lists(sample_list)
+        expected = []
+        self.assertEqual(computed, expected)
+
+    def test_list_of_items_without_list_values(self):
+        sample_list = [
+            {"c": "d"},
+            {"a": "b"}
+        ]
+        computed = sort_values_of_properties_which_map_lists(sample_list)
+        expected = [
+            {"c": "d"},
+            {"a": "b"}
+        ]
+        self.assertEqual(computed, expected)
+
+    def test_list_of_items_with_list_values(self):
+        sample_list = [
+            {"prime": [17, 1, 3, 2, 5, 13, 11, 7]},
+            {"fibo": [2, 34, 13, 1, 3, 21, 5, 1, 8]}
+        ]
+        computed = sort_values_of_properties_which_map_lists(sample_list)
+        expected = [
+            {"prime": [1, 2, 3, 5, 7, 11, 13, 17]},
+            {"fibo": [1, 1, 2, 3, 5, 8, 13, 21, 34]}
+        ]
 
 class MergeByIdTestCase(unittest.TestCase):
 

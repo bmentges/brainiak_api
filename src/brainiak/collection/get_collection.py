@@ -295,6 +295,23 @@ def filter_instances(query_params):
     return build_json(items_list, query_params)
 
 
+def sort_values_of_properties_which_map_lists(items_list):
+    """
+    Provided a list o items (dicts), for each item:
+        for each key and value, if value is a list:
+            sort value
+    """
+    new_list = []
+    for item in items_list:
+        new_item = {}
+        for key, value in item.items():
+            if isinstance(value, list):
+                value = sorted(value)
+            new_item[key] = value
+        new_list.append(new_item)
+    return new_list
+
+
 def build_json(items_list, query_params):
     class_url = build_class_url(query_params)
     schema_url = unquote(build_schema_url_for_instance(query_params, class_url))
@@ -304,7 +321,7 @@ def build_json(items_list, query_params):
         'pattern': '',
         '_class_prefix': query_params['class_prefix'],
         '_base_url': remove_last_slash(query_params.base_url),
-        'items': items_list,
+        'items': sort_values_of_properties_which_map_lists(items_list),
         '@context': {"@language": query_params.get("lang")},
         '@id': query_params['class_uri']
     }

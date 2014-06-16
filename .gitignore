@@ -48,3 +48,6 @@ dump.rdb
 
 # Vi
 *.sw[a-z]
+
+# Gedit
+*~

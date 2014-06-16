@@ -9,6 +9,7 @@ EXTRA_NOSE_PARAMS ?= $(NOSE_PARAMS)
 clean:
 	@find . -name "*.pyc" -delete
 	@find . -name "__pycache__" -delete
+	@find . -name "*~" -delete
 
 clean_redis:
 	@redis-cli FLUSHDB

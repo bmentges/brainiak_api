@@ -1005,3 +1005,134 @@ class GetCollectionDirectObjectTestCase(TornadoAsyncHTTPTestCase, QueryTestCase)
     def test_get_collection_includes_only_direct_instances(self, settings):
         response = self.fetch('/_/_/?graph_uri=http://example.onto/&class_uri=http://example.onto/Animal&direct_instances_only=1', method='GET')
         self.assertEqual(response.code, 200)
+
+
+def clear_items(items):
+    remove_keys = ["instance_prefix", "resource_id", "class_prefix", "@id"]
+    for item in items:
+        for key in remove_keys:
+            item.pop(key)
+    return items
+
+class CastValuesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+
+    fixtures_by_graph = {
+        "http://on.to/": ["tests/sample/people.ttl"]
+    }
+    maxDiff = None
+    
+    def test_cast_integer_values(self):
+        response = self.fetch('/_/_/?lang=en&p=http://on.to/age&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        computed_items = clear_items(computed_items)
+        expected_items = [
+            {
+                "http://on.to/age": 4,
+                "title": "Flipper"
+            },
+            {
+                "http://on.to/age": 18,
+                "title": "Free Willy"
+            },
+            {
+                "http://on.to/age": 27,
+                "title": "Icaro Medeiros"
+            },
+            {
+                "http://on.to/age": 30,
+                "title": "Tatiana Al-Chueyr Martins"
+            },
+            {
+                "http://on.to/age": 39,
+                "title": "Rodrigo Senra"
+            }
+        ]
+        self.assertEqual(sorted(computed_items), sorted(expected_items))
+
+    def test_retrieve_boolean_values(self):
+        response = self.fetch('/_/_/?lang=en&p=http://on.to/age&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        computed_items = clear_items(computed_items)
+        expected_items = [
+            {
+                "http://on.to/age": 4,
+                "title": "Flipper"
+            },
+            {
+                "http://on.to/age": 18,
+                "title": "Free Willy"
+            },
+            {
+                "http://on.to/age": 27,
+                "title": "Icaro Medeiros"
+            },
+            {
+                "http://on.to/age": 30,
+                "title": "Tatiana Al-Chueyr Martins"
+            },
+            {
+                "http://on.to/age": 39,
+                "title": "Rodrigo Senra"
+            }
+        ]
+        self.assertEqual(sorted(computed_items), sorted(expected_items))
+
+    def test_retrieve_float_values(self):
+        response = self.fetch('/_/_/?lang=en&p=http://on.to/weight&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        computed_items = clear_items(computed_items)
+        expected_items = [
+            {
+                "http://on.to/weight": 200.0,
+                "title": "Flipper"
+            },
+            {
+                "http://on.to/weight": 8000.0,
+                "title": "Free Willy"
+            },
+            {
+                "http://on.to/weight": 71.5,
+                "title": "Icaro Medeiros"
+            },
+            {
+                "http://on.to/weight": 54.7,
+                "title": "Tatiana Al-Chueyr Martins"
+            },
+            {
+                "http://on.to/weight": 96.2,
+                "title": "Rodrigo Senra"
+            }
+        ]
+        self.assertEqual(sorted(computed_items), sorted(expected_items))
+
+    def test_retrieve_boolean_values(self):
+        response = self.fetch('/_/_/?lang=en&p=http://on.to/isHuman&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        computed_items = clear_items(computed_items)
+        expected_items = [
+            {
+                "http://on.to/isHuman": False,
+                "title": "Flipper"
+            },
+            {
+                "http://on.to/isHuman": False,
+                "title": "Free Willy"
+            },
+            {
+                "http://on.to/isHuman": True,
+                "title": "Icaro Medeiros"
+            },
+            {
+                "http://on.to/isHuman": True,
+                "title": "Tatiana Al-Chueyr Martins"
+            },
+            {
+                "http://on.to/isHuman": True,
+                "title": "Rodrigo Senra"
+            }
+        ]
+        self.assertEqual(sorted(computed_items), sorted(expected_items))

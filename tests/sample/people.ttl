@@ -1,0 +1,72 @@
+@prefix : <http://on.to/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+### CLASS
+
+:Person a owl:Class ;
+       rdfs:label "Person"@en .
+
+
+### PROPERTIES
+
+rdfs:label a owl:DatatypeProperty ;
+    rdfs:subPropertyOf rdfs:label ;
+    rdfs:label "Given name"@en;
+    rdfs:domain :Person ;
+    rdfs:range xsd:string .
+
+:age a owl:DatatypeProperty ;
+    rdfs:label "Age in years"@en;
+    rdfs:domain :Person ;
+    rdfs:range xsd:int .
+
+:weight a owl:DatatypeProperty ;
+    rdfs:label "Weight of a person in kg"@en;
+    rdfs:domain :Person ;
+    rdfs:range xsd:float .
+
+:isHuman a owl:DatatypeProperty ;
+    rdfs:label "If person is human"@en;
+    rdfs:domain :Person ;
+    rdfs:range xsd:boolean .
+
+
+### INSTANCES
+
+:rodrigoSenra a :Person ;
+    rdfs:label "Rodrigo Senra" ;
+    :age 39 ; 
+    :weight 96.2 ;
+    :isHuman true .
+
+:icaroMedeiros a :Person ;
+    rdfs:label "Icaro Medeiros" ;
+    :age 27 ;
+    :weight 71.5 ;
+    :isHuman true .
+
+:tatianaAlChueyr a :Person ;
+    rdfs:label "Tatiana Al-Chueyr Martins" ;
+    :age 30 ;
+    :weight 54.7 ;
+    :isHuman true .
+
+# Cultural note:
+# On May 24, 2013 India's Ministry of Environment and Forests acknowledged
+# dolphins are nonhuman persons. Further reference:
+# http://www.dw.de/dolphins-gain-unprecedented-protection-in-india/a-16834519
+
+:flipperTheDolphin a :Person ;
+    rdfs:label "Flipper" ;
+    :age 4 ;
+    :weight 200 ;
+    :isHuman false .
+
+# By inference, as killer whales are dolphins, they are also persons:
+
+:freeWilly a :Person ;
+    rdfs:label "Free Willy" ;
+    :age 18 ;
+    :weight 8000 ;
+    :isHuman false .

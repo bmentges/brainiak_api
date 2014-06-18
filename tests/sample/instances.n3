@@ -8,7 +8,9 @@
 tpedia:Place a owl:Class;
              rdfs:label "Defines place at tatipedia.org" .
 
-tpedia:Person a owl:Class .
+tpedia:Person a owl:Class;
+    rdfs:label "Person"@en ;
+    rdfs:label "Pessoa"@pt .
 
 tpedia:Species a owl:Class .
 

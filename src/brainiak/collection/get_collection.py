@@ -297,33 +297,62 @@ def filter_instances(query_params):
     return build_json(items_list, query_params)
 
 
-# TO-DO unittest
 def cast_item(item, property_to_type):
+    """
+    Casts values of properties, according to the mapping provided.
+
+    Example:
+        item = {
+            "team": "Semantic Team",
+            "grade": "10"
+        }
+        property_to_type = {
+            "team": str,
+            "grade": int
+        }
+        cast_item(item, property_to_type)
+
+    Returns:
+        {
+            "team": "Semantic Team",
+            "grade": 10
+        }
+    """
     new_item = {}
     for property_, value in item.items():
         type_ = property_to_type.get(property_)
         if not type_ is None:
             if isinstance(value, list):
                 value = [type_(v) for v in value]
-                value = sorted(value)
             elif type_ is bool:
                 value = bool(int(value))
             else:
                 value = type_(value)
+        if isinstance(value, list):
+            value = sorted(value)
         new_item[property_] = value
     return new_item
 
 
-# TO-DO unittest
 def build_map_property_to_type(properties):
     """
     Based on a dictionary with class schema properties, return dict map from
     which maps property name to python object type.
+
+    Example:
+        properties = {
+            "http://on.to/weight": {
+                "datatype": "http://www.w3.org/2001/XMLSchema#float"
+            }
+        }
+        build_map_property_to_type(properties)
+
+    Response:
+        {"http://on.to/weight": float}
     """
-    return {prop: rdf_to_type[info["datatype"]] for prop, info in properties.items() if "datatype" in info}
+    return {prop: rdf_to_type[info["datatype"]] for prop, info in properties.items() if "datatype" in info and info["datatype"] in rdf_to_type}
 
 
-# to-do: unittest
 def cast_items_values(items_list, class_properties):
     """
     Provided a list o items (dicts), cast all values based on properties' types.
@@ -342,7 +371,7 @@ def build_json(items_list, query_params):
 
     class_properties = get_class.get_cached_schema(query_params)["properties"]
     items_list = cast_items_values(items_list, class_properties)
-    
+
     json = {
         '_schema_url': schema_url,
         'pattern': '',

@@ -373,7 +373,6 @@ def build_json(items_list, query_params):
     class_properties = get_class.get_cached_schema(query_params)["properties"]
     items_list = cast_items_values(items_list, class_properties)
 
-
     json = {
         '_schema_url': schema_url,
         'pattern': '',

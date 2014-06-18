@@ -416,8 +416,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'title': u'Mary Land'
             }
         ]
-        computed_items = sorted(computed_items,  key=lambda item: item['title'])
-        self.assertItemsEqual(computed_items, expected_items)
+        self.assertItemsEqual(sorted(computed_items), sorted(expected_items))
 
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     @patch("brainiak.handlers.logger")
@@ -1014,13 +1013,14 @@ def clear_items(items):
             item.pop(key)
     return items
 
+
 class CastValuesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     fixtures_by_graph = {
         "http://on.to/": ["tests/sample/people.ttl"]
     }
     maxDiff = None
-    
+
     def test_cast_integer_values(self):
         response = self.fetch('/_/_/?lang=en&p=http://on.to/age&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
         self.assertEqual(response.code, 200)

@@ -1,43 +1,138 @@
 import unittest
 
+from mock import patch
+
 from brainiak.collection.get_collection import Query, merge_by_id, build_json,\
-    cast_properties_values
+    cast_item, cast_items_values, build_map_property_to_type
 from brainiak.utils.params import LIST_PARAMS, ParamDict
 from tests.mocks import MockRequest, MockHandler
 from tests.sparql import strip
 from tests.utils import URLTestCase
 
 
-class SortItemsListValuesTestCase(unittest.TestCase):
+class CastItemTestCase(unittest.TestCase):
 
-    def test_empty_list(self):
-        sample_list = []
-        computed = cast_properties_values(sample_list)
-        expected = []
+    def test_cast_item(self):
+        item = {
+            "name": "Armando",
+            "marriedTo": "Regina",
+            "age": "82",
+            "weight": "84.5",
+            "canCode": "0"
+        }
+        property_to_type = {
+            "name": str,
+            "age": int,
+            "weight": float,
+            "canCode": bool
+        }
+        computed = cast_item(item, property_to_type)
+        expected = {
+            "name": "Armando",
+            "marriedTo": "Regina",
+            "age": 82,
+            "weight": 84.5,
+            "canCode": False
+        }
         self.assertEqual(computed, expected)
 
-    def test_list_of_items_without_list_values(self):
-        sample_list = [
-            {"c": "d"},
-            {"a": "b"}
-        ]
-        computed = cast_properties_values(sample_list)
-        expected = [
-            {"c": "d"},
-            {"a": "b"}
-        ]
+    def test_cast_item_containing_list(self):
+        item = {
+            "team": "Semantic Team",
+            "grade": ["10", "10", "10"]
+        }
+        property_to_type = {
+            "team": str,
+            "grade": float
+        }
+        computed = cast_item(item, property_to_type)
+        expected = {
+            "team": "Semantic Team",
+            "grade": [10.0, 10.0, 10.0]
+        }
         self.assertEqual(computed, expected)
 
-    def test_list_of_items_with_list_values(self):
-        sample_list = [
-            {"prime": [17, 1, 3, 2, 5, 13, 11, 7]},
-            {"fibo": [2, 34, 13, 1, 3, 21, 5, 1, 8]}
+    def test_cast_items_values(self):
+        items_list = [
+            {
+                "name": "Strogonof",
+                "calories": "600.0",
+                "isVegetarian": "0"
+            },
+            {
+                "name": "Pesto Gnocchi",
+                "calories": "323.7",
+                "isVegetarian": "1"
+            }
         ]
-        computed = cast_properties_values(sample_list)
+        class_properties = {
+            "name": {"datatype": "http://www.w3.org/2001/XMLSchema#string"},
+            "calories": {"datatype": "http://www.w3.org/2001/XMLSchema#float"},
+            "isVegetarian": {"datatype": "http://www.w3.org/2001/XMLSchema#boolean"}
+        }
+        computed = cast_items_values(items_list, class_properties)
         expected = [
-            {"prime": [1, 2, 3, 5, 7, 11, 13, 17]},
-            {"fibo": [1, 1, 2, 3, 5, 8, 13, 21, 34]}
+            {
+                "name": "Strogonof",
+                "calories": 600.0,
+                "isVegetarian": False
+            },
+            {
+                "name": "Pesto Gnocchi",
+                "calories": 323.7,
+                "isVegetarian": True
+            }
         ]
+
+
+class BuildMapPropertyToTypeTestCase(object):
+
+    def test_build_map_propert_to_type_xsddateTime(self):
+        properties = {
+            "releaseDate": {
+                "datatype": "xsd:dateTime"
+            }
+        }
+        computed = build_map_property_to_type(properties)
+        expected = {}
+        self.assertEqual(computed, expected)
+
+    def test_build_map_propert_to_type_float_bool_string_int(self):
+        properties = {
+            "http://on.to/weight": {
+                "datatype": "http://www.w3.org/2001/XMLSchema#float"
+            },
+            "http://on.to/isHuman": {
+                "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "http://on.to/name": {
+                "datatype": "http://www.w3.org/2001/XMLSchema#string"
+            },
+            "http://on.to/age": {
+                "datatype": "http://www.w3.org/2001/XMLSchema#int"
+            }
+        }
+        computed = build_map_property_to_type(properties)
+        expected = {
+            "http://on.to/weight": float,
+            "http://on.to/isHuman": bool,
+            "http://on.to/name": str,
+            "http://on.to/age": int
+        }
+        self.assertEqual(computed, expected)
+
+    def test_build_map_property_to_type_object_property(self):
+        properties = {
+            "livesIn": {
+                "range": {
+                    "something"
+                }
+            }
+        }
+        computed = build_map_property_to_type(properties)
+        expected = {}
+        self.assertEqual(computed, expected)
+
 
 class MergeByIdTestCase(unittest.TestCase):
 
@@ -437,7 +532,8 @@ class BuildJSONTestCase(URLTestCase):
     }
     maxDiff = None
 
-    def test_query_without_extras_other(self):
+    @patch("brainiak.collection.get_collection.get_class.get_cached_schema", return_value={"properties": {}})
+    def test_query_without_extras_other(self, mock_get_schema):
         handler = MockHandler()
         params = ParamDict(handler,
                            context_name="zoo",
@@ -449,45 +545,8 @@ class BuildJSONTestCase(URLTestCase):
         self.assertEqual(something["@context"], {'@language': 'pt'})
         self.assertEqual(something["items"], [])
 
-        # TODO - migrar para um novo teste
-        # links = something["links"]
-        # expected_links = [
-        #     {'href': 'http://mock.test.com/', 'method': 'GET', 'rel': 'self'},
-        #     {
-        #         'href': 'http://mock.test.com?per_page=10&page=1',
-        #         'method': 'GET',
-        #         'rel': 'first'
-        #     },
-        #     {
-        #         'href': 'http://mock.test.com?per_page=10&page=2',
-        #         'method': 'GET',
-        #         'rel': 'next'
-        #     },
-        #     {
-        #         'href': 'http://mock.test.com/{resource_id}?instance_prefix={instance_prefix}',
-        #         'method': 'GET',
-        #         'rel': 'item'
-        #     },
-        #     {
-        #         'href': 'http://mock.test.com/{resource_id}?instance_prefix={instance_prefix}',
-        #         'method': 'GET',
-        #         'rel': 'instance'
-        #     },
-        #     {
-        #         'href': 'http://mock.test.com/zoo/Lion/_schema',
-        #         'method': 'GET',
-        #         'rel': 'class'
-        #     },
-        #     {
-        #         'href': 'http://mock.test.com/zoo/Lion',
-        #         'method': 'POST',
-        #         'rel': 'add',
-        #         'schema': {'$ref': 'http://mock.test.com/zoo/Lion/_schema'}
-        #     }
-        # ]
-        # self.assertEquals(sorted(links), sorted(expected_links))
-
-    def test_query_with_prev_and_next_args_with_sort_by(self):
+    @patch("brainiak.collection.get_collection.get_class.get_cached_schema", return_value={"properties": {}})
+    def test_query_with_prev_and_next_args_with_sort_by(self, mock_get_schema):
         handler = MockHandler(querystring="page=2&per_page=1&sort_by=rdfs:label")
         params = ParamDict(handler, context_name="subject", class_name="Maths", **(LIST_PARAMS))
         items = []
@@ -495,7 +554,8 @@ class BuildJSONTestCase(URLTestCase):
         self.assertQueryStringArgsEqual(computed["_previous_args"], 'per_page=1&page=1&sort_by=rdfs%3Alabel')
         self.assertQueryStringArgsEqual(computed["_next_args"], 'per_page=1&page=3&sort_by=rdfs%3Alabel')
 
-    def test_query_with_prev_and_next_args_with_sort_by_and_lang(self):
+    @patch("brainiak.collection.get_collection.get_class.get_cached_schema", return_value={"properties": {}})
+    def test_query_with_prev_and_next_args_with_sort_by_and_lang(self, mock_get_schema):
         handler = MockHandler(querystring="page=2&per_page=1&sort_by=rdfs:label&lang=en")
         params = ParamDict(handler, context_name="subject", class_name="Maths", **(LIST_PARAMS))
         items = []
@@ -503,7 +563,8 @@ class BuildJSONTestCase(URLTestCase):
         self.assertQueryStringArgsEqual(computed["_previous_args"], 'per_page=1&page=1&sort_by=rdfs%3Alabel&lang=en')
         self.assertQueryStringArgsEqual(computed["_next_args"], 'per_page=1&page=3&sort_by=rdfs%3Alabel&lang=en')
 
-    def test_query_with_extras(self):
+    @patch("brainiak.collection.get_collection.get_class.get_cached_schema", return_value={"properties": {}})
+    def test_query_with_extras(self, mock_get_schema):
         handler = MockHandler(querystring="class_prefix=Xubiru")
         params = ParamDict(handler,
                            context_name="zoo",
@@ -513,19 +574,3 @@ class BuildJSONTestCase(URLTestCase):
         something = build_json(items, params)
         self.assertEqual(something["@context"], {'@language': 'pt'})
         self.assertEqual(something["items"], [])
-
-        # TODO - migrar para um novo teste
-        # links = something["links"]
-        # expected_links = [
-        #     {'href': 'http://mock.test.com/?class_prefix=Xubiru', 'method': 'GET', 'rel': 'self'},
-        #     {'href': 'http://mock.test.com?per_page=10&page=1&class_prefix=Xubiru', 'method': 'GET', 'rel': 'first'},
-        #     {'href': 'http://mock.test.com?per_page=10&page=2&class_prefix=Xubiru', 'method': 'GET', 'rel': 'next'},
-        #     {'href': 'http://mock.test.com/zoo/Lion/_schema?class_prefix=Xubiru', 'method': 'GET', 'rel': 'class'},
-        #     {'href': 'http://mock.test.com/{resource_id}?class_prefix=Xubiru&instance_prefix={instance_prefix}',
-        #      'method': 'GET', 'rel': 'item'},
-        #     {'href': 'http://mock.test.com/{resource_id}?class_prefix=Xubiru&instance_prefix={instance_prefix}',
-        #      'method': 'GET', 'rel': 'instance'},
-        #     {'href': 'http://mock.test.com/zoo/Lion?class_prefix=Xubiru', 'method': 'POST', 'rel': 'add',
-        #      'schema': {'$ref': 'http://mock.test.com/zoo/Lion/_schema?class_prefix=Xubiru'}}
-        # ]
-        # self.assertEquals(sorted(links), sorted(expected_links))

@@ -25,6 +25,7 @@ from brainiak.instance.create_instance import create_instance
 from brainiak.instance.delete_instance import delete_instance
 from brainiak.instance.edit_instance import edit_instance, instance_exists
 from brainiak.instance.get_instance import get_instance
+from brainiak.instance.patch_instance import apply_patch
 from brainiak.prefixes import normalize_all_uris_recursively, list_prefixes, SHORTEN, EXPAND
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
@@ -513,7 +514,7 @@ class InstanceHandler(BrainiakRequestHandler):
         del instance_id
 
         try:
-            patch_data = json.loads(self.request.body)
+            patch_list = json.loads(self.request.body)
         except ValueError:
             raise HTTPError(400, log_message=_("No JSON object could be decoded"))
 
@@ -527,9 +528,9 @@ class InstanceHandler(BrainiakRequestHandler):
         # FIXME
         instance_data.pop('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
 
-        # Apply patch
-        patch_data = normalize_all_uris_recursively(patch_data)
-        changed_data = dict(instance_data, **patch_data)
+        # compute patch        
+        changed_data = apply_patch(instance_data, patch_list)
+
         # Try to put
         edit_instance(self.query_params, changed_data)
         status = 200

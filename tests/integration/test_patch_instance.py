@@ -38,11 +38,16 @@ class PatchInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         }
         self.assertEqual(computed, expected)
 
-        # Change birthcity
-        data = '{"http://on.to/age": 5}'
+        data = [
+            {
+                "op": "replace",
+                "path": "http://on.to/age",
+                "value": 5
+            }
+        ]
         patch_url = self.get_url(url)
 
-        response = self.fetch(url, method='PATCH', body=data)
+        response = self.fetch(url, method='PATCH', body=json.dumps(data))
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "")
 

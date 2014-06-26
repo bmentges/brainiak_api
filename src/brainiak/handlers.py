@@ -563,10 +563,9 @@ class InstanceHandler(BrainiakRequestHandler):
 
         instance_data = normalize_all_uris_recursively(instance_data)
 
-
         RDFS_TYPE = "http://www.w3.org/2000/01/rdf-schema#type"
         rdfs_type = instance_data.get(RDFS_TYPE)
-        
+
         if rdfs_type:
             class_uri = self.query_params["class_uri"]
             if (rdfs_type == class_uri):

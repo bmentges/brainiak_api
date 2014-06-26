@@ -187,7 +187,7 @@ class CreateInstanceTestCaseWithoutMocks(TornadoAsyncHTTPTestCase, QueryTestCase
         computed_location = response.headers['Location']
         expected_location = '/_/_/_/?graph_uri=http://on.to/&class_uri=http://on.to/Person&instance_uri=http://on.to/rubensAzambuja&lang=en'
         self.assertTrue(expected_location in computed_location)
-        
+
     def test_put_fails_with_incompatible_rdfs_type(self):
         info = {
             "instance": "http://on.to/rubensAzambuja",
@@ -210,5 +210,4 @@ class CreateInstanceTestCaseWithoutMocks(TornadoAsyncHTTPTestCase, QueryTestCase
         self.assertEqual(response.code, 400)
         computed = json.loads(response.body)
         expected = {"errors": ["HTTP error: 400\nIncompatible values for rdfs:type <http://on.to/Manager> and class URI <http://on.to/Person>"]}
-        self.assertEqual(computed,expected)
-
+        self.assertEqual(computed, expected)

@@ -62,3 +62,19 @@ class PatchInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
             u'rdf:type': u'http://on.to/Person'
         }
         self.assertEqual(computed, expected)
+
+    def test_patch_fails_due_to_inexistent_instance(self):
+        data = {
+            "instance": "http://on.to/Beethoven",
+            "class": "http://on.to/Person",
+            "graph": "http://on.to/",
+            "meta": "0"
+        }
+        url = '/_/_/_/?graph_uri={graph}&class_uri={class}&instance_uri={instance}&meta_properties={meta}&lang=en'
+        url = url.format(**data)
+
+        response = self.fetch(url, method='PATCH', body=json.dumps(data))
+        self.assertEqual(response.code, 404)
+        computed_msg = json.loads(response.body)
+        expected_msg = {"errors": ["HTTP error: 404\nInexistent instance"]}
+        self.assertEqual(computed_msg, expected_msg)

@@ -523,7 +523,10 @@ class InstanceHandler(BrainiakRequestHandler):
                            get_instance,
                            key=build_instance_key(self.query_params),
                            function_arguments=self.query_params)
-        instance_data = instance_data['body']
+        try:
+            instance_data = instance_data['body']
+        except TypeError:
+            raise HTTPError(404, log_message=_("Inexistent instance"))
 
         # FIXME
         instance_data.pop('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')

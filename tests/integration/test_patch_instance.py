@@ -38,16 +38,15 @@ class PatchInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         }
         self.assertEqual(computed, expected)
 
-        data = [
+        patch_list = [
             {
                 "op": "replace",
                 "path": "http://on.to/age",
                 "value": 5
             }
         ]
-        patch_url = self.get_url(url)
 
-        response = self.fetch(url, method='PATCH', body=json.dumps(data))
+        response = self.fetch(url, method='PATCH', body=json.dumps(patch_list))
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "")
 
@@ -77,4 +76,27 @@ class PatchInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         self.assertEqual(response.code, 404)
         computed_msg = json.loads(response.body)
         expected_msg = {"errors": ["HTTP error: 404\nInexistent instance"]}
+        self.assertEqual(computed_msg, expected_msg)
+
+    def test_patch_fails_due_to_removal_of_obligatory_field(self):
+        data = {
+            "instance": "http://on.to/flipperTheDolphin",
+            "class": "http://on.to/Person",
+            "graph": "http://on.to/",
+            "meta": "0"
+        }
+        url = '/_/_/_/?graph_uri={graph}&class_uri={class}&instance_uri={instance}&meta_properties={meta}&lang=en'
+        url = url.format(**data)
+
+        patch_list = [
+            {
+                u'path': 'http://on.to/name',
+                u'op': u'remove'
+            }
+        ]
+
+        response = self.fetch(url, method='PATCH', body=json.dumps(patch_list))
+        self.assertEqual(response.code, 400)
+        computed_msg = json.loads(response.body)
+        expected_msg = {"errors": ["HTTP error: 400\nLabel properties like rdfs:label or its subproperties are required"]}
         self.assertEqual(computed_msg, expected_msg)

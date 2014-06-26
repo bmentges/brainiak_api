@@ -7,7 +7,7 @@ from brainiak.instance.patch_instance import apply_patch
 
 class PatchTestCase(unittest.TestCase):
 
-    def test_apply_patch_one_replace_works(self):
+    def test_apply_patch_replace_succeeds(self):
         instance_data = {
             u'http://on.to/name': u'Flipper',
             u'http://on.to/age': 4
@@ -26,7 +26,7 @@ class PatchTestCase(unittest.TestCase):
         }
         self.assertEqual(computed, expected)
 
-    def test_apply_patch_with_wrong_keys(self):
+    def test_apply_patch_with_wrong_keys_raises_400(self):
         instance_data = {}
         patch_list = [
             {
@@ -36,6 +36,22 @@ class PatchTestCase(unittest.TestCase):
         with self.assertRaises(HTTPError) as error:
             apply_patch(instance_data, patch_list)
         msg = str(error.exception)
-        expected = 'HTTP 400: Bad Request (Incorrect patch item. Every object in the list must contain the following keys: op, path and value)'
+        expected = "HTTP 400: Bad Request (Incorrect patch item. Every object in the list must contain the following keys: ['op', 'path'])"
         self.assertEqual(msg, expected)
-        
+
+    def test_apply_patch_remove_succeeds(self):
+        instance_data = {
+            'http://on.to/name': u'Flipper',
+            'http://on.to/weight': 200.0
+        }
+        patch_list = [
+            {
+                u'path': 'http://on.to/weight',
+                u'op': u'remove'
+            }
+        ]
+        computed = apply_patch(instance_data, patch_list)
+        expected = {
+            u'http://on.to/name': u'Flipper',
+        }
+        self.assertEqual(computed, expected)

@@ -1,9 +1,9 @@
 from tornado.web import HTTPError
 
-from brainiak.prefixes import normalize_all_uris_recursively
+from brainiak.prefixes import normalize_uri, EXPAND
 
 
-error_msg = u"Incorrect patch item. Every object in the list must contain the following keys: op, path and value"
+error_msg = u"Incorrect patch item. Every object in the list must contain the following keys: {}"
 
 
 def apply_patch(instance_data, patch_list):
@@ -17,6 +17,7 @@ def apply_patch(instance_data, patch_list):
 
     instance_data = {
         u'http://on.to/name': u'Flipper',
+        'http://on.to/weight': 200.0
         u'http://on.to/age': 4
     }
     patch_list = [
@@ -24,6 +25,10 @@ def apply_patch(instance_data, patch_list):
             u'path': u'http://on.to/age',
             u'value': 5,
             u'op': u'replace'
+        },
+        {
+            u'path': u'http://on.to/weight',
+            u'op': u'remove'
         }
     ]
     
@@ -42,13 +47,17 @@ def apply_patch(instance_data, patch_list):
         try:
             operation = item['op']
             predicate = item['path']
-            value = item['value']
         except KeyError:
-            raise HTTPError(400, log_message=error_msg)
-            
-        if operation == 'replace':
-            patch_data[predicate] = value
+            raise HTTPError(400, log_message=error_msg.format(['op', 'path']))
+        else:
+            predicate = normalize_uri(predicate, EXPAND)
 
-    patch_data = normalize_all_uris_recursively(patch_data)
+        if operation == 'replace':
+            value = item['value']
+            patch_data[predicate] = value
+        elif operation == 'remove':
+            instance_data.pop(predicate)
+
+    patch_data = patch_data
     changed_data = dict(instance_data, **patch_data)
     return changed_data

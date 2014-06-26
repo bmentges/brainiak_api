@@ -522,14 +522,16 @@ class InstanceHandler(BrainiakRequestHandler):
                            get_instance,
                            key=build_instance_key(self.query_params),
                            function_arguments=self.query_params)
-        instance_data = response['body']
+        instance_data = instance_data['body']
+
+        # FIXME
+        instance_data.pop('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
 
         # Apply patch
         patch_data = normalize_all_uris_recursively(patch_data)
         changed_data = dict(instance_data, **patch_data)
-
         # Try to put
-        instance_uri, instance_id = edit_instance(self.query_params, changed_data)
+        edit_instance(self.query_params, changed_data)
         status = 200
 
         # Clear cache

@@ -5,21 +5,23 @@
 ### CLASS
 
 :Person a owl:Class ;
-       rdfs:label "Person"@en .
-
+   rdfs:subClassOf owl:Thing ;
+   rdfs:label "Person"@en .
 
 ### PROPERTIES
 
-rdfs:label a owl:DatatypeProperty ;
-    rdfs:subPropertyOf rdfs:label ;
-    rdfs:label "Given name"@en;
-    rdfs:domain :Person ;
-    rdfs:range xsd:string .
+rdfs:label rdfs:domain :Person .
+
+:name a owl:DatatypeProperty ;
+      rdfs:label "Name of a person" ;
+      rdfs:subPropertyOf rdfs:label ;
+      rdfs:domain :Person ;
+      rdfs:range xsd:string .
 
 :age a owl:DatatypeProperty ;
     rdfs:label "Age in years"@en;
     rdfs:domain :Person ;
-    rdfs:range xsd:int .
+    rdfs:range xsd:integer .
 
 :weight a owl:DatatypeProperty ;
     rdfs:label "Weight of a person in kg"@en;
@@ -35,19 +37,19 @@ rdfs:label a owl:DatatypeProperty ;
 ### INSTANCES
 
 :rodrigoSenra a :Person ;
-    rdfs:label "Rodrigo Senra" ;
+    :name "Rodrigo Senra" ;
     :age 39 ; 
     :weight 96.2 ;
     :isHuman true .
 
 :icaroMedeiros a :Person ;
-    rdfs:label "Icaro Medeiros" ;
+    :name "Icaro Medeiros" ;
     :age 27 ;
     :weight 71.5 ;
     :isHuman true .
 
 :tatianaAlChueyr a :Person ;
-    rdfs:label "Tatiana Al-Chueyr Martins" ;
+    :name "Tatiana Al-Chueyr Martins" ;
     :age 30 ;
     :weight 54.7 ;
     :isHuman true .
@@ -58,7 +60,7 @@ rdfs:label a owl:DatatypeProperty ;
 # http://www.dw.de/dolphins-gain-unprecedented-protection-in-india/a-16834519
 
 :flipperTheDolphin a :Person ;
-    rdfs:label "Flipper" ;
+    :name "Flipper"@en ;
     :age 4 ;
     :weight 200 ;
     :isHuman false .
@@ -66,7 +68,7 @@ rdfs:label a owl:DatatypeProperty ;
 # By inference, as killer whales are dolphins, they are also persons:
 
 :freeWilly a :Person ;
-    rdfs:label "Free Willy" ;
+    :name "Free Willy"@en ;
     :age 18 ;
     :weight 8000 ;
     :isHuman false .

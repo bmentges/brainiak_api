@@ -41,7 +41,7 @@ def apply_patch(instance_data, patch_list):
         u'http://on.to/age': 5
     }
     """
-
+    original_data = instance_data.copy()
     patch_data = {}
     for item in patch_list:
         try:
@@ -56,8 +56,18 @@ def apply_patch(instance_data, patch_list):
             value = item['value']
             patch_data[predicate] = value
         elif operation == 'remove':
-            instance_data.pop(predicate)
+            original_data.pop(predicate)
+        elif operation == 'add':
+            new_values = item['value']
+            if not isinstance(new_values, list):
+                new_values = [new_values]    
+            values = original_data.get(predicate, [])
+            if not isinstance(values, list):
+                values = [values]
+
+            values.extend(new_values)
+            patch_data[predicate] = sorted(list(set(values)))
 
     patch_data = patch_data
-    changed_data = dict(instance_data, **patch_data)
+    changed_data = dict(original_data, **patch_data)
     return changed_data

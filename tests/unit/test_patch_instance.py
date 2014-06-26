@@ -55,3 +55,50 @@ class PatchTestCase(unittest.TestCase):
             u'http://on.to/name': u'Flipper',
         }
         self.assertEqual(computed, expected)
+
+    def test_apply_patch_remove_succeeds_for_expanded_uri(self):
+        instance_data = {
+            'http://dbpedia.org/ontology/name': u'Francis'
+        }
+        patch_list = [
+            {
+                u'path': 'dbpedia:name',
+                u'op': u'remove'
+            }
+        ]
+        computed = apply_patch(instance_data, patch_list)
+        expected = {}
+        self.assertEqual(computed, expected)
+
+    def test_apply_patch_add_inexistent_data_succeeds(self):
+        instance_data = {
+        }
+        patch_list = [
+            {
+                u'path': 'http://on.to/children',
+                u'op': u'add',
+                u'value': u'Mary'
+            }
+        ]
+        computed = apply_patch(instance_data, patch_list)
+        expected = {
+            u'http://on.to/children': [u'Mary'],
+        }
+        self.assertEqual(computed, expected)
+        
+    def test_apply_patch_add_list_data_succeeds(self):
+        instance_data = {
+            'http://on.to/children': ['Dave', 'Eric']
+        }
+        patch_list = [
+            {
+                u'path': 'http://on.to/children',
+                u'op': u'add',
+                u'value': [u'Mary', u'John']
+            }
+        ]
+        computed = apply_patch(instance_data, patch_list)
+        expected = {
+            u'http://on.to/children': ['Dave', 'Eric', 'John', 'Mary'],
+        }
+        self.assertEqual(computed, expected)

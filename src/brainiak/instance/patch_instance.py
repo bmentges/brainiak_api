@@ -10,9 +10,9 @@ def apply_patch(instance_data, patch_list):
     """
     Apply changes described in patch_list to the original instance_data.
     Return new dictionary containing the changes.
-    
+
     For more information on patch_list: http://tools.ietf.org/html/rfc6902
-    
+
     Example of usage:
 
     instance_data = {
@@ -31,11 +31,11 @@ def apply_patch(instance_data, patch_list):
             u'op': u'remove'
         }
     ]
-    
+
     response = apply_patch(instance_data, patch_list)
-    
+
     Value of response:
-    
+
     reponse = {
         u'http://on.to/name': u'Flipper',
         u'http://on.to/age': 5
@@ -60,7 +60,7 @@ def apply_patch(instance_data, patch_list):
         elif operation == 'add':
             new_values = item['value']
             if not isinstance(new_values, list):
-                new_values = [new_values]    
+                new_values = [new_values]
             values = original_data.get(predicate, [])
             if not isinstance(values, list):
                 values = [values]

@@ -85,7 +85,7 @@ class PatchTestCase(unittest.TestCase):
             u'http://on.to/children': [u'Mary'],
         }
         self.assertEqual(computed, expected)
-        
+
     def test_apply_patch_add_list_data_succeeds(self):
         instance_data = {
             'http://on.to/children': ['Dave', 'Eric']

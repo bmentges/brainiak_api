@@ -531,7 +531,7 @@ class InstanceHandler(BrainiakRequestHandler):
         # FIXME
         instance_data.pop('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
 
-        # compute patch        
+        # compute patch
         changed_data = apply_patch(instance_data, patch_list)
 
         # Try to put

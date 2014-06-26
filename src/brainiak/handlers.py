@@ -563,6 +563,19 @@ class InstanceHandler(BrainiakRequestHandler):
 
         instance_data = normalize_all_uris_recursively(instance_data)
 
+
+        RDFS_TYPE = "http://www.w3.org/2000/01/rdf-schema#type"
+        rdfs_type = instance_data.get(RDFS_TYPE)
+        
+        if rdfs_type:
+            class_uri = self.query_params["class_uri"]
+            if (rdfs_type == class_uri):
+                instance_data.pop(RDFS_TYPE)
+            else:
+                msg = u"Incompatible values for rdfs:type <{0}> and class URI <{1}>"
+                msg = msg.format(rdfs_type, class_uri)
+                raise HTTPError(400, log_message=msg)
+
         try:
             if not instance_exists(self.query_params):
                 try:

@@ -194,5 +194,5 @@ class QueryTestCase(SimpleTestCase):
     def query(self, query_string, graph=None):
         endpoint_dict = parse_section()
         self.process_inference_options()
-        response = triplestore.query_sparql(query_string, endpoint_dict, async=False)
+        response = triplestore.query_sparql(query_string, endpoint_dict)
         return response

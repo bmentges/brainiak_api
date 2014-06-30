@@ -6,6 +6,7 @@ from mock import patch, PropertyMock
 from brainiak import triplestore, settings
 from brainiak.collection import get_collection
 from brainiak.collection.get_collection import query_filter_instances, Query
+from brainiak.utils import sparql
 from tests.mocks import Params
 from tests.sparql import QueryTestCase
 from tests.utils import URLTestCase
@@ -508,17 +509,6 @@ class FilterInstancesQueryTestCase(QueryTestCase):
     fixtures = ["tests/sample/instances.n3"]
     graph_uri = "http://tatipedia.org/"
 
-    def setUp(self):
-        self.original_query_sparql = triplestore.query_sparql
-        triplestore.query_sparql = lambda query, params: query
-        self.original_query_filter_instances = get_collection.query_filter_instances
-        self.original_query_count_filter_instances = get_collection.query_count_filter_instances
-
-    def tearDown(self):
-        triplestore.query_sparql = self.original_query_sparql
-        get_collection.query_filter_instances = self.original_query_filter_instances
-        get_collection.query_count_filter_instances = self.original_query_count_filter_instances
-
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     def test_sort_by(self, mock_inference_graph):
         params = Params({
@@ -805,29 +795,16 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "sort_by": ""
         })
 
-        query = query_filter_instances(params)
-        computed = self.query(query)["results"]["bindings"]
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed = response["results"]["bindings"]
+
         expected = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'},
                      u'label': {u'type': u'literal', u'value': u'John Jones'},
                      u'p': {u'type': u'uri', u'value': u'http://tatipedia.org/likes'}
                      }]
 
         self.assertEqual(computed, expected)
-
-    # def test_instance_filter_in_inexistent_graph(self):
-    #     params = {
-    #         "class_uri": "http://tatipedia.org/test/Person",
-    #         "p": "?p",
-    #         "o": "Aikido",
-    #         "lang_filter": "",
-    #         "graph_uri": "http://neverland.com/",
-    #         "per_page": "10",
-    #         "page": "0"
-    #     }
-
-    #     query = query_filter_instances(params)
-    #     response = self.query(query, params["graph_uri"])
-    #     self.assertFalse(response["results"]["bindings"])
 
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     def test_query_filter_instances_with_language_restriction_to_pt(self, mock_inference_graph):
@@ -841,8 +818,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "0",
             "sort_by": ""
         })
-        query = query_filter_instances(params)
-        computed_bindings = self.query(query)["results"]["bindings"]
+
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed_bindings = response["results"]["bindings"]
+
         expected_bindings = [
             {
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'},
@@ -869,9 +849,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "0",
             "sort_by": ""
         })
-        query = query_filter_instances(params)
 
-        computed_bindings = self.query(query)["results"]["bindings"]
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed_bindings = response["results"]["bindings"]
+
         expected_bindings = [
             {
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Platypus'},
@@ -902,9 +884,9 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "0",
             "sort_by": ""
         })
-        query = query_filter_instances(params)
-
-        computed_bindings = self.query(query)["results"]["bindings"]
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed_bindings = response["results"]["bindings"]
         self.assertEqual(len(computed_bindings), 1)
 
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
@@ -919,9 +901,9 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "1",
             "sort_by": ""
         })
-        query = query_filter_instances(params)
-
-        computed_bindings = self.query(query)["results"]["bindings"]
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed_bindings = response["results"]["bindings"]
         self.assertEqual(len(computed_bindings), 1)
 
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
@@ -936,9 +918,9 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "0",
             "sort_by": ""
         })
-        query = query_filter_instances(params)
-
-        computed_bindings = self.query(query)["results"]["bindings"]
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed_bindings = response["results"]["bindings"]
         expected_bindings = [
             {
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'},
@@ -1021,7 +1003,8 @@ class CastValuesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     }
     maxDiff = None
 
-    def test_cast_integer_values(self):
+    @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://on.to/ruleset")
+    def test_cast_integer_values(self, mock_ruleset):
         response = self.fetch('/_/_/?lang=en&p=http://on.to/age&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
         self.assertEqual(response.code, 200)
         computed_items = json.loads(response.body)["items"]
@@ -1050,36 +1033,8 @@ class CastValuesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertEqual(sorted(computed_items), sorted(expected_items))
 
-    def test_retrieve_boolean_values(self):
-        response = self.fetch('/_/_/?lang=en&p=http://on.to/age&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
-        self.assertEqual(response.code, 200)
-        computed_items = json.loads(response.body)["items"]
-        computed_items = clear_items(computed_items)
-        expected_items = [
-            {
-                "http://on.to/age": 4,
-                "title": "Flipper"
-            },
-            {
-                "http://on.to/age": 18,
-                "title": "Free Willy"
-            },
-            {
-                "http://on.to/age": 27,
-                "title": "Icaro Medeiros"
-            },
-            {
-                "http://on.to/age": 30,
-                "title": "Tatiana Al-Chueyr Martins"
-            },
-            {
-                "http://on.to/age": 39,
-                "title": "Rodrigo Senra"
-            }
-        ]
-        self.assertEqual(sorted(computed_items), sorted(expected_items))
-
-    def test_retrieve_float_values(self):
+    @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://on.to/ruleset")
+    def test_retrieve_float_values(self, mock_ruleset):
         response = self.fetch('/_/_/?lang=en&p=http://on.to/weight&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
         self.assertEqual(response.code, 200)
         computed_items = json.loads(response.body)["items"]
@@ -1108,7 +1063,8 @@ class CastValuesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         ]
         self.assertEqual(sorted(computed_items), sorted(expected_items))
 
-    def test_retrieve_boolean_values(self):
+    @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://on.to/ruleset")
+    def test_retrieve_boolean_values(self, mock_ruleset):
         response = self.fetch('/_/_/?lang=en&p=http://on.to/isHuman&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
         self.assertEqual(response.code, 200)
         computed_items = json.loads(response.body)["items"]

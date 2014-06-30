@@ -3,12 +3,12 @@ import re
 import shutil
 import subprocess
 import unittest
+import urllib2
 
 import rdflib
-from SPARQLWrapper import Wrapper, JSON
 
+from brainiak import settings, triplestore
 from brainiak.utils.config_parser import parse_section
-from brainiak import settings
 
 
 def strip(query_string):
@@ -61,63 +61,11 @@ ISQL = "isql"
 ISQL_CMD = 'echo "%s" | %s'
 ISQL_UP = "DB.DBA.TTLP_MT_LOCAL_FILE('%(ttl)s', '', '%(graph)s');"
 ISQL_DOWN = "SPARQL CLEAR GRAPH <%(graph)s>;"
+ISQL_DROP =  "SPARQL DROP GRAPH <%(graph)s>;"
+
 ISQL_SERVER = "select server_root();"
 ISQL_INFERENCE = "rdfs_rule_set('%(graph_uri)sruleset', '%(graph_uri)s');"
 ISQL_REMOVE_INFERENCE = "rdfs_rule_set('%(graph_uri)sruleset', '%(graph_uri)s', 1);"
-
-
-def mocked_query(self):
-
-    qres = graph.query(self.queryString)
-
-    bindings_list = []
-    for row in qres.bindings:
-        row_dict = {}
-        for key, value in row.items():
-            if not value:
-                continue
-
-            row_item = {}
-
-            if isinstance(value, rdflib.term.URIRef):
-                type_ = 'uri'
-            elif isinstance(value, rdflib.term.Literal):
-                if hasattr(value, 'datatype') and value.datatype:
-                    type_ = 'typed-literal'
-                    row_item["datatype"] = value.datatype
-                else:
-                    type_ = 'literal'
-            else:
-                raise Exception('Unkown type')
-
-            row_item["type"] = type_
-            row_item["value"] = str(value)
-
-            row_dict[str(key)] = row_item
-
-        bindings_list.append(row_dict)
-
-    binding_str = {
-        'results': {
-            'bindings': bindings_list
-        }
-    }
-    return Wrapper.QueryResult(binding_str)
-
-
-def mocked_virtuoso_query(self):
-    query = self.queryString
-    graph = GRAPH_URI
-    if query.find('INSERT') > -1:
-        query = re.sub('GRAPH [^\s]+', 'GRAPH <%s>' % graph, query)
-    elif query.find('FROM') == -1 and query.find('WHERE') > -1:
-        splited_query = query.split('WHERE')
-        splited_query.insert(1, 'FROM <%s> WHERE' % graph)
-        return ' '.join(splited_query)
-    else:
-        query = re.sub('FROM [^\s]+', 'FROM <%s>' % graph, query)
-    self.queryString = query
-    return Wrapper.QueryResult(self._query())
 
 
 def mocked_convert(self):
@@ -175,11 +123,6 @@ class QueryTestCase(SimpleTestCase):
     fixtures = []
     fixtures_by_graph = {}
 
-    # Mock related
-    originalSPARQLWrapper = Wrapper.SPARQLWrapper
-    originalQueryResult = Wrapper.QueryResult
-    originalQueryResultConvert = Wrapper.QueryResult.convert
-
     @property
     def graph_uri(self):
         return GRAPH_URI
@@ -188,14 +131,6 @@ class QueryTestCase(SimpleTestCase):
     def graph_uri(self, value):
         global GRAPH_URI
         GRAPH_URI = value
-
-    def _setup_mocked_triplestore(self):
-        Wrapper.SPARQLWrapper.query = mocked_query
-        Wrapper.QueryResult.convert = mocked_convert
-        Wrapper.SPARQLWrapper.query = mocked_virtuoso_query
-
-    def _setup_triplestore(self):
-        self._restore_triplestore()
 
     def _load_fixture_to_memory(self, fixture, graph=None):
         graph.parse(fixture, format="n3")
@@ -207,17 +142,15 @@ class QueryTestCase(SimpleTestCase):
 
     def _pre_setup(self):
         self.remove_inference_options()
+
         self._drop_graph_from_triplestore(self.graph_uri)
 
-        setup = self._setup_triplestore
         load = self._load_fixture_to_triplestore
 
         if not self.fixtures_by_graph:
-            setup()
             for fixture in self.fixtures:
                 load(fixture, self.graph_uri)
         else:
-            setup()
             for (graph, fixtures) in self.fixtures_by_graph.items():
                 for fixture in fixtures:
                     load(fixture, graph)
@@ -227,14 +160,14 @@ class QueryTestCase(SimpleTestCase):
     def _drop_graph_from_triplestore(self, graph):
         isql_down = ISQL_DOWN % {"graph": graph}
         run_isql(isql_down)
-
-    def _restore_triplestore(self):
-        Wrapper.SPARQLWrapper = self.originalSPARQLWrapper
-        Wrapper.QueryResult = self.originalQueryResult
-        Wrapper.QueryResult.convert = self.originalQueryResultConvert
+        try:
+            isql_drop = ISQL_DROP % {"graph": graph}
+            run_isql(isql_drop)
+        except Exception, e:
+            pass
+            #print(e)
 
     def _post_teardown(self):
-        self._restore_triplestore()
         self.remove_inference_options()
         if not self.fixtures_by_graph:
             self._drop_graph_from_triplestore(self.graph_uri)
@@ -260,18 +193,6 @@ class QueryTestCase(SimpleTestCase):
 
     def query(self, query_string, graph=None):
         endpoint_dict = parse_section()
-        user = endpoint_dict["auth_username"]
-        password = endpoint_dict["auth_password"]
-        mode = endpoint_dict["auth_mode"]
-        endpoint = endpoint_dict["url"]
-        realm = "SPARQL"
-
         self.process_inference_options()
-
-        endpoint = Wrapper.SPARQLWrapper(endpoint)
-        endpoint.setCredentials(user, password, mode=mode, realm=realm)
-        endpoint.setReturnFormat(JSON)
-        endpoint.setQuery(query_string)
-
-        response = endpoint.query().convert()
+        response = triplestore.query_sparql(query_string, endpoint_dict, async=False)
         return response

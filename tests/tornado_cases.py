@@ -54,15 +54,15 @@ def _curl_setup_request(curl, request, buffer, headers):
     """
     Util tornado 3.1.0.0, tornado.curl_httpclient ignores payloads (body) of
     custom methods.
-    
+
     We fixed this and proposed a pull request to tornado:
     https://github.com/tornadoweb/tornado/pull/1090
-    
+
     While this issue is not fixed (1/7/2014), we are monkey patching
     tornado.curl_httpclient's _curl_setup_request.
     """
     assert tornado.version_info == (3, 1, 0, 0)
-    
+
     curl.setopt(pycurl.URL, native_str(request.url))
 
     # libcurl's magic "Expect: 100-continue" behavior causes delays

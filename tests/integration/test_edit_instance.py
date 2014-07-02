@@ -64,8 +64,11 @@ class EditInstanceIntegrationTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     @patch("brainiak.handlers.logger")
     def test_edit_instance_400_no_body(self, log):
-        response = self.fetch('/anything/Place/new_york', method='PUT')
-        self.assertEqual(response.code, 400)
+        with self.assertRaises(AssertionError) as error:
+            response = self.fetch('/anything/Place/new_york', method='PUT')
+        computed = str(error.exception)
+        expected = 'Body must not be empty for "PUT" request'
+        self.assertEqual(computed, expected)
 
     @patch("brainiak.handlers.logger")
     def test_edit_instance_400_wrong_params(self, log):

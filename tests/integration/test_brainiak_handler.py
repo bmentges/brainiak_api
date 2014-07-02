@@ -13,6 +13,22 @@ from brainiak.handlers import BrainiakRequestHandler
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
+# Util tornado 3.1.0.0, tornado.curl_httpclient ignores payloads (body) of
+# custom methods.
+#
+# We fixed this and proposed a pull request to tornado:
+# https://github.com/tornadoweb/tornado/pull/1090
+#
+# While this issue is not fixed (1/7/2014), we are monkey patching
+# tornado.curl_httpclient's _curl_setup_request.
+
+#import tornado
+#from tests.tornado_cases import _curl_setup_request
+
+#print("Temporary mockey-patch to tornado/curl_httpclient.py")
+#tornado.curl_httpclient._curl_setup_request = _curl_setup_request
+
+
 class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
 
     class Handler(BrainiakRequestHandler):
@@ -79,11 +95,6 @@ class TestBrainiakRequestHandler(TornadoAsyncHTTPTestCase):
         self.assertIn(expected_error_json, response_error_json["errors"][0])
 
     @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
-    def test_500_curl_error(self, log):
-        response = self.fetch('/', method='PUT')
-        self.assertEqual(response.code, 500)
-
-    @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_500_client_error(self, log):
         response = self.fetch('/', method='PUT', body="unauthorized")
         self.assertEqual(response.code, 500)
@@ -103,17 +114,17 @@ class TestUnmatchedHandler(TornadoAsyncHTTPTestCase):
 
     @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_put(self, log):
-        response = self.fetch('/a/b/c/d/e', method='PUT', body='')
+        response = self.fetch('/a/b/c/d/e', method='PUT', body='xubiru')
         self.assertEqual(response.code, 404)
 
     @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_post(self, log):
-        response = self.fetch('/a/b/c/d/e', method='POST', body='')
+        response = self.fetch('/a/b/c/d/e', method='POST', body='xubiru')
         self.assertEqual(response.code, 404)
 
     @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise
     def test_patch(self, log):
-        response = self.fetch('/a/b/c/d/e', method='PATCH', body='')
+        response = self.fetch('/a/b/c/d/e', method='PATCH', body='xubiru')
         self.assertEqual(response.code, 404)
 
     @patch_mock("brainiak.handlers.logger")  # log is None and breaks test otherwise

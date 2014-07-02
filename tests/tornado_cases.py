@@ -35,7 +35,7 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
 
     def fetch(self, path, **kwargs):
         kwargs['url'] = self.get_url(path)
-        body = kwargs.pop('body', '')
+        body = kwargs.pop('body', None)
         request = HTTPRequest(**kwargs)
         request.body = body
         request.allow_nonstandard_methods = True
@@ -154,7 +154,7 @@ def _curl_setup_request(curl, request, buffer, headers):
         # (but see version check in _process_queue above)
         curl.setopt(pycurl.IPRESOLVE, pycurl.IPRESOLVE_V4)
 
-    # Set the request method through curl's irritating interface which makes
+  # Set the request method through curl's irritating interface which makes
     # up names for almost every single method
     curl_options = {
         "GET": pycurl.HTTPGET,
@@ -162,7 +162,7 @@ def _curl_setup_request(curl, request, buffer, headers):
         "PUT": pycurl.UPLOAD,
         "HEAD": pycurl.NOBODY,
     }
-
+    custom_methods = set(["DELETE", "OPTIONS", "PATCH"])
     for o in curl_options.values():
         curl.setopt(o, False)
     if request.method in curl_options:
@@ -170,12 +170,19 @@ def _curl_setup_request(curl, request, buffer, headers):
         curl.setopt(curl_options[request.method], True)
     elif request.allow_nonstandard_methods or request.method in custom_methods:
         curl.setopt(pycurl.CUSTOMREQUEST, request.method)
-        curl.setopt(pycurl.UPLOAD, True)
     else:
         raise KeyError('unknown method ' + request.method)
 
     # Handle curl's cryptic options for every individual HTTP method
-    if request.method in ("POST", "PUT", "PATCH"):
+    if request.method == "GET":
+        if request.body is not None:
+            raise AssertionError('Body must be empty for GET request')
+    elif request.method in ("POST", "PUT") or request.body:
+        if not request.body:
+            raise AssertionError(
+                'Body must not be empty for "%s" request'
+                % request.method)
+
         request_buffer = BytesIO(utf8(request.body))
         curl.setopt(pycurl.READFUNCTION, request_buffer.read)
         if request.method == "POST":
@@ -185,6 +192,7 @@ def _curl_setup_request(curl, request, buffer, headers):
             curl.setopt(pycurl.IOCTLFUNCTION, ioctl)
             curl.setopt(pycurl.POSTFIELDSIZE, len(request.body))
         else:
+            curl.setopt(pycurl.UPLOAD, True)
             curl.setopt(pycurl.INFILESIZE, len(request.body))
 
     if request.auth_username is not None:

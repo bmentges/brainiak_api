@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Managing Prefixes &mdash; brainiak 2.6.0 documentation</title>
+    <title>Patch an Instance &mdash; brainiak 2.6.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -31,9 +31,9 @@
     <script type="text/javascript" src="../../_static/bootstrap-2.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="brainiak 2.6.0 documentation" href="../../index.html" />
-    <link rel="up" title="Services" href="../../services.html" />
-    <link rel="next" title="List of Prefixes" href="list_prefixes.html" />
-    <link rel="prev" title="List of Contexts" href="../context/list_contexts.html" />
+    <link rel="up" title="Managing Instances" href="instance.html" />
+    <link rel="next" title="Search" href="../search/search.html" />
+    <link rel="prev" title="Edit a Instance" href="edit_instance.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -91,7 +91,7 @@
 </ul>
 </li>
 </ul>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../concepts.html">Concepts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/resources.html">Ubiquitous Language</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../concepts/rest_verbs.html">Using HTTP methods in a RESTful way</a></li>
@@ -103,12 +103,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../globocom/authorization.html">Authorization using Accounts</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../services.html">Services</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../services.html">Services</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../context/context.html">Managing Contexts</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Managing Prefixes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../prefix/prefix.html">Managing Prefixes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../collection/collection.html">Managing Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schema/schema.html">Managing Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../instance/instance.html">Managing Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instance.html">Managing Instances</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../search/search.html">Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../suggest/suggest.html">Suggest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../stored_query/stored_query.html">Stored Queries</a></li>
@@ -142,7 +142,9 @@
             <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
-<li><a class="reference internal" href="#">Managing Prefixes</a><ul>
+<li><a class="reference internal" href="#">Patch an Instance</a><ul>
+<li><a class="reference internal" href="#optional-query-string-parameters">Optional query string parameters</a></li>
+<li><a class="reference internal" href="#possible-responses">Possible responses</a></li>
 </ul>
 </li>
 </ul>
@@ -151,14 +153,14 @@
           
           
             
-  <li><a href="../context/list_contexts.html"
-         title="previous chapter">&laquo; List of Contexts</a></li>
-  <li><a href="list_prefixes.html"
-         title="next chapter">List of Prefixes &raquo;</a></li>
+  <li><a href="edit_instance.html"
+         title="previous chapter">&laquo; Edit a Instance</a></li>
+  <li><a href="../search/search.html"
+         title="next chapter">Search &raquo;</a></li>
           
           
             <li>
-  <a href="../../_sources/services/prefix/prefix.txt"
+  <a href="../../_sources/services/instance/patch_instance.txt"
      rel="nofollow">Source</a></li>
           
         </ul>
@@ -176,19 +178,120 @@
   </div>
 
   
-  <div class="section" id="managing-prefixes">
-<h1>Managing Prefixes<a class="headerlink" href="#managing-prefixes" title="Permalink to this headline">¶</a></h1>
-<p>Prefixes are names for contexts (e.g. person and place) and common namespaces like owl or rdf.</p>
-<p>They are used to shorten URIs in the communication with the API.</p>
-<p>Services available for managing prefixes:</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="list_prefixes.html">List of Prefixes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="list_prefixes.html#optional-parameters">Optional parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="list_prefixes.html#possible-responses">Possible responses</a></li>
+  <div class="section" id="patch-an-instance">
+<h1>Patch an Instance<a class="headerlink" href="#patch-an-instance" title="Permalink to this headline">¶</a></h1>
+<p>Edit a part of an existing instance, providing:</p>
+<ul class="simple">
+<li>context (graph)</li>
+<li>class (schema)</li>
+<li>instance identifier (id or uri)</li>
+<li>patch body or payload (JSON)</li>
 </ul>
-</li>
-</ul>
+<p>The body must be a <strong>list</strong> and respect RFC-6902: <a class="reference external" href="http://tools.ietf.org/html/rfc6902">http://tools.ietf.org/html/rfc6902</a>.</p>
+<p>Currently the following operations are supported:</p>
+<ol class="arabic simple">
+<li><strong>replace</strong>: change a property value</li>
+<li><strong>add</strong>: add a new property and its value</li>
+<li><strong>remove</strong>: remove some existing property (and therefore its value)</li>
+</ol>
+<p><strong>Basic usage</strong></p>
+<p>Consider you have an existing instance:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -s http://brainiak.semantica.dev.globoi.com/place/City/globoland
+</pre></div>
+</div>
+<div class="highlight-text"><div class="highlight"><pre>{
+    &quot;@id&quot;: &quot;http://semantica.globo.com/place/City/globoland&quot;,
+    &quot;@type&quot;: &quot;place:City&quot;,
+    &quot;_base_url&quot;: &quot;http://brainiak.semantica.dev.globoi.com/place/City/globoland/&quot;,
+    &quot;_instance_prefix&quot;: &quot;http://semantica.globo.com/place/City/&quot;,
+    &quot;_resource_id&quot;: &quot;globoland&quot;,
+    &quot;_type_title&quot;: &quot;Cidade&quot;,
+    &quot;place:latitude&quot;: -22.9583,
+    &quot;place:longitude&quot;: -43.4071,
+    &quot;place:partOfState&quot;: &quot;base:UF_RJ&quot;,
+    &quot;upper:fullName&quot;: &quot;Globoland (RJ)&quot;,
+    &quot;upper:name&quot;: &quot;Globoland&quot;
+}
+</pre></div>
+</div>
+<p>Note that prefixes, such as &#8220;upper&#8221;, are defined in the &#8220;&#64;context&#8221; section:
+<a class="reference external" href="http://brainiak.semantica.dev.globoi.com/_prefixes">Default prefixes</a> are implicit and don&#8217;t need to be declared.</p>
+<p><strong>Replace</strong></p>
+<p>To patch this instance <strong>replacing</strong> some existing property&#8217;s value, do:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -s -X PATCH -d <span class="s1">&#39;[{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;upper:name&quot;, &quot;value&quot;: &quot;New Globoland name&quot;}]&#39;</span> http://brainiak.semantica.dev.globoi.com/place/City/globoland
+</pre></div>
+</div>
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 200 OK
+Server: nginx
+Date: Thu, 03 Jul 2014 21:00:39 GMT
+Content-Type: text/html; charset=UTF-8
+Content-Length: 0
+Connection: keep-alive
+Access-Control-Allow-Origin: *
+</pre></div>
+</div>
+<p><strong>Remove</strong></p>
+<p>To patch this instance <strong>removing</strong> some property (and its existing values), do:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -s -X PATCH -d <span class="s1">&#39;[{&quot;op&quot;: &quot;remove&quot;, &quot;path&quot;: &quot;place:latitude&quot;}]&#39;</span> http://brainiak.semantica.dev.globoi.com/place/City/globoland
+</pre></div>
+</div>
+<p><strong>Add</strong></p>
+<p>To patch this instance <strong>adding</strong> some property and value, do:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -i -s -X PATCH -d <span class="s1">&#39;[{&quot;op&quot;: &quot;add&quot;, &quot;path&quot;: &quot;place:latitude&quot;, &quot;value&quot;: 11.785}]&#39;</span> http://brainiak.semantica.dev.globoi.com/place/City/globoland
+</pre></div>
+</div>
+<div class="section" id="optional-query-string-parameters">
+<h2>Optional query string parameters<a class="headerlink" href="#optional-query-string-parameters" title="Permalink to this headline">¶</a></h2>
+<p><strong>graph_uri</strong>: Set the graph URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME</span></tt></p>
+<p><strong>class_uri</strong>: Set the class URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME</span></tt></p>
+<p><strong>class_prefix</strong>: by default, the class URI is defined by the API&#8217;s convention (context_uri/class_name).
+If the convention doesn&#8217;t apply, provide class_prefix so the URI will be: class_prefix/class_name.  Example:</p>
+<div class="highlight-http"><pre>'http://brainiak.semantica.dev.globoi.com/place/City/?class_prefix=http%3A//dbpedia.org/'</pre>
+</div>
+<p>If no <strong>class_prefix</strong> had been provided, the class URI above would be resolved as: <a class="reference external" href="http://semantica.globo.com/place/City">http://semantica.globo.com/place/City</a>.
+As <strong>class_prefix</strong> was defined, the class URI will be: <a class="reference external" href="http://dbpedia.org/City">http://dbpedia.org/City</a>.</p>
+<p><strong>instance_id</strong>: Unique word identifier for an instance. This is composed with <tt class="docutils literal"><span class="pre">instance_prefix</span></tt> to form an equivalent of <tt class="docutils literal"><span class="pre">instance_uri</span></tt>.</p>
+<p><strong>instance_uri</strong>: Set the instance URI, for cases where the URI is not like <tt class="docutils literal"><span class="pre">http://semantica.globo.com/CONTEXT_NAME/CLASS_NAME/INSTANCE_ID</span></tt></p>
+</div>
+<div class="section" id="possible-responses">
+<h2>Possible responses<a class="headerlink" href="#possible-responses" title="Permalink to this headline">¶</a></h2>
+<p><strong>Status 200</strong></p>
+<p>The instance was patched successfully, the response body is empty.</p>
+<p><strong>Status 400</strong></p>
+<p>If there are unknown parameters in the request, the response status code
+is 400 and the body contains a JSON containing valid and invalid parameters.</p>
+<p>The 400 status may also happen when the JSON provided is invalid:</p>
+<blockquote>
+<div>$ curl -i -s  -X PATCH -d &#8216;[{&#8220;op&#8221;: &#8220;replace&#8221;, &#8220;path&#8221;: &#8220;inexistent:property&#8221;, &#8220;value&#8221;: 123}]&#8217; http://brainiak.semantica.dev.globoi.com/place/City/globoland</div></blockquote>
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 400 Bad Request
+Server: nginx
+Date: Thu, 03 Jul 2014 21:00:39 GMT
+Content-Type: application/json; charset=UTF-8
+Content-Length: 196
+Connection: keep-alive
+Access-Control-Allow-Origin: *
+
+{&quot;errors&quot;: [&quot;Propriedade inexistente (inexistent:property) na classe (http://semantica.globo.com/place/City), usada para criar a inst\u00e2ncia (http://semantica.globo.com/place/City/globoland)&quot;]}
+</pre></div>
+</div>
+<p><strong>Status 404</strong></p>
+<p>If the instance does not exist, the response status code is 404.</p>
+<blockquote>
+<div>$ curl -i -s  -X PATCH -d &#8216;[{&#8220;op&#8221;: &#8220;replace&#8221;, &#8220;path&#8221;: &#8220;upper:name&#8221;, &#8220;value&#8221;: &#8220;Some new name&#8221;}]&#8217; http://brainiak.semantica.dev.globoi.com/place/City/InexistentCity</div></blockquote>
+<div class="highlight-text"><div class="highlight"><pre>HTTP/1.1 404 Not Found
+Server: nginx
+Date: Thu, 03 Jul 2014 21:00:39 GMT
+Content-Type: application/json; charset=UTF-8
+Content-Length: 52
+Connection: keep-alive
+Access-Control-Allow-Origin: *
+
+{&quot;errors&quot;: [&quot;HTTP error: 404\nInexistent instance&quot;]}
+</pre></div>
+</div>
+<p><strong>Status 500</strong></p>
+<p>Internal server error. Please, contact the team &lt;<a class="reference external" href="mailto:semantica&#37;&#52;&#48;corp&#46;globo&#46;com">semantica<span>&#64;</span>corp<span>&#46;</span>globo<span>&#46;</span>com</a>&gt;
+and provide the URL, JSON and error message.</p>
 </div>
 </div>
 

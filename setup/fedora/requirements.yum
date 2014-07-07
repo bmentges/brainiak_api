@@ -1,0 +1,30 @@
+gcc
+gcc-c++ # greenlets
+git
+
+openssl-devel  # python3.4.1 pip dependency
+libcurl-devel  # pycurl
+libevent-devel  # python gevent
+
+python-devel
+python-libs
+python-setuptools
+python-pip
+python-virtualenv
+python-virtualenvwrapper
+python3
+python-matplotlib
+python-debuginfo
+
+redis
+
+# virtuoso open-source from source
+aclocal
+autoconf
+autoheader
+automake
+libtool
+bison
+flex
+gperf
+

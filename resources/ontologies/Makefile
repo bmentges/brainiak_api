@@ -1,7 +1,7 @@
 NEW_PYTHONPATH="`pwd`/src:$(PYTHONPATH)"
 
-USER=<change here>
-PWD=<change here>
+USER=dba
+PWD=dba
 VIRTUOSO_HOST=localhost
 
 help:

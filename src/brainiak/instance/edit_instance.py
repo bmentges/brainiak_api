@@ -32,7 +32,6 @@ def edit_instance(query_params, instance_data):
     triples.extend(implicit_triples)
     unique_triples = set(triples)
     string_triples = join_triples(unique_triples)
-
     prefixes = instance_data.get("@context", {})
     string_prefixes = join_prefixes(prefixes)
 

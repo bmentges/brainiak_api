@@ -6,6 +6,7 @@ from mock import patch, PropertyMock
 from brainiak import triplestore, settings
 from brainiak.collection import get_collection
 from brainiak.collection.get_collection import query_filter_instances, Query
+from brainiak.utils import sparql
 from tests.mocks import Params
 from tests.sparql import QueryTestCase
 from tests.utils import URLTestCase
@@ -416,8 +417,7 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
                 u'title': u'Mary Land'
             }
         ]
-        computed_items = sorted(computed_items,  key=lambda item: item['title'])
-        self.assertItemsEqual(computed_items, expected_items)
+        self.assertItemsEqual(sorted(computed_items), sorted(expected_items))
 
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     @patch("brainiak.handlers.logger")
@@ -508,17 +508,6 @@ class MixTestFilterInstanceResource(TornadoAsyncHTTPTestCase, QueryTestCase):
 class FilterInstancesQueryTestCase(QueryTestCase):
     fixtures = ["tests/sample/instances.n3"]
     graph_uri = "http://tatipedia.org/"
-
-    def setUp(self):
-        self.original_query_sparql = triplestore.query_sparql
-        triplestore.query_sparql = lambda query, params: query
-        self.original_query_filter_instances = get_collection.query_filter_instances
-        self.original_query_count_filter_instances = get_collection.query_count_filter_instances
-
-    def tearDown(self):
-        triplestore.query_sparql = self.original_query_sparql
-        get_collection.query_filter_instances = self.original_query_filter_instances
-        get_collection.query_count_filter_instances = self.original_query_count_filter_instances
 
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     def test_sort_by(self, mock_inference_graph):
@@ -806,29 +795,16 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "sort_by": ""
         })
 
-        query = query_filter_instances(params)
-        computed = self.query(query)["results"]["bindings"]
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed = response["results"]["bindings"]
+
         expected = [{u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/john'},
                      u'label': {u'type': u'literal', u'value': u'John Jones'},
                      u'p': {u'type': u'uri', u'value': u'http://tatipedia.org/likes'}
                      }]
 
         self.assertEqual(computed, expected)
-
-    # def test_instance_filter_in_inexistent_graph(self):
-    #     params = {
-    #         "class_uri": "http://tatipedia.org/test/Person",
-    #         "p": "?p",
-    #         "o": "Aikido",
-    #         "lang_filter": "",
-    #         "graph_uri": "http://neverland.com/",
-    #         "per_page": "10",
-    #         "page": "0"
-    #     }
-
-    #     query = query_filter_instances(params)
-    #     response = self.query(query, params["graph_uri"])
-    #     self.assertFalse(response["results"]["bindings"])
 
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
     def test_query_filter_instances_with_language_restriction_to_pt(self, mock_inference_graph):
@@ -842,8 +818,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "0",
             "sort_by": ""
         })
-        query = query_filter_instances(params)
-        computed_bindings = self.query(query)["results"]["bindings"]
+
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed_bindings = response["results"]["bindings"]
+
         expected_bindings = [
             {
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'},
@@ -870,9 +849,11 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "0",
             "sort_by": ""
         })
-        query = query_filter_instances(params)
 
-        computed_bindings = self.query(query)["results"]["bindings"]
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed_bindings = response["results"]["bindings"]
+
         expected_bindings = [
             {
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/Platypus'},
@@ -903,9 +884,9 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "0",
             "sort_by": ""
         })
-        query = query_filter_instances(params)
-
-        computed_bindings = self.query(query)["results"]["bindings"]
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed_bindings = response["results"]["bindings"]
         self.assertEqual(len(computed_bindings), 1)
 
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
@@ -920,9 +901,9 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "1",
             "sort_by": ""
         })
-        query = query_filter_instances(params)
-
-        computed_bindings = self.query(query)["results"]["bindings"]
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed_bindings = response["results"]["bindings"]
         self.assertEqual(len(computed_bindings), 1)
 
     @patch("brainiak.collection.get_collection.Query.inference_graph", new_callable=PropertyMock, return_value="http://tatipedia.org/ruleset")
@@ -937,9 +918,9 @@ class FilterInstancesQueryTestCase(QueryTestCase):
             "page": "0",
             "sort_by": ""
         })
-        query = query_filter_instances(params)
-
-        computed_bindings = self.query(query)["results"]["bindings"]
+        query = Query(params).to_string()
+        response = self.query(query)
+        computed_bindings = response["results"]["bindings"]
         expected_bindings = [
             {
                 u'subject': {u'type': u'uri', u'value': u'http://tatipedia.org/london'},
@@ -1005,3 +986,109 @@ class GetCollectionDirectObjectTestCase(TornadoAsyncHTTPTestCase, QueryTestCase)
     def test_get_collection_includes_only_direct_instances(self, settings):
         response = self.fetch('/_/_/?graph_uri=http://example.onto/&class_uri=http://example.onto/Animal&direct_instances_only=1', method='GET')
         self.assertEqual(response.code, 200)
+
+
+def clear_items(items):
+    remove_keys = ["instance_prefix", "resource_id", "class_prefix", "@id"]
+    for item in items:
+        for key in remove_keys:
+            item.pop(key)
+    return items
+
+
+class CastValuesTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
+
+    fixtures_by_graph = {
+        "http://on.to/": ["tests/sample/people.ttl"]
+    }
+    maxDiff = None
+
+    @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://on.to/ruleset")
+    def test_cast_integer_values(self, mock_ruleset):
+        response = self.fetch('/_/_/?lang=en&p=http://on.to/age&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        computed_items = clear_items(computed_items)
+        expected_items = [
+            {
+                "http://on.to/age": 4,
+                "title": "Flipper"
+            },
+            {
+                "http://on.to/age": 18,
+                "title": "Free Willy"
+            },
+            {
+                "http://on.to/age": 27,
+                "title": "Icaro Medeiros"
+            },
+            {
+                "http://on.to/age": 30,
+                "title": "Tatiana Al-Chueyr Martins"
+            },
+            {
+                "http://on.to/age": 39,
+                "title": "Rodrigo Senra"
+            }
+        ]
+        self.assertEqual(sorted(computed_items), sorted(expected_items))
+
+    @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://on.to/ruleset")
+    def test_retrieve_float_values(self, mock_ruleset):
+        response = self.fetch('/_/_/?lang=en&p=http://on.to/weight&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        computed_items = clear_items(computed_items)
+        expected_items = [
+            {
+                "http://on.to/weight": 200.0,
+                "title": "Flipper"
+            },
+            {
+                "http://on.to/weight": 8000.0,
+                "title": "Free Willy"
+            },
+            {
+                "http://on.to/weight": 71.5,
+                "title": "Icaro Medeiros"
+            },
+            {
+                "http://on.to/weight": 54.7,
+                "title": "Tatiana Al-Chueyr Martins"
+            },
+            {
+                "http://on.to/weight": 96.2,
+                "title": "Rodrigo Senra"
+            }
+        ]
+        self.assertEqual(sorted(computed_items), sorted(expected_items))
+
+    @patch("brainiak.collection.get_collection.settings", DEFAULT_RULESET_URI="http://on.to/ruleset")
+    def test_retrieve_boolean_values(self, mock_ruleset):
+        response = self.fetch('/_/_/?lang=en&p=http://on.to/isHuman&graph_uri=http://on.to/&class_uri=http://on.to/Person', method='GET')
+        self.assertEqual(response.code, 200)
+        computed_items = json.loads(response.body)["items"]
+        computed_items = clear_items(computed_items)
+        expected_items = [
+            {
+                "http://on.to/isHuman": False,
+                "title": "Flipper"
+            },
+            {
+                "http://on.to/isHuman": False,
+                "title": "Free Willy"
+            },
+            {
+                "http://on.to/isHuman": True,
+                "title": "Icaro Medeiros"
+            },
+            {
+                "http://on.to/isHuman": True,
+                "title": "Tatiana Al-Chueyr Martins"
+            },
+            {
+                "http://on.to/isHuman": True,
+                "title": "Rodrigo Senra"
+            }
+        ]
+        self.assertEqual(sorted(computed_items), sorted(expected_items))

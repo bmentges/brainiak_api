@@ -84,74 +84,6 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
     @patch("brainiak.instance.get_instance.get_class.get_cached_schema",
            return_value={
                "properties": {
-                   "http://www.w3.org/2000/01/rdf-schema#label": {
-                       "type": "string",
-                       "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                   },
-                   "http://example.onto/name": {
-                       "type": "string",
-                       "datatype": "http://www.w3.org/2001/XMLSchema#string"
-                   }
-               },
-               "id": "http://example.onto/City",
-               "title": "City"
-           })
-    @patch("brainiak.instance.create_instance.get_cached_schema",
-           return_value={
-               "properties": {
-                   "http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"},
-                   "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}
-               },
-               "id": "http://example.onto/City",
-               "title": "City"
-           })
-    @patch("brainiak.instance.create_instance.are_there_label_properties_in", return_value=True)
-    def test_create_instance_201(
-        self, mock_are_there_label_properties_in, mock_get_schema, mock_get_instance_schema, mocked_handler_settings, mockeed_triplestore, mocked_settings,
-            mocked_create_instance_uri, mocked_get_schema, mocked_notify_bus, mocked_logger):
-        mockeed_triplestore.query_sparql = self.query
-        payload = {
-            "@context": {
-                "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-                "place": "http://example.onto/place/",
-                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-                "ex": "http://example.onto/"
-            },
-            "ex:name": "Globoland\r\nwith multiline",
-        }
-        response = self.fetch('/example/City?graph_uri=http://example.onto/&class_prefix=http://example.onto/',
-                              method='POST',
-                              body=json.dumps(payload))
-
-        self.assertEqual(response.code, 201)
-        location = response.headers['Location']
-        self.assertTrue(location.startswith("http://localhost:"))
-
-        resource_id = response.headers['X-Brainiak-Resource-Uri']
-        self.assertTrue('http://example.onto/City/' in resource_id)
-
-        self.assertTrue("/example/City" in location)
-        self.assertEqual(response.body, "")
-        self.assertTrue(mocked_notify_bus.called)
-        expected = {
-            'action': 'POST',
-            'instance_data': {u'http://example.onto/name': u'Globoland\r\nwith multiline'},
-            'instance': 'http://example.onto/City/123',
-            'klass': 'http://example.onto/City',
-            'graph': 'http://example.onto/'
-        }
-        mocked_notify_bus.assert_called_once_with(**expected)
-
-    @patch("brainiak.handlers.logger")
-    @patch("brainiak.handlers.notify_bus")
-    @patch("brainiak.handlers.schema_resource.get_schema", return_value=True)
-    @patch("brainiak.instance.create_instance.create_instance_uri", return_value="http://example.onto/City/123")
-    @patch("brainiak.instance.get_instance.settings", DEFAULT_RULESET_URI="{0}ruleset".format(graph_uri))
-    @patch("brainiak.instance.get_instance.triplestore")
-    @patch("brainiak.handlers.settings", NOTIFY_BUS=True)
-    @patch("brainiak.instance.get_instance.get_class.get_cached_schema",
-           return_value={
-               "properties": {
                    "http://www.w3.org/2000/01/rdf-schema#label": {"type": "string"},
                    "http://example.onto/name": {"type": "string", "datatype": "http://www.w3.org/2001/XMLSchema#string"}
                },
@@ -203,10 +135,79 @@ class CreateInstanceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
         expected_msg_substring = "Label properties like rdfs:label or its subproperties are required"
         self.assertIn(expected_msg_substring, json.loads(response.body)["errors"][0])
 
-    def test_query(self):
-        self.graph_uri = "http://fofocapedia.org/"
-        self.assertInstanceDoesNotExist('criatura', 'fulano')
-        query = create_instance.QUERY_INSERT_TRIPLES % {
-            "triples": '<fulano> a <criatura>; <gosta-de> <ciclano>', "prefix": "", "graph_uri": self.graph_uri}
-        self.query(query)
-        self.assertInstanceExist('criatura', 'fulano')
+
+class CreateInstanceTestCaseWithoutMocks(TornadoAsyncHTTPTestCase, QueryTestCase):
+    fixtures_by_graph = {"http://on.to/": ["tests/sample/people.ttl"]}
+
+    def test_put_suceeds(self):
+        info = {
+            "instance": "http://on.to/rubensAzambuja",
+            "class": "http://on.to/Person",
+            "graph": "http://on.to/",
+            "meta": "0"
+        }
+        url = '/_/_/_/?graph_uri={graph}&class_uri={class}&instance_uri={instance}&lang=en'
+        url = url.format(**info)
+
+        data = {
+            u'http://on.to/weight': 88.5,
+            u'http://on.to/isHuman': True,
+            u'http://on.to/name': u'Rubens Azambuja',
+            u'http://on.to/age': 40
+        }
+
+        response = self.fetch(url, method='PUT', body=json.dumps(data))
+        self.assertEqual(response.code, 201)
+        self.assertEqual(response.body, "")
+        computed_location = response.headers['Location']
+        expected_location = '/_/_/_/?graph_uri=http://on.to/&class_uri=http://on.to/Person&instance_uri=http://on.to/rubensAzambuja&lang=en'
+        self.assertTrue(expected_location in computed_location)
+
+    def test_put_suceeds_with_rdfs_type(self):
+        info = {
+            "instance": "http://on.to/rubensAzambuja",
+            "class": "http://on.to/Person",
+            "graph": "http://on.to/",
+            "meta": "0"
+        }
+        url = '/_/_/_/?graph_uri={graph}&class_uri={class}&instance_uri={instance}&lang=en'
+        url = url.format(**info)
+
+        data = {
+            u'http://on.to/weight': 88.5,
+            u'http://on.to/isHuman': True,
+            u'http://on.to/name': u'Rubens Azambuja',
+            u'http://on.to/age': 40,
+            u'rdfs:type': "http://on.to/Person"
+        }
+
+        response = self.fetch(url, method='PUT', body=json.dumps(data))
+        self.assertEqual(response.code, 201)
+        self.assertEqual(response.body, "")
+        computed_location = response.headers['Location']
+        expected_location = '/_/_/_/?graph_uri=http://on.to/&class_uri=http://on.to/Person&instance_uri=http://on.to/rubensAzambuja&lang=en'
+        self.assertTrue(expected_location in computed_location)
+
+    def test_put_fails_with_incompatible_rdfs_type(self):
+        info = {
+            "instance": "http://on.to/rubensAzambuja",
+            "class": "http://on.to/Person",
+            "graph": "http://on.to/",
+            "meta": "0"
+        }
+        url = '/_/_/_/?graph_uri={graph}&class_uri={class}&instance_uri={instance}&lang=en'
+        url = url.format(**info)
+
+        data = {
+            u'http://on.to/weight': 88.5,
+            u'http://on.to/isHuman': True,
+            u'http://on.to/name': u'Rubens Azambuja',
+            u'http://on.to/age': 40,
+            u'rdfs:type': "http://on.to/Manager"
+        }
+
+        response = self.fetch(url, method='PUT', body=json.dumps(data))
+        self.assertEqual(response.code, 400)
+        computed = json.loads(response.body)
+        expected = {"errors": ["HTTP error: 400\nIncompatible values for rdfs:type <http://on.to/Manager> and class URI <http://on.to/Person>"]}
+        self.assertEqual(computed, expected)

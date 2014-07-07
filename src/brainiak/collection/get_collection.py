@@ -4,7 +4,9 @@ from urllib import unquote
 from tornado.web import HTTPError
 
 from brainiak import settings, triplestore
-from brainiak.prefixes import shorten_uri
+from brainiak.prefixes import shorten_uri, expand_uri
+from brainiak.schema import get_class
+from brainiak.type_mapper import MAP_RDF_EXPANDED_TYPE_TO_PYTHON as rdf_to_type
 from brainiak.utils.links import build_schema_url_for_instance, remove_last_slash, build_class_url
 from brainiak.utils.resources import decorate_with_resource_id, decorate_dict_with_pagination, calculate_offset
 from brainiak.utils.sparql import compress_keys_and_values, is_literal, is_url, normalize_term, get_one_value, \
@@ -288,6 +290,7 @@ def filter_instances(query_params):
     result_dict = query_filter_instances(query_params)
     if not result_dict or not result_dict['results']['bindings']:
         return None
+
     items_list = compress_keys_and_values(result_dict, keymap=keymap, ignore_keys=["total"])
     items_list = merge_by_id(items_list)
     add_prefix(items_list, query_params['class_prefix'])
@@ -295,19 +298,70 @@ def filter_instances(query_params):
     return build_json(items_list, query_params)
 
 
-def sort_values_of_properties_which_map_lists(items_list):
+def cast_item(item, property_to_type):
     """
-    Provided a list o items (dicts), for each item:
-        for each key and value, if value is a list:
-            sort value
+    Casts values of properties, according to the mapping provided.
+
+    Example:
+        item = {
+            "team": "Semantic Team",
+            "grade": "10"
+        }
+        property_to_type = {
+            "team": str,
+            "grade": int
+        }
+        cast_item(item, property_to_type)
+
+    Returns:
+        {
+            "team": "Semantic Team",
+            "grade": 10
+        }
     """
+    new_item = {}
+    for property_, value in item.items():
+        type_ = property_to_type.get(expand_uri(property_))
+        if not type_ is None:
+            if isinstance(value, list):
+                value = [type_(v) for v in value]
+            elif type_ is bool:
+                value = bool(int(value))
+            else:
+                value = type_(value)
+        if isinstance(value, list):
+            value = sorted(value)
+        new_item[property_] = value
+    return new_item
+
+
+def build_map_property_to_type(properties):
+    """
+    Based on a dictionary with class schema properties, return dict map from
+    which maps property name to python object type.
+
+    Example:
+        properties = {
+            "http://on.to/weight": {
+                "datatype": "http://www.w3.org/2001/XMLSchema#float"
+            }
+        }
+        build_map_property_to_type(properties)
+
+    Response:
+        {"http://on.to/weight": float}
+    """
+    return {prop: rdf_to_type[info["datatype"]] for prop, info in properties.items() if "datatype" in info and info["datatype"] in rdf_to_type}
+
+
+def cast_items_values(items_list, class_properties):
+    """
+    Provided a list o items (dicts), cast all values based on properties' types.
+    """
+    property_to_type = build_map_property_to_type(class_properties)
     new_list = []
     for item in items_list:
-        new_item = {}
-        for key, value in item.items():
-            if isinstance(value, list):
-                value = sorted(value)
-            new_item[key] = value
+        new_item = cast_item(item, property_to_type)
         new_list.append(new_item)
     return new_list
 
@@ -316,12 +370,15 @@ def build_json(items_list, query_params):
     class_url = build_class_url(query_params)
     schema_url = unquote(build_schema_url_for_instance(query_params, class_url))
 
+    class_properties = get_class.get_cached_schema(query_params)["properties"]
+    items_list = cast_items_values(items_list, class_properties)
+
     json = {
         '_schema_url': schema_url,
         'pattern': '',
         '_class_prefix': query_params['class_prefix'],
         '_base_url': remove_last_slash(query_params.base_url),
-        'items': sort_values_of_properties_which_map_lists(items_list),
+        'items': items_list,
         '@context': {"@language": query_params.get("lang")},
         '@id': query_params['class_uri']
     }

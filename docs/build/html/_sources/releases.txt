@@ -1,6 +1,39 @@
 Releases
 ========
 
+Version 2.6.0 - 2014/07/07
+--------------------------
+
+New Features
+____________
+
+
+- Patch instance (see :doc:`/services/instance/patch_instance`).
+
+Fixes, Improvements
+___________________
+
+- When filtering a collection of instances, property values are now being casted.
+
+Refactor
+________
+
+- Removed dependency of SPARQLWrapper
+
+
+Version 2.5.1 - 2014/06/06
+--------------------------
+
+Fixes, improvements
+___________________
+
+- PUT instance raised exception when trying to add property mapping list of values, if the property was obligatory.
+
+- Workaround in get_instance turning off inference while retrieving properties of an object.
+  There is a bug in Virtuoso that when property X is a subProperty of property Y, and X has several values associated
+  with some instance, then inference attributes only the first value to X and Y, the remaining are only attributed to Y.
+
+
 Version 2.5.0 - 2014/05/19
 --------------------------
 

@@ -24,7 +24,7 @@ install:
 
 tests: clean pep8 pep8_tests
 	@echo "Running pep8, unit and integration tests..."
-	@nosetests -s  --cover-branches --cover-erase --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests  --exclude-dir=$(HOME_BRAINIAK)/tests/acceptance --exclude=$(HOME_BRAINIAK)/tests/acceptance --with-xunit --with-spec --spec-color $(EXTRA_NOSE_PARAMS) --with-stopwatch
+	@nosetests -s  --cover-branches --cover-erase --with-coverage --cover-inclusive --cover-package=brainiak --tests=$(HOME_BRAINIAK)/tests --with-xunit --with-spec --spec-color $(EXTRA_NOSE_PARAMS) --with-stopwatch
 
 unit: clean
 	@echo "Running unit tests..."

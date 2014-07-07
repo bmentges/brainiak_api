@@ -25,7 +25,8 @@ from brainiak.instance.create_instance import create_instance
 from brainiak.instance.delete_instance import delete_instance
 from brainiak.instance.edit_instance import edit_instance, instance_exists
 from brainiak.instance.get_instance import get_instance
-from brainiak.prefixes import normalize_all_uris_recursively, list_prefixes, SHORTEN
+from brainiak.instance.patch_instance import apply_patch
+from brainiak.prefixes import normalize_all_uris_recursively, list_prefixes, SHORTEN, EXPAND
 from brainiak.root.get_root import list_all_contexts
 from brainiak.root.json_schema import schema as root_schema
 from brainiak.schema import get_class as schema_resource
@@ -500,6 +501,48 @@ class InstanceHandler(BrainiakRequestHandler):
         self.finalize(response)
 
     @greenlet_asynchronous
+    def patch(self, context_name, class_name, instance_id):
+        valid_params = INSTANCE_PARAMS
+        with safe_params(valid_params):
+            self.query_params = ParamDict(self,
+                                          context_name=context_name,
+                                          class_name=class_name,
+                                          instance_id=instance_id,
+                                          **valid_params)
+        del context_name
+        del class_name
+        del instance_id
+
+        try:
+            patch_list = json.loads(self.request.body)
+        except ValueError:
+            raise HTTPError(400, log_message=_("No JSON object could be decoded"))
+
+        # Retrieve original data
+        instance_data = memoize(self.query_params,
+                           get_instance,
+                           key=build_instance_key(self.query_params),
+                           function_arguments=self.query_params)
+        try:
+            instance_data = instance_data['body']
+        except TypeError:
+            raise HTTPError(404, log_message=_("Inexistent instance"))
+
+        instance_data.pop('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', None)
+
+        # compute patch
+        changed_data = apply_patch(instance_data, patch_list)
+
+        # Try to put
+        edit_instance(self.query_params, changed_data)
+        status = 200
+
+        # Clear cache
+        cache.purge_an_instance(self.query_params['instance_uri'])
+
+        self.finalize(status)
+
+    @greenlet_asynchronous
     def put(self, context_name, class_name, instance_id):
         valid_params = INSTANCE_PARAMS
         with safe_params(valid_params):
@@ -518,6 +561,18 @@ class InstanceHandler(BrainiakRequestHandler):
             raise HTTPError(400, log_message=_("No JSON object could be decoded"))
 
         instance_data = normalize_all_uris_recursively(instance_data)
+
+        RDFS_TYPE = "http://www.w3.org/2000/01/rdf-schema#type"
+        rdfs_type = instance_data.get(RDFS_TYPE)
+
+        if rdfs_type:
+            class_uri = self.query_params["class_uri"]
+            if (rdfs_type == class_uri):
+                instance_data.pop(RDFS_TYPE)
+            else:
+                msg = u"Incompatible values for rdfs:type <{0}> and class URI <{1}>"
+                msg = msg.format(rdfs_type, class_uri)
+                raise HTTPError(400, log_message=msg)
 
         try:
             if not instance_exists(self.query_params):

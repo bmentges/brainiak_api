@@ -1,6 +1,25 @@
 Releases
 ========
 
+Version 2.6.0 - 2014/07/07
+--------------------------
+
+New Features
+____________
+
+
+- Patch instance (see :doc:`/services/instance/patch_instance`).
+
+Fixes, Improvements
+___________________
+
+- When filtering a collection of instances, property values are now being casted.
+
+Refactor
+________
+
+- Remove dependency of SPARQLWrapper.
+
 
 Version 2.5.1 - 2014/06/06
 --------------------------

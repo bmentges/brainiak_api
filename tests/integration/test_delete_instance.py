@@ -1,8 +1,11 @@
-from tornado.web import HTTPError
+import json
+
 from mock import patch
+from tornado.web import HTTPError
+
 
 from brainiak.instance.delete_instance import query_delete, query_dependants, \
-    delete_instance
+    delete_instance, QUERY_DEPENDANTS_TEMPLATE, QUERY_DELETE_INSTANCE
 from brainiak import triplestore, server
 
 from tests.mocks import Params
@@ -42,21 +45,14 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
     def get_app(self):
         return server.Application()
 
-    def setUp(self):
-        self.original_query_sparql = triplestore.query_sparql
-        triplestore.query_sparql = lambda query, params: self.query(query)
-        super(DeleteQueriesTestCase, self).setUp()
-
-    def tearDown(self):
-        triplestore.query_sparql = self.original_query_sparql
-
     def test_dependants_query(self):
         params = Params({
             "graph_uri": self.graph_uri,
             "instance_uri": "http://tatipedia.org/Australia"
         })
 
-        response_bindings = query_dependants(params)
+        query = QUERY_DEPENDANTS_TEMPLATE % params
+        response_bindings = self.query(query)
         expected_binding = EXPECTED_DEPENDANTS_JSON
 
         self.assertEqual(len(response_bindings), len(expected_binding))
@@ -68,45 +64,28 @@ class DeleteQueriesTestCase(QueryTestCase, TornadoAsyncHTTPTestCase):
             "graph_uri": self.graph_uri,
             "instance_uri": "http://tatipedia.org/Platypus"
         })
-        response = query_delete(params)
+        query = QUERY_DELETE_INSTANCE % params
+        response = self.query(query)
 
         expected = EXPECTED_DELETE_JSON
 
         self.assertEqual(len(response), len(expected))
         self.assertEqual(response, expected)
 
-    def test_delete_instance_with_dependendants(self):
-        params = Params({
-            "graph_uri": self.graph_uri,
-            "instance_uri": "http://tatipedia.org/Australia"
-        })
-        self.assertRaises(HTTPError, delete_instance, params)
-
-    def test_delete_instance_successful(self):
-        params = Params({
-            "graph_uri": self.graph_uri,
-            "instance_uri": "http://tatipedia.org/Platypus"
-        })
-        self.assertTrue(delete_instance(params))
-
-    def test_delete_instance_unsuccessful(self):
-        params = Params({
-            "graph_uri": self.graph_uri,
-            "instance_uri": "http://tatipedia.org/NonExistentURI"
-        })
-        self.assertFalse(delete_instance(params))
-
     @patch("brainiak.handlers.cache.purge_an_instance")
     @patch("brainiak.handlers.logger")
     @patch("brainiak.handlers.notify_bus")
-    def test_handler_204(self, logger, mocked_notify_bus, mock_delete):
+    def test_handler_204(self, logger, mocked_notify_bus, mock_purge):
         response = self.fetch(
                     '/anygraph/Species/Platypus?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/',
                     method="DELETE")
-        mock_delete.assert_called_with(u'http://tatipedia.org/Platypus')
+        mock_purge.assert_called_with(u'http://tatipedia.org/Platypus')
         self.assertEqual(response.code, 204)
 
     @patch("brainiak.handlers.logger")
     def test_handler_409(self, log):
         response = self.fetch('/anygraph/Place/Australia?class_prefix=http://tatipedia.org/&instance_prefix=http://tatipedia.org/&graph_uri=http://somegraph.org/', method="DELETE")
         self.assertEqual(response.code, 409)
+        expected_body = {u'errors': [u'HTTP error: 409\nN\xe3o foi poss\xedvel excluir inst\xe2ncias devido \xe0s depend\xeancias: http://tatipedia.org/Platypus, http://tatipedia.org/Teinolophos']}
+        computed_body = json.loads(response.body)
+        self.assertEqual(computed_body, expected_body)

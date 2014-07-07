@@ -25,13 +25,6 @@ class ClassSchemaQueryTestCase(QueryTestCase):
 
     fixtures = ["tests/sample/schemas.n3"]
 
-    def setUp(self):
-        self.original_query_sparql = triplestore.query_sparql
-        triplestore.query_sparql = lambda query, params: self.query(query)
-
-    def tearDown(self):
-        triplestore.query_sparql = self.original_query_sparql
-
     def test_query_superclasses(self):
         handler = MockHandler()
         params = ParamDict(handler, class_uri="http://example.onto/City")
@@ -39,18 +32,9 @@ class ClassSchemaQueryTestCase(QueryTestCase):
         expected_bindings = [{u'class': {u'type': u'uri', u'value': u'http://example.onto/City'}},
                              {u'class': {u'type': u'uri', u'value': u'http://example.onto/Place'}}]
 
-        response = _query_superclasses(params)
+        query = QUERY_SUPERCLASS % params
+        response = self.query(query)
         self.assertEqual(response["results"]["bindings"], expected_bindings)
-
-    def test_query_superclasses_result(self):
-        handler = MockHandler()
-        params = ParamDict(handler, class_uri="http://example.onto/City")
-
-        expected_list = [u'http://example.onto/City',
-                         u'http://example.onto/Place']
-
-        response = query_superclasses(params)
-        self.assertEqual(response, expected_list)
 
     def test_schema_with_label_and_comment_in_pt(self):
         params = {"class_uri": "http://example.onto/Place",

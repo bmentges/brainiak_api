@@ -1,0 +1,2 @@
+DB.DBA.TTLP_MT_LOCAL_FILE('dumps/data_organization.ttl','', 'http://semantica.globo.com/organization/');
+rdfs_rule_set('http://semantica.globo.com/ruleset', 'http://semantica.globo.com/organization/');

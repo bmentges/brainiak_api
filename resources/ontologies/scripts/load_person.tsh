@@ -1,0 +1,2 @@
+DB.DBA.TTLP_MT_LOCAL_FILE('dumps/data_person.ttl','', 'http://semantica.globo.com/person/');
+rdfs_rule_set('http://semantica.globo.com/ruleset', 'http://semantica.globo.com/person/');

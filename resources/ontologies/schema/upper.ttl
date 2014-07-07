@@ -1,0 +1,419 @@
+@prefix : <http://semantica.globo.com/upper/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix schema: <http://schema.org/> .
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix time: <http://www.w3.org/2006/time#> .
+@prefix event: <http://purl.org/NET/c4dm/event.owl#> .
+@prefix place: <http://semantica.globo.com/place/> .
+@prefix organization: <http://semantica.globo.com/organization/> .
+
+###############################################################
+# Instruções para declaração de URIs
+# URIs de classes:
+#  http://semantica.globo.com/<grafo>/<NomeDaClasse>
+#
+# URI de propriedades:
+#  http://semantica.globo.com/<grafo>/<nomeDaPropriedade>
+#
+# URI de instâncias:
+#  http://semantica.globo.com/<grafo>/<NomeDaClasse>/<UUID>
+#
+###############################################################
+
+
+###############################################################
+#
+# Instruções para declaração do TTL - Classes
+# - Seguir uma ordem lógica na declaração de uma classe:
+#   - Ordem: tipo (a owl:Class), relação de subclasse,
+#     relação de equivalência com ontologias externas,
+#     label, restrições, comentário
+# - Usar padrão ?sujeito ?predicado ?objeto pontuação (; ou .)
+# - Alinhar quando usar ; ou ,
+# - Usar camel case sempre
+#
+# Referência de sintaxe e boas práticas:
+#  http://www.w3.org/TeamSubmission/turtle/
+###############################################################
+
+
+##########################################
+# Classes
+##########################################
+
+# http://semantica.globo.com/upper/Entity
+:Entity a owl:Class ;
+# Temporariamente interrompemos a herança da nossa classe base upper:Entity com a ancestral owl:Thing
+# para obter um desacoplamento intencional e total com as definições anteriores.
+# Inclusive havia restrições na ontologia antiga de que owl:Thing tinha que ter um rdfs:label obrigatoriamente,
+# esta restrição não existe mais.  
+#        rdfs:subClassOf owl:Thing ;
+        rdfs:label "Entidade"@pt ;
+        rdfs:label "Entity"@en ;
+        rdfs:comment "Elemento mais abstrato da ontologia de fundamentação"@pt .
+
+# http://semantica.globo.com/upper/AtomicEntity
+:AtomicEntity a owl:Class ;
+              rdfs:subClassOf :Entity ;
+              rdfs:label "Entidade Atômica"@pt ;
+              rdfs:label "Atomic Entity"@en ;
+              rdfs:comment "Entidade (e.g. pessoa, lugar, organização) que não é composta por outras entidades (i.e. sem sub-divisões)."@pt .
+
+# http://semantica.globo.com/upper/CompositeEntity
+:CompositeEntity a owl:Class ;
+                 rdfs:subClassOf :Entity ;
+                 rdfs:label "Entidade Composta"@pt ;
+                 rdfs:label "Composite Entity"@en ;
+                 rdfs:comment "Entidade (e.g. lugar, organização) que por definição é composta por outras partes (e.g. Conglomerado empresarial)."@pt .
+
+# http://semantica.globo.com/upper/AbstractEntity
+:AbstractEntity a owl:Class ;
+                rdfs:subClassOf :Entity ;
+                rdfs:label "Entidade Abstrata"@pt ;
+                rdfs:label "Abstract Entity"@en ;
+                rdfs:comment "Raiz de conceitos abstratos (ex: sentimentos ou áreas como saúde)"@pt .
+
+# http://semantica.globo.com/upper/ConcreteEntity
+:ConcreteEntity a owl:Class ;
+                rdfs:subClassOf :Entity ;
+                rdfs:label "Entidade Concreta"@pt ;
+                rdfs:label "Concrete Entity"@en ;
+                rdfs:comment "Raiz de conceitos concretos"@pt .
+
+# http://semantica.globo.com/upper/Substance
+:Substance a owl:Class ;
+           rdfs:subClassOf :ConcreteEntity ,
+                           [ rdf:type owl:Restriction ;
+                             owl:onProperty :name ;
+                             owl:allValuesFrom xsd:string ;
+                             owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                           ] ;
+           rdfs:label "Substância"@pt ;
+           rdfs:label "Substance"@en ;
+           rdfs:comment "Entidade tangível que pode ser passiva ou ativa, e.g. uma Pessoa, uma Organização ou um Objeto. Restrição: Ter um nome no mínimo."@pt .
+
+# http://semantica.globo.com/upper/Object
+:Object a owl:Class ;
+        rdfs:subClassOf :Substance ;
+        rdfs:label "Objeto"@pt ;
+        rdfs:label "Object"@en ;
+        rdfs:comment "Entidade tangível passiva (oposição a agente)."@pt .
+
+# http://semantica.globo.com/upper/Aspect
+:Aspect a owl:Class ;
+        rdfs:subClassOf :ConcreteEntity ;
+        rdfs:label "Aspecto"@pt ;
+        rdfs:label "Aspect"@en ;
+        rdfs:comment "Dimensão conceitual ou característica de uma entidade."@pt .
+
+# http://semantica.globo.com/upper/Agent
+:Agent a owl:Class ;
+       rdfs:subClassOf :Substance ;
+       rdfs:label "Agente"@pt ;
+       rdfs:label "Agent"@en ;
+       rdfs:comment "Entidade tangível ativa (oposição a objeto)."@pt .
+
+# http://semantica.globo.com/upper/SingleAgent
+:SingleAgent a owl:Class ;
+             rdfs:subClassOf :Agent ;
+             owl:equivalentClass foaf:Agent ;
+             rdfs:label "Agente Individual"@pt ;
+             rdfs:label "Single Agent"@en ;
+             rdfs:comment "Agente que contempla noção de elemento de conjunto"@pt .
+
+# http://semantica.globo.com/upper/CollectiveAgent
+:CollectiveAgent a owl:Class ;
+            rdfs:subClassOf :Agent ;
+            rdfs:label "Agente Coletivo"@pt ;
+            rdfs:label "Collective Agent"@en ;
+            rdfs:comment "Agente que contempla noção de conjunto"@pt .
+
+# http://semantica.globo.com/upper/SocialCollectiveAgent
+:SocialCollectiveAgent a owl:Class ;
+                       rdfs:subClassOf :CollectiveAgent ;
+                       rdfs:label "Agente Social Coletivo"@pt ;
+                       rdfs:label "Social Collective Agent"@en ;
+                       rdfs:comment "Agente Coletivo com teor social. Ex.: Uma banda de rock ou um time de futebol"@pt .
+
+# http://semantica.globo.com/upper/Event
+:Event a owl:Class ;
+       rdfs:subClassOf :ConcreteEntity ;
+       owl:equivalentClass schema:Event ,
+                           event:Event ;
+       rdfs:label "Evento"@pt ;
+       rdfs:label "Event"@en ;
+       rdfs:comment "Um evento que ocorre em um certo tempo e/ou em uma certa localização"@pt .
+
+# http://semantica.globo.com/upper/Action
+:Action a owl:Class ;
+        rdfs:subClassOf :Event ;
+        rdfs:label "Ação"@pt ;
+        rdfs:label "Action"@en ;
+        rdfs:comment "Um evento que implica a participação de um Agente"@pt .
+
+###############################################################
+#
+# Instruções para declaração do TTL - Properties
+# - Seguir uma ordem lógica na declaração de uma propriedade:
+#   - Ordem: tipo (e.g. a owl:DatatypeProperty), relação de
+#     subpropriedade, relação de equivalência com ontologias
+#     externas, label, domain, range, comentário
+#
+###############################################################
+
+
+##########################################
+# DatatypeProperties
+##########################################
+
+# http://semantica.globo.com/upper/name
+:name rdf:type owl:DatatypeProperty  ;
+      rdfs:subPropertyOf rdfs:label ;
+      rdfs:label "Nome"@pt ;
+      rdfs:label "Name"@en ;
+      rdfs:domain :Entity ;
+      rdfs:range xsd:string ;
+      rdfs:comment "Nomes populares de uma instância. Exemplo: nomes pelo quais uma pessoa é conhecida (e.g. Ronaldinho, Zico, Lula). Não confundir com nome completo, uma outra propriedade com valor único e formal."@pt .
+
+# http://semantica.globo.com/upper/fullName
+:fullName a owl:DatatypeProperty ;
+          owl:equivalentProperty foaf:name ;
+          rdfs:label "Nome Completo"@pt ;
+          rdfs:label "Full Name"@en ;
+          rdfs:domain :Substance ;
+          rdfs:range xsd:string ;
+          rdfs:comment "Nome completo de Agente ou Objeto."@pt.
+
+# http://semantica.globo.com/upper/description
+:description a owl:DatatypeProperty ;
+             owl:equivalentProperty dbpedia:description ,
+                                    schema:description ;
+             rdfs:label "Descrição"@pt ;
+             rdfs:label "Description"@en ;
+             rdfs:domain :Entity ;
+             rdfs:range xsd:string ;
+             rdfs:comment "Descrição textual da entidade."@pt .
+
+##########################################
+# ObjectProperties
+##########################################
+
+# http://semantica.globo.com/upper/isPartOf
+:isPartOf a owl:ObjectProperty ,
+            owl:TransitiveProperty ;
+          owl:equivalentProperty dct:isPartOf ;
+          owl:inverseOf :hasPart ;
+          rdfs:label "É parte de"@pt ;
+          rdfs:label "Is part of"@en ;
+          rdfs:domain :Entity ;
+          rdfs:range :Entity ;
+          rdfs:comment "Um recurso (sujeito) que está física ou logicamente incluído em outro (objeto ou valor) (e.g. <UF_RJ> upper:isPartOf <Country_Brazil> ou <Pessoa_Romario> upper:isPartOf <Partido_PSB>)."@pt .
+
+# http://semantica.globo.com/upper/hasPart
+:hasPart a owl:ObjectProperty ,
+           owl:TransitiveProperty ;
+          owl:equivalentProperty dct:hasPart ;
+          owl:inverseOf :isPartOf ;
+          rdfs:label "Tem parte"@pt ;
+          rdfs:label "Has part"@en ;
+          rdfs:domain :Entity ;
+          rdfs:range :Entity ;
+          rdfs:comment "Relação inversa a 'isPartOf', onde quem 'domina' a relação é o elemento 'maior' (e.g. <Country_Brazil> dc:isPartOf <UF_RJ>)."@pt .
+
+# http://semantica.globo.com/upper/memberOf
+:memberOf a owl:ObjectProperty ,
+            owl:TransitiveProperty ;
+          rdfs:subPropertyOf :isPartOf ;
+          owl:equivalentProperty dbpedia:childOrganisation ;
+          rdfs:label "É membro de"@pt ;
+          rdfs:label "Is member of"@en ;
+          rdfs:domain :Agent ;
+          rdfs:range :CollectiveAgent ;
+          rdfs:comment "Um Agente (singular ou coletivo) que pertence a um Agente Coletivo."@pt .
+
+# http://semantica.globo.com/upper/hasMember
+:hasMember a owl:ObjectProperty ,
+             owl:TransitiveProperty ;
+          rdfs:subPropertyOf :hasPart ;
+          owl:equivalentProperty dbpedia:parentOrganisation ;
+          owl:inverseOf :memberOf ;
+          rdfs:label "Tem membro"@pt ;
+          rdfs:label "Has member"@en ;
+          rdfs:domain :CollectiveAgent ;
+          rdfs:range :Agent ;
+          rdfs:comment "Um Agente Coletivo que incorpora um outro Agente (singular ou coletivo)." .
+
+# http://semantica.globo.com/upper/sociallyRelatedWith
+:sociallyRelatedWith a owl:ObjectProperty ;
+                     rdfs:label "Socialmente relacionado a"@pt ;
+                     rdfs:label "Socially related with"@en ;
+                     rdfs:domain :Substance ;
+                     rdfs:range :Substance ;
+                     rdfs:comment "Relação social abstrata entre qualquer combinação de (Agente, Objeto) tomados dois-a-dois."@pt .
+
+# http://semantica.globo.com/upper/subordinateOf
+:subordinateOf a owl:ObjectProperty ,
+                owl:TransitiveProperty ;
+              rdfs:subPropertyOf :sociallyRelatedWith ;
+              rdfs:label "Subordinado a"@pt ;
+              rdfs:label "Subordinate of"@en ;
+              rdfs:domain :CollectiveAgent ;
+              rdfs:range :CollectiveAgent ;
+              rdfs:comment "Relação social de subordinação entre Agentes Coletivos. Ex.: Secretaria de Educação do RJ subordinada ao MEC/INEP."@pt .
+
+# http://semantica.globo.com/upper/hasSubordinate
+:hasSubordinate a owl:ObjectProperty ,
+                owl:TransitiveProperty ;
+              rdfs:subPropertyOf :sociallyRelatedWith ;
+              owl:inverseOf :subordinateOf ;
+              rdfs:label "Tem subordinado"@pt ;
+              rdfs:label "Has subordinate"@en ;
+              rdfs:domain :CollectiveAgent ;
+              rdfs:range :CollectiveAgent ;
+              rdfs:comment "Relação social de subordinação entre Agentes Coletivos. Ex.: MEC/INEP tem como subordinados as Secretarias de Educação Estaduais."@pt .
+
+# http://semantica.globo.com/upper/competesWith
+:competesWith a owl:ObjectProperty ;
+              rdfs:subPropertyOf :sociallyRelatedWith ;
+              rdfs:label "Compete com"@pt ;
+              rdfs:label "Competes with"@en ;
+              rdfs:domain :CollectiveAgent ;
+              rdfs:range :CollectiveAgent ;
+              rdfs:comment "Relação social de competição ou concorrência."@pt .
+
+# http://semantica.globo.com/upper/alliedWith
+:cooperatesWith a owl:ObjectProperty ;
+                rdfs:subPropertyOf :sociallyRelatedWith ;
+                rdfs:label "Aliado com"@pt ;
+                rdfs:label "Allied with"@en ;
+                rdfs:domain :CollectiveAgent ;
+                rdfs:range :CollectiveAgent ;
+                rdfs:comment "Relação social de aliança ou cooperação."@pt .
+
+# http://semantica.globo.com/upper/hasActivity
+:hasActivity a owl:DatatypeProperty ,
+               owl:FunctionalProperty ;
+             owl:equivalentProperty dbpedia:industry ;
+             rdfs:label "Desempenha atividade"@pt ;
+             rdfs:label "Has activity"@en ;
+             rdfs:domain :CollectiveAgent ;
+             rdfs:range organization:Activity ;
+             rdfs:comment "Descreve atividade desempenhada por um Agente Coletivo."@pt .
+
+# http://semantica.globo.com/upper/nationality
+:nationality a owl:ObjectProperty ;
+             owl:equivalentProperty dbpedia:nationality ,
+                                    schema:nationality ;
+             rdfs:label "Nacionalidade"@pt ;
+             rdfs:label "Nationality"@en ;
+             rdfs:domain :Agent ;
+             rdfs:range place:Country ;
+             rdfs:comment "Nacionalidade de um agente."@pt .
+
+# http://semantica.globo.com/upper/produces
+:produces a owl:ObjectProperty ;
+          owl:equivalentProperty event:product ;
+          rdfs:label "Produz"@pt ;
+          rdfs:label "Produces"@en ;
+          rdfs:domain :Event ;
+          rdfs:range owl:Entity ;
+          rdfs:comment "Noção de geração/criação."@pt ;
+          rdfs:comment "Relates an event to something produced during the event---a sound, a pie, etc."@en .
+
+# http://semantica.globo.com/upper/causes
+:causes a owl:ObjectProperty ;
+        rdfs:subPropertyOf event:product ;
+        rdfs:label "Causa"@pt ;
+        rdfs:label "Causes"@en ;
+        rdfs:domain :Event ;
+        rdfs:range :Event ;
+        rdfs:comment "Noção ativa de causalidade entre eventos."@pt .
+
+# http://semantica.globo.com/upper/causedBy
+:causedBy a owl:ObjectProperty ;
+          owl:inverseOf :causes ;
+          rdfs:label "Causado por"@pt ;
+          rdfs:label "Caused by"@en ;
+          rdfs:domain :Event ;
+          rdfs:range :Event ;
+          rdfs:comment "Noção passiva de causalidade entre eventos."@pt .
+
+# http://semantica.globo.com/upper/birthDate
+:birthDate a owl:DatatypeProperty ,
+             owl:FunctionalProperty ;
+           owl:equivalentProperty dbpedia:birthDate ,
+                                  schema:birthDate ;
+           rdfs:label "Data de Nascimento"@pt ;
+           rdfs:label "Birth Date"@en ;
+           rdfs:domain :SingleAgent ;
+           rdfs:range xsd:date ;
+           rdfs:comment "Data de nascimento de um Agente."@pt .
+
+# http://semantica.globo.com/upper/birthPlace
+:birthPlace a owl:ObjectProperty ;
+             owl:equivalentProperty dbpedia:birthPlace ;
+             rdfs:label "Local de Nascimento"@pt ;
+             rdfs:label "Birth Place"@en ;
+             rdfs:domain :SingleAgent ;
+             rdfs:range place:Place ;
+             rdfs:comment "Local de nascimento de um Agente."@pt .
+
+
+# http://semantica.globo.com/upper/deathDate
+:deathDate a owl:DatatypeProperty ,
+             owl:FunctionalProperty ;
+           owl:equivalentProperty dbpedia:deathDate ,
+                                  schema:deathDate ;
+           rdfs:label "Data de Falecimento"@pt ;
+           rdfs:label "Death Date"@en ;
+           rdfs:domain :SingleAgent ;
+           rdfs:range xsd:date ;
+           rdfs:comment "Data de falecimento de um Agente."@pt .
+
+# http://semantica.globo.com/upper/foundingDate         
+:foundingDate a owl:DatatypeProperty ,
+                owl:FunctionalProperty ;
+              owl:equivalentProperty dbpedia:establishedDate ,
+                                     schema:foundingDate ;
+              rdfs:label "Data de fundação"@pt ;
+              rdfs:label "Founding date"@en ;
+              rdfs:domain [
+                            a owl:Class ;
+                            owl:unionOf (place:GeopoliticalDivision organization:Organization)
+                          ] ;
+              rdfs:range xsd:date ;
+              rdfs:comment "Data de fundação de uma organização ou cidade."@pt .
+## Na dbpedia a propriedade  dbpedia:establishedDate tem muita sugeira,
+## e existe ainda a possibilidade de alinharmos com dbpedia:formationDate
+
+# http://semantica.globo.com/upper/location
+:location rdf:type owl:ObjectProperty ;
+          owl:equivalentProperty dbpedia:location ,
+                                 schema:location ,
+                                 foaf:location,
+                                 event:place ;
+          rdfs:label "Localização"@pt ;
+          rdfs:label "Location"@en ;
+          rdfs:domain [
+                        a owl:Class ;
+                        owl:unionOf (:Event organization:Organization)
+                      ] ;
+          rdfs:range place:Place ;
+          rdfs:comment "Local de um evento ou de uma Organização."@pt .
+
+# http://semantica.globo.com/upper/acronym
+:acronym rdf:type owl:DatatypeProperty ;
+         rdfs:label "Acronym"@en ;
+         rdfs:label "Sigla"@pt ;
+         rdfs:domain [
+                       a owl:Class ;
+                       owl:unionOf (place:Place organization:Organization)
+                     ] ;
+         rdfs:range xsd:string ;
+         rdfs:comment "Sigla. Ex: SP, RJ, NYC"@pt .

@@ -1,0 +1,324 @@
+@prefix : <http://semantica.globo.com/place/> .
+@prefix country: <http://semantica.globo.com/place/Country/> .
+@prefix continent: <http://semantica.globo.com/place/Continent/> .
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix upper: <http://semantica.globo.com/upper/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+
+:dummy a owl:Class .
+
+##########################################
+# Classes
+##########################################
+
+# http://semantica.globo.com/place/Place
+:Place a owl:Class ;
+       rdfs:subClassOf upper:Object ;
+       owl:equivalentClass schema:Place ,
+                           dbpedia:Place ,
+                           dct:Location ;
+       rdfs:label "Lugar"@pt ;
+       rdfs:label "Place"@en ;
+       rdfs:comment "An area with boundaries or a portion of space which has a name."@en ;
+       rdfs:comment "Uma área com delimitações ou uma região espacial que possui um nome."@pt .
+
+# http://semantica.globo.com/place/Region
+:Region a owl:Class ;
+        rdfs:subClassOf :Place ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty upper:hasPart ;
+                          owl:allValuesFrom :Place ;
+                          owl:minQualifiedCardinality "2"^^xsd:nonNegativeInteger
+                        ] ;
+       rdfs:label "Região"@pt ;
+       rdfs:label "Region"@en ;
+       rdfs:comment "A aggregation of places."@en ;
+       rdfs:comment "Uma agregação de lugares não necessariamente sob jurisdição política. Ex.: Mercosul, Bacia do Araguaia, etc."@pt .
+
+# http://semantica.globo.com/place/GeopoliticalDivision
+:GeopoliticalDivision a owl:Class ;
+                      rdfs:subClassOf :Place ;
+                      owl:equivalentClass schema:AdministrativeArea ,
+                                          dbpedia:GeopoliticalDivision ;
+                      rdfs:label "Região Administrativa"@pt ;
+                      rdfs:label "Administrative Region"@en ;
+                      rdfs:comment "Uma região geográfica reconhecida como uma sub-divisão política. Ex: Brasi, Mercosul"@pt ;
+                      rdfs:comment "A geographical region under the jurisdiction of a particular government."@en .
+
+# http://semantica.globo.com/place/Continent
+:Continent a owl:Class ;
+           rdfs:subClassOf :GeopoliticalDivision ;
+           owl:equivalentClass schema:Continent ,
+                               dbpedia:Continent ;
+           rdfs:label "Continente"@pt ;
+           rdfs:label "Continent"@en ;
+           rdfs:comment "One of the continents on Earth, using the six-continent model, e.g. Africa, Europe, Asia, America, Antarctica, and Australia."@en ;
+           rdfs:comment "Um dos contients da Terra, usando o modelo de seis contents, são eles: África, Europa, Ásia, América, Antártica e Austrália."@pt .
+
+# http://semantica.globo.com/place/Country
+:Country a owl:Class ;
+         rdfs:subClassOf :GeopoliticalDivision ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty :partOfContinent ;
+                           owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:allValuesFrom :Country
+                         ] ;
+         owl:equivalentClass schema:Country ,
+                             dbpedia:Country ;
+         rdfs:label "País"@pt ;
+         rdfs:label "Country"@en ;
+         rdfs:comment "Political subdivision of the World."@en ;
+         rdfs:comment "Sub-divisão política do Mundo."@pt .
+
+# http://semantica.globo.com/place/State
+:State a owl:Class ;
+       rdfs:subClassOf :GeopoliticalDivision ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :partOfCountry ;
+                         owl:allValuesFrom :Country ;
+                         owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :partOfCountry ;
+                         owl:allValuesFrom :Country ;
+                         owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                       ] ;
+      owl:equivalentClass schema:State ;
+      rdfs:label "Estado"@pt ;
+      rdfs:label "State"@en ;
+      rdfs:comment "A state or province."@en ;
+      rdfs:comment "Estado ou Unidade Federativa. Essa classe não distingue especifidades geopolíticas de país. "@pt .
+## Não alinhamos com a DBPedia porque ela só define
+## região administrativa e não entra no mérito
+## de especifidades de subdivisão política
+
+# http://semantica.globo.com/place/City
+:City a owl:Class ;
+      rdfs:subClassOf :GeopoliticalDivision ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :partOfState ;
+                        owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:allValuesFrom :State
+                      ] ;
+      owl:equivalentClass schema:City ,
+                          dbpedia:City ;
+      rdfs:label "Cidade"@pt ;
+      rdfs:label "City"@en ;
+      rdfs:comment "A relatively large and permanent settlement, particularly a large urban settlement. Definição do estado que contém a cidade é opcional."@en ;
+      rdfs:comment "Lugar perene e urbanizado onde pessoas habitam."@pt .
+
+
+# http://semantica.globo.com/place/Neighborhood
+:Neighborhood a owl:Class ;
+              rdfs:subClassOf :GeopoliticalDivision ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :partOfCity ;
+                                owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                owl:allValuesFrom :City
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :partOfCity ;
+                                owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                owl:allValuesFrom :City
+                              ] ;
+              rdfs:label "Bairro"@pt ;
+              rdfs:label "Neighborhood"@en ;
+              rdfs:comment "Neighborhood is a geographically localised community within a larger city, town or suburb."@en ;
+              rdfs:comment "Bairro é uma comunidade localizada geograficamente dentro de uma cidade."@pt .
+
+# http://semantica.globo.com/place/PostalAddress
+:PostalAddress a owl:Class ;
+               rdfs:subClassOf :GeopoliticalDivision ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :partOfNeighborhood ;
+                                 owl:allValuesFrom :Neighborhood
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :partOfCity ;
+                                 owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                 owl:allValuesFrom :City
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :partOfCity ;
+                                 owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                 owl:allValuesFrom :City
+                               ] ;
+               rdfs:label "Endereço"@pt ;
+               rdfs:label "Postal Address"@en ;
+               rdfs:comment "Indication where a person, organization, or the like is located or may be reached."@en ;
+               rdfs:comment "Indicação de onde uma pessoa, organização, ou entidade pode ser localizada."@pt .
+
+##########################################
+# DatatypeProperties
+##########################################
+
+# http://semantica.globo.com/place/geonameId
+:geonameId rdf:type owl:DatatypeProperty ;
+           rdfs:label "Geoname ID"@en ;
+           rdfs:label "ID no Geoname"@pt ;
+           rdfs:domain :Place ;
+           rdfs:range xsd:integer ;
+           rdfs:comment "ID para uso da API do Geonames."@pt .
+
+
+##########################################
+# ObjectProperties
+##########################################
+
+# http://semantica.globo.com/place/subRegionOf
+:subRegionOf a owl:ObjectProperty ;
+             rdfs:subPropertyOf upper:isPartOf ;
+             owl:equivalentProperty schema:containedIn ;
+             rdfs:label "Subregião de"@pt ;
+             rdfs:label "Sub-region of"@en ;
+             rdfs:domain :Region ;
+             rdfs:range :Place ;
+             rdfs:comment "Uma região compõe um lugar."@pt .
+
+# http://semantica.globo.com/place/hasSubRegion
+:hasSubRegion a owl:ObjectProperty ;
+             rdfs:subPropertyOf upper:hasPart ;
+             owl:inverseOf :subRegionOf ;
+             rdfs:label "Tem sub-região"@pt ;
+             rdfs:label "Has Sub-region"@en ;
+             rdfs:domain :Place ;
+             rdfs:range :Region ;
+             rdfs:comment "Um lugar pode ser subdividido em regiões."@pt .
+
+# http://semantica.globo.com/place/composedBy
+:composedBy a owl:ObjectProperty ;
+            rdfs:subPropertyOf upper:isPartOf ;
+            rdfs:label "subregião de"@pt ;
+            rdfs:label "sub-region of"@en ;
+            rdfs:domain :Region ;
+            rdfs:range  :GeopoliticalDivision ;
+            rdfs:comment "Uma região é composta por outras regiões (nesse caso, necessariamente são divisões geopolíticas)."@pt .
+
+# http://semantica.globo.com/place/latitude
+:latitude a owl:DatatypeProperty ;
+          owl:equivalentProperty geo:lat ;
+          rdfs:label "Latitude"@pt ;
+          rdfs:label "Latitude"@en ;
+          rdfs:domain :Place ;
+          rdfs:range xsd:float ;
+          rdfs:comment "Coordenada de latitude de acordo com WGS84."@pt ;
+          rdfs:comment "Latitude coordinates according to WGS84."@en .
+
+# http://semantica.globo.com/place/longitude
+:longitude a owl:DatatypeProperty ;
+           owl:equivalentProperty geo:long ;
+           rdfs:label "Longitude"@pt ;
+           rdfs:label "Longitude"@en ;
+           rdfs:domain :Place ;
+           rdfs:range xsd:float ;
+           rdfs:comment "Coordenada de longitude de acordo com WGS84."@pt ;
+           rdfs:comment "Longitude coordinates according to WGS84."@en .
+
+# http://semantica.globo.com/place/partOfContinent
+:partOfContinent a owl:ObjectProperty ;
+                 rdfs:subPropertyOf upper:isPartOf ;
+                 rdfs:label "Faz parte do continente"@pt ;
+                 rdfs:label "Part of continent"@en ;
+                 rdfs:domain :Country ;
+                 rdfs:range :Continent ;
+                 rdfs:comment "País está no contiente."@pt .
+
+# http://semantica.globo.com/place/partOfCountry
+:partOfCountry a owl:ObjectProperty ;
+               rdfs:subPropertyOf upper:isPartOf ;
+               rdfs:label "Faz parte do país"@pt ;
+               rdfs:label "Part of country"@en ;
+               rdfs:domain [
+                             a owl:Class ;
+                             owl:unionOf (:State :City)
+                           ] ;
+               rdfs:range :Country ;
+               rdfs:comment "Estado está no país."@pt .
+
+# http://semantica.globo.com/place/partOfState
+:partOfState a owl:ObjectProperty ;
+             rdfs:subPropertyOf upper:isPartOf ;
+             rdfs:label "Faz parte do estado"@pt ;
+             rdfs:label "Part of state"@en ;
+             rdfs:domain :City ;
+             rdfs:range :State ;
+             rdfs:comment "Cidade está no estado."@pt .
+
+# http://semantica.globo.com/place/partOfCity
+:partOfCity a owl:ObjectProperty ;
+            rdfs:subPropertyOf upper:isPartOf ;
+            rdfs:label "Faz parte da cidade"@pt ;
+            rdfs:label "Part of city"@en ;
+            rdfs:domain [
+                          a owl:Class ;
+                          owl:unionOf (:Neighborhood :PostalAddress)
+                        ] ;
+            rdfs:range :City ;
+            rdfs:comment "Endereço ou bairro estão na cidade."@pt .
+
+# http://semantica.globo.com/place/partOfNeighborhood
+:partOfNeighborhood a owl:ObjectProperty ;
+                    rdfs:subPropertyOf upper:isPartOf ;
+                    rdfs:label "Está no bairro"@pt ;
+                    rdfs:label "Part to neighborhood"@en ;
+                    rdfs:domain :PostalAddress ;
+                    rdfs:range :Neighborhood ;
+                    rdfs:comment "Endereço postal está no bairro."@pt .
+
+# http://semantica.globo.com/place/atPostalAddress
+:atPostalAddress a owl:ObjectProperty ;
+                 rdfs:subPropertyOf upper:isPartOf ;
+                 rdfs:label "Está no endereço"@pt ;
+                 rdfs:label "At postal address"@en ;
+                 rdfs:domain :Entity ;
+                 rdfs:range :PostalAddress ;
+                 rdfs:comment "Qualquer entidade que está situada na rua."@pt .
+
+##########################################
+# Instances
+##########################################
+
+# http://semantica.globo.com/place/Country/Brazil
+country:Brazil rdf:type :Country ;
+        upper:name "Brasil"@pt ;
+        upper:name "Brazil"@en ;
+        upper:description "Representa o país Brasil."@pt .
+
+# http://semantica.globo.com/place/ForeignCountry
+:ForeignCountry rdfs:subClassOf :Country ,
+                [ owl:complementOf :Brazil ] ;
+                upper:name "País Estrangeiro"@pt ;
+                upper:name "Foreign Country"@en ;
+                upper:description "Representa país que não é o Brasil. Útil para representar conceito de algo com nacionalidade diferente da brasileira."@pt .
+
+# http://semantica.globo.com/place/Continent/Africa
+continent:Africa a :Continent ;
+        upper:name "África"@pt ,
+                   "Africa"@en .
+
+# http://semantica.globo.com/place/Continent/Europe
+continent:Europe a :Continent ;
+        upper:name "Europa"@pt ,
+                   "Europe"@en .
+
+# http://semantica.globo.com/place/Continent/Asia
+continent:Asia a :Continent ;
+        upper:name "Ásia"@pt ,
+                   "Asia"@en .
+
+# http://semantica.globo.com/place/Continent/America
+continent:America a :Continent ;
+         upper:name "América"@pt ,
+                    "America"@en .
+
+# http://semantica.globo.com/place/Continent/Antarctica
+continent:Antarctica a :Continent ;
+            upper:name "Oceania"@pt ,
+                       "Oceania"@en .

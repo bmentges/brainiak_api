@@ -1,0 +1,5 @@
+SPARQL CREATE GRAPH <http://semantica.globo.com/upper/>;
+SPARQL CREATE GRAPH <http://semantica.globo.com/organization/>;
+SPARQL CREATE GRAPH <http://semantica.globo.com/person/>;
+SPARQL CREATE GRAPH <http://semantica.globo.com/place/>;
+SPARQL CREATE GRAPH <http://test.onto/>;

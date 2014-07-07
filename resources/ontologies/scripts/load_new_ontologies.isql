@@ -1,0 +1,22 @@
+SPARQL CLEAR GRAPH <http://semantica.globo.com/upper/>;
+DB.DBA.TTLP_MT_LOCAL_FILE('dumps/upper.ttl', '', 'http://semantica.globo.com/upper/');
+
+SPARQL CLEAR GRAPH <http://semantica.globo.com/organization/>;
+DB.DBA.TTLP_MT_LOCAL_FILE('dumps/concla.ttl', '', 'http://semantica.globo.com/organization/');
+DB.DBA.TTLP_MT_LOCAL_FILE('dumps/organization.ttl', '', 'http://semantica.globo.com/organization/');
+
+SPARQL CLEAR GRAPH <http://semantica.globo.com/person/>;
+DB.DBA.TTLP_MT_LOCAL_FILE('dumps/person.ttl', '', 'http://semantica.globo.com/person/');
+
+SPARQL CLEAR GRAPH <http://semantica.globo.com/place/>;
+DB.DBA.TTLP_MT_LOCAL_FILE('dumps/place.ttl', '', 'http://semantica.globo.com/place/');
+
+SPARQL CLEAR GRAPH <http://test.onto/>;
+DB.DBA.TTLP_MT_LOCAL_FILE('dumps/test.ttl', '', 'http://test.onto/');
+
+
+rdfs_rule_set('http://semantica.globo.com/ruleset', 'http://semantica.globo.com/upper/');
+rdfs_rule_set('http://semantica.globo.com/ruleset', 'http://semantica.globo.com/organization/');
+rdfs_rule_set('http://semantica.globo.com/ruleset', 'http://semantica.globo.com/person/');
+rdfs_rule_set('http://semantica.globo.com/ruleset', 'http://semantica.globo.com/place/');
+rdfs_rule_set('http://semantica.globo.com/ruleset', 'http://test.onto/');

@@ -1,0 +1,85 @@
+@prefix : <http://semantica.globo.com/organization/> .
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix upper: <http://semantica.globo.com/upper/> .
+
+##########################################
+# Enumerations
+##########################################
+
+# http://semantica.globo.com/organization/Activity
+:Activity a owl:Class ;
+          rdfs:label "Atividade"@pt ;
+          rdfs:label "Activity"@en ;
+          rdfs:comment "Atividade desempenhada por um agente coletivo"@pt .
+
+##########################################
+# Classes
+##########################################
+
+# http://semantica.globo.com/organization/Organization
+:Organization a owl:Class ;
+              rdfs:subClassOf upper:CollectiveAgent ;
+              rdfs:label "Organização"@pt ;
+              rdfs:label "Organization"@en ;
+              rdfs:comment "Agente Coletivo que representa uma organização com teor jurídico/fiscal, por exemplo instituição que tem um CNPJ."@pt .
+
+# http://semantica.globo.com/organization/OrganizationalUnit
+:OrganizationalUnit a owl:Class ;
+                    rdfs:subClassOf upper:CollectiveAgent ;
+                    rdfs:label "Unidade Organizacional"@pt ;
+                    rdfs:label "Organizational Unit"@en ;
+                    rdfs:comment "Uma parte de uma organização, porém sem ter necessariamente o teor jurídico/fiscal da organização que a contém."@pt .
+
+## As classes abaixo estão alinhadas com  as definições de primeiro nível em
+## http://concla.ibge.gov.br/en/estrutura/natjur-estrutura/natureza-juridica-2009-1
+
+# http://semantica.globo.com/organization/PublicOrganization
+:PublicOrganization a owl:Class ;
+                    rdfs:subClassOf :Organization ;
+                    owl:equivalentClass schema:GovernmentOrganization,
+                                        dbpedia:GovernmentAgency ;
+                    owl:disjointWith  :PrivateOrganization ,
+                                      :NonProfitOrganization ;
+                    rdfs:label "Organização da Administração Pública"@pt ;
+                    rdfs:label "Public Administration Organization"@en ;
+                    rdfs:comment "Organização que pertence a Administração Pública."@pt .
+
+# http://semantica.globo.com/organization/PrivateOrganization
+:PrivateOrganization a owl:Class ;
+                     rdfs:subClassOf :Organization ;
+                     owl:equivalentClass schema:Corporation ,
+                                         dbpedia:Company ;
+                     owl:disjointWith  :PublicOrganization ,
+                                       :NonProfitOrganization ;
+                     rdfs:label "Organização Privada"@pt ;
+                     rdfs:label "Private Organization"@en ;
+                     rdfs:comment "Organização privada com fins lucrativos."@pt .
+
+# http://semantica.globo.com/organization/NonProfitOrganization
+:NonProfitOrganization a owl:Class ;
+                       rdfs:subClassOf :Organization ;
+                       owl:equivalentClass dbpedia:Non-ProfitOrganisation ,
+                                           schema:NGO ;
+                       owl:disjointWith  :PrivateOrganization ,
+                                         :PublicOrganization ;
+                       rdfs:label "Organização sem fins lucrativos"@pt ;
+                       rdfs:label "Non-Profit Organization"@en ;
+                       rdfs:comment "Organização que não possui fins lucrativos e não é uma pertence a Administração Pública."@pt .
+
+##########################################
+# DatatypeProperties
+##########################################
+
+# http://semantica.globo.com/organization/ibgeConclaSection
+:ibgeConclaSection a owl:DatatypeProperty ,
+                    owl:FunctionalProperty ;
+                  rdfs:label "Identificador CONCLA-IBGE"@pt ;
+                  rdfs:label "Identifier CONCLA-IBGE"@en ;
+                  rdfs:domain :Organization ;
+                  rdfs:range :Activity ;
+                  rdfs:comment "Identificador da seção na Comissão Nacional de Classificação (CONCLA) do IBGE, de A a U. Mais informações em: http://www.cnae.ibge.gov.br/estrutura.asp?TabelaBusca=CNAE_200@CNAE%202.0@0@cnae@0"@pt .

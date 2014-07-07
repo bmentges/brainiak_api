@@ -1,0 +1,168 @@
+@prefix : <http://semantica.globo.com/concla/> .
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix upper: <http://semantica.globo.com/upper/> .
+@prefix organization: <http://semantica.globo.com/organization/> .
+@prefix act: <http://semantica.globo.com/organization/Activity/> .
+
+
+##########################################
+# Instances
+##########################################
+
+## As instâncias de Atividade são alinhadas com as seções definidas pelo IBGE,
+##  de primeiro nível.
+
+# http://semantica.globo.com/organization/Activity/NaturalCulture
+act:NaturalCulture rdf:type organization:Activity ;
+                   rdfs:label "Cultura Natural"@pt ;
+                   rdfs:label "Natural Cultures"@en ;
+                   rdfs:comment "Agricultura, Pecuária, Produção Florestal, Pesca e Aqüicultura."@pt ;
+                   :ibgeConclaSection "A" .
+
+# http://semantica.globo.com/organization/Activity/ExtractionIndustry
+act:ExtractionIndustry rdf:type organization:Activity ;
+                       rdfs:label "Indústrias Extrativas"@pt ;
+                       rdfs:label "Extraction Industries"@en ;
+                       rdfs:comment "Indústrias Extrativas de carvão mineral, petróleo, gás natural e minerais."@pt ;
+                       :ibgeConclaSection "B" .
+
+# http://semantica.globo.com/organization/Activity/TransformationIndustries
+act:TransformationIndustry rdf:type organization:Activity ;
+                           rdfs:label "Indústrias de Transformação"@pt ;
+                           rdfs:label "Transformation Industries"@en ;
+                           rdfs:comment "Todas indústrias de transformação. Ex.: Alimentícia, Têxtil, Farmacêutica, etc."@pt ;
+                           :ibgeConclaSection "C" .
+
+# http://semantica.globo.com/organization/Activity/ElectricityGasIndustry
+act:ElectricityGasIndustry rdf:type organization:Activity ;
+                           rdfs:label "Indústrias de Gás e Eletricidade"@pt ;
+                           rdfs:label "Electricity and Gas Industries"@en ;
+                           rdfs:comment "Indústrias responsáveis pelo suprimento e distribuição de gás e eletricidade."@pt ;
+                           :ibgeConclaSection "D" .
+
+# http://semantica.globo.com/organization/Activity/WaterSewageIndustry
+act:WaterSewageIndustry rdf:type organization:Activity ;
+                        rdfs:label "Indúsrias de Água e Esgoto"@pt ;
+                        rdfs:label "Water and Sewage Industries"@en ;
+                        rdfs:comment "Indústrias responsáveis pelo suprimento, distribuição e tratamento de água, esgoto e resíduos."@pt ;
+                        :ibgeConclaSection "E" .
+
+# http://semantica.globo.com/organization/Activity/ConstructionIndustry
+act:ConstructionIndustry rdf:type organization:Activity ;
+                         rdfs:label "Indústria da Construção Civil"@pt ;
+                         rdfs:label "Construction Industry"@en ;
+                         rdfs:comment "Indústria responsável por obras da construção civul."@pt ;
+                         :ibgeConclaSection "F" .
+
+# http://semantica.globo.com/organization/Activity/CommerceAndVehicleRepair
+act:CommerceAndVehicleRepair rdf:type organization:Activity ;
+                             rdfs:label "Comércio e Reparo de Veículos"@pt ;
+                             rdfs:label "Commerce and Vehicle Repair"@en ;
+                             rdfs:comment "Atividades de Comércio em geral e reparo de veículos"@pt ;
+                             :ibgeConclaSection "G" .
+
+
+# http://semantica.globo.com/organization/Activity/TransportationStorageDelivery
+act:TransportationStorageDelivery rdf:type organization:Activity ;
+                                  rdfs:label "Indústrias de Transporte, Armazenamento e Entregas."@pt ;
+                                  rdfs:label "Transportation, Storage and Delivery Industries"@en ;
+                                  rdfs:comment "Atividades de transporte de passageiros ou mercadorias, armazenagem de carga e entrega."@pt ;
+                                  :ibgeConclaSection "H" .
+
+# http://semantica.globo.com/organization/Activity/AccommodationFoodService
+act:AccommodationFoodService rdf:type organization:Activity ;
+                             rdfs:label "Serviços de Hospedagem e Alimentação"@pt ;
+                             rdfs:label "Accommodation and Food Services"@en ;
+                             rdfs:comment "Atividades de hospedagem, acomodação e alimentação."@pt ;
+                             :ibgeConclaSection "I" .
+
+# http://semantica.globo.com/organization/Activity/InformationCommunicationService
+act:InformationCommunicationServices rdf:type organization:Activity ;
+                                     rdfs:label "Serviços de Informação e Comunicação"@pt ;
+                                     rdfs:label "Information and Communication Services"@en ;
+                                     rdfs:comment "Todos serviços re;acionados a informação e comunicação. Ex.: Impressão, Radio, Telecomunicações, Cinema, etc."@pt ;
+                                     :ibgeConclaSection "J" .
+
+# http://semantica.globo.com/organization/Activity/FinacialInsuranceService
+act:FinacialInsuranceService rdf:type organization:Activity ;
+                              rdfs:label "Serviços Financeiros, Previdenciários e Seguros"@pt ;
+                              rdfs:label "Finacial and Insurance Services"@en ;
+                              rdfs:comment "Serviços de natureza financeira, previdenciária, seguros e planos de saúde."@pt ;
+                              :ibgeConclaSection "K" .
+
+# http://semantica.globo.com/organization/Activity/RealStateService
+act:RealStateService rdf:type organization:Activity ;
+                     rdfs:label "Serviços Imobiliários"@pt ;
+                     rdfs:label "Real State Services"@en ;
+                     rdfs:comment "Atividades de gestores de propriedade imobiliária como : proprietários de imóveis e corretores."@pt ;
+                     :ibgeConclaSection "L" .
+
+# http://semantica.globo.com/organization/Activity/ProfessionalScientificTechnicalService
+act:ProfessionalScientificTechnicalService rdf:type organization:Activity ;
+                                           rdfs:label "Serviços Profissionais, Científicos ou Técnicos"@pt ;
+                                           rdfs:label "Professional, Scientific or Technical Services"@en ;
+                                           rdfs:comment "Atividades especializadas profissionais, científicas e técnicas. Estas atividades requerem uma formação profissional específica normalmente com elevado nível de qualificação e treinamento."@pt ;
+                                           :ibgeConclaSection "M" .
+
+# http://semantica.globo.com/organization/Activity/AdministrationAndSupportService
+act:AdministrationAndSupportService rdf:type organization:Activity ;
+                                    rdfs:label "Serviços Administrativos e de Suporte à Administração"@pt ;
+                                    rdfs:label "Administration and Support Services"@en ;
+                                    rdfs:comment "Atividades de apoio administrativo geralmente compreendem: contratação e colocação de pessoas em empresas clientes; preparo de documentos e outros serviços de escritório; serviços de teleatendimento; serviços de cobrança para clientes; organização de viagens; e serviços de envasamento e empacotamento sob contrato."@pt ;
+                                    :ibgeConclaSection "N" .
+
+# http://semantica.globo.com/organization/Activity/PublicAdministrationService
+act:PublicAdministrationService rdf:type organization:Activity ;
+                                rdfs:label "Serviços da Administração Pública"@pt ;
+                                rdfs:label "Public Administration Services"@en ;
+                                rdfs:comment "Atividades que são normalmente realizadas pela Administração Pública."@pt ;
+                                :ibgeConclaSection "O" .
+
+# http://semantica.globo.com/organization/Activity/Education
+act:Education rdf:type organization:Activity ;
+              rdfs:label "Educação"@pt ;
+              rdfs:label "Education"@en ;
+              rdfs:comment "Atividades de ensino público e privado."@pt ;
+              :ibgeConclaSection "P" .
+
+# http://semantica.globo.com/organization/Activity/HealthAndSocialService
+act:HealthAndSocialService rdf:type organization:Activity ;
+                           rdfs:label "Serviços de Saúde e Assistência Social"@pt ;
+                           rdfs:label "Health and Social Services"@en ;
+                           rdfs:comment "Atividades de atenção à saúde humana e de serviços sociais."@pt ;
+                           :ibgeConclaSection "Q" .
+
+# http://semantica.globo.com/organization/Activity/Recreation
+act:Recreation rdf:type organization:Activity ;
+               rdfs:label "Artes, Cultura, Esportes e Recreação."@pt ;
+               rdfs:label "Art, Culture, Sport and Recreation "@en ;
+               rdfs:comment "Atividades destinadas a satisfazer os interesses culturais, de entretenimento e recreativos da população."@pt ;
+               :ibgeConclaSection "R" .
+
+# http://semantica.globo.com/organization/Activity/PersonalService
+act:PersonalService rdf:type organization:Activity ;
+                    rdfs:label "Serviços Pessoais"@pt ;
+                    rdfs:label "Personal Service"@en ;
+                    rdfs:comment "Variedade de serviços pessoais; serviços de organizações associativas patronais, empresariais, profissionais, sindicais, de defesa de direitos sociais, religiosas, políticas, etc.; atividades de manutenção e reparação de equipamentos de informática, de comunicação e de objetos pessoais e domésticos."@pt ;
+                    :ibgeConclaSection "S" .
+
+# http://semantica.globo.com/organization/Activity/DomesticService
+act:DomesticService rdf:type organization:Activity ;
+                    rdfs:label "Serviços Domésticos"@pt ;
+                    rdfs:label "Domestic Services"@en ;
+                    rdfs:comment "Atividades realizadas nos domicílios por empregados contratados pelas famílias."@pt ;
+                    :ibgeConclaSection "T" .
+
+# http://semantica.globo.com/organization/Activity/DiplomaticService
+act:DiplomaticService rdf:type organization:Activity ;
+                      rdfs:label "Serviços Diplomáticos"@pt ;
+                      rdfs:label "Diplomatic Services"@en ;
+                      rdfs:comment "Atividades de enclaves diplomáticos ou similares (como embaixadas, consulados, representações de organismos internacionais), onde se enquadram os organismos localizados no país dentro do conceito de extraterritorialidade."@pt ;
+                      :ibgeConclaSection "U" .
+
+

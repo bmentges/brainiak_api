@@ -1,0 +1,86 @@
+SPARQL MODIFY <http://semantica.globo.com/person/>
+DELETE {
+    ?s ?p ?o
+}
+INSERT {
+    `iri(?s_new)` ?p ?o ;
+                  owl:sameAs ?s .
+}
+FROM <http://semantica.globo.com/person/>
+WHERE
+{
+    {
+        SELECT ?s_new ?s ?p ?o
+        WHERE
+        {
+            ?s ?p ?o ;
+            owl:sameAs ?s_new .
+            FILTER (regex (str(?s), "http://semantica.globo.com/"))
+        }
+    }
+};
+
+SPARQL DELETE FROM <http://semantica.globo.com/person/> {
+    ?s_new owl:sameAs ?s_new
+}
+WHERE{
+    ?s_new owl:sameAs ?s_new
+} ;
+
+SPARQL MODIFY <http://semantica.globo.com/place/>
+DELETE {
+    ?s ?p ?o
+}
+INSERT {
+    `iri(?s_new)` ?p ?o ;
+                  owl:sameAs ?s .
+}
+FROM <http://semantica.globo.com/place/>
+WHERE
+{
+    {
+        SELECT ?s_new ?s ?p ?o
+        WHERE
+        {
+            ?s ?p ?o ;
+            owl:sameAs ?s_new .
+            FILTER (regex (str(?s), "http://semantica.globo.com/"))
+        }
+    }
+};
+
+SPARQL DELETE FROM <http://semantica.globo.com/place/> {
+    ?s_new owl:sameAs ?s_new
+}
+WHERE{
+    ?s_new owl:sameAs ?s_new
+} ;
+
+SPARQL MODIFY <http://semantica.globo.com/organization/>
+DELETE {
+    ?s ?p ?o
+}
+INSERT {
+    `iri(?s_new)` ?p ?o ;
+                  owl:sameAs ?s .
+}
+FROM <http://semantica.globo.com/organization/>
+WHERE
+{
+    {
+        SELECT ?s_new ?s ?p ?o
+        WHERE
+        {
+            ?s ?p ?o ;
+            owl:sameAs ?s_new .
+            FILTER (regex (str(?s), "http://semantica.globo.com/"))
+        }
+    }
+};
+
+SPARQL DELETE FROM <http://semantica.globo.com/organization/> {
+    ?s_new owl:sameAs ?s_new
+}
+WHERE{
+    ?s_new owl:sameAs ?s_new
+} ;

@@ -1,0 +1,165 @@
+@prefix : <http://semantica.globo.com/person/> .
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix gender: <http://semantica.globo.com/person/Gender/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix place: <http://semantica.globo.com/place/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix upper: <http://semantica.globo.com/upper/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+##########################################
+# Enumerations
+##########################################
+
+# http://semantica.globo.com/person/Gender
+:Gender a owl:Class ;
+        rdfs:subClassOf upper:Aspect ;
+        rdfs:label "Gênero da Pessoa"@pt ;
+        rdfs:label "Person Gender"@en ;
+        rdfs:comment "Gênero de uma pessoa."@pt .
+
+##########################################
+# Classes
+##########################################
+
+# http://semantica.globo.com/person/Person
+:Person a owl:Class ;
+        rdfs:subClassOf upper:SingleAgent ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty upper:name ;
+                          owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                          owl:allValuesFrom xsd:string 
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :fullName ;
+                          owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                          owl:allValuesFrom xsd:string
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :cityOfBirth ;
+                          owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                          owl:allValuesFrom place:City
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :gender ;
+                          owl:allValuesFrom [
+                            owl:oneOf (gender:Male gender:Female gender:Transgender)
+                          ]
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :gender ;
+                          owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                          owl:allValuesFrom :Gender
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :gender ;
+                          owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                          owl:allValuesFrom :Gender
+                        ] ;
+        owl:equivalentClass dbpedia:Person ,
+                            schema:Person ,
+                            foaf:Person ;
+        rdfs:label "Pessoa"@pt ;
+        rdfs:label "Person"@en ;
+        rdfs:comment "Human being, living, dead or fictional."@en ;
+        rdfs:comment "Ser humano, vivo, morto ou fictício."@pt .
+
+
+##########################################
+# ObjectProperties
+##########################################
+
+# http://semantica.globo.com/person/parent
+:parent rdf:type owl:ObjectProperty ;
+        owl:equivalentProperty dbpedia:parent ,
+                               schema:parent ;
+        rdfs:label "Filiação"@pt ;
+        rdfs:label "Parent"@en ;
+        rdfs:domain :Person ;
+        rdfs:range :Person ;
+        rdfs:comment "Father or Mother."@en ;
+        rdfs:comment "Pai ou a Mãe (progenitor)."@pt .
+
+# http://semantica.globo.com/person/gender
+:gender a owl:ObjectProperty ,
+          owl:FunctionalProperty ;
+        owl:equivalentProperty dbpedia:sex ,
+                               schema:gender ;
+        rdfs:label "Sexo"@pt ;
+        rdfs:label "Gender"@en ;
+        rdfs:domain :Person ;
+        rdfs:range :Gender ;
+        rdfs:comment "Gênero."@pt .
+
+# http://semantica.globo.com/person/birthPlace
+:birthPlace a owl:ObjectProperty ;
+             rdfs:subPropertyOf upper:birthPlace ;
+             rdfs:label "Local de Nascimento"@pt ;
+             rdfs:label "Birth Place"@en ;
+             rdfs:domain :Person ;
+             rdfs:range place:Place ;
+             rdfs:comment "Local de nascimento de uma pessoa. Pode ser país, estado, cidade, etc."@pt .
+
+# http://semantica.globo.com/person/cityOfBirth
+:cityOfBirth a owl:ObjectProperty ;
+             rdfs:subPropertyOf upper:birthPlace ;
+             rdfs:label "Naturalidade"@pt ;
+             rdfs:label "City of Birth"@en ;
+             rdfs:domain :Person ;
+             rdfs:range place:City ;
+             rdfs:comment "Cidade de nascimento de uma pessoa."@pt .
+
+##########################################
+# DatatypeProperties
+##########################################
+
+# http://semantica.globo.com/person/fullName
+:fullName a owl:DatatypeProperty ;
+      rdfs:subPropertyOf upper:fullName ;
+      owl:equivalentProperty dbpedia:birthName ;
+      rdfs:label "Nome"@pt ;
+      rdfs:label "Name"@en ;
+      rdfs:domain :Person ;
+      rdfs:range xsd:string ;
+      rdfs:comment "Nome completo dado a uma pessoa"@pt.
+
+# http://semantica.globo.com/person/occupation
+:occupation a owl:DatatypeProperty ;
+            owl:equivalentProperty dbpedia:occupation , # dbpedia:occupation > dbpedia:title
+                                   schema:jobTitle ;
+            rdfs:label "Ocupação"@pt ;
+            rdfs:label "Occupation"@en ;
+            rdfs:domain :Person ;
+            rdfs:range xsd:string ;
+            rdfs:comment "Ocupação (e.g. profissão) de uma pessoa."@pt .
+
+# http://semantica.globo.com/person/mainPhoto
+:mainPhoto a owl:DatatypeProperty ;
+            owl:equivalentProperty schema:image ;
+            rdfs:label "Foto"@pt ;
+            rdfs:label "Main Photo"@en ;
+            rdfs:domain :Person ;
+            rdfs:range xsd:XMLLiteral ;
+            rdfs:comment "Foto de uma pessoa, pra ser usada em um perfil ou algo do tipo."@pt .
+
+##########################################
+# Instances
+##########################################
+
+# http://semantica.globo.com/person/Gender/Male
+gender:Male rdf:type :Gender ;
+            upper:name "Male"@en ;
+            upper:name "Masculino"@pt .
+
+# http://semantica.globo.com/person/Gender/Female
+gender:Female rdf:type :Gender ;
+              upper:name "Female"@en ;
+              upper:name "Feminino"@pt .
+
+# http://semantica.globo.com/person/Gender/Transgender
+gender:Transgender rdf:type :Gender ;
+                   upper:name "Transgender"@en ;
+                   upper:name "Transgênero"@pt .

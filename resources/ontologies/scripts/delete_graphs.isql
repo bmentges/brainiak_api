@@ -1,0 +1,5 @@
+SPARQL DROP GRAPH <http://semantica.globo.com/upper/>;
+SPARQL DROP GRAPH <http://semantica.globo.com/organization/>;
+SPARQL DROP GRAPH <http://semantica.globo.com/person/>;
+SPARQL DROP GRAPH <http://semantica.globo.com/place/>;
+SPARQL DROP GRAPH <http://test.onto/>;

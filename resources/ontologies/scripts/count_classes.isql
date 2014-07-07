@@ -1,0 +1,1 @@
+SPARQL select count(*) where {?s a owl:Class} ;

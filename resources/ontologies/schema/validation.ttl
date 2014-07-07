@@ -1,0 +1,131 @@
+@prefix : <http://dados.globo.com/validation/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+##########################################
+# ObjectProperties
+##########################################
+
+# http://test.onto/gender
+:gender rdf:type owl:ObjectProperty ;
+        rdfs:label "Gender" ;
+        rdfs:domain :Animal ;
+        rdfs:range :Gender .
+
+# http://test.onto/furColour
+:furColour rdf:type owl:ObjectProperty ;
+           rdfs:label "Fur or hair colour" ;
+           rdfs:domain :Mammalia ;
+           rdfs:range :FurColour .
+
+# http://test.onto/child
+:child a owl:ObjectProperty ;
+       rdfs:domain :Human ;
+       rdfs:range :Human .
+
+# http://test.onto/isBasedIn
+:isBasedIn a owl:ObjectProperty ;
+           rdfs:label "is based in" ;
+           rdfs:domain :ResearchGroup ;
+           rdfs:range [
+                         a owl:Class ;
+                         owl:unionOf (:University :Institute)
+                      ] .
+
+##########################################
+# Classes
+##########################################
+
+# http://test.onto/ResearchGroup
+:ResearchGroup a owl:Class ;
+               rdfs:label "Research Group".
+
+# http://test.onto/University
+:University a owl:Class ;
+            rdfs:label "University".
+
+# http://test.onto/Institute
+:Institute a owl:Class ;
+           rdfs:label "Institute".
+
+# http://test.onto/Gender
+:Gender a owl:Class ;
+        rdfs:label "Gender".
+
+
+# http://test.onto/Species
+:Species a owl:Class ;
+         rdfs:label "Species".
+
+# http://test.onto/FurColour
+:FurColour a owl:Class ;
+           rdfs:label "Fur Colour" .
+
+# http://test.onto/Animal
+:Animal a owl:Class ;
+        rdfs:label "Animal" ;
+        rdfs:subClassOf :Species ,
+            [ rdf:type owl:Restriction ;
+              owl:onProperty :gender ;
+              owl:allValuesFrom [
+                owl:oneOf (:Male :Female :Transgender) 
+              ]
+            ] ,
+            [ rdf:type owl:Restriction ;
+              owl:onProperty :gender ;
+              owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+              owl:allValuesFrom :Gender
+            ] ,
+            [ rdf:type owl:Restriction ;
+              owl:onProperty :gender ;
+              owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+              owl:allValuesFrom :Gender
+            ] ;
+        :cellStructure "Eukaryotes" ;
+        :carbonAcquisition "Heterotroph" .
+
+# http://test.onto/Mammalia
+:Mammalia a owl:Class ;
+          rdfs:label "Mammalia" ;
+          rdfs:subClassOf :Animal ,
+              [ rdf:type owl:Restriction ;
+                owl:onProperty :furColour ;
+                owl:minQualifiedCardinality "2"^^xsd:nonNegativeInteger ;
+                owl:allValuesFrom :FurColour
+              ] ;
+          :vertebraType "Vertebrate" ;
+          :temperatureManagement "Endothermy" .
+
+# http://test.onto/Human
+:Human a owl:Class ;
+       rdfs:label "Human" ;
+       rdfs:subClassOf :Mammalia ,
+        [ rdf:type owl:Restriction ;
+          owl:onProperty :child ;
+          owl:maxQualifiedCardinality "888"^^xsd:nonNegativeInteger ;
+          owl:allValuesFrom :Human
+        ] .
+
+
+##########################################
+# Instance
+##########################################
+
+:Male a :Gender .
+:Female a :Gender .
+:Transgender a :Gender .
+
+:Black a :FurColour .
+:White a :FurColour .
+:Brown a :FurColour .
+:Yellow a :FurColour .
+:Red a :FurColour .
+
+:MicrosoftResearch a :ResearchGroup ;
+                   rdfs:label "Microsoft Research" .
+
+:GoogleResearch a :ResearchGroup ;
+                rdfs:label "Google Research" .
+
+:YahooResearch a :ResearchGroup ;
+                   rdfs:label "Yahoo Research" .

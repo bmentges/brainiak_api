@@ -143,7 +143,6 @@ def query_class_schema(query_params):
 
 def get_predicates_and_cardinalities(context, query_params, superclasses):
     query_result = query_cardinalities(query_params)
-
     bindings = query_predicates(query_params, superclasses)
     predicate_dict = bindings_to_dict('predicate', bindings)
 
@@ -252,6 +251,8 @@ WHERE {
       OPTIONAL { ?list_node rdf:first ?domain_class } .
     }
     %(filter_classes_clause)s
+
+    ### the clauses below are blocking rdfs:label
     {?predicate rdfs:range ?range .}
     UNION {
       ?predicate rdfs:range ?blank .
@@ -276,7 +277,8 @@ WHERE {
         FILTER(langMatches(lang(?range_label), "%(lang)s") OR langMatches(lang(?range_label), "")) .
       }
     }
-}"""
+}
+"""
 
 
 def _query_predicate_with_lang(query_params, superclasses):
@@ -285,7 +287,8 @@ def _query_predicate_with_lang(query_params, superclasses):
                          uniqueness_property=query_params.get_aux_param('uniqueness_property'),
                          **query_params)
     query = QUERY_PREDICATE_WITH_LANG % template_vars
-    return triplestore.query_sparql(query, query_params.triplestore_config)
+    response = triplestore.query_sparql(query, query_params.triplestore_config)
+    return response
 
 
 QUERY_PREDICATE_WITHOUT_LANG = u"""

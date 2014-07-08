@@ -388,21 +388,6 @@ FINAL_REAL = {
     }
 }
 
-SOLR_SIMPLIFIED_RESPONSE = {
-    'response': {
-        u'docs': [{
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Baixa_da_Colina_Rio_Branco_AC',
-            u'label': u'Baixa da Colina'
-        }, {
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Preventorio_Rio_Branco_AC',
-            u'label': u'Prevent\xf3rio'}
-        ]
-    }
-}
 
 SPARQL_RESULT_LABEL_TYPE_QUERY_1 = {
     "head": {
@@ -538,73 +523,3 @@ SUGGEST_PREDICATE_RESPONSE = {u"value": {
 
 SEARCH_API_RESULT = {"page": 1, "page_size": 2, "num_pages": 3, "predicate": {"uri_predicate": "info_predicate"}}
 
-
-SOLR_GOOD_RESPONSE = {
-    u'responseHeader': {
-        u'status': 0,
-        u'QTime': 0,
-        u'params': {
-            u'q': u'*:*',
-            u'rows': u'10',
-            u'wt': u'json'
-        }
-    },
-    u'response': {
-        u'start': 0,
-        u'numFound': 34228,
-        u'docs': [{
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Baixa_da_Colina_Rio_Branco_AC',
-            u'label': u'Baixa da Colina'
-        }, {
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Preventorio_Rio_Branco_AC',
-            u'label': u'Prevent\xf3rio'
-        }, {
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Primavera_Rio_Branco_AC',
-            u'label': u'Primavera'
-        }, {
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Quinze_Rio_Branco_AC',
-            u'label': u'Quinze'
-        }, {
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Santa_Quiteria_Rio_Branco_AC',
-            u'label': u'Santa Quit\xe9ria'
-        }, {
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Sao_Francisco_Rio_Branco_AC',
-            u'label': u'S\xe3o Francisco'
-        }, {
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Seis_De_Agosto_Rio_Branco_AC',
-            u'label': u'Seis De Agosto'
-        }, {
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Sobral_Rio_Branco_AC',
-            u'label': u'Sobral'
-        }, {
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Vila_Acre_Rio_Branco_AC',
-            u'label': u'Vila Acre'
-        }, {
-            u'classe': u'http://test.domain.com/base/Bairro',
-            u'grafo': u'http://test.domain.com/',
-            u'uri': u'http://test.domain.com/base/Bairro_Baixa_Grande_Arapiraca_AL',
-            u'label': u'Baixa Grande'
-        }]
-    }
-}
-
-
-DOCS_SOLR_GOOD_RESPONSE = SOLR_GOOD_RESPONSE['response']['docs']

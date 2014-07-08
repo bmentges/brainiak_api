@@ -5,7 +5,18 @@ Brainiak is a Linked Data RESTful API to provide transparent access to SPARQL en
 
 This a project created by Globo.com's engineers to enhace its semantic platform.
 We are releasing this as an open-source project in order to give something back to the software community.
-Having said that
+
+DISCLAIMER
+==========
+
+The project is released as it is. 
+This means you might have to tweak it, in order to meet your purpose.
+People can contribute to turn this project more adoption-friendly outside its original context of creation and use.
+
+For this purpose, use the forum https://groups.google.com/forum/#!forum/brainiak_api_users to discuss ideas and ask questions.
+
+We use the twitter https://twitter.com/brainiak_api to also broadcast information about the project and related subjects.
+
 
 Motivation
 ==========

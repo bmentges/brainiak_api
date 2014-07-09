@@ -147,6 +147,8 @@ class QueryTestCase(SimpleTestCase):
 
         load = self._load_fixture_to_triplestore
 
+        self.process_inference_options()
+
         if not self.fixtures_by_graph:
             for fixture in self.fixtures:
                 load(fixture, self.graph_uri)

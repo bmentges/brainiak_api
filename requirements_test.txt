@@ -4,6 +4,5 @@ pep8==1.4.1
 mock==1.0.1
 nose-exclude==0.1.9
 pinocchio==0.3.1
-splinter==0.5.4
 
 -e git://github.com/tatiana/estester.git#egg=estester

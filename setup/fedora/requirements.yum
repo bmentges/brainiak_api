@@ -1,10 +1,11 @@
 gcc
-gcc-c++ # greenlets
+gcc-c++
 git
+wget
 
-openssl-devel  # python3.4.1 pip dependency
-libcurl-devel  # pycurl
-libevent-devel  # python gevent
+openssl-devel
+libcurl-devel
+libevent-devel
 
 python-devel
 python-libs
@@ -18,7 +19,6 @@ python-debuginfo
 
 redis
 
-# virtuoso open-source from source
 aclocal
 autoconf
 autoheader

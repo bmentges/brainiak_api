@@ -522,4 +522,3 @@ SUGGEST_PREDICATE_RESPONSE = {u"value": {
 }}
 
 SEARCH_API_RESULT = {"page": 1, "page_size": 2, "num_pages": 3, "predicate": {"uri_predicate": "info_predicate"}}
-

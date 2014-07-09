@@ -9,7 +9,7 @@ We are releasing this as an open-source project in order to give something back 
 DISCLAIMER
 ==========
 
-The project is released as it is. 
+The project is released as it is.
 This means you might have to tweak it, in order to meet your purpose.
 People can contribute to turn this project more adoption-friendly outside its original context of creation and use.
 
@@ -35,7 +35,7 @@ Internally at Globo.com, the docs are available at http://brainiak.semantica.glo
 After public release we will publish the docs probably at https://brainiak.readthedocs.org
 
 Running
-============
+=======
 
 Brainiak is developed using `Python <http://www.python.org/>`_.
 
@@ -87,3 +87,4 @@ Brainiak is GNU GPL 2: ::
 
     You should have received a copy of the GNU General Public License
     along with Brainiak. If not, see <http://www.gnu.org/licenses/>.
+

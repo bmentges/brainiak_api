@@ -13,9 +13,9 @@ set -e
 # SYSTEM DEPENDENCIES #
 #*********************#
 
-sudo su -p
-yum -y update
-yum -y install $(cat requirements.yum)
+sudo su -p <<im_root
+    yum -y update
+    yum -y install $(cat requirements.yum)
 
 #********************#
 # OTHER DEPENDENCIES #
@@ -23,7 +23,7 @@ yum -y install $(cat requirements.yum)
 
 # Virtuoso
 
-su $USER
+su $USER <<im_user
     cd $CODE_DIR
     git clone https://github.com/openlink/virtuoso-opensource.git
     cd virtuoso-opensource
@@ -31,7 +31,8 @@ su $USER
     ./autogen.sh
     ./configure
     make
-exit
+im_user
+
 
 ln -s $CODE_DIR/virtuoso-opensource/binsrc/tests/isql /usr/bin/isql
 ln -s $CODE_DIR/virtuoso-opensource/binsrc/virtuoso/virtuoso-t /usr/bin/virtuoso-t
@@ -39,15 +40,15 @@ ln -s $CODE_DIR/virtuoso-opensource/binsrc/virtuoso/virtuoso-t /usr/bin/virtuoso
 mkdir -p /var/lib/virtuoso/db/dumps/
 chmod 777 /var/lib/virtuoso/db/ -R
 
-su $USER
+su $USER <<im_user
     echo "export VIRTUOSO_HOME=/var/lib/virtuoso/db/" >> ~/.bashrc
     cp $CODE_DIR/brainiak_api/setup/fedora/virtuoso.ini $VIRTUOSO_HOME/virtuoso.ini
     cd $VIRTUOSO_HOME
     virtuoso-t &
-exit
+im_user
 
 # ElasticSearch 0.90.12
-su $USER
+su $USER <<im_user
     cd $BIN_DIR
     wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.12.tar.gz
     tar -xvzf elasticsearch-0.90.12.tar.gz
@@ -88,4 +89,5 @@ su $USER
     cd $CODE_DIR/brainiak_api/
     make unit
 
-exit
+im_user
+im_root

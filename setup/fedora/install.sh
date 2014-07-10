@@ -14,7 +14,7 @@ mkdir -p $BIN_DIR
 # SYSTEM DEPENDENCIES #
 #*********************#
 
-sudo yum update
+sudo yum -y update
 sudo yum -y install $(cat requirements.yum)
 
 #********************#
@@ -25,7 +25,7 @@ sudo yum -y install $(cat requirements.yum)
 cd $CODE_DIR
 git clone https://github.com/openlink/virtuoso-opensource.git || true
 cd $CODE_DIR/virtuoso-opensource;
-git checkout develop/6 #5421d2ea8fd344c1d70d7c99cc77a2051914bdc7
+git checkout 5421d2ea8fd344c1d70d7c99cc77a2051914bdc7 # develop/6
 ./autogen.sh
 ./configure
 make

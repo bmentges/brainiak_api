@@ -259,20 +259,6 @@ def merge_by_id(items_list):
     return items_list
 
 
-# TODO: unit test, move to urls
-def extract_prefix(url):
-    prefix = url.rsplit('/', 1)[0]
-    return u"{0}/".format(prefix)
-
-
-# TODO: unit test
-def add_prefix(items_list, class_prefix):
-    for item in items_list:
-        uri = item["@id"]
-        item["instance_prefix"] = extract_prefix(uri)
-        item["class_prefix"] = expand_uri(class_prefix)
-
-
 def filter_instances(query_params):
     if not class_exists(query_params):
         error_message = u"Class {0} in graph {1} does not exist".format(
@@ -293,7 +279,11 @@ def filter_instances(query_params):
 
     items_list = compress_keys_and_values(result_dict, keymap=keymap, ignore_keys=["total"])
     items_list = merge_by_id(items_list)
-    add_prefix(items_list, query_params['class_prefix'])
+    for item in items_list:
+        uri = item["@id"]
+        item["instance_prefix"] = u"{0}/".format(uri.rsplit('/', 1)[0])
+        item["class_prefix"] = expand_uri(query_params['class_prefix'])
+
     decorate_with_resource_id(items_list)
     return build_json(items_list, query_params)
 

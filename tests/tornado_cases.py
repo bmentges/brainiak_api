@@ -6,7 +6,7 @@ from tornado.testing import AsyncTestCase, AsyncHTTPTestCase
 from brainiak import server, greenlet_tornado
 
 
-TIMEOUT = 30
+TIMEOUT = 100  # None or small values cause some integration tests to fail
 
 
 class TornadoAsyncTestCase(AsyncTestCase):
@@ -39,6 +39,7 @@ class TornadoAsyncHTTPTestCase(AsyncHTTPTestCase):
         request = HTTPRequest(**kwargs)
         request.body = body
         request.allow_nonstandard_methods = True
+        request.request_timeout = TIMEOUT
         self.http_client.fetch(request, self.stop, **kwargs)
         return self.wait()
 

@@ -270,7 +270,7 @@ def add_prefix(items_list, class_prefix):
     for item in items_list:
         uri = item["@id"]
         item["instance_prefix"] = extract_prefix(uri)
-        item["class_prefix"] = class_prefix
+        item["class_prefix"] = expand_uri(class_prefix)
 
 
 def filter_instances(query_params):
@@ -376,7 +376,7 @@ def build_json(items_list, query_params):
     json = {
         '_schema_url': schema_url,
         'pattern': '',
-        '_class_prefix': query_params['class_prefix'],
+        '_class_prefix': expand_uri(query_params['class_prefix']),
         '_base_url': remove_last_slash(query_params.base_url),
         'items': items_list,
         '@context': {"@language": query_params.get("lang")},

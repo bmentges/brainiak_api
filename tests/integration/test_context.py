@@ -11,12 +11,6 @@ from tests.sparql import QueryTestCase
 from tests.tornado_cases import TornadoAsyncHTTPTestCase
 
 
-import tornado
-from tests.tornado_cases import _curl_setup_request
-print("Temporary mockey-patch to tornado/curl_httpclient.py")
-tornado.curl_httpclient._curl_setup_request = _curl_setup_request
-
-
 class ListClassesResourceTestCase(TornadoAsyncHTTPTestCase, QueryTestCase):
 
     fixtures = ["tests/sample/schemas.n3"]

@@ -3,14 +3,16 @@ Brainiak
 
 Brainiak is a Linked Data RESTful API to provide transparent access to SPARQL endpoints.
 
-This project was created by `Globo.com <http://globo.com/>`'s engineers to enhace its semantic platform.
+This project was created by `Globo.com <http://globo.com/>`_'s engineers to enhace its semantic platform.
 We are releasing this as an open-source project in order to give something back to the software community.
 
 Learn more about Brainiak at:
 
+
 .. raw:: html
 
     <iframe src="//www.slideshare.net/slideshow/embed_code/21616964" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px 1px 0; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> <div style="margin-bottom:5px"> <strong> <a href="https://www.slideshare.net/semantic_team/semantic-day-2013-linked-data-at-globocom" title="Semantic day 2013 linked data at globo.com" target="_blank">Semantic day 2013 linked data at globo.com</a> </strong> from <strong><a href="http://www.slideshare.net/semantic_team" target="_blank">Semantic Team</a></strong> </div>
+
 
 DISCLAIMER
 ==========
@@ -21,7 +23,7 @@ People can contribute to turn this project more adoption-friendly outside its or
 
 For this purpose, use the forum https://groups.google.com/forum/#!forum/brainiak_api_users to discuss ideas and ask questions.
 
-We use the twitter https://twitter.com/brainiak_api to broadcast information about the project and related subjects.
+We use the twitter `@brainiak_api <https://twitter.com/brainiak_api>`_'s to broadcast information about the project and related subjects.
 
 
 Motivation
@@ -53,6 +55,7 @@ Running
 Brainiak is developed using `Python <http://www.python.org/>`_.
 
 The requirements for currently running Brainiak are:
+
 - Python packages (detailed at requirements.txt)
 - Triplestore: `Virtuoso 6 <https://github.com/openlink/virtuoso-opensource>`_
 - Search engine: `ElasticSearch 0.90.12 <http://www.elasticsearch.org/>`_

@@ -36,8 +36,6 @@ Documentation
 
 Internally at Globo.com, the docs are available at http://brainiak.semantica.globoi.com/docs/
 
-.. After public release we will publish the docs probably at https://brainiak.readthedocs.org
-
 The documentation source is available at `brainiak_api/docs` directory.
 It was developed using `Sphinx <http://sphinx-doc.org/>`_ and
 `Program output plugin <https://pythonhosted.org/sphinxcontrib-programoutput/>`_.

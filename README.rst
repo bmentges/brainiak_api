@@ -20,6 +20,7 @@ For this purpose, use the forum https://groups.google.com/forum/#!forum/brainiak
 
 We use the twitter `@brainiak_api <https://twitter.com/brainiak_api>`_'s to broadcast information about the project and related subjects.
 
+And we also have a facebbok page at https://www.facebook.com/brainiakapi.
 
 Motivation
 ==========

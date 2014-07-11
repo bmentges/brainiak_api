@@ -36,7 +36,7 @@ Documentation
 
 Internally at Globo.com, the docs are available at http://brainiak.semantica.globoi.com/docs/
 
-After public release we will publish the docs probably at https://brainiak.readthedocs.org
+.. After public release we will publish the docs probably at https://brainiak.readthedocs.org
 
 The documentation source is available at `brainiak_api/docs` directory.
 It was developed using `Sphinx <http://sphinx-doc.org/>`_ and
@@ -62,7 +62,7 @@ are of internal use at Globo.com and won't be released open-source.
 
 Fedora
 ------
-
+    
 There are complete setup instructions and scripts for Fedora 20, at:
 https://github.com/globoi/brainiak_api/tree/master/setup/fedora
 
